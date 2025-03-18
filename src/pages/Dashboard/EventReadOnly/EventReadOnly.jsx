@@ -859,6 +859,7 @@ function EventReadOnly() {
                                     </p>
                                     {eventData?.description && (
                                       <div
+                                        className="read-only-event-description"
                                         dangerouslySetInnerHTML={{
                                           __html: contentLanguageBilingual({
                                             data: eventData?.description,
@@ -899,7 +900,7 @@ function EventReadOnly() {
                               <div
                                 style={{
                                   display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                                    ? adminCheckHandler()
+                                    ? adminCheckHandler({ calendar, user })
                                       ? 'initial'
                                       : 'none'
                                     : 'initial',

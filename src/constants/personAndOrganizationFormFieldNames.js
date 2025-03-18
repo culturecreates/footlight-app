@@ -11,6 +11,7 @@ export const organizationFormFieldNames = {
   CONTACT_WEBSITE: 'CONTACT_WEBSITE',
   PHONE_NUMBER: 'PHONE_NUMBER',
   EMAIL: 'EMAIL',
+  ORGANIZATION_TYPE: 'ORGANIZATION_TYPE',
 };
 
 export const personFormFieldNames = {

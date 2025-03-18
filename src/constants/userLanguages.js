@@ -11,4 +11,9 @@ export const userLanguages = [
     label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.fr')}</Translation>,
     key: `FR`,
   },
+  {
+    value: 'JA',
+    label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.ja')}</Translation>,
+    key: `JA`,
+  },
 ];

@@ -63,37 +63,38 @@ const RecurringModal = ({
     return sortedArray;
   };
   const handleSubmit = (values) => {
-    const obj = {
-      startTime: moment(values.startTimeCustom).format('hh:mm a'),
-      endTime: values.endTimeCustom && moment(values.endTimeCustom).format('hh:mm a'),
-      start: moment(values.startTimeCustom).format('HH:mm'),
-      end: values.endTimeCustom && moment(values.endTimeCustom).format('HH:mm'),
+    const formattedStartTime = moment(values.startTimeCustom).format('hh:mm a');
+    const formattedEndTime = values.endTimeCustom ? moment(values.endTimeCustom).format('hh:mm a') : null;
+    const formattedStart = moment(values.startTimeCustom).format('HH:mm');
+    const formattedEnd = values.endTimeCustom ? moment(values.endTimeCustom).format('HH:mm') : null;
+
+    const newTimeEntry = {
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
+      start: formattedStart,
+      end: formattedEnd,
       color: '#607EFC',
     };
 
-    if (updateAllTime) {
-      setDataSource(
-        dateSource.map((item) => ({
-          ...item,
-          time: item.time ? [...item.time, obj]?.sort((a, b) => a?.startTime?.localeCompare(b?.startTime)) : [obj],
-        })),
-      );
-    } else
-      setDataSource(
-        dateSource.map((item) => {
-          if (selectedDateId === item.id) {
-            if (item.time) item.time = [...item.time, obj]?.sort((a, b) => a?.start?.localeCompare(b?.start));
-            else item.time = [obj];
-          }
-          return item;
-        }),
-      );
+    setDataSource(
+      dateSource.map((item) => {
+        if (updateAllTime || selectedDateId === item.id) {
+          const updatedTimes = [...(item.time || []), newTimeEntry]
+            .filter((time) => time.start || time.startTime || time.end || time.endTime)
+            .sort((a, b) => a.start.localeCompare(b.start));
+
+          return { ...item, time: updatedTimes };
+        }
+        return item;
+      }),
+    );
+
     form.resetFields();
     setShowAddTime(false);
     setSelectedDateId('-100');
-
     setUpdateAllTime(false);
   };
+
   useEffect(() => {
     const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
     setSortedDates(getMonthSorted);
@@ -447,6 +448,7 @@ const RecurringModal = ({
                                 endTimeCustom: value,
                               });
                             }}
+                            disabled={form.getFieldValue('startTimeCustom') ? false : true}
                             data-cy="custom-end-time"
                           />
                         </Form.Item>

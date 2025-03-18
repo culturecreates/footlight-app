@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import './imageUpload.css';
-import { message, Upload, Form } from 'antd';
-import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { message, Upload, Form, Dropdown, Space } from 'antd';
+import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { ImageCrop } from '../ImageCrop';
 import { useOutletContext } from 'react-router-dom';
 import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
+import { IMAGE_ACTIONS, mainImageUploadOptions } from '../../constants/imageUploadOptions';
+import ImageCredits from '../Modal/ImageCredit';
+import Credit from '../Tags/Credit';
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 
 function ImageUpload(props) {
   const {
@@ -27,6 +31,28 @@ function ImageUpload(props) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
   const [originalImage, setOriginalImage] = useState(originalImageUrl ?? null);
+  const [imageOptionsModalOpen, setImageOptionsModalOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState(null);
+  const [imageOptions, setImageOptions] = useState({
+    credit:
+      eventImageData?.creditText ??
+      Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+        acc[contentLanguageKeyMap[lang]] = '';
+        return acc;
+      }, {}),
+    altText:
+      eventImageData?.description ??
+      Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+        acc[contentLanguageKeyMap[lang]] = '';
+        return acc;
+      }, {}),
+    caption:
+      eventImageData?.caption ??
+      Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+        acc[contentLanguageKeyMap[lang]] = '';
+        return acc;
+      }, {}),
+  });
   const [currentCalendarData] = useOutletContext();
 
   const [cropValues, setCropValues] = useState({
@@ -51,7 +77,6 @@ function ImageUpload(props) {
 
   let aspectRatio;
   let width;
-
   if (!isCalendarLogo && currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio) {
     aspectRatio = currentCalendarData.imageConfig[0]?.large.aspectRatio;
     width = getWidthFromAspectRatio(aspectRatio, 48);
@@ -91,6 +116,20 @@ function ImageUpload(props) {
         thumbnail: undefined,
         original: undefined,
       });
+      setImageOptions({
+        credit: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+        altText: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+        caption: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+      });
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
@@ -109,6 +148,9 @@ function ImageUpload(props) {
   const onRemove = () => {
     form.setFieldsValue({
       imageCrop: null,
+    });
+    form.setFieldsValue({
+      mainImageOptions: null,
     });
     setImageUrl(false);
   };
@@ -157,14 +199,33 @@ function ImageUpload(props) {
                       }}
                       src={imageUrl || (file?.url ?? file?.thumbUrl)}
                     />
-                    <a
-                      className="image-name"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={file?.url ?? imageUrl}
-                      data-cy="anchor-image-link">
-                      {file?.name}
-                    </a>
+                    <span className="image-name-wrapper" data-cy="span-image-name-wrapper">
+                      <a
+                        className="image-name"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={file?.url ?? imageUrl}
+                        data-cy="anchor-image-link">
+                        {file?.name}
+                      </a>
+                      <span className="image-credits" data-cy="span-image-credits">
+                        {imageOptions &&
+                          Object.entries(imageOptions).map(([key, value]) => {
+                            if (
+                              value &&
+                              typeof value === 'object' &&
+                              Object.values(value).some((langValue) => langValue && langValue !== '')
+                            ) {
+                              return (
+                                <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                                  {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                                </Credit>
+                              );
+                            }
+                            return null;
+                          })}
+                      </span>
+                    </span>
                   </span>
                   <span className="image-actions">
                     {props?.imageReadOnly && (
@@ -172,15 +233,52 @@ function ImageUpload(props) {
                         <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                       </span>
                     )}
-                    {!props?.imageReadOnly && imageUrl && (
+                    {!props?.imageReadOnly && imageUrl && !isCrop && (
                       <span onClick={actions?.remove} data-cy="span-remove-image">
                         <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                       </span>
                     )}
                     {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && isCrop && (
-                      <span className="edit-image" onClick={actions?.preview} data-cy="span-preview-crop-image">
-                        <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
-                      </span>
+                      <Dropdown
+                        overlayStyle={{ width: '200px' }}
+                        menu={{
+                          items: mainImageUploadOptions({
+                            credits: imageOptions.credit,
+                            altText: imageOptions.altText,
+                            caption: imageOptions.caption,
+                          }),
+                          onClick: ({ key }) => {
+                            if ([IMAGE_ACTIONS.CREDIT, IMAGE_ACTIONS.ALT_TEXT, IMAGE_ACTIONS.CAPTION].includes(key)) {
+                              setImageOptionsModalOpen(true);
+                              form.setFieldsValue({
+                                credit: imageOptions?.credit,
+                                altText: imageOptions?.altText,
+                                caption: imageOptions?.caption,
+                              });
+                              setSelectedField(key);
+                            } else {
+                              switch (key) {
+                                case IMAGE_ACTIONS.CROP:
+                                  actions.preview();
+                                  break;
+                                case IMAGE_ACTIONS.DELETE:
+                                  actions.remove();
+                                  break;
+                                default:
+                                  break;
+                              }
+                            }
+                          },
+                        }}
+                        trigger={['click']}>
+                        <Space>
+                          <MoreOutlined
+                            className="image-options-more-icon"
+                            style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }}
+                            data-cy="span-image-options-icon"
+                          />
+                        </Space>
+                      </Dropdown>
                     )}
                   </span>
                 </span>
@@ -235,6 +333,18 @@ function ImageUpload(props) {
           setImage={setImageUrl}
           largeAspectRatio={largeAspectRatio}
           thumbnailAspectRatio={thumbnailAspectRatio}
+        />
+      )}
+      {currentCalendarData?.contentLanguage && (
+        <ImageCredits
+          open={imageOptionsModalOpen}
+          selectedField={selectedField}
+          setOpen={setImageOptionsModalOpen}
+          form={form}
+          isImageGallery={false}
+          setImageOptions={setImageOptions}
+          imageOptions={imageOptions}
+          calendarContentLanguage={currentCalendarData?.contentLanguage}
         />
       )}
     </>

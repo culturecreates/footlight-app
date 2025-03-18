@@ -471,12 +471,16 @@ function Events() {
       }
     });
 
-    sortQuery.append(
-      'sort',
-      encodeURIComponent(
-        `${filter?.order}(${filter?.sort}${filter?.sort === sortByOptions[0]?.key ? '.' + i18n.language : ''})`,
-      ),
-    );
+    const sortKey = filter?.sort;
+    const orderKey = filter?.order;
+    const isFirstSort = sortKey === sortByOptions[0]?.key;
+    const isFourthSort = sortKey === sortByOptions[3]?.key;
+
+    const rarityScoreSort = isFourthSort ? `,${orderKey}(metadata.rarityScore)` : '';
+
+    const sortingQuery = `${orderKey}(${sortKey}${isFirstSort ? '.' + i18n.language : ''})${rarityScoreSort}`;
+
+    sortQuery.append('sort', sortingQuery);
 
     if (filter?.dates?.length == 2) {
       query.append(

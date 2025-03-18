@@ -95,7 +95,7 @@ import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/M
 import MapComponent from '../../../components/MapComponent';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
-import { stripHtml } from '../../../utils/stringManipulations';
+import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 
 const { TextArea } = Input;
 
@@ -487,6 +487,7 @@ function CreateNewPlace() {
             });
           }
           let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+          let mainImageOptions = form.getFieldValue('mainImageOptions');
           if (imageCrop.length > 0) {
             imageCrop = [
               {
@@ -508,6 +509,9 @@ function CreateNewPlace() {
                   width: imageCrop[0]?.original?.width,
                 },
                 isMain: true,
+                description: mainImageOptions?.altText,
+                creditText: mainImageOptions?.credit,
+                caption: mainImageOptions?.caption,
               },
             ];
           }
@@ -554,12 +558,7 @@ function CreateNewPlace() {
             fieldName: 'name',
           });
           description = filterUneditedFallbackValues({
-            values: Object.keys(values?.description || {}).reduce((acc, key) => {
-              //strips editor html value to its inner text
-              const content = values.description[key];
-              acc[key] = stripHtml(content);
-              return acc;
-            }, {}),
+            values: values?.description,
             activeFallbackFieldsInfo: fallbackStatus,
             fieldName: 'description',
           });
@@ -580,10 +579,7 @@ function CreateNewPlace() {
             ...(values?.containedInPlace && {
               containedInPlace: containedInPlaceObj,
             }),
-            geo: {
-              latitude,
-              longitude,
-            },
+            geo: latitude && longitude && latitude !== '' && longitude !== '' ? { latitude, longitude } : undefined,
 
             accessibility: values?.placeAccessibility
               ? values?.placeAccessibility.map((item) => {
@@ -614,53 +610,6 @@ function CreateNewPlace() {
             ...(values?.containsPlace && { containsPlace }),
           };
 
-          const uploadImageList = async () => {
-            for (let i = 0; i < values.multipleImagesCrop.length; i++) {
-              const file = values.multipleImagesCrop[i]?.originFileObj;
-              if (!file) {
-                if (values.multipleImagesCrop[i]?.cropValues) imageCrop.push(values.multipleImagesCrop[i]?.cropValues);
-                else imageCrop.push(values.multipleImagesCrop[i]);
-                continue;
-              }
-
-              const formdata = new FormData();
-              formdata.append('file', file);
-
-              try {
-                const response = await addImage({ data: formdata, calendarId }).unwrap();
-
-                // Process each image in the list
-                const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
-                const { original, height, width } = response?.data || {};
-
-                const galleryImage = {
-                  large: {
-                    xCoordinate: large?.x,
-                    yCoordinate: large?.y,
-                    height: large?.height,
-                    width: large?.width,
-                  },
-                  original: {
-                    entityId: original?.entityId ?? null,
-                    height,
-                    width,
-                  },
-                  thumbnail: {
-                    xCoordinate: thumbnail?.x,
-                    yCoordinate: thumbnail?.y,
-                    height: thumbnail?.height,
-                    width: thumbnail?.width,
-                  },
-                };
-
-                // Add the processed image to imageCrop
-                imageCrop.push(galleryImage);
-              } catch (error) {
-                console.log(error);
-                throw error; // rethrow to stop further execution
-              }
-            }
-          };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
@@ -680,6 +629,9 @@ function CreateNewPlace() {
                           height: response?.data?.height,
                           width: response?.data?.width,
                         },
+                        description: mainImageOptions?.altText,
+                        creditText: mainImageOptions?.credit,
+                        caption: mainImageOptions?.caption,
                       },
                     ];
                   } else
@@ -693,10 +645,14 @@ function CreateNewPlace() {
                           height: response?.data?.height,
                           width: response?.data?.width,
                         },
+                        description: mainImageOptions?.altText,
+                        creditText: mainImageOptions?.credit,
+                        caption: mainImageOptions?.caption,
                       },
                     ];
 
-                  if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+                  if (values.multipleImagesCrop?.length > 0)
+                    await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                   placeObj['image'] = imageCrop;
                   addUpdatePlaceApiHandler(placeObj, postalObj)
                     .then((id) => resolve(id))
@@ -711,7 +667,8 @@ function CreateNewPlace() {
                   element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                 });
           } else {
-            if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+            if (values.multipleImagesCrop?.length > 0)
+              await uploadImageListHelper(values, addImage, calendarId, imageCrop);
             if (
               values?.draggerWrap &&
               values?.dragger?.length === 0 &&
@@ -1099,6 +1056,11 @@ function CreateNewPlace() {
                     height: mainImage?.thumbnail?.height,
                     width: mainImage?.thumbnail?.width,
                   },
+                  mainImageOptions: {
+                    credit: mainImage?.creditText,
+                    altText: mainImage?.description,
+                    caption: mainImage?.caption,
+                  },
                 },
               });
             }
@@ -1121,6 +1083,11 @@ function CreateNewPlace() {
                   y: image?.thumbnail?.yCoordinate,
                   height: image?.thumbnail?.height,
                   width: image?.thumbnail?.width,
+                },
+                imageOptions: {
+                  credit: image?.creditText,
+                  altText: image?.description,
+                  caption: image?.caption,
                 },
               }));
 
@@ -1192,6 +1159,11 @@ function CreateNewPlace() {
                   height: mainImage?.thumbnail?.height,
                   width: mainImage?.thumbnail?.width,
                 },
+                mainImageOptions: {
+                  credit: mainImage?.creditText,
+                  altText: mainImage?.description,
+                  caption: mainImage?.caption,
+                },
               },
             });
           }
@@ -1214,6 +1186,11 @@ function CreateNewPlace() {
                 y: image?.thumbnail?.yCoordinate,
                 height: image?.thumbnail?.height,
                 width: image?.thumbnail?.width,
+              },
+              imageOptions: {
+                credit: image?.creditText,
+                altText: image?.description,
+                caption: image?.caption,
               },
             }));
 
@@ -1773,6 +1750,13 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.image.additionalImages')}
                   data-cy="form-item-event-multiple-image"
                   hidden={!imageConfig?.enableGallery}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading" data-cy="para-place-image-helper-text">
+                        {t('dashboard.places.createNew.addPlace.image.subheading')}
+                      </p>
+                    </Col>
+                  </Row>
                   <MultipleImageUpload
                     setShowDialog={setShowDialog}
                     form={form}
@@ -1844,7 +1828,7 @@ function CreateNewPlace() {
                 <Form.Item name="addressSearch">
                   <PlacesAutocomplete
                     googleCallbackName="initTwo"
-                    searchOptions={{ componentRestrictions: { country: 'CA' } }}
+                    searchOptions={{ componentRestrictions: { country: ['CA', 'JP'] } }}
                     value={address ?? ''}
                     onChange={handleChange}
                     onSelect={handleSelect}
@@ -1891,7 +1875,7 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.streetAddress')}
-                  required={true}
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames.STREET_ADDRESS)}
                   data-cy="form-item-street-address-title">
                   <CreateMultiLingualFormItems
                     entityId={placeId}
@@ -1907,7 +1891,7 @@ function CreateNewPlace() {
                           externalCalendarEntityData?.length > 0 &&
                           externalCalendarEntityData[0]?.address?.streetAddress
                     }
-                    required={true}
+                    required={requiredFieldNames?.includes(placeFormRequiredFieldNames.STREET_ADDRESS)}
                     validations={t('common.validations.informationRequired')}
                     dataCy="input-text-area-place-street-address-"
                     placeholder={placeHolderCollectionCreator({

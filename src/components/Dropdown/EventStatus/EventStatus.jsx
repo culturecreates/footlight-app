@@ -103,7 +103,6 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
       featureEvents({
         eventIds: `eventIds=${eventData?.id}`,
         calendarId,
-        state: eventData?.isFeatured ? !eventData?.isFeatured : false,
       })
         .unwrap()
         .then((res) => {

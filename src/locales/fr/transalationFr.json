@@ -252,10 +252,43 @@
             "title": "Image",
             "mainImage": "Image principale",
             "additionalImages": "Images supplémentaires",
-            "subHeading": "Utiliser les formats .jpeg/.jpg ou .png",
+            "subHeading": "Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
             "imageGallery": "Galerie d'images",
+            "options": {
+              "cropImage": "Recadrer l’image",
+              "imageCredit": "Ajouter des crédits photos à l'image",
+              "altText": "Ajouter un texte alternatif à l’image",
+              "imageCaptions": "Ajouter une légende à l’image",
+              "deleteImage": "Supprimer l’image",
+              "editImageCredit": "Éditer les crédits photos à l'image",
+              "editAltText": "Éditer le texte alternatif à l’image",
+              "editImageCaptions": "Éditer la légende à l’image"
+            },
+            "modalTexts": {
+              "cancel": "Annuler",
+              "save": "Sauvegarder",
+              "credit": {
+                "title": "Ajouter des crédits photos à l'image",
+                "label": "Ajouter des crédits photos à l'image",
+                "placeholder": "Indiquer les crédits photos à l'image",
+                "credit": "Crédit image"
+              },
+              "altText": {
+                "title": "Ajouter un texte alternatif à l’image",
+                "label": "Ajouter un texte alternatif à l’image",
+                "description": "Ajouter une brève description pour rendre le contenu accessible à tout les utilisateurs.",
+                "placeholder": "Indiquer un texte alternatif à l’image",
+                "altText": "Texte alternatif"
+              },
+              "caption": {
+                "title": "Ajouter une légende à l’image",
+                "label": "Ajouter une légende à l’image",
+                "placeholder": "Indiquer une légende à l’image",
+                "caption": "Légende de l'image"
+              }
+            },
             "crop": {
               "title": "Positionnement de l’image",
               "subHeading": "Ajustez la position de l’image si nécessaire.",
@@ -376,7 +409,7 @@
             "englishShort": "La description en anglais est trop courte.",
             "frenchShort": "La description française est trop courte.",
             "unilingualDescriptionShort": "La description est trop courte",
-            "emptyImage": "Une image est requise. Utiliser les formats .jpeg/.jpg ou .png"
+            "emptyImage": "Une image est requise. Uniquement les fichiers .jpeg et .png sont acceptés."
           },
           "ticket": {
             "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
@@ -410,7 +443,7 @@
             "subHeading": "Ajoutez des informations de base sur cette organisation.",
             "name": "Nom",
             "logo": "Logo",
-            "logoSubHeading": "Utiliser les formats .jpeg/.jpg ou .png",
+            "logoSubHeading": "Uniquement les fichiers .jpeg et .png sont acceptés.",
             "success": "Succès ! Votre fiche d'organisation a été créée.",
             "namePlaceholder": "Indiquer un nom",
             "websitePlaceholder": "Indiquer un site web",
@@ -699,7 +732,7 @@
             "image": "Image",
             "mainImage": "Image principale",
             "additionalImages": "Images supplémentaires",
-            "subheading": "Utiliser les formats .jpeg/.jpg ou .png"
+            "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
           },
           "addMoreDetails": "Ajouter plus de détails.",
           "dataSource": "Source de la donnée.",
@@ -948,6 +981,11 @@
       },
       "widgetSettings": {
         "title": "Apparence",
+        "headerTextDescription": "Indiquez un titre si vous souhaitez qu'il apparaisse en haut de la page.",
+        "headerText": "L'en-tête",
+        "showFooter": "Afficher le pied de page",
+        "filterSelection": "Sélection du filtre",
+        "datepickerToggle": "Toujours afficher le sélecteur de date dans la vue de bureau",
         "pageDescription": "Définissez l'apparence du module sur votre plateforme.",
         "previewDesktop": "Vue écran",
         "previewMobileBtn": "Vue mobile",
@@ -959,8 +997,17 @@
         "height": "Hauteur",
         "width": "Largeur maximale",
         "font": "Sélection de la police de caractères",
+        "redirectionMode": "Action sur le clic de l'événement",
+        "redirectionModeNone": "Afficher dans le widget",
+        "redirectionModeExternal": "Envoyer sur mon site",
+        "redirectionModeDescription": "Où diriger les visiteurs lorsqu'ils cliquent sur les liens de la liste.",
+        "disableGroups": "Afficher les événements séparément",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
+        "filterOptions": "Ajouter d'autres filtres à la vue de la liste.",
+        "date": "Date",
+        "audience": "Public",
+        "place": "Lieu",
         "region": "Région",
         "location": "Lieu",
         "organizer": "Organisateur",
@@ -975,9 +1022,11 @@
           "width": "Indiquez la largeur en pixels",
           "height": "Indiquez la hauteur en pixels",
           "color": "Collez votre code couleur ou sélectionnez une couleur",
-          "limit": "Indiquez le nombre maximum à afficher"
+          "limit": "Indiquez le nombre maximum à afficher",
+          "limitMax": "Le nombre d'événements est trop élevé. Le nombre maximale est 100."
         },
         "placeholder": {
+          "headerText": "Indiquer le titre",
           "eventType": "Sélectionner un type d'événement",
           "region": "Sélectionner une région",
           "place": "Sélectionner un lieu",
@@ -1025,13 +1074,13 @@
           "addImageGallery": "Ajouter la galerie d'images"
         },
         "calendarLogo": "Logo",
-        "calendarLogoDescription": "Utiliser les formats .jpeg/.jpg ou .png",
+        "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
         "calendarWidgetSetup": "Widget de listage",
-        "calendarWidgetDescription": "Ajoutez les modèles de liens nécessaires au bon fonctionnement du widget. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
-        "eventTemplate": "Modèle d'événement",
-        "eventTemplateDescription": "Ajoutez le lien du modèle pour une page d'événement sur votre site web. Ce lien contient les espaces réservés nécessaires au widget.",
-        "searchResultTemplate": "Modèle de résultats de recherche",
-        "searchResultTemplateDescription": "Ajoutez le lien du modèle pour une page de résultats de recherche sur votre site web. Ce lien contient les espaces réservés nécessaires au widget calendrier.",
+        "calendarWidgetDescription": "Ajoutez les gabarits de liens pour pointer les liens du widget vers votre site. Ces gabarits contiennent des modèles de paramètres.",
+        "eventTemplate": "Gabarit de liens d'événement",
+        "eventTemplateDescription": "Ajoutez le gabarit pour une page d'événement sur votre site web.",
+        "searchResultTemplate": "Gabarit de liens de résultat de recherche",
+        "searchResultTemplateDescription": "Ajoutez le gabarit pour une page de résultats de recherche sur votre site web.",
         "filterPersonalization": "Personnalisation des filtres",
         "filterDescription": "Sélectionner les filtres pour l'affichage en listes dans CMS Footlight.",
         "events": "Événements",
@@ -1093,7 +1142,10 @@
           "PerformerRole": "Rôle d'interprète",
           "SupporterRole": "Rôle de contributeur"
         },
-        "Person": { "Occupation": "Occupation" }
+        "Person": { "Occupation": "Occupation" },
+        "organization": {
+          "organizationType": "Type d'organisme"
+        }
       },
       "listing": {
         "heading": "Taxonomies",

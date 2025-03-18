@@ -485,8 +485,9 @@ function PlaceReadOnly() {
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="description"
                                     data={placeData?.description}>
-                                    <p className="read-only-event-content">
+                                    <p>
                                       <div
+                                        className="read-only-place-description"
                                         dangerouslySetInnerHTML={{
                                           __html: contentLanguageBilingual({
                                             data: placeData?.description,
@@ -511,7 +512,7 @@ function PlaceReadOnly() {
                                     imageUrl={mainImageData?.large?.uri}
                                     imageReadOnly={true}
                                     preview={true}
-                                    eventImageData={mainImageData?.large}
+                                    eventImageData={mainImageData}
                                   />
                                 </div>
                               )}

@@ -427,8 +427,9 @@ function PersonReadOnly() {
                                     <FallbackInjectorForReadOnlyPages
                                       fieldName="description"
                                       data={personData?.description}>
-                                      <p className="read-only-event-content">
+                                      <p>
                                         <div
+                                          className="read-only-person-description"
                                           dangerouslySetInnerHTML={{
                                             __html: contentLanguageBilingual({
                                               data: personData?.description,
@@ -497,7 +498,7 @@ function PersonReadOnly() {
                                       imageUrl={mainImageData?.large?.uri}
                                       imageReadOnly={true}
                                       preview={true}
-                                      eventImageData={mainImageData?.large}
+                                      eventImageData={mainImageData}
                                     />
                                   </div>
                                 )}

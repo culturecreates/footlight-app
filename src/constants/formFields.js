@@ -345,6 +345,13 @@ export const formFieldValue = [
             label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
             data-cy="form-item-event-multiple-image"
             hidden={!enableGallery}>
+            <Row>
+              <Col>
+                <p className="add-event-date-heading" data-cy="para-image-upload-sub-text">
+                  {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
+                </p>
+              </Col>
+            </Row>
             <MultipleImageUpload
               setShowDialog={setShowDialog}
               form={form}
@@ -640,7 +647,7 @@ export const returnFormDataWithFields = ({
   entityData,
   index,
   t,
-  adminCheckHandler,
+  adminCheck,
   isCrop,
   currentCalendarData,
   imageCropOpen,
@@ -751,7 +758,7 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage: calendarContentLanguage,
     }),
     position: field?.userTips?.position,
-    hidden: checkMandatoryAdminOnlyFields(field?.name, adminOnlyFields) ? (adminCheckHandler() ? false : true) : false,
+    hidden: checkMandatoryAdminOnlyFields(field?.name, adminOnlyFields) ? (adminCheck ? false : true) : false,
     form,
     style,
     taxonomyAlias: field?.taxonomyAlias,

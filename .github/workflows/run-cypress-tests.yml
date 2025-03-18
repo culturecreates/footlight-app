@@ -41,6 +41,10 @@ on:
         required: true
       S3_SECRET_ACCESS_KEY:
         required: true
+      STAGING_SERVER_IP:
+        required: true
+      AWS_PRIVATE_KEY_UBUNTU_USER:
+        required: true
 
 
 jobs:
@@ -72,6 +76,16 @@ jobs:
 
           docker cp ./latest_file test.mongo:/dump
           docker exec test.mongo mongorestore --db footlight-calendar /dump/$latest_file/footlight-calendar
+
+      - name: Import dev users to test database
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY_UBUNTU_USER  }}
+          STAGING_IP: ${{ secrets.STAGING_SERVER_IP }}
+        run: |
+          sudo apt install python3-pymongo
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          scp -o StrictHostKeyChecking=no -i private_key ubuntu@${STAGING_IP}:application/scripts/add-dev-users.py .
+          python3 add-dev-users.py --mongo_uri "mongodb://localhost:27017/"
         
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -128,6 +142,10 @@ jobs:
           echo "Footlight did not start in time!"
           exit 1   
 
+      - name: Checking for migrations on test database
+        run: |
+          docker exec test.footlight.api npm run migrate:up
+
       - name: Pull cypress docker image
         run: docker pull ghcr.io/kmdvs/cms-cypress_regression_tests:main
 
@@ -178,7 +196,7 @@ jobs:
           npx cypress run --browser firefox --env "$env_arg"
 
       - name: Upload Cypress Debug Logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-debug-logs

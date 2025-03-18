@@ -15,7 +15,10 @@ import SelectionItem from '../../../components/List/SelectionItem/SelectionItem'
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
-import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -39,6 +42,7 @@ import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
+import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -335,6 +339,41 @@ function OrganizationsReadOnly() {
                             </Col>
                           )}
                           {checkIfFieldIsToBeDisplayed(
+                            organizationFormFieldNames.ORGANIZATION_TYPE,
+                            organizationData?.additionalType,
+                          ) && (
+                            <div>
+                              <p
+                                className="read-only-event-content-sub-title-primary"
+                                data-cy="para-organization-type-title">
+                                {taxonomyDetails(allTaxonomyData?.data, user, 'OrganizationType', 'name', false)}
+                              </p>
+                              {organizationData?.additionalType?.length > 0 && (
+                                <TreeSelectOption
+                                  data-cy="treeselect-organization-type"
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  open={false}
+                                  disabled
+                                  treeData={treeTaxonomyOptions(
+                                    allTaxonomyData,
+                                    user,
+                                    'OrganizationType',
+                                    false,
+                                    calendarContentLanguage,
+                                  )}
+                                  defaultValue={organizationData?.additionalType?.map((type) => {
+                                    return type?.entityId;
+                                  })}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags data-cy={`tag-organization-type-${label}`}>{label}</Tags>;
+                                  }}
+                                />
+                              )}
+                            </div>
+                          )}
+                          {checkIfFieldIsToBeDisplayed(
                             organizationFormFieldNames.DISAMBIGUATING_DESCRIPTION,
                             organizationData?.disambiguatingDescription,
                           ) && (
@@ -373,8 +412,9 @@ function OrganizationsReadOnly() {
                                 <FallbackInjectorForReadOnlyPages
                                   fieldName="description"
                                   data={organizationData?.description}>
-                                  <p className="read-only-event-content">
+                                  <p>
                                     <div
+                                      className="read-only-organization-description"
                                       dangerouslySetInnerHTML={{
                                         __html: contentLanguageBilingual({
                                           data: organizationData?.description,
@@ -445,7 +485,7 @@ function OrganizationsReadOnly() {
                                   imageUrl={organizationData?.logo?.large?.uri}
                                   imageReadOnly={true}
                                   preview={true}
-                                  eventImageData={organizationData?.logo?.large}
+                                  eventImageData={organizationData?.logo}
                                 />
                               </div>
                             )}
@@ -462,7 +502,7 @@ function OrganizationsReadOnly() {
                                   imageUrl={organizationData?.image?.find((image) => image?.isMain)?.large?.uri}
                                   imageReadOnly={true}
                                   preview={true}
-                                  eventImageData={organizationData?.image?.find((image) => image?.isMain)?.large}
+                                  eventImageData={organizationData?.image?.find((image) => image?.isMain)}
                                 />
                               </div>
                             )}

@@ -18,7 +18,12 @@
   width: fit-content;
 }
 
-.widget-settings .page-description {
+.widget-settings .page-description,
+.widget-settings .header-text-description,
+.widget-settings .footer-control,
+.widget-settings .datepicker-control,
+.widget-settings .redirection-mode-description,
+.widget-settings .disable-groups-description {
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -50,8 +55,44 @@
   border-left: 0;
 }
 
-.widget-settings .color-select-wrapper .ant-form-item {
+.widget-settings .footer-control-wrapper .ant-form-item,
+.widget-settings .datepicker-control-wrapper .ant-form-item,
+.widget-settings .disable-grouping-flag-wrapper .ant-form-item {
   margin-bottom: 0px;
+}
+
+.widget-settings .color-select-wrapper .ant-form-item,
+.widget-settings .header-text-wrapper .ant-form-item,
+.widget-settings .redirection-mode-wrapper .ant-form-item {
+  margin-bottom: 4px;
+}
+
+.widget-settings .footer-control-wrapper,
+.widget-settings .datepicker-control-wrapper,
+.widget-settings .disable-grouping-flag-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+  align-items: center;
+  margin: 8px 0px 24px 0px;
+}
+
+.widget-settings .footer-control-wrapper p,
+.widget-settings .datepicker-control-wrapper p,
+.widget-settings .disable-grouping-flag-wrapper p {
+  margin-bottom: 0px;
+}
+
+.widget-settings .footer-control-wrapper .ant-switch,
+.widget-settings .datepicker-control-wrapper .ant-switch,
+.widget-settings .disable-grouping-flag-wrapper .ant-switch {
+  height: 24px;
+}
+
+.widget-settings .footer-control-wrapper .ant-switch-handle,
+.widget-settings .datepicker-control-wrapper .ant-switch-handle,
+.widget-settings .disable-grouping-flag-wrapper .ant-switch-handle {
+  top: 3px;
 }
 
 .widget-settings .color-select-wrapper .ant-input-lg {

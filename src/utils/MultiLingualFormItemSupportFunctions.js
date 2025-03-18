@@ -9,7 +9,7 @@ export const placeHolderCollectionCreator = ({
 }) => {
   let placeholderCollection = {};
 
-  calendarContentLanguage.map((language) => {
+  calendarContentLanguage?.map((language) => {
     const languageTranslation = t(`common.tab${capitalizeFirstLetter(language)}`);
     if (hasCommonPlaceHolder) {
       placeholderCollection[contentLanguageKeyMap[language]] = t(placeholderBase) || '';
@@ -28,7 +28,7 @@ export const isDataValid = (data) => {
 export const createInitialNamesObjectFromKeyword = (keyword, calendarContentLanguage) => {
   // for creating initial names object for each language in quick create modals
   let name = {};
-  calendarContentLanguage.forEach((language) => {
+  calendarContentLanguage?.forEach((language) => {
     const lanKey = contentLanguageKeyMap[language];
     name[lanKey] = keyword;
   });
