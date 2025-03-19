@@ -144,6 +144,8 @@ function EventReadOnly() {
     }
   };
 
+  const renderData = (processedData) => processedData && <p className="read-only-event-content">{processedData}</p>;
+
   useEffect(() => {
     if (!isLoading && isSuccess) {
       if (eventData?.recurringEvent || eventData?.subEventConfiguration?.length > 0) setDateType(dateTypes.MULTIPLE);
@@ -374,16 +376,11 @@ function EventReadOnly() {
                                   {t('dashboard.events.addEditEvent.language.title')}
                                 </p>
                               )}
-                              <FallbackInjectorForReadOnlyPages fieldName="name" data={eventData?.name}>
-                                {eventData?.name && (
-                                  <p className="read-only-event-content">
-                                    {contentLanguageBilingual({
-                                      calendarContentLanguage,
-                                      data: eventData?.name,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
-                                )}
+                              <FallbackInjectorForReadOnlyPages
+                                fieldName="name"
+                                data={eventData?.name}
+                                languageKey={activeTabKey}>
+                                {(processedData) => renderData(processedData)}
                               </FallbackInjectorForReadOnlyPages>
                             </div>
                             {checkIfFieldIsToBeDisplayed(
@@ -799,16 +796,9 @@ function EventReadOnly() {
                               )}
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="virtualLocation"
-                                data={initialVirtualLocation[0]?.name}>
-                                {initialVirtualLocation[0] && initialVirtualLocation[0]?.name && (
-                                  <p className="read-only-event-content">
-                                    {contentLanguageBilingual({
-                                      calendarContentLanguage,
-                                      data: initialVirtualLocation[0]?.name,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
-                                )}
+                                data={initialVirtualLocation[0]?.name}
+                                languageKey={activeTabKey}>
+                                {(processedData) => renderData(processedData)}
                               </FallbackInjectorForReadOnlyPages>
 
                               {initialVirtualLocation[0] && initialVirtualLocation[0]?.url?.uri && (
@@ -852,25 +842,28 @@ function EventReadOnly() {
                                 eventFormRequiredFieldNames?.DESCRIPTION,
                                 eventData?.description,
                               ) && (
-                                <FallbackInjectorForReadOnlyPages fieldName="description" data={eventData?.description}>
-                                  <>
+                                <>
+                                  {eventData?.description && (
                                     <p className="read-only-event-content-sub-title-primary">
                                       {t('dashboard.events.addEditEvent.otherInformation.description.title')}
                                     </p>
-                                    {eventData?.description && (
-                                      <div
-                                        className="read-only-event-description"
-                                        dangerouslySetInnerHTML={{
-                                          __html: contentLanguageBilingual({
-                                            data: eventData?.description,
-                                            calendarContentLanguage,
-                                            requiredLanguageKey: activeTabKey,
-                                          }),
-                                        }}
-                                      />
-                                    )}
-                                  </>
-                                </FallbackInjectorForReadOnlyPages>
+                                  )}
+                                  <FallbackInjectorForReadOnlyPages
+                                    fieldName="description"
+                                    data={eventData?.description}
+                                    languageKey={activeTabKey}>
+                                    {(processedData) =>
+                                      processedData && (
+                                        <div
+                                          className="read-only-event-description"
+                                          dangerouslySetInnerHTML={{
+                                            __html: processedData,
+                                          }}
+                                        />
+                                      )
+                                    }
+                                  </FallbackInjectorForReadOnlyPages>
+                                </>
                               )}
                             </div>
                             <br />
@@ -965,16 +958,9 @@ function EventReadOnly() {
                             {eventData?.contactPoint && (
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="contactPoint"
-                                data={eventData?.contactPoint?.name}>
-                                <>
-                                  <p className="read-only-event-content">
-                                    {contentLanguageBilingual({
-                                      calendarContentLanguage,
-                                      data: eventData?.contactPoint?.name,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
-                                </>
+                                data={eventData?.contactPoint?.name}
+                                languageKey={activeTabKey}>
+                                {(processedData) => renderData(processedData)}
                               </FallbackInjectorForReadOnlyPages>
                             )}
                             {eventData?.contactPoint?.url?.uri && (
@@ -1254,14 +1240,9 @@ function EventReadOnly() {
                                   </p>
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="accessibilityNote"
-                                    data={eventData?.accessibilityNote}>
-                                    <p className="read-only-event-content">
-                                      {contentLanguageBilingual({
-                                        calendarContentLanguage,
-                                        data: eventData?.accessibilityNote,
-                                        requiredLanguageKey: activeTabKey,
-                                      })}
-                                    </p>
+                                    data={eventData?.accessibilityNote}
+                                    languageKey={activeTabKey}>
+                                    {(processedData) => renderData(processedData)}
                                   </FallbackInjectorForReadOnlyPages>
                                 </>
                               )}
@@ -1353,14 +1334,11 @@ function EventReadOnly() {
                                             </p>
                                           </td>
                                           <td>
-                                            <FallbackInjectorForReadOnlyPages fieldName="offerName" data={offer?.name}>
-                                              <p className="read-only-event-content">
-                                                {contentLanguageBilingual({
-                                                  data: offer?.name,
-                                                  requiredLanguageKey: activeTabKey,
-                                                  calendarContentLanguage: calendarContentLanguage,
-                                                })}
-                                              </p>
+                                            <FallbackInjectorForReadOnlyPages
+                                              fieldName="offerName"
+                                              data={offer?.name}
+                                              languageKey={activeTabKey}>
+                                              {(processedData) => renderData(processedData)}
                                             </FallbackInjectorForReadOnlyPages>
                                           </td>
                                         </tr>
@@ -1376,13 +1354,7 @@ function EventReadOnly() {
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="offerConfiguration"
                                     data={eventData?.offerConfiguration?.name}>
-                                    <p className="read-only-event-content">
-                                      {contentLanguageBilingual({
-                                        calendarContentLanguage,
-                                        requiredLanguageKey: activeTabKey,
-                                        data: eventData?.offerConfiguration?.name,
-                                      })}
-                                    </p>
+                                    {(processedData) => renderData(processedData)}
                                   </FallbackInjectorForReadOnlyPages>
                                 </>
                               )}
