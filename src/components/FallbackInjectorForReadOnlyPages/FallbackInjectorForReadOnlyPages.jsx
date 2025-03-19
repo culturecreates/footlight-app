@@ -8,16 +8,18 @@ import './fallbackInjectorForReadOnlyPages.css';
 import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
 import { useOutletContext } from 'react-router-dom';
+import { contentLanguageBilingual } from '../../utils/bilingual';
 
 /**
  * FallbackInjectorForReadOnlyPages Component
  *
  * @param {Object} props - The properties object.
- * @param {React.ReactNode} [props.children=<></>] - JSX elements to render as the main content. Defaults to an empty fragment if not provided.
+ * @param {(processedData: any) => React.ReactNode} props.children - function that receives the processed data and returns a React node to be displayed.
  * @param {string} props.fieldName - The name of the field for which fallback information is to be displayed.
  * @param {Object} props.currentCalendarData - The current calendar's data, including language fallback mappings and additional metadata.
  * @param {Object} props.calendarContentLanguage - An array that contains content languages of the calendar.
  * @param {Object} props.data - The field data for which the fallback status needs to be calculated and displayed.
+ *@param {string} props.languageKey - The language key for active tab.
  *
  * @returns {React.Element} The rendered component displaying children content and a fallback badge if applicable.
  *
@@ -33,7 +35,7 @@ import { useOutletContext } from 'react-router-dom';
  */
 
 const FallbackInjectorForReadOnlyPages = (props) => {
-  const { children = <></>, fieldName, data } = props;
+  const { children = <></>, fieldName, data, languageKey } = props;
 
   const [currentCalendarData] = useOutletContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -82,7 +84,17 @@ const FallbackInjectorForReadOnlyPages = (props) => {
 
   return (
     <Row className="readonly-data-wrapper">
-      <Col>{children}</Col>
+      <Col>
+        {typeof children === 'function'
+          ? children(
+              contentLanguageBilingual({
+                calendarContentLanguage,
+                data,
+                requiredLanguageKey: activeFallbackFieldsInfo[fieldName]?.[langKey]?.fallbackLiteralKey ?? languageKey,
+              }),
+            )
+          : children}
+      </Col>
       {activeFallbackFieldsInfo[fieldName]?.[langKey]?.tagDisplayStatus && (
         <Col className="literal-badge-wrapper">
           <LiteralBadge
