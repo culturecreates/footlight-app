@@ -129,6 +129,13 @@ function OrganizationsReadOnly() {
     }
   };
 
+  const renderData = (processedData, dataCy) =>
+    processedData && (
+      <p className="read-only-event-content" data-cy={dataCy}>
+        {processedData}
+      </p>
+    );
+
   const getArtsData = (id) => {
     setArtsDataLoading(true);
     loadArtsDataEntity({ entityId: id })
@@ -326,14 +333,11 @@ function OrganizationsReadOnly() {
                                 {t('dashboard.organization.readOnly.name')}
                               </p>
                               {Object.keys(organizationData?.name ?? {})?.length > 0 && (
-                                <FallbackInjectorForReadOnlyPages fieldName="name" data={organizationData?.name}>
-                                  <p className="read-only-event-content" data-cy="para-organization-name-french">
-                                    {contentLanguageBilingual({
-                                      data: organizationData?.name,
-                                      calendarContentLanguage,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
+                                <FallbackInjectorForReadOnlyPages
+                                  fieldName="name"
+                                  data={organizationData?.name}
+                                  languageKey={activeTabKey}>
+                                  {(processedData) => renderData(processedData, 'para-organization-name-french')}
                                 </FallbackInjectorForReadOnlyPages>
                               )}
                             </Col>
@@ -386,14 +390,9 @@ function OrganizationsReadOnly() {
                               {Object.keys(organizationData?.disambiguatingDescription ?? {})?.length > 0 && (
                                 <FallbackInjectorForReadOnlyPages
                                   fieldName="disambiguatingDescription"
-                                  data={organizationData?.disambiguatingDescription}>
-                                  <p className="read-only-event-content" data-cy="para-disambiguating-desc-french">
-                                    {contentLanguageBilingual({
-                                      data: organizationData?.disambiguatingDescription,
-                                      calendarContentLanguage,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
+                                  data={organizationData?.disambiguatingDescription}
+                                  languageKey={activeTabKey}>
+                                  {(processedData) => renderData(processedData, 'para-disambiguating-desc-french')}
                                 </FallbackInjectorForReadOnlyPages>
                               )}
                             </Col>
@@ -411,20 +410,21 @@ function OrganizationsReadOnly() {
                               {Object.keys(organizationData?.description ?? {})?.length > 0 && (
                                 <FallbackInjectorForReadOnlyPages
                                   fieldName="description"
-                                  data={organizationData?.description}>
-                                  <p>
-                                    <div
-                                      className="read-only-organization-description"
-                                      dangerouslySetInnerHTML={{
-                                        __html: contentLanguageBilingual({
-                                          data: organizationData?.description,
-                                          calendarContentLanguage,
-                                          requiredLanguageKey: activeTabKey,
-                                        }),
-                                      }}
-                                      data-cy="div-organization-description-french"
-                                    />
-                                  </p>
+                                  data={organizationData?.description}
+                                  languageKey={activeTabKey}>
+                                  {(processedData) => {
+                                    return (
+                                      <p>
+                                        <div
+                                          className="read-only-organization-description"
+                                          dangerouslySetInnerHTML={{
+                                            __html: processedData,
+                                          }}
+                                          data-cy="div-organization-description-french"
+                                        />
+                                      </p>
+                                    );
+                                  }}
                                 </FallbackInjectorForReadOnlyPages>
                               )}
                             </Col>
@@ -547,14 +547,9 @@ function OrganizationsReadOnly() {
                               {Object.keys(organizationData?.contactPoint ?? {})?.length > 0 && (
                                 <FallbackInjectorForReadOnlyPages
                                   fieldName="contactPoint"
-                                  data={organizationData?.contactPoint}>
-                                  <p className="read-only-event-content" data-cy="para-organization-contact-french">
-                                    {contentLanguageBilingual({
-                                      data: organizationData?.contactPoint?.name,
-                                      calendarContentLanguage,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
+                                  data={organizationData?.contactPoint?.name}
+                                  languageKey={activeTabKey}>
+                                  {(processedData) => renderData(processedData, 'para-organization-contact-french')}
                                 </FallbackInjectorForReadOnlyPages>
                               )}
                               {organizationData?.contactPoint?.url?.uri && (
