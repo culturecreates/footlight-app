@@ -137,6 +137,13 @@ function PersonReadOnly() {
       });
   };
 
+  const renderData = (processedData, dataCy) =>
+    processedData && (
+      <p className="read-only-event-content" data-cy={dataCy}>
+        {processedData}
+      </p>
+    );
+
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
   }, []);
@@ -285,14 +292,11 @@ function PersonReadOnly() {
                                     {t('dashboard.people.readOnly.name')}
                                   </p>
                                   {Object.keys(personData?.name ?? {})?.length > 0 && (
-                                    <FallbackInjectorForReadOnlyPages fieldName="name" data={personData?.name}>
-                                      <p className="read-only-event-content" data-cy="para-person-name-french">
-                                        {contentLanguageBilingual({
-                                          data: personData?.name,
-                                          calendarContentLanguage,
-                                          requiredLanguageKey: activeTabKey,
-                                        })}
-                                      </p>
+                                    <FallbackInjectorForReadOnlyPages
+                                      fieldName="name"
+                                      data={personData?.name}
+                                      languageKey={activeTabKey}>
+                                      {(processedData) => renderData(processedData, 'para-person-name-french')}
                                     </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </Col>
@@ -398,16 +402,11 @@ function PersonReadOnly() {
                                   {Object.keys(personData?.disambiguatingDescription ?? {})?.length > 0 && (
                                     <FallbackInjectorForReadOnlyPages
                                       fieldName="disambiguatingDescription"
-                                      data={personData?.disambiguatingDescription}>
-                                      <p
-                                        className="read-only-event-content"
-                                        data-cy="para-person-disambiguating-description-french">
-                                        {contentLanguageBilingual({
-                                          data: personData?.disambiguatingDescription,
-                                          calendarContentLanguage,
-                                          requiredLanguageKey: activeTabKey,
-                                        })}
-                                      </p>
+                                      data={personData?.disambiguatingDescription}
+                                      languageKey={activeTabKey}>
+                                      {(processedData) =>
+                                        renderData(processedData, 'para-person-disambiguating-description-french')
+                                      }
                                     </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </Col>
@@ -426,20 +425,25 @@ function PersonReadOnly() {
                                   {Object.keys(personData?.description ?? {})?.length > 0 && (
                                     <FallbackInjectorForReadOnlyPages
                                       fieldName="description"
-                                      data={personData?.description}>
-                                      <p>
-                                        <div
-                                          className="read-only-person-description"
-                                          dangerouslySetInnerHTML={{
-                                            __html: contentLanguageBilingual({
-                                              data: personData?.description,
-                                              calendarContentLanguage,
-                                              requiredLanguageKey: activeTabKey,
-                                            }),
-                                          }}
-                                          data-cy="div-person-description-french"
-                                        />
-                                      </p>
+                                      data={personData?.description}
+                                      languageKey={activeTabKey}>
+                                      {(processedData) => {
+                                        return (
+                                          <p>
+                                            <div
+                                              className="read-only-person-description"
+                                              dangerouslySetInnerHTML={{
+                                                __html: contentLanguageBilingual({
+                                                  data: processedData,
+                                                  calendarContentLanguage,
+                                                  requiredLanguageKey: activeTabKey,
+                                                }),
+                                              }}
+                                              data-cy="div-person-description-french"
+                                            />
+                                          </p>
+                                        );
+                                      }}
                                     </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </Col>

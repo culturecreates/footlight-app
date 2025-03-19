@@ -145,6 +145,13 @@ function PlaceReadOnly() {
       });
   };
 
+  const renderData = (processedData, dataCy) =>
+    processedData && (
+      <p className="read-only-event-content" data-cy={dataCy}>
+        {processedData}
+      </p>
+    );
+
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
   }, []);
@@ -339,14 +346,11 @@ function PlaceReadOnly() {
                                     {t('dashboard.places.readOnly.placeName')}
                                   </p>
                                   {Object.keys(placeData?.name ?? {}).length > 0 && (
-                                    <FallbackInjectorForReadOnlyPages fieldName="name" data={placeData?.name}>
-                                      <p className="read-only-event-content" data-cy="para-place-name-french">
-                                        {contentLanguageBilingual({
-                                          data: placeData?.name,
-                                          calendarContentLanguage,
-                                          requiredLanguageKey: activeTabKey,
-                                        })}
-                                      </p>
+                                    <FallbackInjectorForReadOnlyPages
+                                      fieldName="name"
+                                      data={placeData?.name}
+                                      languageKey={activeTabKey}>
+                                      {(processedData) => renderData(processedData, 'para-place-name-french')}
                                     </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </>
@@ -457,16 +461,11 @@ function PlaceReadOnly() {
                                 {Object.keys(placeData?.disambiguatingDescription ?? {})?.length > 0 && (
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="disambiguatingDescription"
-                                    data={placeData?.disambiguatingDescription}>
-                                    <p
-                                      className="read-only-event-content"
-                                      data-cy="para-place-disambiguating-description-french">
-                                      {contentLanguageBilingual({
-                                        data: placeData?.disambiguatingDescription,
-                                        calendarContentLanguage,
-                                        requiredLanguageKey: activeTabKey,
-                                      })}
-                                    </p>
+                                    data={placeData?.disambiguatingDescription}
+                                    languageKey={activeTabKey}>
+                                    {(processedData) =>
+                                      renderData(processedData, 'para-place-disambiguating-description-french')
+                                    }
                                   </FallbackInjectorForReadOnlyPages>
                                 )}
                               </Col>
@@ -484,20 +483,25 @@ function PlaceReadOnly() {
                                 {Object.keys(placeData?.description ?? {})?.length > 0 && (
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="description"
-                                    data={placeData?.description}>
-                                    <p>
-                                      <div
-                                        className="read-only-place-description"
-                                        dangerouslySetInnerHTML={{
-                                          __html: contentLanguageBilingual({
-                                            data: placeData?.description,
-                                            calendarContentLanguage,
-                                            requiredLanguageKey: activeTabKey,
-                                          }),
-                                        }}
-                                        data-cy="div-place-description-french"
-                                      />
-                                    </p>
+                                    data={placeData?.description}
+                                    languageKey={activeTabKey}>
+                                    {(processedData) => {
+                                      return (
+                                        <p>
+                                          <div
+                                            className="read-only-place-description"
+                                            dangerouslySetInnerHTML={{
+                                              __html: contentLanguageBilingual({
+                                                data: processedData,
+                                                calendarContentLanguage,
+                                                requiredLanguageKey: activeTabKey,
+                                              }),
+                                            }}
+                                            data-cy="div-place-description-french"
+                                          />
+                                        </p>
+                                      );
+                                    }}
                                   </FallbackInjectorForReadOnlyPages>
                                 )}
                               </Col>
@@ -583,14 +587,9 @@ function PlaceReadOnly() {
                               {Object.keys(placeData?.address?.streetAddress ?? {})?.length > 0 && (
                                 <FallbackInjectorForReadOnlyPages
                                   fieldName="streetAddress"
-                                  data={placeData?.address?.streetAddress}>
-                                  <p className="read-only-event-content" data-cy="para-place-street-address-french">
-                                    {contentLanguageBilingual({
-                                      data: placeData?.address?.streetAddress,
-                                      calendarContentLanguage,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
+                                  data={placeData?.address?.streetAddress}
+                                  languageKey={activeTabKey}>
+                                  {(processedData) => renderData(processedData, 'para-place-street-address-french')}
                                 </FallbackInjectorForReadOnlyPages>
                               )}
                             </Col>

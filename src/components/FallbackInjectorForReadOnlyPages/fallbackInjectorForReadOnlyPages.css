@@ -1,3 +1,7 @@
+.readonly-data-wrapper {
+  flex-wrap: nowrap;
+}
+
 .readonly-data-wrapper .literal-badge {
   position: relative;
   top: 0px;
