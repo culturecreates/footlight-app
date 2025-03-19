@@ -28,11 +28,12 @@ const RecurringEvents = function ({
   onOpenChange,
   onCalendarChange,
   setSubEventCount,
+  customDates,
+  setCustomDates,
   subEventCount,
 }) {
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [customDates, setCustomDates] = useState([]);
   const [numberOfTimes, setNumberOfTimes] = useState(0);
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);

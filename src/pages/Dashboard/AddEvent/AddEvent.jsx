@@ -168,6 +168,7 @@ function AddEvent() {
 
   const [dateType, setDateType] = useState();
   const [subEventCount, setSubEventCount] = useState(0);
+  const [customDatesCollection, setCustomDatesCollection] = useState([]);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [ticketType, setTicketType] = useState();
@@ -635,7 +636,27 @@ function AddEvent() {
               }
             }
             const { customDates, frequency } = form.getFieldsValue() || {};
-            if (customDates && frequency === 'CUSTOM') {
+
+            if ((customDates || customDatesCollection) && frequency === 'CUSTOM') {
+              const customDatesData =
+                customDates ||
+                customDatesCollection.map((item) => {
+                  // Handles the edge case where customDates is undefined if the user didn’t interact with RecurringModal
+                  //  but has selected a date for a custom frequency in the date picker.
+                  const obj = {
+                    startDate: moment(item.startDate).format('YYYY-MM-DD'),
+                    customTimes: item.time
+                      ? item?.time?.map((customTime) => {
+                          const obj = {
+                            startTime: customTime?.start,
+                            endTime: customTime?.end && customTime.end,
+                          };
+                          return obj;
+                        })
+                      : [],
+                  };
+                  return obj;
+                });
               recurringEvent = undefined;
               subEventConfiguration = [];
               const subEventConfig = eventData?.subEventConfiguration || [];
@@ -668,10 +689,10 @@ function AddEvent() {
               };
 
               if (eventId) {
-                if (hasSubEventConfigChanges(customDates, subEventConfig)) {
+                if (hasSubEventConfigChanges(customDatesData, subEventConfig)) {
                   // Changes detected
 
-                  customDates.forEach(({ startDate, customTimes = [] }) => {
+                  customDatesData.forEach(({ startDate, customTimes = [] }) => {
                     processCustomTimes(startDate, customTimes);
                   });
                 } else {
@@ -679,7 +700,7 @@ function AddEvent() {
                   subEventConfiguration = subEventConfig;
                 }
               } else {
-                customDates.forEach(({ startDate, customTimes = [] }) => {
+                customDatesData.forEach(({ startDate, customTimes = [] }) => {
                   processCustomTimes(startDate, customTimes);
                 });
               }
@@ -726,7 +747,7 @@ function AddEvent() {
                   currentFrequency: values.frequency,
                   initialRecurringEvent: eventData?.recurringEvent,
                   currentRecurringEvent: recurEvent,
-                  customDates,
+                  customDates: customDates || customDatesCollection,
                 })
               ) {
                 if (eventData?.publishState === eventPublishState.PUBLISHED) {
@@ -2689,6 +2710,8 @@ function AddEvent() {
                             formFields={formValue}
                             numberOfDaysEvent={eventData?.subEvents?.length}
                             form={form}
+                            customDates={customDatesCollection}
+                            setCustomDates={setCustomDatesCollection}
                             eventDetails={eventData}
                             subEventCount={subEventCount}
                             setSubEventCount={setSubEventCount}
