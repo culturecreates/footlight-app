@@ -49,7 +49,7 @@ import { PathName } from '../../../constants/pathName';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout';
 import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
-import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { isDataValid, renderData } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
@@ -143,8 +143,6 @@ function EventReadOnly() {
       return mandatoryDynamicFields.includes(field);
     }
   };
-
-  const renderData = (processedData) => processedData && <p className="read-only-event-content">{processedData}</p>;
 
   useEffect(() => {
     if (!isLoading && isSuccess) {

@@ -38,7 +38,7 @@ import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entiti
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout/ReadOnlyPageTabLayout';
 import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
-import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { isDataValid, renderData } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
@@ -144,13 +144,6 @@ function PlaceReadOnly() {
         console.log(error);
       });
   };
-
-  const renderData = (processedData, dataCy) =>
-    processedData && (
-      <p className="read-only-event-content" data-cy={dataCy}>
-        {processedData}
-      </p>
-    );
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());

@@ -35,7 +35,7 @@ import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entiti
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
 import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout/ReadOnlyPageTabLayout';
-import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { isDataValid, renderData } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { organizationFormFieldNames } from '../../../constants/personAndOrganizationFormFieldNames';
 import ImageUpload from '../../../components/ImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
@@ -128,13 +128,6 @@ function OrganizationsReadOnly() {
       return mandatoryDynamicFields.includes(field);
     }
   };
-
-  const renderData = (processedData, dataCy) =>
-    processedData && (
-      <p className="read-only-event-content" data-cy={dataCy}>
-        {processedData}
-      </p>
-    );
 
   const getArtsData = (id) => {
     setArtsDataLoading(true);
