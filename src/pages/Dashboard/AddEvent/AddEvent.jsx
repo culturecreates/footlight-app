@@ -657,6 +657,7 @@ function AddEvent() {
                   };
                   return obj;
                 });
+
               recurringEvent = undefined;
               subEventConfiguration = [];
               const subEventConfig = eventData?.subEventConfiguration || [];
