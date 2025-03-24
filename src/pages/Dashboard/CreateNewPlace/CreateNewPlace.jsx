@@ -1297,16 +1297,22 @@ function CreateNewPlace() {
             publishValidateFields.push(formFieldNames.DRAGGER_WRAP);
             break;
           case placeFormRequiredFieldNames.CITY:
-            // publishValidateFields.push('location-form-wrapper');
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push([formFieldNames.CITY, contentLanguageKeyMap[language]]);
+            });
             break;
           case placeFormRequiredFieldNames.POSTAL_CODE:
             publishValidateFields.push(formFieldNames.POSTAL_CODE);
             break;
           case placeFormRequiredFieldNames.PROVINCE:
-            publishValidateFields.push(formFieldNames.PROVINCE);
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push([formFieldNames.PROVINCE, contentLanguageKeyMap[language]]);
+            });
             break;
           case placeFormRequiredFieldNames.COUNTRY:
-            publishValidateFields.push(formFieldNames.COUNTRY);
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push([formFieldNames.COUNTRY, contentLanguageKeyMap[language]]);
+            });
             break;
           case placeFormRequiredFieldNames.COORDINATES:
             publishValidateFields.push(formFieldNames.COORDINATES);
