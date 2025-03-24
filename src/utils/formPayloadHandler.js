@@ -61,6 +61,10 @@ export const formPayloadHandler = (
         if (currentMappedField?.length > 1) return write({}, currentMappedField, value ?? '');
         else return { [mappedField]: value };
 
+      case dataTypes.EMAIL:
+        if (currentMappedField?.length > 1) return write({}, currentMappedField, value ?? '');
+        else return { [mappedField]: value };
+
       case dataTypes.URI_STRING:
         return write({}, currentMappedField?.concat(['uri']), value ?? '');
 
