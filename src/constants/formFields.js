@@ -178,7 +178,20 @@ export const formFieldValue = [
         );
       else if (datatype === dataTypes.URI_STRING_ARRAY) {
         return (
-          <Form.List name={name} initialValue={data?.length > 0 ? data : [undefined]}>
+          <Form.List
+            name={name}
+            initialValue={data?.length > 0 ? data : [undefined]}
+            rules={[
+              {
+                validator: async (_, value) => {
+                  if (!value || value?.filter((link) => link)?.length < 1) {
+                    return Promise.reject(
+                      new Error(t('dashboard.events.addEditEvent.validations.otherInformation.socialMediaLinks')),
+                    );
+                  }
+                },
+              },
+            ]}>
             {(fields, { add, remove }) => (
               <>
                 {fields.map((field) => (
