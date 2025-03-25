@@ -35,3 +35,10 @@ export const createInitialNamesObjectFromKeyword = (keyword, calendarContentLang
 
   return name;
 };
+
+export const renderData = (processedData, dataCy) =>
+  processedData && (
+    <p className="read-only-event-content" {...(dataCy ? { 'data-cy': dataCy } : {})}>
+      {processedData}
+    </p>
+  );
