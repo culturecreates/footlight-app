@@ -657,12 +657,18 @@ function AddEvent() {
                   };
                   return obj;
                 });
+
               recurringEvent = undefined;
               subEventConfiguration = [];
               const subEventConfig = eventData?.subEventConfiguration || [];
 
               const processCustomTimes = (startDate, customTimes) => {
-                if (customTimes.length === 0) {
+                if (
+                  customTimes.length === 0 ||
+                  customTimes.every(
+                    (time) => (time.startTime ?? undefined) === undefined && (time.endTime ?? undefined) === undefined,
+                  )
+                ) {
                   subEventConfiguration.push({ startDate });
                 } else {
                   customTimes.forEach(({ startTime, endTime }) => {

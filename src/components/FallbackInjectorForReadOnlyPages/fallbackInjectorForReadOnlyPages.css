@@ -1,0 +1,20 @@
+.readonly-data-wrapper {
+  flex-wrap: nowrap;
+}
+
+.readonly-data-wrapper .literal-badge {
+  position: relative;
+  top: 0px;
+  padding-left: 20px;
+}
+
+.readonly-data-wrapper .literal-badge-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+
+@media only screen and (max-width: 480px) {
+  .readonly-data-wrapper .literal-badge .tags-wrapper {
+    height: 20px;
+  }
+}

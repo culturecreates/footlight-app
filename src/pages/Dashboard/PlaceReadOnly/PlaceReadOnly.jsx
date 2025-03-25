@@ -6,7 +6,7 @@ import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined } from '@ant-
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
@@ -38,11 +38,13 @@ import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entiti
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout/ReadOnlyPageTabLayout';
 import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
-import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { isDataValid, renderData } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import ImageUpload from '../../../components/ImageUpload';
+import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
+import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -80,6 +82,8 @@ function PlaceReadOnly() {
   const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
     sessionId: timestampRef,
   });
+
+  const dispatch = useDispatch();
 
   const { user } = useSelector(getUserDetails);
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
@@ -140,6 +144,10 @@ function PlaceReadOnly() {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    dispatch(clearActiveFallbackFieldsInfo());
+  }, []);
 
   useEffect(() => {
     if (placeError) navigate(`${PathName.NotFound}`);
@@ -240,7 +248,7 @@ function PlaceReadOnly() {
                 <Breadcrumbs
                   name={contentLanguageBilingual({
                     data: placeData?.name,
-                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
                 />
@@ -283,7 +291,7 @@ function PlaceReadOnly() {
                     data-cy="para-place-disambiguating-description">
                     {contentLanguageBilingual({
                       data: placeData?.disambiguatingDescription,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </p>
@@ -299,12 +307,12 @@ function PlaceReadOnly() {
                     artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
                     name={contentLanguageBilingual({
                       data: artsData?.name,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
                       data: artsData?.disambiguatingDescription,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   />
@@ -331,13 +339,12 @@ function PlaceReadOnly() {
                                     {t('dashboard.places.readOnly.placeName')}
                                   </p>
                                   {Object.keys(placeData?.name ?? {}).length > 0 && (
-                                    <p className="read-only-event-content" data-cy="para-place-name-french">
-                                      {contentLanguageBilingual({
-                                        data: placeData?.name,
-                                        calendarContentLanguage,
-                                        requiredLanguageKey: activeTabKey,
-                                      })}
-                                    </p>
+                                    <FallbackInjectorForReadOnlyPages
+                                      fieldName="name"
+                                      data={placeData?.name}
+                                      languageKey={activeTabKey}>
+                                      {(processedData) => renderData(processedData, 'para-place-name-french')}
+                                    </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </>
                               )}
@@ -445,15 +452,14 @@ function PlaceReadOnly() {
                                 </p>
 
                                 {Object.keys(placeData?.disambiguatingDescription ?? {})?.length > 0 && (
-                                  <p
-                                    className="read-only-event-content"
-                                    data-cy="para-place-disambiguating-description-french">
-                                    {contentLanguageBilingual({
-                                      data: placeData?.disambiguatingDescription,
-                                      calendarContentLanguage,
-                                      requiredLanguageKey: activeTabKey,
-                                    })}
-                                  </p>
+                                  <FallbackInjectorForReadOnlyPages
+                                    fieldName="disambiguatingDescription"
+                                    data={placeData?.disambiguatingDescription}
+                                    languageKey={activeTabKey}>
+                                    {(processedData) =>
+                                      renderData(processedData, 'para-place-disambiguating-description-french')
+                                    }
+                                  </FallbackInjectorForReadOnlyPages>
                                 )}
                               </Col>
                             )}
@@ -468,19 +474,28 @@ function PlaceReadOnly() {
                                   {t('dashboard.places.readOnly.description')}
                                 </p>
                                 {Object.keys(placeData?.description ?? {})?.length > 0 && (
-                                  <p>
-                                    <div
-                                      className="read-only-place-description"
-                                      dangerouslySetInnerHTML={{
-                                        __html: contentLanguageBilingual({
-                                          data: placeData?.description,
-                                          calendarContentLanguage,
-                                          requiredLanguageKey: activeTabKey,
-                                        }),
-                                      }}
-                                      data-cy="div-place-description-french"
-                                    />
-                                  </p>
+                                  <FallbackInjectorForReadOnlyPages
+                                    fieldName="description"
+                                    data={placeData?.description}
+                                    languageKey={activeTabKey}>
+                                    {(processedData) => {
+                                      return (
+                                        <p>
+                                          <div
+                                            className="read-only-place-description"
+                                            dangerouslySetInnerHTML={{
+                                              __html: contentLanguageBilingual({
+                                                data: processedData,
+                                                calendarContentLanguage,
+                                                requiredLanguageKey: activeTabKey,
+                                              }),
+                                            }}
+                                            data-cy="div-place-description-french"
+                                          />
+                                        </p>
+                                      );
+                                    }}
+                                  </FallbackInjectorForReadOnlyPages>
                                 )}
                               </Col>
                             )}
@@ -563,13 +578,12 @@ function PlaceReadOnly() {
                                 {t('dashboard.places.readOnly.address.streetAddress')}
                               </p>
                               {Object.keys(placeData?.address?.streetAddress ?? {})?.length > 0 && (
-                                <p className="read-only-event-content" data-cy="para-place-street-address-french">
-                                  {contentLanguageBilingual({
-                                    data: placeData?.address?.streetAddress,
-                                    calendarContentLanguage,
-                                    requiredLanguageKey: activeTabKey,
-                                  })}
-                                </p>
+                                <FallbackInjectorForReadOnlyPages
+                                  fieldName="streetAddress"
+                                  data={placeData?.address?.streetAddress}
+                                  languageKey={activeTabKey}>
+                                  {(processedData) => renderData(processedData, 'para-place-street-address-french')}
+                                </FallbackInjectorForReadOnlyPages>
                               )}
                             </Col>
                           )}
@@ -587,7 +601,7 @@ function PlaceReadOnly() {
                                   <span style={{ textDecoration: 'underline' }} data-cy="span-place-city">
                                     {contentLanguageBilingual({
                                       data: placeData?.address?.addressLocality,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })}
                                   </span>
@@ -628,7 +642,7 @@ function PlaceReadOnly() {
                                       <span style={{ textDecoration: 'underline' }} data-cy="span-place-province">
                                         {contentLanguageBilingual({
                                           data: placeData?.address?.addressRegion,
-                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                          requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                           calendarContentLanguage: calendarContentLanguage,
                                         })}
                                       </span>
@@ -652,7 +666,7 @@ function PlaceReadOnly() {
                                       <span style={{ textDecoration: 'underline' }} data-cy="span-place-country">
                                         {contentLanguageBilingual({
                                           data: placeData?.address?.addressCountry,
-                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                          requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                           calendarContentLanguage: calendarContentLanguage,
                                         })}
                                       </span>
@@ -899,7 +913,7 @@ function PlaceReadOnly() {
                                         Object.keys(place?.name ?? {})?.length > 0
                                           ? contentLanguageBilingual({
                                               data: place?.name,
-                                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                              requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                               calendarContentLanguage: calendarContentLanguage,
                                             })
                                           : typeof place?.name === 'string' && place?.name
@@ -932,7 +946,7 @@ function PlaceReadOnly() {
                                           Object.keys(org?.name ?? {})?.length > 0
                                             ? contentLanguageBilingual({
                                                 data: org?.name,
-                                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                                 calendarContentLanguage: calendarContentLanguage,
                                               })
                                             : typeof org?.name === 'string' && org?.name
@@ -971,7 +985,7 @@ function PlaceReadOnly() {
                                         Object.keys(person?.name ?? {})?.length > 0
                                           ? contentLanguageBilingual({
                                               data: person?.name,
-                                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                              requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                               calendarContentLanguage: calendarContentLanguage,
                                             })
                                           : typeof person?.name === 'string' && person?.name
@@ -1004,7 +1018,7 @@ function PlaceReadOnly() {
                                           Object.keys(event?.name ?? {})?.length > 0
                                             ? contentLanguageBilingual({
                                                 data: event?.name,
-                                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                                 calendarContentLanguage: calendarContentLanguage,
                                               })
                                             : typeof event?.name === 'string' && event?.name
