@@ -184,15 +184,14 @@ export const formFieldValue = [
             rules={[
               {
                 validator: async (_, value) => {
-                  if (!value || value?.filter((link) => link)?.length < 1) {
-                    return Promise.reject(
-                      new Error(t('dashboard.events.addEditEvent.validations.otherInformation.socialMediaLinks')),
-                    );
+                  if ((!value || value?.filter((link) => link)?.length < 1) && required) {
+                    return Promise.reject();
                   }
                 },
+                message: t('common.validations.informationRequired'),
               },
             ]}>
-            {(fields, { add, remove }) => (
+            {(fields, { add, remove }, { errors }) => (
               <>
                 {fields.map((field) => (
                   <Form.Item key={field.key}>
@@ -235,6 +234,7 @@ export const formFieldValue = [
                     onClick={() => add()}
                     data-cy={`button-add-${mappedField}`}
                   />
+                  <Form.ErrorList errors={errors} />
                 </Form.Item>
               </>
             )}
