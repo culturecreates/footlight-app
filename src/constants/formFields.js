@@ -178,8 +178,20 @@ export const formFieldValue = [
         );
       else if (datatype === dataTypes.URI_STRING_ARRAY) {
         return (
-          <Form.List name={name} initialValue={data?.length > 0 ? data : [undefined]}>
-            {(fields, { add, remove }) => (
+          <Form.List
+            name={name}
+            initialValue={data?.length > 0 ? data : [undefined]}
+            rules={[
+              {
+                validator: async (_, value) => {
+                  if ((!value || value?.filter((link) => link)?.length < 1) && required) {
+                    return Promise.reject();
+                  }
+                },
+                message: t('common.validations.informationRequired'),
+              },
+            ]}>
+            {(fields, { add, remove }, { errors }) => (
               <>
                 {fields.map((field) => (
                   <Form.Item key={field.key}>
@@ -222,6 +234,7 @@ export const formFieldValue = [
                     onClick={() => add()}
                     data-cy={`button-add-${mappedField}`}
                   />
+                  <Form.ErrorList errors={errors} />
                 </Form.Item>
               </>
             )}
