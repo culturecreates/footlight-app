@@ -2153,6 +2153,10 @@ function AddEvent() {
             initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
 
             break;
+          case eventFormRequiredFieldNames.IN_LANGUAGE:
+            publishValidateFields.push(otherInformationFieldNames.inLanguage);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames.inLanguage);
+            break;
           default:
             publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
             break;
@@ -4306,6 +4310,12 @@ function AddEvent() {
                         ?.concept?.map((concept) => (concept?.isDefault === true ? concept?.id : null))
                         ?.filter((id) => id)
                 }
+                rules={[
+                  {
+                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.IN_LANGUAGE),
+                    message: t('common.validations.informationRequired'),
+                  },
+                ]}
                 data-cy="form-item-eventlanguage-label">
                 <SortableTreeSelect
                   setShowDialog={setShowDialog}
