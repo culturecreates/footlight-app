@@ -145,6 +145,20 @@ const MINIMUM_PIXEL = [
 export const calendarSettingsFormFields = {
   GENERAL_SETTINGS: [
     {
+      name: 'calendarSlug',
+      className: 'calendar-settings-calendar-slug',
+      label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarSlug')}</Translation>,
+      field: () => (
+        <StyledInput
+          placeholder={(t) => t('dashboard.settings.calendarSettings.placeholders.calendarSlug')}
+          data-cy="input-calendar-slug"
+          disabled={true}
+        />
+      ),
+      hidden: false,
+      required: true,
+    },
+    {
       name: 'calendarName',
       className: 'calendar-settings-calendar-name',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
