@@ -122,6 +122,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const initialValues = {
     calendarName: currentCalendarData?.name,
     calendarContactEmail: currentCalendarData?.contact,
+    calendarSlug: currentCalendarData?.slug,
     calendarTimeZone: currentCalendarData?.timezone,
     calendarDateFormat: currentCalendarData?.dateFormatDisplay,
     eventTemplate: currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate,
