@@ -92,6 +92,7 @@ function Lists(props) {
           ) == dateTypes.SINGLE
             ? dateTimeFormat
             : 'DD-MMM-YYYY';
+        const scheduleTimezone = eventItem?.scheduleTimezone ?? 'Canada/Eastern';
 
         return (
           <List.Item
