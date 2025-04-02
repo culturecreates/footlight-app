@@ -1074,6 +1074,7 @@
           "addImageGallery": "Ajouter la galerie d'images"
         },
         "calendarLogo": "Logo",
+        "calendarSlug": "Slug du calendrier",
         "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
         "calendarWidgetSetup": "Widget de listage",
         "calendarWidgetDescription": "Ajoutez les gabarits de liens pour pointer les liens du widget vers votre site. Ces gabarits contiennent des modèles de paramètres.",

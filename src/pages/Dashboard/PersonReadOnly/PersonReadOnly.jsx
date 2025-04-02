@@ -239,9 +239,9 @@ function PersonReadOnly() {
             </Row>
           </Col>
           {artsDataLinkChecker(personData?.sameAs) && (
-            <Col span={24} className="artsdata-link-wrapper top-level-column" flex={'780px'}>
+            <Col span={24} className="artsdata-link-wrapper top-level-column">
               <Row>
-                <Col flex={'780px'}>
+                <Col flex={'750px'}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(personData?.sameAs)}
                     name={contentLanguageBilingual({
