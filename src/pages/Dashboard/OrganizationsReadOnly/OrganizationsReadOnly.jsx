@@ -283,9 +283,9 @@ function OrganizationsReadOnly() {
             </Row>
           </Col>
           {artsDataLinkChecker(organizationData?.sameAs) && (
-            <Col flex={'780px'} className="artsdata-link-wrapper top-level-column">
+            <Col span={24} className="artsdata-link-wrapper top-level-column">
               <Row>
-                <Col flex={'780px'}>
+                <Col flex={'750px'}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
                     name={contentLanguageBilingual({
