@@ -82,16 +82,14 @@ function Lists(props) {
       }}
       renderItem={(eventItem, index) => {
         const hasStartTime = eventItem?.startDateTime?.includes('T') || eventItem?.startDate?.includes(' ');
-        const eventDateFormat =
-          hasStartTime &&
-          dateTimeTypeHandler(
-            eventItem?.startDate,
-            eventItem?.startDateTime,
-            eventItem?.endDate,
-            eventItem?.endDateTime,
-          ) == dateTypes.SINGLE
-            ? dateTimeFormat
-            : 'DD-MMM-YYYY';
+        const evenDateType = dateTimeTypeHandler(
+          eventItem?.startDate,
+          eventItem?.startDateTime,
+          eventItem?.endDate,
+          eventItem?.endDateTime,
+          eventItem?.subEventDetails?.totalSubEventCount > 0 ? true : false,
+        );
+        const eventDateFormat = hasStartTime && evenDateType == dateTypes.SINGLE ? dateTimeFormat : 'DD-MMM-YYYY';
         const scheduleTimezone = eventItem?.scheduleTimezone ?? 'Canada/Eastern';
 
         return (
@@ -215,32 +213,34 @@ function Lists(props) {
                   <span className="event-list-title-heading" data-cy="span-start-date-time">
                     {(eventItem?.startDate || eventItem?.startDateTime) &&
                       moment
-                        .tz(
-                          eventItem?.startDate ?? eventItem?.startDateTime,
-                          eventItem?.scheduleTimezone ?? 'Canada/Eastern',
-                        )
+                        .tz(eventItem?.startDate ?? eventItem?.startDateTime, scheduleTimezone)
                         .locale(lang)
                         .format(eventDateFormat)
                         ?.toUpperCase()}
 
-                    {dateTimeTypeHandler(
-                      eventItem?.startDate,
-                      eventItem?.startDateTime,
-                      eventItem?.endDate,
-                      eventItem?.endDateTime,
-                    ) === dateTypes.RANGE && (
+                    {evenDateType === dateTypes.RANGE && (
                       <>
                         &nbsp;{t('dashboard.events.list.to')}&nbsp;
                         {moment
-                          .tz(
-                            eventItem?.endDate ?? eventItem?.endDateTime,
-                            eventItem?.scheduleTimezone ?? 'Canada/Eastern',
-                          )
+                          .tz(eventItem?.endDate ?? eventItem?.endDateTime, scheduleTimezone)
                           .locale(lang)
                           .format('DD-MMM-YYYY')
                           ?.toUpperCase()}
                       </>
                     )}
+                    {evenDateType === dateTypes.MULTIPLE &&
+                      !moment
+                        .tz(eventItem?.startDate ?? eventItem?.startDateTime, scheduleTimezone)
+                        .isSame(moment.tz(eventItem?.endDate ?? eventItem?.endDateTime, scheduleTimezone), 'day') && (
+                        <>
+                          &nbsp;{t('dashboard.events.list.to')}&nbsp;
+                          {moment
+                            .tz(eventItem?.endDate ?? eventItem?.endDateTime, scheduleTimezone)
+                            .locale(lang)
+                            .format('DD-MMM-YYYY')
+                            ?.toUpperCase()}
+                        </>
+                      )}
                   </span>
                   &nbsp;&nbsp;
                   {eventItem?.subEventDetails?.totalSubEventCount &&
@@ -311,7 +311,7 @@ function Lists(props) {
                   <span className="event-list-status-created-by">
                     {t('dashboard.events.list.createdBy')}&nbsp;
                     {moment
-                      .tz(eventItem?.creator?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
+                      .tz(eventItem?.creator?.date, scheduleTimezone)
                       .locale(lang)
                       .format('DD-MMM-YYYY')
                       ?.toUpperCase()}
@@ -323,7 +323,7 @@ function Lists(props) {
                     <span className="event-list-status-updated-by" data-cy="span-event-modifier">
                       {t('dashboard.events.list.updatedBy')}&nbsp;
                       {moment
-                        .tz(eventItem?.modifier?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
+                        .tz(eventItem?.modifier?.date, scheduleTimezone)
                         .locale(lang)
                         .format('DD-MMM-YYYY')
                         ?.toUpperCase()}
