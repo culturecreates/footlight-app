@@ -18,9 +18,11 @@ class ErrorLayout extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     this.logError({ info: { error, errorInfo } });
-    infiniteLoopHandler(() => {
-      this.props.clearUser();
-    });
+
+    const isLoopDetected = infiniteLoopHandler();
+    if (isLoopDetected) {
+      this.props.clearUser(); // Only logout if loop is confirmed
+    }
   }
 
   componentDidMount() {
