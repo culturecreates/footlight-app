@@ -12,10 +12,10 @@ export const infiniteLoopHandler = () => {
 
   if (renderCount < 5) {
     Cookies.set('error', renderCount + 1);
-    return false; // No infinite loop yet
+    return false;
   } else {
     sessionStorage.setItem('error', renderCount + 1);
     Cookies.remove('error');
-    return true; // Infinite loop detected
+    return true; // loop detected
   }
 };
