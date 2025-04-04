@@ -179,7 +179,7 @@ const WidgetSettings = ({ tabKey }) => {
           arrayToQueryParam(allValues?.eventType ?? [], 'type') +
           arrayToQueryParam(allValues?.location ?? [], 'place') +
           arrayToQueryParam(allValues?.region ?? [], 'region') +
-          arrayToQueryParam([...(allValues?.organizer ?? [])], 'person-organization') +
+          arrayToQueryParam([...(allValues?.organizer ?? [])], 'organizer') +
           arrayToQueryParam([...(allValues?.person ?? [])], 'performer'),
         locale: onLanguageSelect(allValues?.language)?.key.toLowerCase(),
         color: changedValues.color || color,
