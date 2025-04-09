@@ -1106,7 +1106,7 @@
           "searchResultTemplate": "Indiquer le lien du modèle de résultats de recherche",
           "filterPersonalization": "Sélectionner la personnalisation du filtre"
         },
-        "notification": {
+        "notifications": {
           "update": "Succès ! Vos paramètres de calendrier ont été mis à jour."
         },
         "validations": {
