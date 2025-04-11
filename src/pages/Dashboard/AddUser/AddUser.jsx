@@ -850,7 +850,7 @@ const AddUser = () => {
                         },
                       ]}>
                       <Select
-                        options={userLanguages}
+                        options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
                         onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
                         data-cy="select-user-language"
                       />
