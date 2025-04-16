@@ -587,8 +587,8 @@ function AddEvent() {
                     ? moment(values.endTimeRecur).format('HH:mm')
                     : undefined,
                 weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
-                // customDates:
-                //   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+                customDates:
+                  form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
               customDatesFlag = !!recurEvent?.customDates;
@@ -611,6 +611,7 @@ function AddEvent() {
               if (customDatesFlag) {
                 // Custom dates to single event conversion logic
                 dateTypeValue = dateTypes.SINGLE;
+                form.setFieldValue('frequency', 'DAILY');
                 const singleCustomDate = recurEvent.customDates?.[0];
                 datePickerValue = singleCustomDate ? moment(singleCustomDate.startDate) : undefined;
 
