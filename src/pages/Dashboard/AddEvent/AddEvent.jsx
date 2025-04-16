@@ -437,17 +437,27 @@ function AddEvent() {
           eventId: eventId ?? newEventId,
         })
           .unwrap()
-          .then(() => {
+          .then((res) => {
             resolve(eventId ?? newEventId);
 
             if (!toggle) {
-              notification.success({
-                description: t('dashboard.events.addEditEvent.notification.updateEvent'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
+              if (res?.statusCode == 205 && eventData?.publishState === eventPublishState.PUBLISHED) {
+                notification.info({
+                  key: '205',
+                  message: t('dashboard.events.addEditEvent.notification.savingAsDraft'),
+                  placement: 'top',
+                  description: res?.message,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              } else
+                notification.success({
+                  description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
               navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             }
           })

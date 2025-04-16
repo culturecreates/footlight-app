@@ -393,6 +393,7 @@
         },
         "notification": {
           "saveAsDraft": "Success! Your event has been saved as draft.",
+          "savingAsDraft": "Saving as draft.",
           "sendToReview": "Success! Your event has been sent for review.",
           "publish": "Success! Your event has been published.",
           "updateEvent": "Success! Your event has been updated.",
