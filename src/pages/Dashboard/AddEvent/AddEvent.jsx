@@ -1089,6 +1089,13 @@ function AddEvent() {
           .catch((error) => {
             console.log(error);
             reject(error);
+            const firstErrorField = error?.errorFields?.[0].name;
+            if (firstErrorField) {
+              form.scrollToField(firstErrorField, {
+                behavior: 'smooth',
+                block: 'center',
+              });
+            }
             setShowDialog(previousShowDialog);
             message.warning({
               duration: 10,
