@@ -493,6 +493,22 @@
         "description": "Êtes-vous sûr de vouloir supprimer définitivement cet événement ?",
         "ok": "OK",
         "cancel": "Annuler"
+      },
+      "createNew": {
+        "search": {
+          "title": "Ajouter un événement",
+          "text": "Recherchez pour lier une instance existante de l'événement dans d'autres sources de données. Si non trouvée, vous pouvez la créer.",
+          "searchbarHeader": "Données associées",
+          "searchHeading": "Rechercher une autre instance",
+          "breadcrumb": "Retour à l'écran précédent",
+          "linkText": "Artsdata",
+          "createNew": "Créer une nouvelle événement",
+          "create": "Créer",
+          "footlightSectionHeading": "My Footlight",
+          "artsDataSectionHeading": "Imports de Artsdata",
+          "importsFromFootlight": "Imports de Footlight",
+          "searchPlaceholder": "Rechercher un événement"
+        }
       }
     },
     "organization": {
@@ -551,8 +567,8 @@
           "createNew": "Créer une nouvelle organisation",
           "create": "Créer",
           "footlightSectionHeading": "My Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "artsDataSectionHeading": "Imports de Artsdata",
+          "importsFromFootlight": "Imports de Footlight"
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
@@ -641,8 +657,8 @@
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "My Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "artsDataSectionHeading": "Imports de Artsdata",
+          "importsFromFootlight": "Imports de Footlight"
         },
         "addPlace": {
           "newPlace": "Nouvelle fiche de lieu",

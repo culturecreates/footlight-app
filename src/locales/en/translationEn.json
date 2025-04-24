@@ -493,6 +493,22 @@
         "description": "Are you sure you want to permanently delete this event?",
         "ok": "OK",
         "cancel": "Cancel"
+      },
+      "createNew": {
+        "search": {
+          "title": "New Event",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the event. If you don't find the event, you can create it.",
+          "searchbarHeader": "Linked data",
+          "breadcrumb": "Back to previous screen",
+          "linkText": "Artsdata",
+          "createNew": "Create new Event",
+          "create": "Create",
+          "footlightSectionHeading": "My Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata",
+          "importsFromFootlight": "Imports from Footlight",
+          "searchPlaceholder": "Search Events"
+        }
       }
     },
     "organization": {
