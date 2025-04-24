@@ -2606,17 +2606,6 @@ function AddEvent() {
                     size="large"
                   />
                 </CreateMultiLingualFormItems>
-                {console.log(artsData?.additionalType?.map((type) => type?.label))}
-                {console.log(treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage))}
-
-                {console.log(
-                  findMatchingItems(
-                    treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage),
-                    artsData?.additionalType
-                      ?.map((type) => type?.label)
-                      ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
-                  )?.map((concept) => concept?.value),
-                )}
                 <Form.Item
                   name="eventType"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
