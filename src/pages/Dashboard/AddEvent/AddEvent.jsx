@@ -2710,6 +2710,14 @@ function AddEvent() {
                               required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
                               message: t('dashboard.events.addEditEvent.validations.date'),
                             },
+                            {
+                              validator: (_, value) => {
+                                if (!value || value.length !== 2 || !value[0] || !value[1]) {
+                                  return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
+                                }
+                                return Promise.resolve();
+                              },
+                            },
                           ]}
                           data-cy="form-item-date-range-label">
                           <DateRangePicker
