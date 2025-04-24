@@ -2625,7 +2625,15 @@ function AddEvent() {
                                   onSelect={(value) => {
                                     form.setFieldsValue({
                                       startTime: value,
+                                      endTime: value ? form.getFieldValue('endTime') : undefined,
                                     });
+                                  }}
+                                  onChange={(value) => {
+                                    if (!value) {
+                                      form.setFieldsValue({
+                                        endTime: null,
+                                      });
+                                    }
                                   }}
                                   data-cy="single-date-start-time"
                                 />
