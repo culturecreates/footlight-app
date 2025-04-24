@@ -48,12 +48,12 @@ const RecurringEvents = function ({
       if (
         formFields?.frequency === 'CUSTOM' ||
         eventDetails.recurringEvent?.frequency === 'CUSTOM' ||
-        eventDetails.subEventConfiguration
+        eventDetails?.subEventConfiguration?.length > 0
       ) {
         setDateModified(true);
         setIsCustom(true);
       } else setIsCustom(false);
-      if (eventDetails.recurringEvent?.customDates || eventDetails.subEventConfiguration) {
+      if (eventDetails.recurringEvent?.customDates || eventDetails?.subEventConfiguration?.length > 0) {
         setIsCustom(true);
         let recurringDates =
           eventDetails.recurringEvent?.customDates || groupEventsByDate(eventDetails.subEventConfiguration);
