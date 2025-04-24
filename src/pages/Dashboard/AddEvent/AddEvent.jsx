@@ -1870,36 +1870,33 @@ function AddEvent() {
             setFormValue(obj);
           }
           if (data?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
-          if (getAdditionalTypeFromOffers(data?.offers)?.[0] === 'Paid') {
+          const isPaid = getAdditionalTypeFromOffers(data?.offers)?.[0] === 'Paid';
+
+          if (data?.offers?.length) {
             setTicketType(offerTypes.PAYING);
-            data = {
-              ...data,
-              offerConfiguration: {
-                category: offerTypes.PAYING,
-                prices: data.offers
-                  ?.map((offer) => {
-                    if (!offer?.price) return null;
-                    return {
-                      price: offer?.price,
-                      name: offer?.name,
-                    };
-                  })
-                  ?.filter((offer) => offer),
-                url: {
-                  uri: data.offers?.[0]?.url,
-                },
+
+            const offerConfig = {
+              category: offerTypes.PAYING,
+              url: {
+                uri: isPaid ? data.offers?.[0]?.url : data.offers?.[0]?.url?.uri,
               },
             };
-          } else if (data?.offers) {
-            setTicketType(offerTypes.REGISTER);
+
+            if (isPaid) {
+              offerConfig.prices = data.offers
+                ?.map((offer) => {
+                  if (!offer?.price) return null;
+                  return {
+                    price: offer?.price,
+                    name: offer?.name,
+                  };
+                })
+                ?.filter((offer) => offer);
+            }
+
             data = {
               ...data,
-              offerConfiguration: {
-                category: offerTypes.REGISTER,
-                url: {
-                  uri: data.offers?.[0]?.url?.uri,
-                },
-              },
+              offerConfiguration: offerConfig,
             };
           }
           setArtsData(data);
@@ -2606,6 +2603,7 @@ function AddEvent() {
                     size="large"
                   />
                 </CreateMultiLingualFormItems>
+
                 <Form.Item
                   name="eventType"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
