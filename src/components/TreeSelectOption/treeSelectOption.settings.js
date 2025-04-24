@@ -89,26 +89,29 @@ export const treeEntitiesOption = (
   });
   let options = data?.map((entity) => {
     let mainImageData = entity?.image;
+    const entityTypes = Array.isArray(entity?.type) ? entity.type : [entity?.type?.toUpperCase()];
+
+    const isOrganization = entityTypes.includes(taxonomyClass.ORGANIZATION);
+    const isPerson = entityTypes.includes(taxonomyClass.PERSON);
 
     return {
       label: (
         <SelectionItem
           itemWidth="100%"
           icon={
-            entity?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+            isOrganization ? (
               entity?.logo?.thumbnail?.uri || mainImageData?.original?.uri ? (
                 <img src={entity?.logo?.thumbnail?.uri ?? mainImageData?.original?.uri} />
               ) : (
                 <Icon component={Organizations} style={{ color: '#607EFC' }} />
               )
-            ) : (
-              entity?.type?.toUpperCase() == taxonomyClass.PERSON &&
-              (entity?.image?.thumbnail?.uri ? (
+            ) : isPerson ? (
+              entity?.image?.thumbnail?.uri ? (
                 <img src={entity?.image?.thumbnail?.uri} />
               ) : (
                 <UserOutlined style={{ color: '#607EFC' }} />
-              ))
-            )
+              )
+            ) : null
           }
           name={
             isDataValid(entity?.name)
@@ -197,4 +200,22 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
       };
     });
   return options;
+};
+
+export const findMatchingItems = (array2 = [], searchTerms = []) => {
+  const results = [];
+
+  for (const item of array2) {
+    const titleMatch = searchTerms?.includes(item?.title?.toLowerCase());
+    if (titleMatch) {
+      results.push(item);
+    }
+
+    if (item?.children) {
+      const childMatches = item.children.filter((child) => searchTerms?.includes(child?.title?.toLowerCase()));
+      results.push(...childMatches);
+    }
+  }
+
+  return results;
 };
