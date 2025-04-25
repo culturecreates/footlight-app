@@ -48,12 +48,12 @@ const RecurringEvents = function ({
       if (
         formFields?.frequency === 'CUSTOM' ||
         eventDetails.recurringEvent?.frequency === 'CUSTOM' ||
-        eventDetails.subEventConfiguration
+        eventDetails?.subEventConfiguration?.length > 0
       ) {
         setDateModified(true);
         setIsCustom(true);
       } else setIsCustom(false);
-      if (eventDetails.recurringEvent?.customDates || eventDetails.subEventConfiguration) {
+      if (eventDetails.recurringEvent?.customDates || eventDetails?.subEventConfiguration?.length > 0) {
         setIsCustom(true);
         let recurringDates =
           eventDetails.recurringEvent?.customDates || groupEventsByDate(eventDetails.subEventConfiguration);
@@ -345,7 +345,20 @@ const RecurringEvents = function ({
             name="startDateRecur"
             className="status-comment-item"
             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}
+            rules={[
+              {
+                required: true,
+                message: t('dashboard.events.addEditEvent.validations.date'),
+              },
+              {
+                validator: (_, value) => {
+                  if (!value || value.length !== 2 || !value[0] || !value[1]) {
+                    return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
             data-cy="form-item-multiple-start-date-range-label">
             <DateRangePicker
               style={{ width: '423px' }}
