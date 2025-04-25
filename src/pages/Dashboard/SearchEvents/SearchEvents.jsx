@@ -1,4 +1,4 @@
-import { Popover } from 'antd';
+import { notification, Popover } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
+import { loadArtsDataEventEntity } from '../../../services/artsData';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -81,7 +82,30 @@ function SearchEvents() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, { state: { data: entity } });
+    loadArtsDataEventEntity({ entityId: entity?.id })
+      .then(async (response) => {
+        if (response?.data?.length > 0) {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
+            state: { data: entity },
+          });
+        } else {
+          notification.info({
+            key: 'unable-to-import',
+            placement: 'top',
+            description: (
+              <a href={`${entity?.uri}`} style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer">
+                {t('dashboard.events.createNew.search.notifications.emptyArtsdataLine1')}
+                {t('dashboard.events.createNew.search.notifications.emptyArtsdataLine2', {
+                  link: `${entity?.uri}`,
+                })}
+              </a>
+            ),
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const searchHandler = (value) => {

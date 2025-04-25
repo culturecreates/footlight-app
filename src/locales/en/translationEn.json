@@ -507,7 +507,11 @@
           "footlightSectionHeading": "My Footlight",
           "artsDataSectionHeading": "Imports from Artsdata",
           "importsFromFootlight": "Imports from Footlight",
-          "searchPlaceholder": "Search Events"
+          "searchPlaceholder": "Search Events",
+        "notifications": {
+          "emptyArtsdataLine1": "Cannot import event from Artsdata due to missing data.",
+          "emptyArtsdataLine2": "Go to {{link}} "
+        }
         }
       }
     },
