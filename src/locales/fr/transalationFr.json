@@ -392,7 +392,6 @@
         },
         "notification": {
           "saveAsDraft": "Succès ! Votre événement a été enregistré comme brouillon.",
-          "savingAsDraft": "Sauvegarde comme brouillon.",
           "sendToReview": " Succès ! Votre événement a été envoyé pour validation.",
           "publish": "Succès ! Votre événement a été publié.",
           "updateEvent": "Succès ! Votre événement a été mis à jour.",
