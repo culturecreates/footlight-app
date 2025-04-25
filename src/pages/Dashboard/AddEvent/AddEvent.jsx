@@ -587,8 +587,8 @@ function AddEvent() {
                     ? moment(values.endTimeRecur).format('HH:mm')
                     : undefined,
                 weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
-                // customDates:
-                //   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+                customDates:
+                  form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
               customDatesFlag = !!recurEvent?.customDates;
@@ -611,6 +611,7 @@ function AddEvent() {
               if (customDatesFlag) {
                 // Custom dates to single event conversion logic
                 dateTypeValue = dateTypes.SINGLE;
+                form.setFieldValue('frequency', 'DAILY');
                 const singleCustomDate = recurEvent.customDates?.[0];
                 datePickerValue = singleCustomDate ? moment(singleCustomDate.startDate) : undefined;
 
@@ -1088,6 +1089,13 @@ function AddEvent() {
           .catch((error) => {
             console.log(error);
             reject(error);
+            const firstErrorField = error?.errorFields?.[0].name;
+            if (firstErrorField) {
+              form.scrollToField(firstErrorField, {
+                behavior: 'smooth',
+                block: 'center',
+              });
+            }
             setShowDialog(previousShowDialog);
             message.warning({
               duration: 10,
@@ -2617,7 +2625,15 @@ function AddEvent() {
                                   onSelect={(value) => {
                                     form.setFieldsValue({
                                       startTime: value,
+                                      endTime: value ? form.getFieldValue('endTime') : undefined,
                                     });
+                                  }}
+                                  onChange={(value) => {
+                                    if (!value) {
+                                      form.setFieldsValue({
+                                        endTime: null,
+                                      });
+                                    }
                                   }}
                                   data-cy="single-date-start-time"
                                 />
@@ -2693,6 +2709,14 @@ function AddEvent() {
                             {
                               required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
                               message: t('dashboard.events.addEditEvent.validations.date'),
+                            },
+                            {
+                              validator: (_, value) => {
+                                if (!value || value.length !== 2 || !value[0] || !value[1]) {
+                                  return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
+                                }
+                                return Promise.resolve();
+                              },
                             },
                           ]}
                           data-cy="form-item-date-range-label">
