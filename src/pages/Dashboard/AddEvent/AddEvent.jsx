@@ -1918,10 +1918,16 @@ function AddEvent() {
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
+    const newEntityName = location?.state?.name;
     if (artsDataId && !artsData && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       setArtsDataLoading(true);
       getArtsDataEvent();
+    } else if (newEntityName) {
+      calendarContentLanguage.forEach((language) => {
+        const langKey = contentLanguageKeyMap[language];
+        form.setFieldValue(['name', `${langKey}`], newEntityName);
+      });
     }
   }, [artsDataId]);
 
