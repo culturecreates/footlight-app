@@ -400,8 +400,16 @@ const RecurringEvents = function ({
                       data-cy="multiple-start-time"
                       onSelect={(value) => {
                         form.setFieldsValue({
-                          startTimeRecur: value,
+                          startTime: value,
+                          endTime: value ? form.getFieldValue('endTimeRecur') : undefined,
                         });
+                      }}
+                      onChange={(value) => {
+                        if (!value) {
+                          form.setFieldsValue({
+                            endTimeRecur: null,
+                          });
+                        }
                       }}
                     />
                   </Form.Item>
