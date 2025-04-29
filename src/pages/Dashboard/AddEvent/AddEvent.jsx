@@ -1870,13 +1870,15 @@ function AddEvent() {
             setFormValue(obj);
           }
           if (data?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
-          const isPaid = getAdditionalTypeFromOffers(data?.offers)?.[0] === 'Paid';
-
           if (data?.offers?.length) {
-            setTicketType(offerTypes.PAYING);
+            const hasUrl = !!data.offers?.[0]?.url || !!data.offers?.[0]?.url?.uri;
+            const allPricesFree = data.offers.every((offer) => Number(offer?.price) === 0);
+            const isPaid = hasUrl || (!allPricesFree && getAdditionalTypeFromOffers(data?.offers)?.[0] === 'Paid');
+
+            setTicketType(isPaid ? offerTypes.PAYING : offerTypes.FREE);
 
             const offerConfig = {
-              category: offerTypes.PAYING,
+              category: isPaid ? offerTypes.PAYING : offerTypes.FREE,
               url: {
                 uri: isPaid ? data.offers?.[0]?.url : data.offers?.[0]?.url?.uri,
               },
@@ -1885,15 +1887,14 @@ function AddEvent() {
             if (isPaid) {
               offerConfig.prices = data.offers
                 ?.map((offer) => {
-                  if (!offer?.price) return null;
+                  if (!offer?.price && offer?.price !== 0) return null;
                   return {
                     price: Number(offer?.price),
                     name: offer?.name,
                   };
                 })
-                ?.filter((offer) => offer);
+                .filter((offer) => offer);
             }
-
             data = {
               ...data,
               offerConfiguration: offerConfig,
