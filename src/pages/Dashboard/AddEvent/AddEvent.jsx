@@ -1782,8 +1782,9 @@ function AddEvent() {
               initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
             }
           }
+          if (data.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
 
-          if (data.location?.length > 0) {
+          if (data.location) {
             const entityId = extractLastSegment(data.location);
             let response = await loadArtsDataPlaceEntity({ entityId });
             const entityData = response?.data?.[0];
@@ -3128,7 +3129,7 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
-                initialValue={initialPlace && initialPlace[0]?.id}
+                initialValue={initialPlace ? initialPlace[0]?.id : artsDataId && locationPlace?.uri}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
@@ -4537,7 +4538,7 @@ function AddEvent() {
                   display: !addedFields?.includes(otherInformationFieldNames.keywords) && 'none',
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
-                initialValue={eventData?.keywords}
+                initialValue={eventData?.keywords ?? artsData?.keywords}
                 rules={[
                   {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.KEYWORDS),
