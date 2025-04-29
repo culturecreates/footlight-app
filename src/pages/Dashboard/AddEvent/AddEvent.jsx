@@ -1887,7 +1887,7 @@ function AddEvent() {
                 ?.map((offer) => {
                   if (!offer?.price) return null;
                   return {
-                    price: offer?.price,
+                    price: Number(offer?.price),
                     name: offer?.name,
                   };
                 })
