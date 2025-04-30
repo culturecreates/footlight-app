@@ -401,6 +401,7 @@ const RecurringEvents = function ({
                       onSelect={(value) => {
                         form.setFieldsValue({
                           startTimeRecur: value,
+                          endTimeRecur: value ? form.getFieldValue('endTimeRecur') : undefined,
                         });
                       }}
                     />
