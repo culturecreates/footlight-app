@@ -429,9 +429,13 @@ const RecurringModal = ({
                                 startTimeCustom: value,
                                 endTimeCustom: value ? form.getFieldValue('endTimeCustom') : undefined,
                               });
-                              form.setFieldsValue({
-                                startTimeCustom: value,
-                              });
+                            }}
+                            onChange={(value) => {
+                              if (!value) {
+                                form.setFieldsValue({
+                                  endTimeCustom: null,
+                                });
+                              }
                             }}
                             data-cy="custom-start-time"
                           />

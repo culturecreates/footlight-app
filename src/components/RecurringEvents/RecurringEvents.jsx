@@ -404,6 +404,13 @@ const RecurringEvents = function ({
                           endTimeRecur: value ? form.getFieldValue('endTimeRecur') : undefined,
                         });
                       }}
+                      onChange={(value) => {
+                        if (!value) {
+                          form.setFieldsValue({
+                            endTimeRecur: null,
+                          });
+                        }
+                      }}
                     />
                   </Form.Item>
                 </Col>
