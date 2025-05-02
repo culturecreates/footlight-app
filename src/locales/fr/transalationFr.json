@@ -392,6 +392,7 @@
         },
         "notification": {
           "saveAsDraft": "Succès ! Votre événement a été enregistré comme brouillon.",
+          "savingAsDraft": "Sauvegarde comme brouillon.",
           "sendToReview": " Succès ! Votre événement a été envoyé pour validation.",
           "publish": "Succès ! Votre événement a été publié.",
           "updateEvent": "Succès ! Votre événement a été mis à jour.",
@@ -1074,6 +1075,7 @@
           "addImageGallery": "Ajouter la galerie d'images"
         },
         "calendarLogo": "Logo",
+        "calendarSlug": "Slug du calendrier",
         "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
         "calendarWidgetSetup": "Widget de listage",
         "calendarWidgetDescription": "Ajoutez les gabarits de liens pour pointer les liens du widget vers votre site. Ces gabarits contiennent des modèles de paramètres.",
@@ -1105,7 +1107,7 @@
           "searchResultTemplate": "Indiquer le lien du modèle de résultats de recherche",
           "filterPersonalization": "Sélectionner la personnalisation du filtre"
         },
-        "notification": {
+        "notifications": {
           "update": "Succès ! Vos paramètres de calendrier ont été mis à jour."
         },
         "validations": {

@@ -24,7 +24,7 @@ const baseQuery = fetchBaseQuery({
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
-  if (result.error && result.error.status === 400) {
+  if (result.error && (result.error.status === 400 || result.error.status === 409)) {
     //HTTP 400 Bad Request
     //The server cannot or will not process the request due to something that is perceived to be a client error.
 

@@ -199,7 +199,10 @@ function ImageUpload(props) {
                       }}
                       src={imageUrl || (file?.url ?? file?.thumbUrl)}
                     />
-                    <span className="image-name-wrapper" data-cy="span-image-name-wrapper">
+                    <span
+                      className="image-name-wrapper"
+                      style={{ width: `calc(100% - ${width}px)` }}
+                      data-cy="span-image-name-wrapper">
                       <a
                         className="image-name"
                         target="_blank"
@@ -274,7 +277,7 @@ function ImageUpload(props) {
                         <Space>
                           <MoreOutlined
                             className="image-options-more-icon"
-                            style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }}
+                            style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px', padding: 4 }}
                             data-cy="span-image-options-icon"
                           />
                         </Space>

@@ -310,7 +310,7 @@ function EventReadOnly() {
           </Col>
 
           {artsDataLink?.length > 0 && (
-            <Col flex={'723px'} className="events-readonly-artsdata-link-wrapper top-level-column">
+            <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
               <Row>
                 <Col flex={'723px'}>
                   <ArtsDataInfo

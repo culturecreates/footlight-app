@@ -153,7 +153,7 @@ const DragableUploadListItem = ({
               <Space>
                 <MoreOutlined
                   className="image-options-more-icon"
-                  style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }}
+                  style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px', padding: 4 }}
                   data-cy="span-image-options-icon"
                 />
               </Space>

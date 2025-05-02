@@ -393,6 +393,7 @@
         },
         "notification": {
           "saveAsDraft": "Success! Your event has been saved as draft.",
+          "savingAsDraft": "Saving as draft.",
           "sendToReview": "Success! Your event has been sent for review.",
           "publish": "Success! Your event has been published.",
           "updateEvent": "Success! Your event has been updated.",
@@ -1077,6 +1078,7 @@
           "addImageGallery": "Add image gallery"
         },
         "calendarLogo": "Logo",
+        "calendarSlug": "Calendar Slug",
         "calendarLogoDescription": "Only JPEG and PNG files are supported.",
         "calendarWidgetSetup": "Listing widgets",
         "calendarWidgetDescription": "Add link templates so you can point widget URLs back to your site. These templates contain placeholders.",
