@@ -432,8 +432,21 @@ function QuickCreatePlace(props) {
                   entityId: postalAddressResponse?.id,
                 };
 
-              if (values?.placeType) {
-                additionalType = values?.placeType?.map((placeTypeId) => {
+              description = filterUneditedFallbackValues({
+                values: values?.description,
+                activeFallbackFieldsInfo: fallbackStatus,
+                fieldName: 'description',
+              });
+
+              accessibilityNote = filterUneditedFallbackValues({
+                values: values?.accessibilityNote,
+                activeFallbackFieldsInfo: fallbackStatus,
+                fieldName: 'accessibilityNote',
+              });
+              disambiguatingDescription = filterUneditedFallbackValues({ values: values?.disambiguatingDescription });
+
+              if (values?.type) {
+                additionalType = values?.type?.map((placeTypeId) => {
                   return {
                     entityId: placeTypeId,
                   };
