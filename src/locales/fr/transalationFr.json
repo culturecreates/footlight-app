@@ -392,6 +392,7 @@
         },
         "notification": {
           "saveAsDraft": "Succès ! Votre événement a été enregistré comme brouillon.",
+          "savingAsDraft": "Sauvegarde comme brouillon.",
           "sendToReview": " Succès ! Votre événement a été envoyé pour validation.",
           "publish": "Succès ! Votre événement a été publié.",
           "updateEvent": "Succès ! Votre événement a été mis à jour.",
@@ -550,9 +551,9 @@
           "linkText": "Artsdata",
           "createNew": "Créer une nouvelle organisation",
           "create": "Créer",
-          "footlightSectionHeading": "My Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "footlightSectionHeading": "Mon Footlight",
+          "artsDataSectionHeading": "Importées d'Artsdata",
+          "importsFromFootlight": "Importées de Footlight"
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
@@ -640,9 +641,9 @@
           "text": "Recherchez pour lier une instance existante du lieu dans d'autres sources de données. Si non trouvée, vous pouvez le créer.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
-          "footlightSectionHeading": "My Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "footlightSectionHeading": "Mon Footlight",
+          "artsDataSectionHeading": "Importées d'Artsdata",
+          "importsFromFootlight": "Importées de Footlight"
         },
         "addPlace": {
           "newPlace": "Nouvelle fiche de lieu",
@@ -790,9 +791,9 @@
           "text": "Recherchez pour établir un lien avec une instance existante de la personne dans d'autres sources de données. Si vous ne trouvez pas la personne, vous pouvez créer sa fiche.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
-          "footlightSectionHeading": "My Footlight",
-          "artsDataSectionHeading": "Imports de Artsdata",
-          "importsFromFootlight": "Imports de Footlight"
+          "footlightSectionHeading": "Mon Footlight",
+          "artsDataSectionHeading": "Importées d'Artsdata",
+          "importsFromFootlight": "Importées de Footlight"
         },
         "addPerson": {
           "newPerson": "Nouvelle personne",

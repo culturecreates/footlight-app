@@ -73,6 +73,7 @@ const RecurringEvents = function ({
                   ?.sort((a, b) => a?.startTime?.localeCompare(b?.startTime))
                   ?.map((customTime) => {
                     const objTime = {
+                      id: uniqid(),
                       startTime: customTime.startTime && moment(customTime.startTime, 'hh:mm a').format('hh:mm a'),
                       endTime: customTime.endTime && moment(customTime.endTime, 'hh:mm a').format('hh:mm a'),
                       start: customTime.startTime,
@@ -400,8 +401,16 @@ const RecurringEvents = function ({
                       data-cy="multiple-start-time"
                       onSelect={(value) => {
                         form.setFieldsValue({
-                          startTimeRecur: value,
+                          startTime: value,
+                          endTime: value ? form.getFieldValue('endTimeRecur') : undefined,
                         });
+                      }}
+                      onChange={(value) => {
+                        if (!value) {
+                          form.setFieldsValue({
+                            endTimeRecur: null,
+                          });
+                        }
                       }}
                     />
                   </Form.Item>
