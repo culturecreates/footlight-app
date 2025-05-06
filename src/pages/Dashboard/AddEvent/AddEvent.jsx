@@ -1726,6 +1726,82 @@ function AddEvent() {
     return offers.map((offer) => offer['http://schema.org/additionalType']).filter((type) => type !== undefined);
   }
 
+  const extractPrice = (price) => {
+    if (typeof price === 'object' && '@value' in price) {
+      return Number(price['@value']);
+    }
+    return Number(price);
+  };
+
+  const isFreePrice = (price) => extractPrice(price) === 0;
+
+  const extractUrl = (offer) => ({
+    uri: offer?.url?.uri ?? offer?.url,
+  });
+
+  const handleArtsdataOffers = (offers) => {
+    if (!offers) return;
+
+    // Single object case
+    if (typeof offers === 'object' && !Array.isArray(offers)) {
+      if (offers.type === 'AggregateOffer') {
+        return {
+          category: offerTypes.PAYING,
+          url: extractUrl(offers),
+        };
+      }
+
+      if (offers.type === 'Offer') {
+        const priceValue = extractPrice(offers.price);
+        const isPaid = priceValue > 0;
+
+        return {
+          category: isPaid ? offerTypes.PAYING : offerTypes.FREE,
+          url: extractUrl(offers),
+          prices: isPaid
+            ? [
+                {
+                  price: priceValue,
+                  name: offers?.name,
+                },
+              ]
+            : undefined,
+        };
+      }
+    }
+
+    // Array of offers case
+    if (Array.isArray(offers)) {
+      const primaryOffer = offers.find((offer) => offer.type === 'AggregateOffer');
+      const individualOffers = offers.filter((offer) => offer.type === 'Offer');
+
+      const allPricesFree = individualOffers.every((offer) => isFreePrice(offer?.price));
+      const hasPaidType = getAdditionalTypeFromOffers(offers)?.[0] === 'Paid';
+      const hasUrl = primaryOffer?.url?.uri || primaryOffer?.url;
+
+      const isPaid = hasUrl || (!allPricesFree && hasPaidType);
+
+      return {
+        category: isPaid ? offerTypes.PAYING : offerTypes.FREE,
+        url: extractUrl(primaryOffer),
+        prices: isPaid
+          ? individualOffers
+              .map((offer) => {
+                const priceValue = extractPrice(offer?.price);
+                if (!isNaN(priceValue)) {
+                  return {
+                    price: priceValue,
+                    name: offer?.name,
+                  };
+                }
+                return null;
+              })
+              .filter(Boolean)
+          : undefined,
+      };
+    }
+  };
+
   const getArtsDataEvent = () => {
     let initialAddedFields = [...addedFields];
     loadArtsDataEventEntity({ entityId: artsDataId })
@@ -1786,21 +1862,29 @@ function AddEvent() {
 
           if (data.location) {
             const entityId = extractLastSegment(data.location);
-            let response = await loadArtsDataPlaceEntity({ entityId });
-            const entityData = response?.data?.[0];
-            setLocationPlace(
-              placesOptions(
-                [entityData],
-                user,
-                calendarContentLanguage,
-                sourceOptions.ARTSDATA,
-                currentCalendarData,
-              )[0],
+            const response = await loadArtsDataPlaceEntity({ entityId });
+
+            const placeData = response?.data?.[0];
+            const primaryAddress = placeData?.address?.[0];
+
+            const updatedPlaceData =
+              placeData && primaryAddress ? { ...placeData, address: primaryAddress } : placeData;
+
+            const entityData = updatedPlaceData ? [updatedPlaceData] : [];
+
+            const [location] = placesOptions(
+              entityData,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
             );
+
+            setLocationPlace(location);
           }
 
-          if (data.image?.url?.uri) {
-            let artsDataImage = await addImage({ imageUrl: data.image?.url?.uri, calendarId }).unwrap();
+          if (data.image?.url?.uri || data.image) {
+            let artsDataImage = await addImage({ imageUrl: data.image?.url?.uri ?? data.image, calendarId }).unwrap();
             data['image'] = {
               original: {
                 ...artsDataImage.data?.original,
@@ -1871,31 +1955,11 @@ function AddEvent() {
             setFormValue(obj);
           }
           if (data?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
-          if (data?.offers?.length) {
-            const hasUrl = !!data.offers?.[0]?.url || !!data.offers?.[0]?.url?.uri;
-            const allPricesFree = data.offers.every((offer) => Number(offer?.price) === 0);
-            const isPaid = hasUrl || (!allPricesFree && getAdditionalTypeFromOffers(data?.offers)?.[0] === 'Paid');
+          if (data?.offers) {
+            const offerConfig = handleArtsdataOffers(data?.offers);
 
-            setTicketType(isPaid ? offerTypes.PAYING : offerTypes.FREE);
+            setTicketType(offerConfig?.category);
 
-            const offerConfig = {
-              category: isPaid ? offerTypes.PAYING : offerTypes.FREE,
-              url: {
-                uri: isPaid ? data.offers?.[0]?.url : data.offers?.[0]?.url?.uri,
-              },
-            };
-
-            if (isPaid) {
-              offerConfig.prices = data.offers
-                ?.map((offer) => {
-                  if (!offer?.price && offer?.price !== 0) return null;
-                  return {
-                    price: Number(offer?.price),
-                    name: offer?.name,
-                  };
-                })
-                .filter((offer) => offer);
-            }
             data = {
               ...data,
               offerConfiguration: offerConfig,
