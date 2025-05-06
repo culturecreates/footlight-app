@@ -89,7 +89,9 @@ export const treeEntitiesOption = (
   });
   let options = data?.map((entity) => {
     let mainImageData = entity?.image;
-    const entityTypes = Array.isArray(entity?.type) ? entity.type : [entity?.type?.toUpperCase()];
+    const entityTypes = Array.isArray(entity?.type)
+      ? entity.type?.map((type) => type?.toUpperCase())
+      : [entity?.type?.toUpperCase()];
 
     const isOrganization = entityTypes.includes(taxonomyClass.ORGANIZATION);
     const isPerson = entityTypes.includes(taxonomyClass.PERSON);
