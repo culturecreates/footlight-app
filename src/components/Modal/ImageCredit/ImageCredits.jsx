@@ -136,6 +136,7 @@ const ImageCredits = (props) => {
           label={t(item.label)}
           hidden={selectedField !== item.key}
           data-cy="form-item-image-options"
+          className="image-credit-form-item"
           key={index}>
           <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
@@ -154,7 +155,7 @@ const ImageCredits = (props) => {
               style={{
                 borderRadius: '4px',
                 border: '1px solid #B6C1C9',
-                width: '423px',
+                width: '100%',
               }}
               size="large"
               placeholder={t(item.placeholder)}

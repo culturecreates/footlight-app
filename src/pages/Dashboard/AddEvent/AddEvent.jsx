@@ -448,17 +448,27 @@ function AddEvent() {
           eventId: eventId ?? newEventId,
         })
           .unwrap()
-          .then(() => {
+          .then((res) => {
             resolve(eventId ?? newEventId);
 
             if (!toggle) {
-              notification.success({
-                description: t('dashboard.events.addEditEvent.notification.updateEvent'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
+              if (res?.statusCode == 205 && eventData?.publishState === eventPublishState.PUBLISHED) {
+                notification.info({
+                  key: '205',
+                  message: t('dashboard.events.addEditEvent.notification.savingAsDraft'),
+                  placement: 'top',
+                  description: res?.message,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              } else
+                notification.success({
+                  description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
               navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             }
           })
@@ -598,8 +608,8 @@ function AddEvent() {
                     ? moment(values.endTimeRecur).format('HH:mm')
                     : undefined,
                 weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
-                // customDates:
-                //   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+                customDates:
+                  form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
               customDatesFlag = !!recurEvent?.customDates;
@@ -622,6 +632,7 @@ function AddEvent() {
               if (customDatesFlag) {
                 // Custom dates to single event conversion logic
                 dateTypeValue = dateTypes.SINGLE;
+                form.setFieldValue('frequency', 'DAILY');
                 const singleCustomDate = recurEvent.customDates?.[0];
                 datePickerValue = singleCustomDate ? moment(singleCustomDate.startDate) : undefined;
 
@@ -1099,6 +1110,13 @@ function AddEvent() {
           .catch((error) => {
             console.log(error);
             reject(error);
+            const firstErrorField = error?.errorFields?.[0].name;
+            if (firstErrorField) {
+              form.scrollToField(firstErrorField, {
+                behavior: 'smooth',
+                block: 'center',
+              });
+            }
             setShowDialog(previousShowDialog);
             message.warning({
               duration: 10,
@@ -2947,7 +2965,15 @@ function AddEvent() {
                                   onSelect={(value) => {
                                     form.setFieldsValue({
                                       startTime: value,
+                                      endTime: value ? form.getFieldValue('endTime') : undefined,
                                     });
+                                  }}
+                                  onChange={(value) => {
+                                    if (!value) {
+                                      form.setFieldsValue({
+                                        endTime: null,
+                                      });
+                                    }
                                   }}
                                   data-cy="single-date-start-time"
                                 />
@@ -3032,6 +3058,14 @@ function AddEvent() {
                             {
                               required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
                               message: t('dashboard.events.addEditEvent.validations.date'),
+                            },
+                            {
+                              validator: (_, value) => {
+                                if (!value || value.length !== 2 || !value[0] || !value[1]) {
+                                  return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
+                                }
+                                return Promise.resolve();
+                              },
                             },
                           ]}
                           data-cy="form-item-date-range-label">
@@ -3250,7 +3284,7 @@ function AddEvent() {
                                       onClick={() => {
                                         setLocationPlace(place);
                                         form.setFieldValue('locationPlace', place?.value);
-                                        setShowDialog(true);
+                                        if (!showDialog) setShowDialog(true);
                                         setIsPopoverOpen({
                                           ...isPopoverOpen,
                                           locationPlace: false,
@@ -3291,7 +3325,7 @@ function AddEvent() {
                                         onClick={() => {
                                           setLocationPlace(place);
                                           form.setFieldValue('locationPlace', place?.value);
-                                          setShowDialog(true);
+                                          if (!showDialog) setShowDialog(true);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             locationPlace: false,
@@ -3333,7 +3367,7 @@ function AddEvent() {
                                         onClick={() => {
                                           setLocationPlace(place);
                                           form.setFieldValue('locationPlace', place?.uri);
-                                          setShowDialog(true);
+                                          if (!showDialog) setShowDialog(true);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             locationPlace: false,
@@ -3399,7 +3433,7 @@ function AddEvent() {
                     closable
                     onClose={() => {
                       setLocationPlace();
-                      setShowDialog(true);
+                      if (!showDialog) setShowDialog(true);
                       form.setFieldValue('locationPlace', undefined);
                     }}
                     edit={locationPlace?.source === sourceOptions.CMS && true}
@@ -3617,6 +3651,7 @@ function AddEvent() {
                                             ...isPopoverOpen,
                                             organizer: false,
                                           });
+                                          if (!showDialog) setShowDialog(true);
                                         }}
                                         data-cy={`div-select-organizer-${index}`}>
                                         {organizer?.label}
@@ -3658,6 +3693,7 @@ function AddEvent() {
                                               ...isPopoverOpen,
                                               organizer: false,
                                             });
+                                            if (!showDialog) setShowDialog(true);
                                           }}
                                           data-cy={`div-select-import-footlight-organizer-${index}`}>
                                           {organizer?.label}
@@ -3700,6 +3736,7 @@ function AddEvent() {
                                               ...isPopoverOpen,
                                               organizer: false,
                                             });
+                                            if (!showDialog) setShowDialog(true);
                                           }}
                                           data-cy={`div-select-artsdata-organizer-${index}`}>
                                           {organizer?.label}
@@ -3761,6 +3798,7 @@ function AddEvent() {
                           setSelectedOrganizers(
                             selectedOrganizers?.filter((selectedOrganizer, indexValue) => indexValue != index),
                           );
+                          if (!showDialog) setShowDialog(true);
                         }}
                         edit={organizer?.source === sourceOptions.CMS && true}
                         calendarContentLanguage={calendarContentLanguage}
@@ -4112,6 +4150,7 @@ function AddEvent() {
                                           ...isPopoverOpen,
                                           performer: false,
                                         });
+                                        if (!showDialog) setShowDialog(true);
                                       }}
                                       data-cy={`div-select-performer-${index}`}>
                                       {performer?.label}
@@ -4151,6 +4190,7 @@ function AddEvent() {
                                             ...isPopoverOpen,
                                             performer: false,
                                           });
+                                          if (!showDialog) setShowDialog(true);
                                         }}
                                         data-cy={`div-select-import-footlight-performer-${index}`}>
                                         {performer?.label}
@@ -4191,6 +4231,7 @@ function AddEvent() {
                                             ...isPopoverOpen,
                                             performer: false,
                                           });
+                                          if (!showDialog) setShowDialog(true);
                                         }}
                                         data-cy={`div-select-artsdata-performer-${index}`}>
                                         {performer?.label}
@@ -4252,6 +4293,7 @@ function AddEvent() {
                           setSelectedPerformers(
                             selectedPerformers?.filter((selectedPerformer, indexValue) => indexValue != index),
                           );
+                          if (!showDialog) setShowDialog(true);
                         }}
                         edit={performer?.source === sourceOptions.CMS && true}
                         onEdit={(e) =>
@@ -4346,6 +4388,7 @@ function AddEvent() {
                                             ...isPopoverOpen,
                                             supporter: false,
                                           });
+                                          if (!showDialog) setShowDialog(true);
                                         }}
                                         data-cy={`div-select-supporter-${index}`}>
                                         {supporter?.label}
@@ -4385,6 +4428,7 @@ function AddEvent() {
                                               ...isPopoverOpen,
                                               supporter: false,
                                             });
+                                            if (!showDialog) setShowDialog(true);
                                           }}
                                           data-cy={`div-select-import-footlight-supporter-${index}`}>
                                           {supporter?.label}
@@ -4425,6 +4469,7 @@ function AddEvent() {
                                               ...isPopoverOpen,
                                               supporter: false,
                                             });
+                                            if (!showDialog) setShowDialog(true);
                                           }}
                                           data-cy={`div-select-artsdata-supporter-${index}`}>
                                           {supporter?.label}
@@ -4486,6 +4531,7 @@ function AddEvent() {
                           setSelectedSupporters(
                             selectedSupporters?.filter((selectedSupporter, indexValue) => indexValue != index),
                           );
+                          if (!showDialog) setShowDialog(true);
                         }}
                         edit={supporter?.source === sourceOptions.CMS && true}
                         onEdit={(e) =>

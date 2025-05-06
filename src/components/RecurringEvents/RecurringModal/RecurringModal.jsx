@@ -74,6 +74,7 @@ const RecurringModal = ({
       start: formattedStart,
       end: formattedEnd,
       color: '#607EFC',
+      id: uniqid(),
     };
 
     setDataSource(
@@ -194,12 +195,12 @@ const RecurringModal = ({
     else setUpdateAllTime(false);
   };
 
-  const deleteTime = (event, start) => {
+  const deleteTime = (event, id) => {
     setDataSource(
       dateSource.map((item) => {
         const obj = {
           ...item,
-          time: event.id === item.id ? item.time.filter((eventTime) => eventTime.startTime !== start) : item.time,
+          time: event.id === item.id ? item.time.filter((eventTime) => eventTime.id !== id) : item.time,
         };
 
         return obj;
@@ -387,7 +388,7 @@ const RecurringModal = ({
                         <div>
                           <CloseOutlined
                             className="close-time"
-                            onClick={() => deleteTime(item, customTime.startTime)}
+                            onClick={() => deleteTime(item, customTime.id)}
                             data-cy="icon-delete-custom-time"
                           />
                         </div>
@@ -427,7 +428,15 @@ const RecurringModal = ({
                             onSelect={(value) => {
                               form.setFieldsValue({
                                 startTimeCustom: value,
+                                endTimeCustom: value ? form.getFieldValue('endTimeCustom') : undefined,
                               });
+                            }}
+                            onChange={(value) => {
+                              if (!value) {
+                                form.setFieldsValue({
+                                  endTimeCustom: null,
+                                });
+                              }
                             }}
                             data-cy="custom-start-time"
                           />

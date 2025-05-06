@@ -2,3 +2,14 @@
   font-size: 16px;
   color: #646d7b;
 }
+
+.image-credit-form-item > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 423px;
+}
+
+.image-credit-form-item > div > .ant-form-item-label {
+  width: fit-content;
+}
