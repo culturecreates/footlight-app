@@ -931,7 +931,7 @@ function CreateNewPlace() {
   }, [addedFields]);
 
   useEffect(() => {
-    if ((taxonomyLoading && !allTaxonomyData, !currentCalendarData)) return;
+    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
     const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.place);
     const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
       (field) => field,
