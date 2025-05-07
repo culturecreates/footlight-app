@@ -238,6 +238,7 @@ function CreateNewPlace() {
     longitude: null,
   });
   const [geocoder, setGeocoder] = useState(null);
+  const [dynamicFields, setDynamicFields] = useState([]);
 
   useEffect(() => {
     if (window.google) {
@@ -928,6 +929,30 @@ function CreateNewPlace() {
       element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
   }, [addedFields]);
+
+  useEffect(() => {
+    if ((taxonomyLoading && !allTaxonomyData, !currentCalendarData)) return;
+    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.place);
+    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
+      (field) => field,
+    );
+
+    allTaxonomyData?.data?.map((taxonomy) => {
+      if (taxonomy?.isDynamicField) {
+        const tooltip = bilingual({ data: taxonomy?.description, interfaceLanguage: user?.interfaceLanguage });
+        const fieldObject = {
+          type: taxonomy?.id,
+          fieldNames: taxonomy?.id,
+          taxonomy: false,
+          disabled: false,
+          required: requiredTaxonomies?.includes(taxonomy?.id),
+          label: bilingual({ data: taxonomy?.name, interfaceLanguage: user?.interfaceLanguage }),
+          ...(tooltip && { tooltip }),
+        };
+        setDynamicFields((prev) => [...prev, fieldObject]);
+      }
+    });
+  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
 
   useEffect(() => {
     if (placeId) {
@@ -1785,15 +1810,22 @@ function CreateNewPlace() {
                     placeData?.dynamicFields?.forEach((dynamicField) => {
                       if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                     });
+
+                    const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
+                    const shouldShowField = requiredFlag || addedFields?.includes(taxonomy?.id) || !!initialValues;
+                    const displayFlag = !shouldShowField;
+
                     return (
                       <Form.Item
                         data-cy={`form-item-place-dynamic-field-title-${index}`}
                         key={index}
+                        className={taxonomy?.id}
                         name={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
                         label={bilingual({
                           data: taxonomy?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
+                        style={{ display: displayFlag && 'none' }}
                         initialValue={initialValues}
                         rules={[
                           {
@@ -1820,7 +1852,40 @@ function CreateNewPlace() {
                   }
                 })}
               </>
-              <></>
+              <ChangeTypeLayout>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
+                  style={{ lineHeight: '2.5' }}
+                  data-cy="form-item-add-more-details-title">
+                  {dynamicFields.map((field) => field.fieldNames).every((field) => addedFields?.includes(field)) ? (
+                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                  ) : (
+                    [...dynamicFields].map((type) => {
+                      let initialValues;
+                      placeData?.dynamicFields?.forEach((dynamicField) => {
+                        if (type?.fieldNames === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                      });
+                      if (
+                        !addedFields?.includes(type.fieldNames) &&
+                        !type?.required &&
+                        !(initialValues || initialValues?.length > 0)
+                      ) {
+                        return (
+                          <ChangeType
+                            key={type.type}
+                            primaryIcon={<PlusOutlined />}
+                            disabled={type.disabled}
+                            label={type.label}
+                            promptText={type.tooltip}
+                            secondaryIcon={<InfoCircleOutlined />}
+                            onClick={() => addFieldsHandler(type?.fieldNames)}
+                          />
+                        );
+                      }
+                    })
+                  )}
+                </Form.Item>
+              </ChangeTypeLayout>
             </Card>
             <Card marginResponsive="0px" title={t('dashboard.places.createNew.addPlace.address.address')}>
               <>

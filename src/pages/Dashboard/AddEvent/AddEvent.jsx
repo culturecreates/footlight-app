@@ -4429,6 +4429,7 @@ function AddEvent() {
                   otherInformationFieldNames.facebookLinkWrap,
                   otherInformationFieldNames.keywords,
                   otherInformationFieldNames.inLanguage,
+                  ...dynamicFields.map((field) => field.fieldNames),
                 ].every((field) => addedFields?.includes(field)) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
