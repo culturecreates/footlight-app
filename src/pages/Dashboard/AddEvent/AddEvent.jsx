@@ -1711,7 +1711,11 @@ function AddEvent() {
 
     allTaxonomyData?.data?.map((taxonomy) => {
       if (taxonomy?.isDynamicField) {
-        const tooltip = bilingual({ data: taxonomy?.description, interfaceLanguage: user?.interfaceLanguage });
+        const tooltip = bilingual({
+          data: taxonomy?.disambiguatingDescription,
+          interfaceLanguage: user?.interfaceLanguage,
+        });
+
         const fieldObject = {
           type: taxonomy?.id,
           fieldNames: taxonomy?.id,
