@@ -1,36 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CustomModal from '../Common/CustomModal';
 import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input, notification, message, Button } from 'antd';
-import ImageUpload from '../../ImageUpload/ImageUpload';
-import StyledInput from '../../Input/Common';
+import { Row, Col, Form, notification, message, Button } from 'antd';
 import { useAddImageMutation } from '../../../services/image';
 import { useAddOrganizationMutation, useLazyGetOrganizationQuery } from '../../../services/organization';
 import './quickCreateOrganization.css';
-import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
+import { treeDynamicTaxonomyOptions, treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
-import { sourceOptions } from '../../../constants/sourceOptions';
+import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 import { eventPublishState } from '../../../constants/eventPublishState';
-import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
-import {
-  createInitialNamesObjectFromKeyword,
-  placeHolderCollectionCreator,
-} from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { createInitialNamesObjectFromKeyword } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
-
-const { TextArea } = Input;
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import {
+  checkMandatoryAdminOnlyFields,
+  formCategory,
+  formFieldValue,
+  returnFormDataWithFields,
+} from '../../../constants/formFields';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { formFieldsHandler } from '../../../utils/formFieldsHandler';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { bilingual } from '../../../utils/bilingual';
+import SortableTreeSelect from '../../TreeSelectOption/SortableTreeSelect';
+import NoContent from '../../NoContent/NoContent';
+import { formPayloadHandler } from '../../../utils/formPayloadHandler';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
+import { useLazyGetEntitiesQuery } from '../../../services/entities';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { placesOptions } from '../../Select/selectOption.settings';
+import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 
 function QuickCreateOrganization(props) {
   const {
+    // eslint-disable-next-line no-unused-vars
     open,
     setOpen,
     calendarContentLanguage,
@@ -56,12 +70,58 @@ function QuickCreateOrganization(props) {
   const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
   const { eventId } = useParams();
+  const timestampRef = useRef(Date.now()).current;
 
   const [addImage] = useAddImageMutation();
   const [addOrganization] = useAddOrganizationMutation();
   const [getOrganization] = useLazyGetOrganizationQuery();
 
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+  ] = useOutletContext();
+
   const [event, setEvent] = useState([]);
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
+    includeConcepts: true,
+    sessionId: timestampRef,
+  });
+
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
+  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
+
+  const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [locationPlace, setLocationPlace] = useState();
+  const [allPlacesList, setAllPlacesList] = useState([]);
+  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
+  const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
+  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
+  let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
+  fields = fields
+    ?.filter((category) => category.length > 0)
+    ?.map((category) =>
+      category.filter(
+        (field) =>
+          checkMandatoryAdminOnlyFields(field?.name, formFieldProperties?.mandatoryFields?.standardFields) ||
+          checkMandatoryAdminOnlyFields(field?.name, formFieldProperties?.minimumRequiredFields?.standardFields),
+      ),
+    );
+  formFields = formFields?.length > 0 && formFields[0]?.formFields;
+  let organizationData = {
+    name: createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage),
+  };
+
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   useEffect(() => {
     if (event.length > 0) {
@@ -127,99 +187,191 @@ function QuickCreateOrganization(props) {
       })
       .catch((error) => console.log(error));
   };
+
+  const placesSearch = (inputValue = '') => {
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.place);
+    let sourceQuery = new URLSearchParams();
+    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
+    getEntities({
+      searchKey: inputValue,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+    })
+      .unwrap()
+      .then((response) => {
+        setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
+      })
+      .catch((error) => console.log(error));
+    getExternalSource({
+      searchKey: inputValue,
+      classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    })
+      .unwrap()
+      .then((response) => {
+        setAllPlacesArtsdataList(
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
+        setAllPlacesImportsFootlight(
+          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+        );
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
+
   const createOrganizationHandler = (toggle = true) => {
-    const validationFieldNames = [];
+    let validationFieldNames = [];
     calendarContentLanguage.forEach((language) => {
       validationFieldNames.push(['name', contentLanguageKeyMap[language]]);
     });
+    validationFieldNames = validationFieldNames.concat(
+      fields?.map((category) => category?.map((field) => field.mappedField))?.flat() ?? [],
+    );
     return new Promise((resolve, reject) => {
       form
         .validateFields(validationFieldNames)
-        .then(() => {
-          var values = form.getFieldsValue();
+        .then(async () => {
+          var values = form.getFieldsValue(true);
+          let organizationPayload = {};
+          Object.keys(values)?.map((object) => {
+            let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
+            if (payload) {
+              let newKeys = Object.keys(payload);
+              let childKeys = object?.split('.');
+              organizationPayload = {
+                ...organizationPayload,
+                ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
+                ...(childKeys?.length == 2 && {
+                  [childKeys[0]]: {
+                    ...organizationPayload[childKeys[0]],
+                    [childKeys[1]]: payload[childKeys[0]][childKeys[1]],
+                  },
+                }),
+              };
+            }
+          });
 
-          let name = values?.name,
-            url = {},
-            organizationObj = {};
-
-          if (values?.contactWebsiteUrl)
-            url = {
-              uri: values?.contactWebsiteUrl,
+          if (locationPlace?.source === sourceOptions.ARTSDATA) {
+            organizationPayload = {
+              ...organizationPayload,
+              place: {
+                uri: locationPlace?.uri,
+              },
             };
-          organizationObj = {
-            name,
-            url,
-          };
-          if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.dragger[0].originFileObj);
-            if (!toggle) {
-              setLoaderModalOpen(true);
-              setOpen(false);
-            }
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  organizationObj['logo'] = response?.data;
-                  addOrganization({ data: organizationObj, calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      if (toggle) {
-                        notification.success({
-                          description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
-                          placement: 'top',
-                          closeIcon: <></>,
-                          maxCount: 1,
-                          duration: 3,
-                        });
-                        setOpen(false);
-                        setKeyword('');
-                        getSelectedOrganizer(response?.id);
-                      } else {
-                        setKeyword('');
-                        getSelectedOrganizer(response?.id);
-                      }
-                      setShowDialog(true);
-                      resolve(response);
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                    });
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
           } else {
+            organizationPayload = {
+              ...organizationPayload,
+              place: {
+                entityId: locationPlace?.value,
+              },
+            };
+          }
+
+          let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+          let mainImageOptions = form.getFieldValue('mainImageOptions');
+          if (imageCrop.length > 0) {
+            imageCrop = [
+              {
+                large: {
+                  xCoordinate: imageCrop[0]?.large?.x,
+                  yCoordinate: imageCrop[0]?.large?.y,
+                  height: imageCrop[0]?.large?.height,
+                  width: imageCrop[0]?.large?.width,
+                },
+                thumbnail: {
+                  xCoordinate: imageCrop[0]?.thumbnail?.x,
+                  yCoordinate: imageCrop[0]?.thumbnail?.y,
+                  height: imageCrop[0]?.thumbnail?.height,
+                  width: imageCrop[0]?.thumbnail?.width,
+                },
+                original: {
+                  entityId: imageCrop[0]?.original?.entityId,
+                  height: imageCrop[0]?.original?.height,
+                  width: imageCrop[0]?.original?.width,
+                },
+                isMain: true,
+                description: mainImageOptions?.altText,
+                creditText: mainImageOptions?.credit,
+                caption: mainImageOptions?.caption,
+              },
+            ];
+          }
+
+          try {
+            if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.image[0].originFileObj);
+              const mainImageResponse = await addImage({ data: formdata, calendarId }).unwrap();
+              imageCrop = [
+                {
+                  large: imageCrop[0]?.large,
+                  thumbnail: imageCrop[0]?.thumbnail,
+                  isMain: true,
+                  original: {
+                    entityId: mainImageResponse?.data?.original?.entityId,
+                    height: mainImageResponse?.data?.height,
+                    width: mainImageResponse?.data?.width,
+                  },
+                  description: mainImageOptions?.altText,
+                  creditText: mainImageOptions?.credit,
+                  caption: mainImageOptions?.caption,
+                },
+              ];
+            }
+            if (values.multipleImagesCrop?.length > 0)
+              await uploadImageListHelper(values, addImage, calendarId, imageCrop);
+
+            organizationPayload['image'] = imageCrop ?? [];
+
+            if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.logo[0].originFileObj);
+              const logoImageResponse = await addImage({ data: formdata, calendarId }).unwrap();
+
+              organizationPayload['logo'] = {
+                original: {
+                  entityId: logoImageResponse?.data?.original?.entityId,
+                  height: logoImageResponse?.data?.height,
+                  width: logoImageResponse?.data?.width,
+                },
+                large: {},
+                thumbnail: {},
+              };
+            }
+
             if (!toggle) {
               setLoaderModalOpen(true);
               setOpen(false);
             }
-            addOrganization({ data: organizationObj, calendarId })
-              .unwrap()
-              .then((response) => {
-                if (toggle) {
-                  notification.success({
-                    description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
-                    placement: 'top',
-                    closeIcon: <></>,
-                    maxCount: 1,
-                    duration: 3,
-                  });
-                  setKeyword('');
-                  getSelectedOrganizer(response?.id);
-                  setOpen(false);
-                } else {
-                  getSelectedOrganizer(response?.id);
-                  setOpen(false);
-                }
-                setShowDialog(true);
-                resolve(response);
-              })
-              .catch((error) => {
-                console.log(error);
-                reject(error);
+            const organizationResponse = await addOrganization({ data: organizationPayload, calendarId }).unwrap();
+
+            if (toggle) {
+              notification.success({
+                description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
               });
+              setKeyword('');
+              getSelectedOrganizer(organizationResponse?.id);
+              setOpen(false);
+            } else {
+              getSelectedOrganizer(organizationResponse?.id);
+              setOpen(false);
+            }
+
+            setShowDialog(true);
+            resolve(organizationResponse);
+          } catch (error) {
+            console.error(error);
+            reject(error);
           }
         })
         .catch((error) => {
@@ -269,7 +421,7 @@ function QuickCreateOrganization(props) {
 
   return (
     <>
-      {!loaderModalOpen ? (
+      {!loaderModalOpen && !taxonomyLoading ? (
         <CustomModal
           open={open}
           centered
@@ -278,6 +430,11 @@ function QuickCreateOrganization(props) {
               {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}
             </span>
           }
+          bodyStyle={{
+            maxHeight: '60vh',
+            minHeight: '10vh',
+            overflowY: 'auto',
+          }}
           onCancel={() => setOpen(false)}
           footer={
             <div
@@ -322,91 +479,99 @@ function QuickCreateOrganization(props) {
                     </p>
                   </Col>
                 </Row>
-                <Row>
-                  <Col>
-                    <span
-                      className="quick-create-organization-modal-label"
-                      data-cy="span-quick-create-organization-name-label">
-                      {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
-                    </span>
-                  </Col>
-                </Row>
-                <CreateMultiLingualFormItems
-                  calendarContentLanguage={calendarContentLanguage}
-                  form={form}
-                  name={['name']}
-                  data={createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage)}
-                  validations={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name')}
-                  dataCy={`input-quick-create-organization-name-`}
-                  placeholder={placeHolderCollectionCreator({
-                    t,
-                    calendarContentLanguage,
-                    placeholderBase:
-                      'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder',
-                    hasCommonPlaceHolder: true,
-                  })}
-                  required={true}>
-                  <TextArea
-                    autoSize
-                    autoComplete="off"
-                    style={{
-                      borderRadius: '4px',
-                      border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
-                      width: '100%',
-                    }}
-                    size="large"
-                  />
-                </CreateMultiLingualFormItems>
-                <Form.Item
-                  name="contactWebsiteUrl"
-                  label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
-                  rules={[
-                    {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
-                    },
-                  ]}
-                  data-cy="form-item-quick-create-organizer-website-label">
-                  <StyledInput
-                    addonBefore="URL"
-                    autoComplete="off"
-                    placeholder={t(
-                      'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.websitePlaceholder',
-                    )}
-                    data-cy="input-quick-create-organization-website"
-                  />
-                </Form.Item>
-                <Form.Item
-                  label={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logo')}
-                  name="draggerWrap"
-                  rules={[
-                    ({ getFieldValue }) => ({
-                      validator() {
-                        if (
-                          (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                          !getFieldValue('dragger') ||
-                          getFieldValue('dragger')?.length > 0
-                        ) {
-                          return Promise.resolve();
-                        } else
-                          return Promise.reject(
-                            new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
-                          );
-                      },
-                    }),
-                  ]}
-                  data-cy="form-item-quick-create-organizer-logo-label">
-                  <Row>
-                    <Col>
-                      <p
-                        className="quick-create-organization-modal-sub-heading"
-                        data-cy="para-quick-create-organization-logo-subheading">
-                        {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logoSubHeading')}
-                      </p>
-                    </Col>
-                  </Row>
-                  <ImageUpload imageReadOnly={false} preview={false} />
-                </Form.Item>
+                {fields?.map((section) => {
+                  if (section?.length > 0)
+                    return (
+                      <>
+                        {section?.map((field) => {
+                          return formFieldValue?.map((formField, index) => {
+                            if (formField?.type === field.type) {
+                              return returnFormDataWithFields({
+                                field,
+                                formField,
+                                allTaxonomyData,
+                                user,
+                                calendarContentLanguage,
+                                entityData: organizationData,
+                                index,
+                                t,
+                                adminCheck: adminCheckHandler({ calendar, user }),
+                                currentCalendarData,
+                                imageCropOpen,
+                                setImageCropOpen,
+                                placesSearch: debounceSearchPlace,
+                                allPlacesList,
+                                allPlacesArtsdataList,
+                                allPlacesImportsFootlight,
+                                locationPlace,
+                                setLocationPlace,
+                                setIsPopoverOpen,
+                                isPopoverOpen,
+                                form,
+                                // placeNavigationHandler,
+                                isEntitiesFetching,
+                                isExternalSourceFetching,
+                                mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
+                                adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
+                                setShowDialog,
+                              });
+                            }
+                          });
+                        })}
+                        {section[0]?.category === formCategory.PRIMARY &&
+                          allTaxonomyData?.data?.map((taxonomy, index) => {
+                            if (
+                              taxonomy?.isDynamicField &&
+                              formFieldProperties?.mandatoryFields?.dynamicFields?.includes(taxonomy?.id)
+                            ) {
+                              return (
+                                <Form.Item
+                                  key={index}
+                                  name={['dynamicFields', taxonomy?.id]}
+                                  data-cy={`form-item-organizer-dynamic-fields-${index}`}
+                                  label={bilingual({
+                                    data: taxonomy?.name,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  })}
+                                  rules={[
+                                    {
+                                      required: formFieldProperties?.mandatoryFields?.dynamicFields?.includes(
+                                        taxonomy?.id,
+                                      ),
+                                      message: t('common.validations.informationRequired'),
+                                    },
+                                  ]}
+                                  hidden={
+                                    taxonomy?.isAdminOnly
+                                      ? adminCheckHandler({ calendar, user })
+                                        ? false
+                                        : true
+                                      : false
+                                  }>
+                                  <SortableTreeSelect
+                                    setShowDialog={setShowDialog}
+                                    dataCy={`tag-organizer-dynamic-field`}
+                                    form={form}
+                                    draggable
+                                    fieldName={['dynamicFields', taxonomy?.id]}
+                                    data-cy={`treeselect-organizer-dynamic-fields-${index}`}
+                                    allowClear
+                                    treeDefaultExpandAll
+                                    notFoundContent={<NoContent />}
+                                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                                    treeData={treeDynamicTaxonomyOptions(
+                                      taxonomy?.concept,
+                                      user,
+                                      calendarContentLanguage,
+                                    )}
+                                  />
+                                </Form.Item>
+                              );
+                            }
+                          })}
+                      </>
+                    );
+                })}
               </Form>
             </Col>
           </Row>

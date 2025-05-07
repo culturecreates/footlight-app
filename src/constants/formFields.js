@@ -106,7 +106,7 @@ const rules = [
   },
 ];
 
-const checkMandatoryAdminOnlyFields = (fieldName, fieldList = []) => {
+export const checkMandatoryAdminOnlyFields = (fieldName, fieldList = []) => {
   if (fieldList?.length > 0) {
     return fieldList.some((field) => field.fieldName === fieldName);
   }
@@ -149,7 +149,7 @@ export const formFieldValue = [
               style={{
                 borderRadius: '4px',
                 border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
-                width: '423px',
+                width: '100%',
               }}
               size="large"
             />
@@ -267,7 +267,7 @@ export const formFieldValue = [
         style={{
           borderRadius: '4px',
           border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
-          width: '423px',
+          width: '100%',
         }}
         size="large"
         data-cy={`input-text-area-${mappedField}`}
@@ -514,7 +514,7 @@ export const formFieldValue = [
               </div>
             }>
             <EventsSearch
-              style={{ borderRadius: '4px', width: '423px' }}
+              style={{ borderRadius: '4px', width: '100%' }}
               placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
               onChange={(e) => {
                 placesSearch(e.target.value);
