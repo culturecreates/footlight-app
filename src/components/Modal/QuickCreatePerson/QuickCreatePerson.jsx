@@ -5,35 +5,41 @@ import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input, notification, Button, message } from 'antd';
-import StyledInput from '../../Input/Common';
-import { treeEntitiesOption, treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
+import { Row, Col, Form, notification, Button, message } from 'antd';
+import { treeDynamicTaxonomyOptions, treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useAddPersonMutation, useLazyGetPersonQuery } from '../../../services/people';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import NoContent from '../../NoContent/NoContent';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 import { eventPublishState } from '../../../constants/eventPublishState';
-import {
-  createInitialNamesObjectFromKeyword,
-  placeHolderCollectionCreator,
-} from '../../../utils/MultiLingualFormItemSupportFunctions';
-import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import SortableTreeSelect from '../../TreeSelectOption/SortableTreeSelect';
-
-const { TextArea } = Input;
+import {
+  checkMandatoryAdminOnlyFields,
+  formCategory,
+  formFieldValue,
+  returnFormDataWithFields,
+} from '../../../constants/formFields';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { formFieldsHandler } from '../../../utils/formFieldsHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { bilingual } from '../../../utils/bilingual';
+import { createInitialNamesObjectFromKeyword } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { formPayloadHandler } from '../../../utils/formPayloadHandler';
+import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import { useAddImageMutation } from '../../../services/image';
 
 function QuickCreatePerson(props) {
   const {
+    //eslint-disable-next-line no-unused-vars
     open,
     setOpen,
     calendarContentLanguage,
@@ -61,8 +67,34 @@ function QuickCreatePerson(props) {
 
   const { user } = useSelector(getUserDetails);
   const navigate = useNavigate();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+  ] = useOutletContext();
 
   const [event, setEvent] = useState([]);
+  const [imageCropOpen, setImageCropOpen] = useState(false);
+
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
+  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person);
+  let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
+  fields = fields
+    ?.filter((category) => category.length > 0)
+    ?.map((category) =>
+      category.filter(
+        (field) =>
+          checkMandatoryAdminOnlyFields(field?.name, formFieldProperties?.mandatoryFields?.standardFields) ||
+          checkMandatoryAdminOnlyFields(field?.name, formFieldProperties?.minimumRequiredFields?.standardFields),
+      ),
+    );
+  formFields = formFields?.length > 0 && formFields[0]?.formFields;
+  let personData = {
+    name: createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage),
+  };
+
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   useEffect(() => {
     if (event.length > 0) {
@@ -103,6 +135,7 @@ function QuickCreatePerson(props) {
   });
   const [addPerson] = useAddPersonMutation();
   const [getPerson] = useLazyGetPersonQuery();
+  const [addImage] = useAddImageMutation();
 
   const getSelectedPerson = (id) => {
     getPerson({ personId: id, calendarId })
@@ -138,61 +171,107 @@ function QuickCreatePerson(props) {
       .catch((error) => console.log(error));
   };
   const createPersonHandler = (toggle = true) => {
-    const validationFieldNames = [];
+    let validationFieldNames = [];
     calendarContentLanguage.forEach((language) => {
       validationFieldNames.push(['name', contentLanguageKeyMap[language]]);
     });
+    validationFieldNames = validationFieldNames.concat(
+      fields?.map((category) => category?.map((field) => field.mappedField))?.flat() ?? [],
+    );
     return new Promise((resolve, reject) => {
       form
         .validateFields(validationFieldNames)
-        .then(() => {
-          var values = form.getFieldsValue();
-          let name = values?.name,
-            url = {},
-            occupation = [],
-            personObj = {};
-
-          if (values?.contactWebsiteUrl)
-            url = {
-              uri: values?.contactWebsiteUrl,
-            };
-          if (values?.occupation) {
-            occupation = values?.occupation?.map((occupationId) => {
-              return {
-                entityId: occupationId,
+        .then(async () => {
+          var values = form.getFieldsValue(true);
+          let personObj = {};
+          Object.keys(values)?.map((object) => {
+            let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
+            if (payload) {
+              let newKeys = Object.keys(payload);
+              personObj = {
+                ...personObj,
+                ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
               };
+            }
+          });
+
+          try {
+            const formImageCrop = form.getFieldValue('imageCrop');
+            const mainImageOptions = form.getFieldValue('mainImageOptions');
+            const getImageCrop = (crop, entityId = null, responseData = null) => ({
+              large: {
+                xCoordinate: crop?.large?.x,
+                yCoordinate: crop?.large?.y,
+                height: crop?.large?.height,
+                width: crop?.large?.width,
+              },
+              thumbnail: {
+                xCoordinate: crop?.thumbnail?.x,
+                yCoordinate: crop?.thumbnail?.y,
+                height: crop?.thumbnail?.height,
+                width: crop?.thumbnail?.width,
+              },
+              original: {
+                entityId: entityId || crop?.original?.entityId,
+                height: responseData?.height ?? crop?.original?.height,
+                width: responseData?.width ?? crop?.original?.width,
+              },
+              isMain: true,
+              description: mainImageOptions?.altText,
+              creditText: mainImageOptions?.credit,
+              caption: mainImageOptions?.caption,
             });
-          }
-          personObj = {
-            name,
-            url,
-            occupation,
-          };
-          if (!toggle) {
-            setOpen(false);
-            setLoaderModalOpen(true);
-          }
-          addPerson({ data: personObj, calendarId })
-            .unwrap()
-            .then((response) => {
-              if (toggle) {
-                notification.success({
-                  description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
-                  placement: 'top',
-                  closeIcon: <></>,
-                  maxCount: 1,
-                  duration: 3,
-                });
-              }
-              setKeyword('');
+            let imageCrop = formImageCrop ? [getImageCrop(formImageCrop)] : [];
+
+            if (!toggle) {
               setOpen(false);
-              getSelectedPerson(response?.id);
-              setShowDialog(true);
-              resolve(response);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+              setLoaderModalOpen(true);
+            }
+
+            const hasMultipleImages = values.multipleImagesCrop?.length > 0;
+            const hasNewMainImage = values?.image?.length > 0 && values?.image[0]?.originFileObj;
+
+            if (hasNewMainImage) {
+              const formData = new FormData();
+              formData.append('file', values.image[0].originFileObj);
+
+              const response = await addImage({ data: formData, calendarId }).unwrap();
+              const entityId = response?.data?.original?.entityId;
+
+              imageCrop = [getImageCrop(formImageCrop, entityId, response?.data)];
+            }
+
+            if (hasMultipleImages) {
+              await uploadImageListHelper(values, addImage, calendarId, imageCrop);
+            }
+
+            if (!hasNewMainImage && values?.image?.length === 0 && !hasMultipleImages) {
+              personObj['image'] = [];
+            } else {
+              personObj['image'] = imageCrop ?? [];
+            }
+
+            const response = await addPerson({ data: personObj, calendarId }).unwrap();
+
+            if (toggle) {
+              notification.success({
+                description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+            }
+
+            setKeyword('');
+            setOpen(false);
+            getSelectedPerson(response?.id);
+            setShowDialog(true);
+            resolve(response);
+          } catch (error) {
+            console.log(error);
+            reject(error);
+          }
         })
         .catch((error) => reject(error));
     });
@@ -241,6 +320,11 @@ function QuickCreatePerson(props) {
       <>
         {!loaderModalOpen ? (
           <CustomModal
+            bodyStyle={{
+              maxHeight: '60vh',
+              minHeight: '10vh',
+              overflowY: 'auto',
+            }}
             open={open}
             centered
             title={
@@ -292,85 +376,89 @@ function QuickCreatePerson(props) {
                       </p>
                     </Col>
                   </Row>
-                  <Row>
-                    <Col>
-                      <span className="quick-create-person-modal-label" data-cy="span-quick-create-person-name-label">
-                        {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.name')}
-                      </span>
-                    </Col>
-                  </Row>
-                  <CreateMultiLingualFormItems
-                    calendarContentLanguage={calendarContentLanguage}
-                    form={form}
-                    name={['name']}
-                    data={createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage)}
-                    validations={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name')}
-                    dataCy={`input-quick-create-person-name-`}
-                    placeholder={placeHolderCollectionCreator({
-                      t,
-                      calendarContentLanguage,
-                      placeholderBase: 'dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder',
-                      hasCommonPlaceHolder: true,
-                    })}
-                    required={true}>
-                    <TextArea
-                      autoSize
-                      autoComplete="off"
-                      style={{
-                        borderRadius: '4px',
-                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
-                        width: '100%',
-                      }}
-                      size="large"
-                    />
-                  </CreateMultiLingualFormItems>
-                  <Form.Item
-                    name="occupation"
-                    label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
-                    hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}
-                    data-cy="form-item-quick-create-person-occupation-label">
-                    <SortableTreeSelect
-                      dataCy={`tags-quick-create-person-occupation`}
-                      form={form}
-                      draggable
-                      fieldName={'occupation'}
-                      style={{
-                        display: !taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) && 'none',
-                      }}
-                      placeholder={t(
-                        'dashboard.events.addEditEvent.quickCreate.quickCreatePerson.occupationPlaceholder',
-                      )}
-                      allowClear
-                      treeDefaultExpandAll
-                      notFoundContent={<NoContent />}
-                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                      treeData={treeTaxonomyOptions(
-                        allTaxonomyData,
-                        user,
-                        'Occupation',
-                        false,
-                        calendarContentLanguage,
-                      )}
-                      data-cy="treeselect-quick-create-person-occupation"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="contactWebsiteUrl"
-                    label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
-                    rules={[
-                      {
-                        type: 'url',
-                        message: t('dashboard.events.addEditEvent.validations.url'),
-                      },
-                    ]}
-                    data-cy="form-item-quick-create-person-website-label">
-                    <StyledInput
-                      addonBefore="URL"
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.websitePlaceholder')}
-                      data-cy="input-quick-create-person-website"
-                    />
-                  </Form.Item>
+                  {fields?.map((section) => {
+                    if (section?.length > 0)
+                      return (
+                        <>
+                          {section?.map((field) => {
+                            return formFieldValue?.map((formField, index) => {
+                              if (formField?.type === field.type) {
+                                return returnFormDataWithFields({
+                                  field,
+                                  formField,
+                                  allTaxonomyData,
+                                  user,
+                                  calendarContentLanguage,
+                                  entityId: null,
+                                  entityData: personData,
+                                  index,
+                                  t,
+                                  adminCheck: adminCheckHandler({ calendar, user }),
+                                  currentCalendarData,
+                                  imageCropOpen,
+                                  setImageCropOpen,
+                                  form,
+                                  mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
+                                  adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
+                                  setShowDialog,
+                                });
+                              }
+                            });
+                          })}
+                          {section[0]?.category === formCategory.PRIMARY &&
+                            allTaxonomyData?.data?.map((taxonomy, index) => {
+                              if (
+                                taxonomy?.isDynamicField &&
+                                formFieldProperties?.mandatoryFields?.dynamicFields?.includes(taxonomy?.id)
+                              ) {
+                                return (
+                                  <Form.Item
+                                    key={index}
+                                    name={['dynamicFields', taxonomy?.id]}
+                                    data-cy={`form-item-person-dynamic-fields-${index}`}
+                                    label={bilingual({
+                                      data: taxonomy?.name,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    })}
+                                    rules={[
+                                      {
+                                        required: formFieldProperties?.mandatoryFields?.dynamicFields?.includes(
+                                          taxonomy?.id,
+                                        ),
+                                        message: t('common.validations.informationRequired'),
+                                      },
+                                    ]}
+                                    hidden={
+                                      taxonomy?.isAdminOnly
+                                        ? adminCheckHandler({ calendar, user })
+                                          ? false
+                                          : true
+                                        : false
+                                    }>
+                                    <SortableTreeSelect
+                                      setShowDialog={setShowDialog}
+                                      dataCy={`tag-person-dynamic-field`}
+                                      form={form}
+                                      draggable
+                                      fieldName={['dynamicFields', taxonomy?.id]}
+                                      data-cy={`treeselect-person-dynamic-fields-${index}`}
+                                      allowClear
+                                      treeDefaultExpandAll
+                                      notFoundContent={<NoContent />}
+                                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                                      treeData={treeDynamicTaxonomyOptions(
+                                        taxonomy?.concept,
+                                        user,
+                                        calendarContentLanguage,
+                                      )}
+                                    />
+                                  </Form.Item>
+                                );
+                              }
+                            })}
+                        </>
+                      );
+                  })}
                 </Form>
               </Col>
             </Row>
