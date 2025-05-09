@@ -4,6 +4,8 @@ import { Form, Row, Col, Button, notification, message } from 'antd';
 import Icon, {
   CloseCircleOutlined,
   ExclamationCircleOutlined,
+  PlusOutlined,
+  InfoCircleOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
 } from '@ant-design/icons';
@@ -56,6 +58,9 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import ChangeType from '../../../components/ChangeType';
+import i18next from 'i18next';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -120,6 +125,9 @@ function CreateNewPerson() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [dynamicFields, setDynamicFields] = useState([]);
+  const [addedFields, setAddedFields] = useState([]);
+  const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
@@ -218,6 +226,13 @@ function CreateNewPerson() {
       }
     });
     return promise;
+  };
+
+  const addFieldsHandler = (fieldNames) => {
+    let array = addedFields?.concat(fieldNames);
+    array = [...new Set(array)];
+    setAddedFields(array);
+    setScrollToSelectedField(array?.at(-1));
   };
 
   const onSaveHandler = (event) => {
@@ -383,6 +398,36 @@ function CreateNewPerson() {
       }
     }
   };
+
+  useEffect(() => {
+    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
+    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person);
+    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
+      (field) => field,
+    );
+
+    allTaxonomyData?.data?.map((taxonomy) => {
+      if (taxonomy?.isDynamicField) {
+        const tooltip = contentLanguageBilingual({
+          calendarContentLanguage,
+          data: taxonomy?.disambiguatingDescription,
+          requiredLanguageKey: i18next.language,
+        });
+
+        const fieldObject = {
+          type: taxonomy?.id,
+          fieldNames: taxonomy?.id,
+          mappedField: taxonomy?.id,
+          taxonomy: false,
+          disabled: false,
+          isPreset: requiredTaxonomies?.includes(taxonomy?.id),
+          label: bilingual({ data: taxonomy?.name, interfaceLanguage: i18next.language }),
+          ...(tooltip && { tooltip }),
+        };
+        setDynamicFields((prev) => [...prev, fieldObject]);
+      }
+    });
+  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
 
   const getArtsData = (id) => {
     setArtsDataLoading(true);
@@ -575,6 +620,13 @@ function CreateNewPerson() {
       }
     }
   }, [personLoading, currentCalendarData, externalEntityLoading]);
+
+  useEffect(() => {
+    if (addedFields?.length > 0) {
+      const element = document.getElementsByClassName(scrollToSelectedField);
+      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [addedFields]);
 
   useEffect(() => {
     if (isReadOnly) {
@@ -800,15 +852,24 @@ function CreateNewPerson() {
                             personData?.dynamicFields?.forEach((dynamicField) => {
                               if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                             });
+
+                            const requiredFlag = dynamicFields.find(
+                              (field) => field?.fieldNames === taxonomy?.id,
+                            )?.isPreset;
+                            const shouldShowField =
+                              requiredFlag || addedFields?.includes(taxonomy?.id) || !!initialValues;
+                            const displayFlag = !shouldShowField;
                             return (
                               <Form.Item
                                 key={index}
                                 name={['dynamicFields', taxonomy?.id]}
+                                className={taxonomy?.id}
                                 data-cy={`form-item-person-dynamic-fields-${index}`}
                                 label={bilingual({
                                   data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
+                                style={{ display: displayFlag && 'none' }}
                                 initialValue={initialValues}
                                 rules={[
                                   {
@@ -843,7 +904,72 @@ function CreateNewPerson() {
                           }
                         })}
                     </>
-                    <></>
+                    <>
+                      <ChangeTypeLayout>
+                        {(() => {
+                          const nonPresetFields = section?.filter((field) => !field?.isPreset) || [];
+                          const hasNonPresetFields = nonPresetFields.length > 0;
+                          const hasUnaddedFields = nonPresetFields.some(
+                            (field) => !addedFields?.includes(field?.mappedField),
+                          );
+
+                          const allDynamicFieldsAdded = dynamicFields
+                            .map((field) => field.mappedField)
+                            .every((fieldName) => addedFields?.includes(fieldName));
+                          console.log(
+                            hasNonPresetFields,
+                            'hasNonPresetFields',
+                            allDynamicFieldsAdded,
+                            'allDynamicFieldsAdded',
+                          );
+
+                          return (
+                            (hasNonPresetFields || dynamicFields.length) && (
+                              <Form.Item
+                                label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                                style={{ lineHeight: '2.5' }}>
+                                {hasUnaddedFields || !allDynamicFieldsAdded ? (
+                                  [...section, ...dynamicFields]?.map((field) => {
+                                    let initialValues;
+                                    personData?.dynamicFields?.forEach((dynamicField) => {
+                                      if (field?.id === dynamicField?.taxonomyId)
+                                        initialValues = dynamicField?.conceptIds;
+                                    });
+
+                                    if (
+                                      !addedFields?.includes(field?.mappedField) &&
+                                      !field?.isPreset &&
+                                      !initialValues
+                                    )
+                                      return (
+                                        <ChangeType
+                                          key={field?.mappedField}
+                                          primaryIcon={<PlusOutlined />}
+                                          disabled={false}
+                                          label={contentLanguageBilingual({
+                                            data: field?.label,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          promptText={contentLanguageBilingual({
+                                            data: field?.infoPopup,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          secondaryIcon={<InfoCircleOutlined />}
+                                          onClick={() => addFieldsHandler(field?.mappedField)}
+                                        />
+                                      );
+                                  })
+                                ) : (
+                                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                                )}
+                              </Form.Item>
+                            )
+                          );
+                        })()}
+                      </ChangeTypeLayout>
+                    </>
                   </Card>
                 );
             })}
