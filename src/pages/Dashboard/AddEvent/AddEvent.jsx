@@ -1820,6 +1820,24 @@ function AddEvent() {
     }
   };
 
+  function normalizeLanguageData(input) {
+    const result = {};
+
+    if (Array.isArray(input)) {
+      input.forEach((item) => {
+        if (item?.['@language'] && item?.['@value']) {
+          result[item['@language']] = item['@value'];
+        }
+      });
+    } else if (typeof input === 'object' && input !== null) {
+      if (input['@language'] && input['@value']) {
+        result[input['@language']] = input['@value'];
+      }
+    }
+
+    return result;
+  }
+
   const getArtsDataEvent = () => {
     let initialAddedFields = [...addedFields];
     loadArtsDataEventEntity({ entityId: artsDataId })
@@ -1903,6 +1921,8 @@ function AddEvent() {
 
           if (data.image?.url?.uri || data.image) {
             let artsDataImage = await addImage({ imageUrl: data.image?.url?.uri ?? data.image, calendarId }).unwrap();
+            const getLocalized = (field) => (field ? normalizeLanguageData(field) : undefined);
+
             data['image'] = {
               original: {
                 ...artsDataImage.data?.original,
@@ -1914,6 +1934,10 @@ function AddEvent() {
               thumbnail: {
                 uri: artsDataImage.data?.url?.uri,
               },
+              isMain: true,
+              creditText: getLocalized(data?.image?.creditText),
+              description: getLocalized(data?.image?.description),
+              caption: getLocalized(data?.image?.caption),
             };
             form.setFieldsValue({
               imageCrop: {
@@ -1932,9 +1956,9 @@ function AddEvent() {
                 },
               },
               mainImageOptions: {
-                credit: undefined,
-                altText: undefined,
-                caption: undefined,
+                credit: getLocalized(data?.image?.creditText),
+                altText: getLocalized(data?.image?.description),
+                caption: getLocalized(data?.image?.caption),
               },
             });
           }
