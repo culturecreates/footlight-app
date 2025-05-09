@@ -115,6 +115,7 @@ import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import { loadArtsDataEntity, loadArtsDataEventEntity, loadArtsDataPlaceEntity } from '../../../services/artsData';
+import { identifyBestTimezone } from '../../../utils/handleTimeZones';
 
 const { TextArea } = Input;
 
@@ -160,7 +161,6 @@ function AddEvent() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-
   const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
@@ -260,7 +260,11 @@ function AddEvent() {
 
     // adjustedCustomDate is used to handle dates that are coming from custom recurring event config
     if (isAdjustedCustomDate) {
-      return moment.tz(dateSelected + ' ' + time, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
+      return moment.tz(
+        dateSelected + ' ' + time,
+        'DD-MM-YYYY HH:mm a',
+        eventData?.scheduleTimezone ?? artsData?.scheduleTimezone ?? currentCalendarData?.timezone ?? 'Canada/Eastern',
+      );
     }
 
     if (moment.isMoment(time)) {
@@ -270,7 +274,16 @@ function AddEvent() {
     }
 
     // Combine date and time and explicitly set the timezone to 'Canada/Eastern'
-    let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
+    let dateTime = artsDataId
+      ? moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a')
+      : moment.tz(
+          dateSelected + ' ' + timeSelected,
+          'DD-MM-YYYY HH:mm a',
+          eventData?.scheduleTimezone ??
+            artsData?.scheduleTimezone ??
+            currentCalendarData?.timezone ??
+            'Canada/Eastern',
+        );
     return dateTime.toISOString();
   };
 
@@ -1844,7 +1857,9 @@ function AddEvent() {
       .then(async (response) => {
         if (response?.data?.length > 0) {
           let data = response?.data[0] ?? [];
-
+          if (data.startDateTime) {
+            data.scheduleTimezone = identifyBestTimezone(data.startDateTime)?.value;
+          }
           if (data.organizers?.length > 0) {
             let initialOrganizers = await loadArtsDataDetails(data?.organizers);
             initialOrganizers = initialOrganizers?.filter((org) => org?.uri !== undefined);
@@ -2948,7 +2963,10 @@ function AddEvent() {
                                       eventData?.startDateTime ??
                                       artsData?.startDateTime ??
                                       artsData?.startDate,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    eventData?.scheduleTimezone ??
+                                      artsData?.scheduleTimezone ??
+                                      currentCalendarData?.timezone ??
+                                      'Canada/Eastern',
                                   )
                                 : undefined
                             }
@@ -2977,7 +2995,10 @@ function AddEvent() {
                                   eventData?.startDateTime || artsData?.startDateTime
                                     ? moment.tz(
                                         eventData?.startDateTime ?? artsData?.startDateTime,
-                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        eventData?.scheduleTimezone ??
+                                          artsData?.scheduleTimezone ??
+                                          currentCalendarData?.timezone ??
+                                          'Canada/Eastern',
                                       )
                                     : undefined
                                 }
@@ -3059,14 +3080,20 @@ function AddEvent() {
                                       eventData?.startDateTime ??
                                       artsData?.startDate ??
                                       artsData?.startDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    eventData?.scheduleTimezone ??
+                                      artsData?.scheduleTimezone ??
+                                      currentCalendarData?.timezone ??
+                                      'Canada/Eastern',
                                   ),
                                   moment.tz(
                                     eventData?.endDate ??
                                       eventData?.endDateTime ??
                                       artsData?.endDate ??
                                       artsData?.endDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    eventData?.scheduleTimezone ??
+                                      artsData?.scheduleTimezone ??
+                                      currentCalendarData?.timezone ??
+                                      'Canada/Eastern',
                                   ),
                                 ]
                               : undefined
