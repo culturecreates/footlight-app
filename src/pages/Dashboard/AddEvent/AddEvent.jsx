@@ -44,6 +44,7 @@ import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
 import { useAddImageMutation } from '../../../services/image';
 import {
+  findMatchingItems,
   treeDynamicTaxonomyOptions,
   treeEntitiesOption,
   treeTaxonomyOptions,
@@ -113,6 +114,8 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import { loadArtsDataEntity, loadArtsDataEventEntity, loadArtsDataPlaceEntity } from '../../../services/artsData';
+import { identifyBestTimezone } from '../../../utils/handleTimeZones';
 
 const { TextArea } = Input;
 
@@ -132,6 +135,7 @@ function AddEvent() {
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
+  const artsDataId = location?.state?.data?.id ?? null;
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -157,7 +161,6 @@ function AddEvent() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-
   const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
@@ -209,6 +212,8 @@ function AddEvent() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [artsData, setArtsData] = useState(null);
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
 
   setContentBackgroundColor('#F9FAFF');
 
@@ -255,7 +260,11 @@ function AddEvent() {
 
     // adjustedCustomDate is used to handle dates that are coming from custom recurring event config
     if (isAdjustedCustomDate) {
-      return moment.tz(dateSelected + ' ' + time, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
+      return moment.tz(
+        dateSelected + ' ' + time,
+        'DD-MM-YYYY HH:mm a',
+        eventData?.scheduleTimezone ?? artsData?.scheduleTimezone ?? currentCalendarData?.timezone ?? 'Canada/Eastern',
+      );
     }
 
     if (moment.isMoment(time)) {
@@ -265,7 +274,16 @@ function AddEvent() {
     }
 
     // Combine date and time and explicitly set the timezone to 'Canada/Eastern'
-    let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
+    let dateTime = artsDataId
+      ? moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a')
+      : moment.tz(
+          dateSelected + ' ' + timeSelected,
+          'DD-MM-YYYY HH:mm a',
+          eventData?.scheduleTimezone ??
+            artsData?.scheduleTimezone ??
+            currentCalendarData?.timezone ??
+            'Canada/Eastern',
+        );
     return dateTime.toISOString();
   };
 
@@ -402,6 +420,12 @@ function AddEvent() {
   const addUpdateEventApiHandler = (eventObj, toggle, sameAs) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
+        if (artsDataId) {
+          eventObj = {
+            ...eventObj,
+            sameAs,
+          };
+        }
         addEvent({
           data: eventObj,
           calendarId,
@@ -513,7 +537,7 @@ function AddEvent() {
               name = {},
               subEventConfiguration = undefined,
               inLanguage = [],
-              sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : [],
+              sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : artsDataId ? artsData?.sameAs : [],
               eventDiscipline = [];
 
             let eventObj;
@@ -1700,10 +1724,335 @@ function AddEvent() {
       ?.filter((mappedEntity) => mappedEntity);
   };
 
+  function extractLastSegment(url) {
+    if (typeof url !== 'string') return null;
+    const segments = url.trim().split('/');
+    return segments.pop() || null;
+  }
+
+  const loadArtsDataDetails = async (entities = []) => {
+    return await Promise.all(
+      entities.map(async (entityUri) => {
+        const entityId = extractLastSegment(entityUri);
+        let response = await loadArtsDataEntity({ entityId });
+        const entityData = response?.data?.[0];
+        if (entityData) {
+          return {
+            disambiguatingDescription: entityData?.disambiguatingDescription,
+            uri: entityData?.uri,
+            name: entityData?.name,
+            type: entityData?.type,
+            logo: entityData?.logo,
+            image: entityData?.image?.url?.uri,
+            ...(entityData?.contactPoint ? { contactPoint: entityData.contactPoint } : {}),
+          };
+        } else return null;
+      }),
+    );
+  };
+
+  function getAdditionalTypeFromOffers(offers) {
+    if (!Array.isArray(offers)) return [];
+
+    return offers.map((offer) => offer['http://schema.org/additionalType']).filter((type) => type !== undefined);
+  }
+
+  const extractPrice = (price) => {
+    if (typeof price === 'object' && '@value' in price) {
+      return Number(price['@value']);
+    }
+    return Number(price);
+  };
+
+  const isFreePrice = (price) => extractPrice(price) === 0;
+
+  const extractUrl = (offer) => ({
+    uri: offer?.url?.uri ?? offer?.url,
+  });
+
+  const handleArtsdataOffers = (offers) => {
+    if (!offers) return;
+
+    // Single object case
+    if (typeof offers === 'object' && !Array.isArray(offers)) {
+      if (offers.type === 'AggregateOffer') {
+        return {
+          category: offerTypes.PAYING,
+          url: extractUrl(offers),
+        };
+      }
+
+      if (offers.type === 'Offer') {
+        const priceValue = extractPrice(offers.price);
+        const isPaid = priceValue > 0;
+
+        return {
+          category: isPaid ? offerTypes.PAYING : offerTypes.FREE,
+          url: extractUrl(offers),
+          prices: isPaid
+            ? [
+                {
+                  price: priceValue,
+                  name: offers?.name,
+                },
+              ]
+            : undefined,
+        };
+      }
+    }
+
+    // Array of offers case
+    if (Array.isArray(offers)) {
+      const primaryOffer = offers.find((offer) => offer.type === 'AggregateOffer');
+      const individualOffers = offers.filter((offer) => offer.type === 'Offer');
+
+      const allPricesFree = individualOffers.every((offer) => isFreePrice(offer?.price));
+      const hasPaidType = getAdditionalTypeFromOffers(offers)?.[0] === 'Paid';
+      const hasUrl = primaryOffer?.url?.uri || primaryOffer?.url;
+
+      const isPaid = hasUrl || (!allPricesFree && hasPaidType);
+
+      return {
+        category: isPaid ? offerTypes.PAYING : offerTypes.FREE,
+        url: extractUrl(primaryOffer),
+        prices: isPaid
+          ? individualOffers
+              .map((offer) => {
+                const priceValue = extractPrice(offer?.price);
+                if (!isNaN(priceValue)) {
+                  return {
+                    price: priceValue,
+                    name: offer?.name,
+                  };
+                }
+                return null;
+              })
+              .filter(Boolean)
+          : undefined,
+      };
+    }
+  };
+
+  function normalizeLanguageData(input) {
+    const result = {};
+
+    if (Array.isArray(input)) {
+      input.forEach((item) => {
+        if (item?.['@language'] && item?.['@value']) {
+          result[item['@language']] = item['@value'];
+        }
+      });
+    } else if (typeof input === 'object' && input !== null) {
+      if (input['@language'] && input['@value']) {
+        result[input['@language']] = input['@value'];
+      }
+    }
+
+    return result;
+  }
+
+  const getArtsDataEvent = () => {
+    let initialAddedFields = [...addedFields];
+    loadArtsDataEventEntity({ entityId: artsDataId })
+      .then(async (response) => {
+        if (response?.data?.length > 0) {
+          let data = response?.data[0] ?? [];
+          if (data.startDateTime) {
+            data.scheduleTimezone = identifyBestTimezone(data.startDateTime)?.value;
+          }
+          if (data.organizers?.length > 0) {
+            let initialOrganizers = await loadArtsDataDetails(data?.organizers);
+            initialOrganizers = initialOrganizers?.filter((org) => org?.uri !== undefined);
+            initialOrganizers?.length > 0 &&
+              setSelectedOrganizers(
+                treeEntitiesOption(
+                  initialOrganizers,
+                  user,
+                  calendarContentLanguage,
+                  sourceOptions.ARTSDATA,
+                  currentCalendarData,
+                ),
+              );
+          }
+
+          if (data.performers?.length > 0) {
+            let initialPerformers = await loadArtsDataDetails(data?.performers);
+            initialPerformers = initialPerformers?.filter((org) => org?.uri !== undefined);
+            if (initialPerformers?.length > 0) {
+              setSelectedPerformers(
+                treeEntitiesOption(
+                  initialPerformers,
+                  user,
+                  calendarContentLanguage,
+                  sourceOptions.ARTSDATA,
+                  currentCalendarData,
+                ),
+              );
+              initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
+            }
+          }
+
+          if (data.sponsors?.length > 0) {
+            let initialSupporters = await loadArtsDataDetails(data?.sponsors);
+            initialSupporters = initialSupporters?.filter((org) => org?.uri !== undefined);
+            if (initialSupporters?.length > 0) {
+              setSelectedSupporters(
+                treeEntitiesOption(
+                  initialSupporters,
+                  user,
+                  calendarContentLanguage,
+                  sourceOptions.ARTSDATA,
+                  currentCalendarData,
+                ),
+              );
+
+              initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
+            }
+          }
+          if (data.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+
+          if (data.location) {
+            const entityId = extractLastSegment(data.location);
+            const response = await loadArtsDataPlaceEntity({ entityId });
+
+            const placeData = response?.data?.[0];
+            const primaryAddress = placeData?.address?.[0];
+
+            const updatedPlaceData =
+              placeData && primaryAddress ? { ...placeData, address: primaryAddress } : placeData;
+
+            const entityData = updatedPlaceData ? [updatedPlaceData] : [];
+
+            const [location] = placesOptions(
+              entityData,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            );
+
+            setLocationPlace(location);
+          }
+
+          if (data.image?.url?.uri || data.image) {
+            let artsDataImage = await addImage({ imageUrl: data.image?.url?.uri ?? data.image, calendarId }).unwrap();
+            const getLocalized = (field) => (field ? normalizeLanguageData(field) : undefined);
+
+            data['image'] = {
+              original: {
+                ...artsDataImage.data?.original,
+                uri: artsDataImage.data?.url?.uri,
+              },
+              large: {
+                uri: artsDataImage.data?.url?.uri,
+              },
+              thumbnail: {
+                uri: artsDataImage.data?.url?.uri,
+              },
+              isMain: true,
+              creditText: getLocalized(data?.image?.creditText),
+              description: getLocalized(data?.image?.description),
+              caption: getLocalized(data?.image?.caption),
+            };
+            form.setFieldsValue({
+              imageCrop: {
+                large: {
+                  x: undefined,
+                  y: undefined,
+                  height: undefined,
+                  width: undefined,
+                },
+                original: artsDataImage.data?.original,
+                thumbnail: {
+                  x: undefined,
+                  y: undefined,
+                  height: undefined,
+                  width: undefined,
+                },
+              },
+              mainImageOptions: {
+                credit: getLocalized(data?.image?.creditText),
+                altText: getLocalized(data?.image?.description),
+                caption: getLocalized(data?.image?.caption),
+              },
+            });
+          }
+          const isRecurring = !!data.subEventConfiguration;
+          let initialDateType = dateTimeTypeHandler(
+            data?.startDate,
+            data?.startDateTime,
+            data?.endDate,
+            data?.endDateTime,
+            isRecurring,
+          );
+          setDateType(initialDateType);
+          form.setFieldsValue({
+            initialDateType,
+          });
+
+          if (data?.subEventConfiguration && data?.subEventConfiguration?.length > 0) {
+            form.setFieldsValue({
+              frequency: 'CUSTOM',
+              startDateRecur: [
+                moment(moment(data?.startDate ?? data?.startDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
+                moment(moment(data?.endDate ?? data?.endDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
+              ],
+              startTimeRecur: null,
+              endTimeRecur: null,
+              customDates: groupEventsByDate(data?.subEventConfiguration),
+            });
+            const obj = {
+              frequency: 'CUSTOM',
+              startDateRecur: [
+                moment(moment(data?.startDate ?? data?.startDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
+                moment(moment(data?.endDate ?? data?.endDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
+              ],
+              startTimeRecur: null,
+            };
+            setFormValue(obj);
+          }
+          if (data?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
+          if (data?.offers) {
+            const offerConfig = handleArtsdataOffers(data?.offers);
+
+            setTicketType(offerConfig?.category);
+
+            data = {
+              ...data,
+              offerConfiguration: offerConfig,
+            };
+          }
+          setArtsData(data);
+          setAddedFields(initialAddedFields);
+          setArtsDataLoading(false);
+        }
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
     dispatch(setBannerDismissed(false));
   }, []);
+
+  const hasFetchedRef = useRef(false);
+
+  useEffect(() => {
+    const newEntityName = location?.state?.name;
+    if (artsDataId && !artsData && !hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      setArtsDataLoading(true);
+      getArtsDataEvent();
+    } else if (newEntityName) {
+      calendarContentLanguage.forEach((language) => {
+        const langKey = contentLanguageKeyMap[language];
+        form.setFieldValue(['name', `${langKey}`], newEntityName);
+      });
+    }
+  }, [artsDataId]);
 
   useEffect(() => {
     let shouldDisplay = true;
@@ -2210,7 +2559,8 @@ function AddEvent() {
     currentCalendarData &&
     !updateEventLoading &&
     !addEventLoading &&
-    !updateEventStateLoading ? (
+    !updateEventStateLoading &&
+    !artsDataLoading ? (
     <div>
       <RouteLeavingGuard isBlocking={showDialog} />
       <Form
@@ -2362,7 +2712,7 @@ function AddEvent() {
                   calendarContentLanguage={calendarContentLanguage}
                   form={form}
                   name={['name']}
-                  data={eventData?.name}
+                  data={eventData?.name ?? artsData?.name}
                   validations={t('dashboard.events.addEditEvent.validations.title')}
                   dataCy={`text-area-event-name-`}
                   placeholder={placeHolderCollectionCreator({
@@ -2386,9 +2736,17 @@ function AddEvent() {
                 <Form.Item
                   name="eventType"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
-                  initialValue={eventData?.additionalType?.map((type) => {
-                    return type?.entityId;
-                  })}
+                  initialValue={
+                    eventData?.additionalType?.map((type) => {
+                      return type?.entityId;
+                    }) ??
+                    findMatchingItems(
+                      treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage),
+                      artsData?.additionalType
+                        ?.map((type) => type?.label)
+                        ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+                    )?.map((concept) => concept?.value)
+                  }
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
                       ? adminCheckHandler({ calendar, user })
@@ -2424,9 +2782,17 @@ function AddEvent() {
                 <Form.Item
                   name="targetAudience"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
-                  initialValue={eventData?.audience?.map((audience) => {
-                    return audience?.entityId;
-                  })}
+                  initialValue={
+                    eventData?.audience?.map((audience) => {
+                      return audience?.entityId;
+                    }) ??
+                    findMatchingItems(
+                      treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage),
+                      artsData?.audience
+                        ?.map((type) => type?.label)
+                        ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+                    )?.map((concept) => concept?.value)
+                  }
                   style={{
                     display: !taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false) && 'none',
                   }}
@@ -2587,14 +2953,20 @@ function AddEvent() {
                             label={t('dashboard.events.addEditEvent.dates.date')}
                             initialValue={
                               dateTimeTypeHandler(
-                                eventData?.startDate,
-                                eventData?.startDateTime,
-                                eventData?.endDate,
-                                eventData?.endDateTime,
+                                eventData?.startDate ?? artsData?.startDate,
+                                eventData?.startDateTime ?? artsData?.startDateTime,
+                                eventData?.endDate ?? artsData?.endDate,
+                                eventData?.endDateTime ?? artsData?.endDateTime,
                               ) === dateTypes.SINGLE
                                 ? moment.tz(
-                                    eventData?.startDate ?? eventData?.startDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    eventData?.startDate ??
+                                      eventData?.startDateTime ??
+                                      artsData?.startDateTime ??
+                                      artsData?.startDate,
+                                    eventData?.scheduleTimezone ??
+                                      artsData?.scheduleTimezone ??
+                                      currentCalendarData?.timezone ??
+                                      'Canada/Eastern',
                                   )
                                 : undefined
                             }
@@ -2620,10 +2992,13 @@ function AddEvent() {
                                 name="startTime"
                                 label={t('dashboard.events.addEditEvent.dates.startTime')}
                                 initialValue={
-                                  eventData?.startDateTime
+                                  eventData?.startDateTime || artsData?.startDateTime
                                     ? moment.tz(
-                                        eventData?.startDateTime,
-                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        eventData?.startDateTime ?? artsData?.startDateTime,
+                                        eventData?.scheduleTimezone ??
+                                          artsData?.scheduleTimezone ??
+                                          currentCalendarData?.timezone ??
+                                          'Canada/Eastern',
                                       )
                                     : undefined
                                 }
@@ -2654,8 +3029,11 @@ function AddEvent() {
                                 name="endTime"
                                 label={t('dashboard.events.addEditEvent.dates.endTime')}
                                 initialValue={
-                                  eventData?.endDateTime
-                                    ? moment.tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                                  eventData?.endDateTime || artsData?.endDateTime
+                                    ? moment.tz(
+                                        eventData?.endDateTime ?? artsData?.endDateTime,
+                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                      )
                                     : undefined
                                 }
                                 dependencies={['startTime']}
@@ -2691,19 +3069,31 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.dates.dateRange')}
                           initialValue={
                             dateTimeTypeHandler(
-                              eventData?.startDate,
-                              eventData?.startDateTime,
-                              eventData?.endDate,
-                              eventData?.endDateTime,
+                              eventData?.startDate ?? artsData?.startDate,
+                              eventData?.startDateTime ?? artsData?.startDateTime,
+                              eventData?.endDate ?? artsData?.endDate,
+                              eventData?.endDateTime ?? artsData?.endDateTime,
                             ) === dateTypes.RANGE
                               ? [
                                   moment.tz(
-                                    eventData?.startDate ?? eventData?.startDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    eventData?.startDate ??
+                                      eventData?.startDateTime ??
+                                      artsData?.startDate ??
+                                      artsData?.startDateTime,
+                                    eventData?.scheduleTimezone ??
+                                      artsData?.scheduleTimezone ??
+                                      currentCalendarData?.timezone ??
+                                      'Canada/Eastern',
                                   ),
                                   moment.tz(
-                                    eventData?.endDate ?? eventData?.endDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    eventData?.endDate ??
+                                      eventData?.endDateTime ??
+                                      artsData?.endDate ??
+                                      artsData?.endDateTime,
+                                    eventData?.scheduleTimezone ??
+                                      artsData?.scheduleTimezone ??
+                                      currentCalendarData?.timezone ??
+                                      'Canada/Eastern',
                                   ),
                                 ]
                               : undefined
@@ -2752,11 +3142,11 @@ function AddEvent() {
                           <RecurringEvents
                             currentLang={i18n.language}
                             formFields={formValue}
-                            numberOfDaysEvent={eventData?.subEvents?.length}
+                            numberOfDaysEvent={eventData?.subEvents?.length ?? artsData?.subEventConfiguration?.length}
                             form={form}
                             customDates={customDatesCollection}
                             setCustomDates={setCustomDatesCollection}
-                            eventDetails={eventData}
+                            eventDetails={eventData ?? artsData}
                             subEventCount={subEventCount}
                             setSubEventCount={setSubEventCount}
                             onCalendarChange={(dates) => {
@@ -2888,7 +3278,7 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
-                initialValue={initialPlace && initialPlace[0]?.id}
+                initialValue={initialPlace ? initialPlace[0]?.id : artsDataId && locationPlace?.uri}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
@@ -3217,7 +3607,7 @@ function AddEvent() {
                 data-cy="form-item-description-title">
                 <MultiLingualTextEditor
                   entityId={eventId}
-                  data={eventData?.description}
+                  data={eventData?.description ?? artsData?.description}
                   form={form}
                   calendarContentLanguage={calendarContentLanguage}
                   name={'editor'}
@@ -3649,7 +4039,7 @@ function AddEvent() {
                       : true
                     : false
                 }
-                initialValue={mainImageData && mainImageData?.original?.uri}
+                initialValue={mainImageData?.original?.uri ?? artsData?.image?.original?.uri}
                 {...(isAddImageError && {
                   help: t('dashboard.events.addEditEvent.validations.errorImage'),
                   validateStatus: 'error',
@@ -3659,8 +4049,10 @@ function AddEvent() {
                     validator() {
                       if (
                         (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                        (mainImageData?.original?.uri && !getFieldValue('dragger')) ||
-                        (mainImageData?.original?.uri && getFieldValue('dragger')?.length > 0)
+                        ((mainImageData?.original?.uri || artsData?.image?.original?.uri) &&
+                          !getFieldValue('dragger')) ||
+                        ((mainImageData?.original?.uri || artsData?.image?.original?.uri) &&
+                          getFieldValue('dragger')?.length > 0)
                       ) {
                         return Promise.resolve();
                       } else
@@ -3678,14 +4070,14 @@ function AddEvent() {
                   </Col>
                 </Row>
                 <ImageUpload
-                  imageUrl={mainImageData?.large?.uri}
-                  originalImageUrl={mainImageData?.original?.uri}
+                  imageUrl={mainImageData?.large?.uri ?? artsData?.image?.large?.uri}
+                  originalImageUrl={mainImageData?.original?.uri ?? artsData?.image?.original?.uri}
                   imageReadOnly={false}
                   preview={true}
                   setImageCropOpen={setImageCropOpen}
                   imageCropOpen={imageCropOpen}
                   form={form}
-                  eventImageData={mainImageData}
+                  eventImageData={mainImageData ?? artsData?.image}
                   largeAspectRatio={
                     currentCalendarData?.imageConfig?.length > 0
                       ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
@@ -4211,7 +4603,7 @@ function AddEvent() {
                   display: !addedFields?.includes(otherInformationFieldNames.eventLink) && 'none',
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.eventLink')}
-                initialValue={eventData?.url?.uri}
+                initialValue={eventData?.url?.uri ?? artsData?.url?.uri}
                 rules={[
                   {
                     type: 'url',
@@ -4307,7 +4699,7 @@ function AddEvent() {
                   display: !addedFields?.includes(otherInformationFieldNames.keywords) && 'none',
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
-                initialValue={eventData?.keywords}
+                initialValue={eventData?.keywords ?? artsData?.keywords}
                 rules={[
                   {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.KEYWORDS),
@@ -4631,7 +5023,11 @@ function AddEvent() {
                     <Form.Item
                       noStyle
                       name="registerLink"
-                      initialValue={eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
+                      initialValue={
+                        eventData?.offerConfiguration?.url?.uri ??
+                        eventData?.offerConfiguration?.email ??
+                        artsData?.offerConfiguration?.url?.uri
+                      }
                       rules={[
                         form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value && {
                           type: 'url',
@@ -4692,7 +5088,11 @@ function AddEvent() {
                         noStyle
                         name="ticketLink"
                         data-cy="form-item-ticket-link-label"
-                        initialValue={eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
+                        initialValue={
+                          eventData?.offerConfiguration?.url?.uri ??
+                          eventData?.offerConfiguration?.email ??
+                          artsData?.offerConfiguration?.url?.uri
+                        }
                         rules={[
                           form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value && {
                             type: 'url',
@@ -4736,7 +5136,7 @@ function AddEvent() {
                   </Form.Item>
 
                   <MultilingualInput
-                    fieldData={eventData?.offerConfiguration?.prices}
+                    fieldData={eventData?.offerConfiguration?.prices ?? artsData?.offerConfiguration?.prices}
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={createPriceIsFieldsDirty}
                     dataCyCollection={['dataCyCollection']}
@@ -4745,7 +5145,9 @@ function AddEvent() {
                       <Form.List
                         key={language}
                         name={[`prices`]}
-                        initialValue={eventData?.offerConfiguration?.prices ?? [undefined]}
+                        initialValue={
+                          eventData?.offerConfiguration?.prices ?? artsData?.offerConfiguration?.prices ?? [undefined]
+                        }
                         rules={[
                           ({ getFieldValue }) => ({
                             validator() {
@@ -4788,7 +5190,7 @@ function AddEvent() {
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={['ticketNote']}
-                    data={eventData?.offerConfiguration?.name}
+                    data={eventData?.offerConfiguration?.name ?? artsData?.offerConfiguration?.name}
                     required={
                       (form.getFieldValue('prices') !== undefined && form.getFieldValue('prices')?.length > 0) ||
                       form.getFieldValue('ticketLink') ||

@@ -24,3 +24,10 @@ export async function loadArtsDataPlaceEntity({ entityId }) {
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
+
+export async function loadArtsDataEventEntity({ entityId }) {
+  const query = `query?adid=${entityId}&format=json&frame=ranked_event_footlight&sparql=ranked_event_footlight`;
+  const url = `${baseUrl}/${query}`;
+
+  return fetchData(url);
+}
