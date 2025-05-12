@@ -116,6 +116,7 @@ import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTre
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import { loadArtsDataEntity, loadArtsDataEventEntity, loadArtsDataPlaceEntity } from '../../../services/artsData';
 import { identifyBestTimezone } from '../../../utils/handleTimeZones';
+import { timeZones } from '../../../constants/calendarSettingsForm';
 
 const { TextArea } = Input;
 
@@ -249,6 +250,10 @@ function AddEvent() {
   const dateTimeConverter = (date, time, isAdjustedCustomDate = false) => {
     let dateSelected;
     let timeSelected;
+    let values = form.getFieldsValue(true);
+    let timezone = artsDataId
+      ? values?.[dateType === dateTypes.MULTIPLE ? 'customEventTimezone' : 'eventTimezone']
+      : currentCalendarData?.timezone;
 
     // Determine if the date is already in the 'DD-MM-YYYY' format.
     // This is to hadle for cases where the date comes from a recurring event configurations that are being converted to single event
@@ -260,11 +265,7 @@ function AddEvent() {
 
     // adjustedCustomDate is used to handle dates that are coming from custom recurring event config
     if (isAdjustedCustomDate) {
-      return moment.tz(
-        dateSelected + ' ' + time,
-        'DD-MM-YYYY HH:mm a',
-        eventData?.scheduleTimezone ?? artsData?.scheduleTimezone ?? currentCalendarData?.timezone ?? 'Canada/Eastern',
-      );
+      return moment.tz(dateSelected + ' ' + time, 'DD-MM-YYYY HH:mm a', timezone);
     }
 
     if (moment.isMoment(time)) {
@@ -276,14 +277,7 @@ function AddEvent() {
     // Combine date and time and explicitly set the timezone to 'Canada/Eastern'
     let dateTime = artsDataId
       ? moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a')
-      : moment.tz(
-          dateSelected + ' ' + timeSelected,
-          'DD-MM-YYYY HH:mm a',
-          eventData?.scheduleTimezone ??
-            artsData?.scheduleTimezone ??
-            currentCalendarData?.timezone ??
-            'Canada/Eastern',
-        );
+      : moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', timezone);
     return dateTime.toISOString();
   };
 
@@ -538,7 +532,10 @@ function AddEvent() {
               subEventConfiguration = undefined,
               inLanguage = [],
               sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : artsDataId ? artsData?.sameAs : [],
-              eventDiscipline = [];
+              eventDiscipline = [],
+              timezone = artsDataId
+                ? values?.[dateType === dateTypes.MULTIPLE ? 'customEventTimezone' : 'eventTimezone']
+                : currentCalendarData?.timezone;
 
             let eventObj;
 
@@ -749,28 +746,19 @@ function AddEvent() {
 
             if (dateTypeValue === dateTypes.SINGLE) {
               if (startTimeValue) startDateTime = dateTimeConverter(datePickerValue, startTimeValue, customTimeFlag);
-              else
-                startDateTime = moment
-                  .tz(datePickerValue, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
+              else startDateTime = moment.tz(datePickerValue, timezone).format('YYYY-MM-DD');
               if (endTimeValue) {
                 endDateTime = dateTimeConverter(datePickerValue, endTimeValue, customTimeFlag);
                 if (startDateTime && endDateTime)
-                  endDateTime = adjustEndDateTimeIfBeforeStart(startDateTime, endDateTime, eventData?.scheduleTimezone);
+                  endDateTime = adjustEndDateTimeIfBeforeStart(startDateTime, endDateTime, timezone);
               }
             }
 
             if (dateTypeValue === dateTypes.RANGE) {
               if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
-              else
-                startDateTime = moment
-                  .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
+              else startDateTime = moment.tz(values?.dateRangePicker[0], timezone).format('YYYY-MM-DD');
               if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
-              else
-                endDateTime = moment
-                  .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
+              else endDateTime = moment.tz(values?.dateRangePicker[1], timezone).format('YYYY-MM-DD');
             }
 
             if (eventId && values?.initialDateType !== dateTypes.SINGLE) {
@@ -1007,10 +995,11 @@ function AddEvent() {
               ...(values?.performers && { performers }),
               ...(values?.supporters && { collaborators }),
               ...(values?.dynamicFields && { dynamicFields }),
-              ...(dateTypes.MULTIPLE && { recurringEvent }),
+              ...(dateType === dateTypes.MULTIPLE && { recurringEvent }),
               inLanguage,
               isFeatured: values?.isFeatured,
               subEventConfiguration,
+              scheduleTimezone: timezone,
             };
 
             let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
@@ -2022,6 +2011,13 @@ function AddEvent() {
               offerConfiguration: offerConfig,
             };
           }
+
+          if (data.additionalType?.length > 0) {
+            data.additionalType = data.additionalType.filter((type) => type?.label);
+          }
+          if (data.audience?.length > 0) {
+            data.audience = data.audience.filter((audience) => audience?.label);
+          }
           setArtsData(data);
           setAddedFields(initialAddedFields);
           setArtsDataLoading(false);
@@ -3032,7 +3028,10 @@ function AddEvent() {
                                   eventData?.endDateTime || artsData?.endDateTime
                                     ? moment.tz(
                                         eventData?.endDateTime ?? artsData?.endDateTime,
-                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        eventData?.scheduleTimezone ??
+                                          artsData?.scheduleTimezone ??
+                                          currentCalendarData?.timezone ??
+                                          'Canada/Eastern',
                                       )
                                     : undefined
                                 }
@@ -3053,10 +3052,30 @@ function AddEvent() {
                                     doesEventExceedNextDay(
                                       start_Time,
                                       end_Time,
-                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                      eventData?.scheduleTimezone ??
+                                        artsData?.scheduleTimezone ??
+                                        currentCalendarData?.timezone ??
+                                        'Canada/Eastern',
                                     ) && <sup> +1&nbsp;{t('common.day')}</sup>
                                   }
                                   data-cy="single-date-end-time"
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col flex={'423px'}>
+                              <Form.Item
+                                label={t('dashboard.settings.calendarSettings.timezone')}
+                                name={'eventTimezone'}
+                                initialValue={
+                                  artsData?.scheduleTimezone ??
+                                  eventData?.scheduleTimezone ??
+                                  currentCalendarData?.timezone
+                                }
+                                hidden={!(artsDataId && artsData?.scheduleTimezone !== currentCalendarData?.timezone)}>
+                                <Select
+                                  options={timeZones}
+                                  data-cy="select-calendar-time-zone"
+                                  placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
                                 />
                               </Form.Item>
                             </Col>
@@ -3162,6 +3181,10 @@ function AddEvent() {
                             }
                             setFormFields={setFormValue}
                             dateType={dateType}
+                            artsData={artsData}
+                            artsDataId={artsDataId}
+                            currentCalendarData={currentCalendarData}
+                            eventData={eventData}
                           />
                         </>
                       )}

@@ -1,14 +1,6 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { timeZones } from '../constants/calendarSettingsForm';
 
-// Convert offset string like "-05:00" to minutes
-function offsetStringToMinutes(offsetStr) {
-  const sign = offsetStr.startsWith('-') ? -1 : 1;
-  const [hours, minutes] = offsetStr.slice(1).split(':').map(Number);
-  return sign * (hours * 60 + minutes);
-}
-
-// Define priority for best match (most preferred first)
 const timezonePriority = [
   'Canada/Eastern',
   'Canada/Central',
@@ -23,16 +15,17 @@ const timezonePriority = [
 ];
 
 export function identifyBestTimezone(timestamp) {
-  const offsetStr = moment.parseZone(timestamp).format('Z');
-  const offsetInMinutes = offsetStringToMinutes(offsetStr);
+  const targetOffset = moment.parseZone(timestamp).utcOffset(); // in minutes
 
-  const matchingZones = timeZones.filter((tz) => tz.offset === offsetInMinutes);
+  const matchingZones = timeZones.filter((tz) => {
+    const zoneOffset = moment.tz(timestamp, tz.value).utcOffset(); // dynamic offset at this time
+    return zoneOffset === targetOffset;
+  });
 
   for (const preferred of timezonePriority) {
     const match = matchingZones.find((tz) => tz.value === preferred);
     if (match) return match;
   }
 
-  // Fallback: return first match if none in priority list
   return matchingZones[0] || null;
 }

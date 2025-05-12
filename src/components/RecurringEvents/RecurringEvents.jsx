@@ -15,6 +15,7 @@ import Tags from '../Tags/Common/Tags';
 import { pluralize } from '../../utils/pluralise';
 import { subEventsCountHandler } from '../../utils/subEventsCountHandler';
 import { groupEventsByDate } from '../../utils/groupSubEventsConfigByDate';
+import { timeZones } from '../../constants/calendarSettingsForm';
 
 const RecurringEvents = function ({
   currentLang,
@@ -31,6 +32,10 @@ const RecurringEvents = function ({
   customDates,
   setCustomDates,
   subEventCount,
+  artsData,
+  artsDataId,
+  currentCalendarData,
+  eventData,
 }) {
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -87,7 +92,7 @@ const RecurringEvents = function ({
         });
         setCustomDates(custom);
       } else {
-        const custom = eventDetails.subEvents.map((item) => {
+        const custom = eventDetails?.subEvents?.map((item) => {
           const obj = {
             id: uniqid(),
             name: 'test name',
@@ -434,6 +439,21 @@ const RecurringEvents = function ({
                           endTimeRecur: value,
                         });
                       }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col flex={'423px'}>
+                  <Form.Item
+                    label={t('dashboard.settings.calendarSettings.timezone')}
+                    name={'customEventTimezone'}
+                    initialValue={
+                      artsData?.scheduleTimezone ?? eventData?.scheduleTimezone ?? currentCalendarData?.timezone
+                    }
+                    hidden={!(artsDataId && artsData?.scheduleTimezone !== currentCalendarData?.timezone)}>
+                    <Select
+                      options={timeZones}
+                      data-cy="select-calendar-time-zone"
+                      placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
                     />
                   </Form.Item>
                 </Col>
