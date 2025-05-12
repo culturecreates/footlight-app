@@ -422,7 +422,11 @@ function CreateNewPerson() {
           taxonomy: false,
           disabled: false,
           isPreset: requiredTaxonomies?.includes(taxonomy?.id),
-          label: bilingual({ data: taxonomy?.name, interfaceLanguage: i18next.language }),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
           ...(tooltip && { tooltip }),
         };
         setDynamicFields((prev) => [...prev, fieldObject]);

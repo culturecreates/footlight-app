@@ -76,6 +76,7 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import i18next from 'i18next';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -775,7 +776,7 @@ function CreateNewOrganization() {
       if (taxonomy?.isDynamicField) {
         const tooltip = contentLanguageBilingual({
           data: taxonomy?.disambiguatingDescription,
-          interfaceLanguage: user?.interfaceLanguage,
+          requiredLanguageKey: i18next.language,
           calendarContentLanguage,
         });
         const fieldObject = {
@@ -786,7 +787,11 @@ function CreateNewOrganization() {
           taxonomy: false,
           disabled: false,
           isPreset: requiredTaxonomies?.includes(taxonomy?.id),
-          label: bilingual({ data: taxonomy?.name, interfaceLanguage: user?.interfaceLanguage }),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
           ...(tooltip && { tooltip }),
         };
         setDynamicFields((prev) => [...prev, fieldObject]);

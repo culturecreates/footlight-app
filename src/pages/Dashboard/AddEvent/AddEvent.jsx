@@ -113,6 +113,7 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import i18next from 'i18next';
 
 const { TextArea } = Input;
 
@@ -1711,9 +1712,10 @@ function AddEvent() {
 
     allTaxonomyData?.data?.map((taxonomy) => {
       if (taxonomy?.isDynamicField) {
-        const tooltip = bilingual({
+        const tooltip = contentLanguageBilingual({
           data: taxonomy?.disambiguatingDescription,
-          interfaceLanguage: user?.interfaceLanguage,
+          requiredLanguageKey: i18next.language,
+          calendarContentLanguage,
         });
 
         const fieldObject = {
@@ -1722,7 +1724,11 @@ function AddEvent() {
           taxonomy: false,
           disabled: false,
           required: requiredTaxonomies?.includes(taxonomy?.id),
-          label: bilingual({ data: taxonomy?.name, interfaceLanguage: user?.interfaceLanguage }),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
           ...(tooltip && { tooltip }),
         };
         setDynamicFields((prev) => [...prev, fieldObject]);
@@ -4374,7 +4380,8 @@ function AddEvent() {
                     : initialValues;
 
                   const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
-                  const shouldShowField = requiredFlag || addedFields?.includes(taxonomy?.id) || !!initialValues;
+                  const shouldShowField =
+                    requiredFlag || addedFields?.includes(taxonomy?.id) || (initialValues && initialValues?.length > 0);
                   const displayFlag = !shouldShowField;
 
                   return (
@@ -4446,7 +4453,7 @@ function AddEvent() {
                     if (
                       !addedFields?.includes(type.fieldNames) &&
                       !type?.required &&
-                      !(initialValues || initialValues?.length > 0)
+                      !(initialValues && initialValues?.length > 0)
                     ) {
                       /* do not display item if
                           - its part if addedFields

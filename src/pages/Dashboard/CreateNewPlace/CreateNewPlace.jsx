@@ -96,6 +96,7 @@ import MapComponent from '../../../components/MapComponent';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import i18next from 'i18next';
 
 const { TextArea } = Input;
 
@@ -939,9 +940,10 @@ function CreateNewPlace() {
 
     allTaxonomyData?.data?.map((taxonomy) => {
       if (taxonomy?.isDynamicField) {
-        const tooltip = bilingual({
+        const tooltip = contentLanguageBilingual({
           data: taxonomy?.disambiguatingDescription,
-          interfaceLanguage: user?.interfaceLanguage,
+          requiredLanguageKey: i18next.language,
+          calendarContentLanguage,
         });
         const fieldObject = {
           type: taxonomy?.id,
@@ -949,7 +951,11 @@ function CreateNewPlace() {
           taxonomy: false,
           disabled: false,
           required: requiredTaxonomies?.includes(taxonomy?.id),
-          label: bilingual({ data: taxonomy?.name, interfaceLanguage: user?.interfaceLanguage }),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
           ...(tooltip && { tooltip }),
         };
         setDynamicFields((prev) => [...prev, fieldObject]);
@@ -1815,7 +1821,10 @@ function CreateNewPlace() {
                     });
 
                     const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
-                    const shouldShowField = requiredFlag || addedFields?.includes(taxonomy?.id) || !!initialValues;
+                    const shouldShowField =
+                      requiredFlag ||
+                      addedFields?.includes(taxonomy?.id) ||
+                      (initialValues && initialValues?.length > 0);
                     const displayFlag = !shouldShowField;
 
                     return (
@@ -1856,38 +1865,58 @@ function CreateNewPlace() {
                 })}
               </>
               <ChangeTypeLayout>
-                <Form.Item
-                  label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
-                  style={{ lineHeight: '2.5' }}
-                  data-cy="form-item-add-more-details-title">
-                  {dynamicFields.map((field) => field.fieldNames).every((field) => addedFields?.includes(field)) ? (
-                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                  ) : (
-                    [...dynamicFields].map((type) => {
-                      let initialValues;
-                      placeData?.dynamicFields?.forEach((dynamicField) => {
-                        if (type?.fieldNames === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
-                      });
-                      if (
-                        !addedFields?.includes(type.fieldNames) &&
-                        !type?.required &&
-                        !(initialValues || initialValues?.length > 0)
-                      ) {
-                        return (
-                          <ChangeType
-                            key={type.type}
-                            primaryIcon={<PlusOutlined />}
-                            disabled={type.disabled}
-                            label={type.label}
-                            promptText={type.tooltip}
-                            secondaryIcon={<InfoCircleOutlined />}
-                            onClick={() => addFieldsHandler(type?.fieldNames)}
-                          />
-                        );
-                      }
-                    })
-                  )}
-                </Form.Item>
+                {(() => {
+                  const nonPresetDynamicFields = dynamicFields?.filter((field) => !field?.required);
+                  const hasInitialValueInAllNonRequiredDynamicField = nonPresetDynamicFields?.every((field) =>
+                    placeData?.dynamicFields?.some(
+                      (dynamicField) =>
+                        field?.fieldNames === dynamicField?.taxonomyId && dynamicField?.conceptIds?.length > 0,
+                    ),
+                  );
+
+                  const allDynamicFieldsAdded = dynamicFields
+                    .map((field) => field.mappedField)
+                    .every((fieldName) => addedFields?.includes(fieldName));
+
+                  return (
+                    nonPresetDynamicFields?.length && (
+                      <Form.Item
+                        label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
+                        style={{ lineHeight: '2.5' }}
+                        data-cy="form-item-add-more-details-title">
+                        {allDynamicFieldsAdded || hasInitialValueInAllNonRequiredDynamicField ? (
+                          <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                        ) : (
+                          [...dynamicFields].map((type) => {
+                            let initialValues;
+                            placeData?.dynamicFields?.forEach((dynamicField) => {
+                              if (type?.fieldNames === dynamicField?.taxonomyId)
+                                initialValues = dynamicField?.conceptIds;
+                            });
+                            if (
+                              !addedFields?.includes(type.fieldNames) &&
+                              !type?.required &&
+                              !(initialValues && initialValues?.length > 0)
+                            ) {
+                              return (
+                                <ChangeType
+                                  key={type.type}
+                                  primaryIcon={<PlusOutlined />}
+                                  disabled={type.disabled}
+                                  label={type.label}
+                                  promptText={type.tooltip}
+                                  secondaryIcon={<InfoCircleOutlined />}
+                                  onClick={() => addFieldsHandler(type?.fieldNames)}
+                                />
+                              );
+                            }
+                            return null;
+                          })
+                        )}
+                      </Form.Item>
+                    )
+                  );
+                })()}
               </ChangeTypeLayout>
             </Card>
             <Card marginResponsive="0px" title={t('dashboard.places.createNew.addPlace.address.address')}>
