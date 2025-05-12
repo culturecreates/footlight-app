@@ -1389,52 +1389,50 @@ function CreateNewOrganization() {
                               .map((field) => field.mappedField)
                               .every((fieldName) => addedFields?.includes(fieldName));
 
-                            return (
-                              (hasNonPresetFields || nonPresetDynamicFields?.length) && (
-                                <Form.Item
-                                  label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
-                                  style={{ lineHeight: '2.5' }}>
-                                  {hasUnaddedFields ||
-                                  !(allDynamicFieldsAdded || hasInitialValueInAllNonRequiredDynamicField) ? (
-                                    [...section, ...dynamicFields]?.map((field) => {
-                                      let initialValues;
+                            return hasNonPresetFields || nonPresetDynamicFields?.length ? (
+                              <Form.Item
+                                label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                                style={{ lineHeight: '2.5' }}>
+                                {hasUnaddedFields ||
+                                !(allDynamicFieldsAdded || hasInitialValueInAllNonRequiredDynamicField) ? (
+                                  [...section, ...dynamicFields]?.map((field) => {
+                                    let initialValues;
 
-                                      organizationData?.dynamicFields?.forEach((dynamicField) => {
-                                        if (field?.id === dynamicField?.taxonomyId)
-                                          initialValues = dynamicField?.conceptIds;
-                                      });
+                                    organizationData?.dynamicFields?.forEach((dynamicField) => {
+                                      if (field?.id === dynamicField?.taxonomyId)
+                                        initialValues = dynamicField?.conceptIds;
+                                    });
 
-                                      if (
-                                        !addedFields?.includes(field?.mappedField) &&
-                                        !field?.isPreset &&
-                                        !(initialValues && initialValues?.length > 0)
-                                      )
-                                        return (
-                                          <ChangeType
-                                            key={field?.mappedField}
-                                            primaryIcon={<PlusOutlined />}
-                                            disabled={false}
-                                            label={contentLanguageBilingual({
-                                              data: field?.label,
-                                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                              calendarContentLanguage: calendarContentLanguage,
-                                            })}
-                                            promptText={contentLanguageBilingual({
-                                              data: field?.infoPopup,
-                                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                              calendarContentLanguage: calendarContentLanguage,
-                                            })}
-                                            secondaryIcon={<InfoCircleOutlined />}
-                                            onClick={() => addFieldsHandler(field?.mappedField)}
-                                          />
-                                        );
-                                    })
-                                  ) : (
-                                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                                  )}
-                                </Form.Item>
-                              )
-                            );
+                                    if (
+                                      !addedFields?.includes(field?.mappedField) &&
+                                      !field?.isPreset &&
+                                      !(initialValues && initialValues?.length > 0)
+                                    )
+                                      return (
+                                        <ChangeType
+                                          key={field?.mappedField}
+                                          primaryIcon={<PlusOutlined />}
+                                          disabled={false}
+                                          label={contentLanguageBilingual({
+                                            data: field?.label,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          promptText={contentLanguageBilingual({
+                                            data: field?.infoPopup,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          secondaryIcon={<InfoCircleOutlined />}
+                                          onClick={() => addFieldsHandler(field?.mappedField)}
+                                        />
+                                      );
+                                  })
+                                ) : (
+                                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                                )}
+                              </Form.Item>
+                            ) : null;
                           })()}
                         </ChangeTypeLayout>
                       )}
