@@ -1934,7 +1934,10 @@ function AddEvent() {
           }
 
           if (data.image?.url?.uri || data.image) {
-            let artsDataImage = await addImage({ imageUrl: data.image?.url?.uri ?? data.image, calendarId }).unwrap();
+            let artsDataImage = await addImage({
+              imageUrl: data.image?.url?.uri ?? data.image?.uri ?? data.image,
+              calendarId,
+            }).unwrap();
             const getLocalized = (field) => (field ? normalizeLanguageData(field) : undefined);
 
             data['image'] = {
