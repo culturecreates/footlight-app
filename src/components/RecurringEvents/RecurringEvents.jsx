@@ -16,6 +16,7 @@ import { pluralize } from '../../utils/pluralise';
 import { subEventsCountHandler } from '../../utils/subEventsCountHandler';
 import { groupEventsByDate } from '../../utils/groupSubEventsConfigByDate';
 import { timeZones } from '../../constants/calendarSettingsForm';
+import SelectOption from '../Select';
 
 const RecurringEvents = function ({
   currentLang,
@@ -450,7 +451,7 @@ const RecurringEvents = function ({
                       artsData?.scheduleTimezone ?? eventData?.scheduleTimezone ?? currentCalendarData?.timezone
                     }
                     hidden={!(artsDataId && artsData?.scheduleTimezone !== currentCalendarData?.timezone)}>
-                    <Select
+                    <SelectOption
                       options={timeZones}
                       data-cy="select-calendar-time-zone"
                       placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
