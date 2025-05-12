@@ -1740,6 +1740,16 @@ function AddEvent() {
     );
   };
 
+  function areOffsetsMissing(start, end) {
+    const isOffsetPresent = (timestamp) => typeof timestamp === 'string' && /([+-]\d\d:\d\d|Z)$/.test(timestamp);
+
+    // If end is missing, only check start
+    if (!end) return !isOffsetPresent(start);
+
+    // Check both if present
+    return !isOffsetPresent(start) && !isOffsetPresent(end);
+  }
+
   function getAdditionalTypeFromOffers(offers) {
     if (!Array.isArray(offers)) return [];
 
@@ -2637,7 +2647,31 @@ function AddEvent() {
               </Row>
             </Col>
           )}
-
+          {areOffsetsMissing(artsData?.startDateTime, artsData?.endDateTime) && (
+            <Col span={24} className="language-literal-banner">
+              <Row>
+                <Col flex={'780px'}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={24}>
+                      <Alert
+                        message={t('dashboard.events.addEditEvent.artsDataNotifications.timezonoOffsetMissing')}
+                        type="info"
+                        showIcon={false}
+                        closable
+                        closeIcon={
+                          <OutlinedButton
+                            data-cy="button-change-artsData-banner"
+                            size="large"
+                            label={t('common.dismiss')}
+                          />
+                        }
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          )}
           <CardEvent marginTop="5%" marginResponsive="0px">
             <>
               {artsDataLink?.length > 0 && (

@@ -137,6 +137,9 @@
           "title": "Publier l'événement",
           "publish": "Publier"
         },
+        "artsDataNotifications": {
+          "timezonoOffsetMissing": "Cet événement importé n'avait pas de fuseau horaire. Votre fuseau horaire par défaut a été appliqué. Ajustez l'heure si nécessaire."
+        },
         "dataSource": "Data source",
         "question": {
           "firstPart": "Est-ce le bon événement ? Si non, ",

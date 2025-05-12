@@ -137,6 +137,9 @@
           "title": "Publish event",
           "publish": "Publish"
         },
+        "artsDataNotifications": {
+          "timezonoOffsetMissing": "This imported event had no timezone. Your default timezone has been applied. Adjust the time if necessary."
+        },
         "language": {
           "title": "Event title",
           "titleLabel": "English",
@@ -509,10 +512,10 @@
           "artsDataSectionHeading": "Imports from Artsdata",
           "importsFromFootlight": "Imports from Footlight",
           "searchPlaceholder": "Search Events",
-        "notifications": {
-          "emptyArtsdataLine1": "Cannot import event from Artsdata due to missing data.",
-          "emptyArtsdataLine2": "Go to {{link}} "
-        }
+          "notifications": {
+            "emptyArtsdataLine1": "Cannot import event from Artsdata due to missing data.",
+            "emptyArtsdataLine2": "Go to {{link}} "
+          }
         }
       }
     },
