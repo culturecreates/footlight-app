@@ -773,12 +773,14 @@ function CreateNewOrganization() {
 
     allTaxonomyData?.data?.map((taxonomy) => {
       if (taxonomy?.isDynamicField) {
-        const tooltip = bilingual({
+        const tooltip = contentLanguageBilingual({
           data: taxonomy?.disambiguatingDescription,
           interfaceLanguage: user?.interfaceLanguage,
+          calendarContentLanguage,
         });
         const fieldObject = {
           type: taxonomy?.id,
+          id: taxonomy?.id,
           fieldNames: taxonomy?.id,
           mappedField: taxonomy?.id,
           taxonomy: false,
@@ -1314,8 +1316,11 @@ function CreateNewOrganization() {
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
                             const shouldShowField =
-                              requiredFlag || addedFields?.includes(taxonomy?.id) || !!initialValues;
+                              requiredFlag ||
+                              addedFields?.includes(taxonomy?.id) ||
+                              (initialValues && initialValues?.length > 0);
                             const displayFlag = !shouldShowField;
+
                             return (
                               <Form.Item
                                 key={index}
@@ -1362,64 +1367,77 @@ function CreateNewOrganization() {
                         })}
                     </>
                     <>
-                      <ChangeTypeLayout>
-                        {(() => {
-                          const nonPresetFields = section?.filter((field) => !field?.isPreset) || [];
-                          const hasNonPresetFields = nonPresetFields.length > 0;
-                          const hasUnaddedFields = nonPresetFields.some(
-                            (field) => !addedFields?.includes(field?.mappedField),
-                          );
+                      {index == 0 && (
+                        <ChangeTypeLayout>
+                          {(() => {
+                            const nonPresetFields = section?.filter((field) => !field?.isPreset) || [];
+                            const nonPresetDynamicFields = dynamicFields?.filter((field) => !field?.isPreset);
+                            const hasNonPresetFields = nonPresetFields.length > 0;
 
-                          const allDynamicFieldsAdded = dynamicFields
-                            .map((field) => field.mappedField)
-                            .every((fieldName) => addedFields?.includes(fieldName));
+                            const hasUnaddedFields = nonPresetFields.some(
+                              (field) => !addedFields?.includes(field?.mappedField),
+                            );
 
-                          return (
-                            (hasNonPresetFields || !allDynamicFieldsAdded) && (
-                              <Form.Item
-                                label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
-                                style={{ lineHeight: '2.5' }}>
-                                {hasUnaddedFields || !allDynamicFieldsAdded ? (
-                                  [...section, ...dynamicFields]?.map((field) => {
-                                    let initialValues;
-                                    organizationData?.dynamicFields?.forEach((dynamicField) => {
-                                      if (field?.id === dynamicField?.taxonomyId)
-                                        initialValues = dynamicField?.conceptIds;
-                                    });
+                            const hasInitialValueInAllNonRequiredDynamicField = nonPresetDynamicFields?.every((field) =>
+                              organizationData?.dynamicFields?.some(
+                                (dynamicField) =>
+                                  field?.id === dynamicField?.taxonomyId && dynamicField?.conceptIds?.length > 0,
+                              ),
+                            );
 
-                                    if (
-                                      !addedFields?.includes(field?.mappedField) &&
-                                      !field?.isPreset &&
-                                      !initialValues
-                                    )
-                                      return (
-                                        <ChangeType
-                                          key={field?.mappedField}
-                                          primaryIcon={<PlusOutlined />}
-                                          disabled={false}
-                                          label={contentLanguageBilingual({
-                                            data: field?.label,
-                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                            calendarContentLanguage: calendarContentLanguage,
-                                          })}
-                                          promptText={contentLanguageBilingual({
-                                            data: field?.infoPopup,
-                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                            calendarContentLanguage: calendarContentLanguage,
-                                          })}
-                                          secondaryIcon={<InfoCircleOutlined />}
-                                          onClick={() => addFieldsHandler(field?.mappedField)}
-                                        />
-                                      );
-                                  })
-                                ) : (
-                                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                                )}
-                              </Form.Item>
-                            )
-                          );
-                        })()}
-                      </ChangeTypeLayout>
+                            const allDynamicFieldsAdded = dynamicFields
+                              .map((field) => field.mappedField)
+                              .every((fieldName) => addedFields?.includes(fieldName));
+
+                            return (
+                              (hasNonPresetFields || nonPresetDynamicFields?.length) && (
+                                <Form.Item
+                                  label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                                  style={{ lineHeight: '2.5' }}>
+                                  {hasUnaddedFields ||
+                                  !(allDynamicFieldsAdded || hasInitialValueInAllNonRequiredDynamicField) ? (
+                                    [...section, ...dynamicFields]?.map((field) => {
+                                      let initialValues;
+
+                                      organizationData?.dynamicFields?.forEach((dynamicField) => {
+                                        if (field?.id === dynamicField?.taxonomyId)
+                                          initialValues = dynamicField?.conceptIds;
+                                      });
+
+                                      if (
+                                        !addedFields?.includes(field?.mappedField) &&
+                                        !field?.isPreset &&
+                                        !(initialValues && initialValues?.length > 0)
+                                      )
+                                        return (
+                                          <ChangeType
+                                            key={field?.mappedField}
+                                            primaryIcon={<PlusOutlined />}
+                                            disabled={false}
+                                            label={contentLanguageBilingual({
+                                              data: field?.label,
+                                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                              calendarContentLanguage: calendarContentLanguage,
+                                            })}
+                                            promptText={contentLanguageBilingual({
+                                              data: field?.infoPopup,
+                                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                              calendarContentLanguage: calendarContentLanguage,
+                                            })}
+                                            secondaryIcon={<InfoCircleOutlined />}
+                                            onClick={() => addFieldsHandler(field?.mappedField)}
+                                          />
+                                        );
+                                    })
+                                  ) : (
+                                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                                  )}
+                                </Form.Item>
+                              )
+                            );
+                          })()}
+                        </ChangeTypeLayout>
+                      )}
                     </>
                   </Card>
                 );

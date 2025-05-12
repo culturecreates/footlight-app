@@ -418,6 +418,7 @@ function CreateNewPerson() {
           type: taxonomy?.id,
           fieldNames: taxonomy?.id,
           mappedField: taxonomy?.id,
+          id: taxonomy?.id,
           taxonomy: false,
           disabled: false,
           isPreset: requiredTaxonomies?.includes(taxonomy?.id),
@@ -857,7 +858,10 @@ function CreateNewPerson() {
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
                             const shouldShowField =
-                              requiredFlag || addedFields?.includes(taxonomy?.id) || !!initialValues;
+                              requiredFlag ||
+                              addedFields?.includes(taxonomy?.id) ||
+                              (initialValues && initialValues?.length > 0);
+
                             const displayFlag = !shouldShowField;
                             return (
                               <Form.Item
@@ -909,26 +913,30 @@ function CreateNewPerson() {
                         {(() => {
                           const nonPresetFields = section?.filter((field) => !field?.isPreset) || [];
                           const hasNonPresetFields = nonPresetFields.length > 0;
+                          const nonPresetDynamicFields = dynamicFields?.filter((field) => !field?.isPreset);
+
                           const hasUnaddedFields = nonPresetFields.some(
                             (field) => !addedFields?.includes(field?.mappedField),
+                          );
+
+                          const hasInitialValueInAllNonRequiredDynamicField = nonPresetDynamicFields?.every((field) =>
+                            personData?.dynamicFields?.some(
+                              (dynamicField) =>
+                                field?.id === dynamicField?.taxonomyId && dynamicField?.conceptIds?.length > 0,
+                            ),
                           );
 
                           const allDynamicFieldsAdded = dynamicFields
                             .map((field) => field.mappedField)
                             .every((fieldName) => addedFields?.includes(fieldName));
-                          console.log(
-                            hasNonPresetFields,
-                            'hasNonPresetFields',
-                            allDynamicFieldsAdded,
-                            'allDynamicFieldsAdded',
-                          );
 
                           return (
-                            (hasNonPresetFields || dynamicFields.length) && (
+                            (hasNonPresetFields || nonPresetDynamicFields.length) && (
                               <Form.Item
                                 label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
                                 style={{ lineHeight: '2.5' }}>
-                                {hasUnaddedFields || !allDynamicFieldsAdded ? (
+                                {hasUnaddedFields ||
+                                !(allDynamicFieldsAdded || hasInitialValueInAllNonRequiredDynamicField) ? (
                                   [...section, ...dynamicFields]?.map((field) => {
                                     let initialValues;
                                     personData?.dynamicFields?.forEach((dynamicField) => {
@@ -939,7 +947,7 @@ function CreateNewPerson() {
                                     if (
                                       !addedFields?.includes(field?.mappedField) &&
                                       !field?.isPreset &&
-                                      !initialValues
+                                      !(initialValues && initialValues?.length > 0)
                                     )
                                       return (
                                         <ChangeType

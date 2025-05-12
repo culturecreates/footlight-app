@@ -309,7 +309,7 @@
             "title": "Performing group/artist/event animator",
             "subHeading": "Add a main performer for your event.",
             "searchPlaceholder": "Search Organizations and People",
-            "performerTooltip": "Add the performing group, performer, artist or event animator depending on event type."
+            "performerTooltip": "Add an interpreter, artist or event host to the event."
           },
           "supporter": {
             "title": "Supporter/Sponsor",
