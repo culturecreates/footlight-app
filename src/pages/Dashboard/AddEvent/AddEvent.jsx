@@ -4821,32 +4821,39 @@ function AddEvent() {
                 </Form.Item>
               )}
             </>
-            {ticketType && (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER) && (
-              <ChangeTypeLayout>
-                <Form.Item
-                  label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
-                  data-cy="form-item-change-ticket-type-label"
-                  style={{ lineHeight: '2.5' }}>
-                  {offerTypeOptions.map((type) => {
-                    if (ticketType != type.type)
-                      return (
+            {ticketType &&
+              (ticketType === offerTypes.PAYING ||
+                ticketType === offerTypes.REGISTER ||
+                ticketType === offerTypes.FREE) && (
+                <ChangeTypeLayout>
+                  <Form.Item
+                    label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
+                    data-cy="form-item-change-ticket-type-label"
+                    style={{ lineHeight: '2.5' }}>
+                    {offerTypeOptions
+                      .filter((type) => {
+                        if (ticketType === offerTypes.FREE) {
+                          return type.type === null;
+                        }
+                        return type.type !== ticketType;
+                      })
+                      .map((type) => (
                         <ChangeType
-                          key={type.type}
+                          key={type.type ?? 'null-offer'}
                           primaryIcon={<SyncOutlined />}
                           disabled={type.disabled}
                           label={type.label}
                           promptText={type.tooltip}
-                          secondaryIcon={<InfoCircleOutlined />}
+                          secondaryIcon={type.secondaryIcon ?? <InfoCircleOutlined />}
                           onClick={() => {
                             setTicketType(type.type);
                             form.resetFields(['prices', 'ticketLink']);
                           }}
                         />
-                      );
-                  })}
-                </Form.Item>
-              </ChangeTypeLayout>
-            )}
+                      ))}
+                  </Form.Item>
+                </ChangeTypeLayout>
+              )}
           </CardEvent>
         </Row>
       </Form>
