@@ -1,4 +1,5 @@
 import { Translation } from 'react-i18next';
+import { DeleteOutlined } from '@ant-design/icons';
 
 export const offerTypes = {
   FREE: 'FREE',
@@ -24,5 +25,11 @@ export const offerTypeOptions = [
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.tickets.changeToRegister')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.tickets.changeToRegisterTooltip')}</Translation>,
+  },
+  {
+    type: null,
+    disabled: false,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.tickets.removeOffer')}</Translation>,
+    secondaryIcon: <DeleteOutlined data-cy="icon-delete-offer" />,
   },
 ];
