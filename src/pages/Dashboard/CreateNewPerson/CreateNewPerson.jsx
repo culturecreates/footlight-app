@@ -427,7 +427,7 @@ function CreateNewPerson() {
             requiredLanguageKey: i18next.language,
             calendarContentLanguage,
           }),
-          ...(tooltip && { tooltip }),
+          ...(tooltip && { infoPopup: tooltip }),
         };
         setDynamicFields((prev) => [...prev, fieldObject]);
       }
