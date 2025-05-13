@@ -1775,6 +1775,15 @@ function AddEvent() {
           initialDateType,
         });
         setTicketType(eventData?.offerConfiguration?.category);
+        if (
+          eventData?.offerConfiguration?.category === offerTypes.PAYING ||
+          eventData?.offerConfiguration?.category === offerTypes.REGISTER
+        ) {
+          setValidateFields((prev) => [
+            ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'ticketLink', 'registerLink', 'ticketNote']),
+          ]);
+        }
+
         if (initialPlace && initialPlace?.length > 0) {
           initialPlace[0] = {
             ...initialPlace[0],
@@ -4596,13 +4605,23 @@ function AddEvent() {
                         <DateAction
                           iconrender={<Money />}
                           label={t('dashboard.events.addEditEvent.tickets.paid')}
-                          onClick={() => setTicketType(offerTypes.PAYING)}
+                          onClick={() => {
+                            setTicketType(offerTypes.PAYING);
+                            setValidateFields((prev) => [
+                              ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'ticketLink', 'ticketNote']),
+                            ]);
+                          }}
                           data-cy="button-select-ticket-paid"
                         />
                         <DateAction
                           iconrender={<EditOutlined />}
                           label={t('dashboard.events.addEditEvent.tickets.registration')}
-                          onClick={() => setTicketType(offerTypes.REGISTER)}
+                          onClick={() => {
+                            setTicketType(offerTypes.REGISTER);
+                            setValidateFields((prev) => [
+                              ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'registerLink', 'ticketNote']),
+                            ]);
+                          }}
                           data-cy="button-select-ticket-register"
                         />
                       </div>
@@ -4848,6 +4867,13 @@ function AddEvent() {
                           onClick={() => {
                             setTicketType(type.type);
                             form.resetFields(['prices', 'ticketLink']);
+                            if (!requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)) {
+                              if (type.type == null) {
+                                setValidateFields((prev) => [
+                                  ...new Set([...prev.filter((field) => !type.removeFields.includes(field))]),
+                                ]);
+                              } else setValidateFields((prev) => [...new Set([...prev, ...type.validateFields])]);
+                            }
                           }}
                         />
                       ))}
