@@ -2690,7 +2690,7 @@ function AddEvent() {
               </Row>
             </Col>
           )}
-          {areOffsetsMissing(artsData?.startDateTime, artsData?.endDateTime) && (
+          {areOffsetsMissing(artsData?.startDateTime, artsData?.endDateTime) && artsDataId && (
             <Col span={24} className="language-literal-banner">
               <Row>
                 <Col flex={'780px'}>
