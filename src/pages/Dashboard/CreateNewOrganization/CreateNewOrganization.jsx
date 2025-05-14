@@ -76,6 +76,7 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import i18next from 'i18next';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -153,6 +154,7 @@ function CreateNewOrganization() {
   const [addedFields, setAddedFields] = useState([]);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [showDialog, setShowDialog] = useState(false);
+  const [dynamicFields, setDynamicFields] = useState([]);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
@@ -764,6 +766,40 @@ function CreateNewOrganization() {
   }, [addedFields]);
 
   useEffect(() => {
+    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
+    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
+    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
+      (field) => field,
+    );
+
+    allTaxonomyData?.data?.map((taxonomy) => {
+      if (taxonomy?.isDynamicField) {
+        const tooltip = contentLanguageBilingual({
+          data: taxonomy?.disambiguatingDescription,
+          requiredLanguageKey: i18next.language,
+          calendarContentLanguage,
+        });
+        const fieldObject = {
+          type: taxonomy?.id,
+          id: taxonomy?.id,
+          fieldNames: taxonomy?.id,
+          mappedField: taxonomy?.id,
+          taxonomy: false,
+          disabled: false,
+          isPreset: requiredTaxonomies?.includes(taxonomy?.id),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
+          ...(tooltip && { infoPopup: tooltip }),
+        };
+        setDynamicFields((prev) => [...prev, fieldObject]);
+      }
+    });
+  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
+
+  useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
     dispatch(setBannerDismissed(false));
   }, []);
@@ -1280,15 +1316,27 @@ function CreateNewOrganization() {
                             organizationData?.dynamicFields?.forEach((dynamicField) => {
                               if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                             });
+
+                            const requiredFlag = dynamicFields.find(
+                              (field) => field?.fieldNames === taxonomy?.id,
+                            )?.isPreset;
+                            const shouldShowField =
+                              requiredFlag ||
+                              addedFields?.includes(taxonomy?.id) ||
+                              (initialValues && initialValues?.length > 0);
+                            const displayFlag = !shouldShowField;
+
                             return (
                               <Form.Item
                                 key={index}
                                 name={['dynamicFields', taxonomy?.id]}
+                                className={taxonomy?.id}
                                 data-cy={`form-item-organization-dynamic-fields-${index}`}
                                 label={bilingual({
                                   data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
+                                style={{ display: displayFlag && 'none' }}
                                 initialValue={initialValues}
                                 rules={[
                                   {
@@ -1324,43 +1372,75 @@ function CreateNewOrganization() {
                         })}
                     </>
                     <>
-                      <ChangeTypeLayout>
-                        {section?.filter((field) => !field?.isPreset)?.length > 0 && (
-                          <Form.Item
-                            label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
-                            style={{ lineHeight: '2.5' }}>
-                            {section
-                              ?.filter((field) => !field?.isPreset)
-                              ?.map((field) => addedFields?.includes(field?.mappedField))
-                              ?.includes(false) ? (
-                              section?.map((field) => {
-                                if (!addedFields?.includes(field?.mappedField) && !field?.isPreset)
-                                  return (
-                                    <ChangeType
-                                      key={field?.mappedField}
-                                      primaryIcon={<PlusOutlined />}
-                                      disabled={false}
-                                      label={contentLanguageBilingual({
-                                        data: field?.label,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      })}
-                                      promptText={contentLanguageBilingual({
-                                        data: field?.infoPopup,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      })}
-                                      secondaryIcon={<InfoCircleOutlined />}
-                                      onClick={() => addFieldsHandler(field?.mappedField)}
-                                    />
-                                  );
-                              })
-                            ) : (
-                              <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                            )}
-                          </Form.Item>
-                        )}
-                      </ChangeTypeLayout>
+                      {index == 0 && (
+                        <ChangeTypeLayout>
+                          {(() => {
+                            const nonPresetFields = section?.filter((field) => !field?.isPreset) || [];
+                            const nonPresetDynamicFields = dynamicFields?.filter((field) => !field?.isPreset);
+                            const hasNonPresetFields = nonPresetFields.length > 0;
+
+                            const hasUnaddedFields = nonPresetFields.some(
+                              (field) => !addedFields?.includes(field?.mappedField),
+                            );
+
+                            const hasInitialValueInAllNonRequiredDynamicField = nonPresetDynamicFields?.every((field) =>
+                              organizationData?.dynamicFields?.some(
+                                (dynamicField) =>
+                                  field?.id === dynamicField?.taxonomyId && dynamicField?.conceptIds?.length > 0,
+                              ),
+                            );
+
+                            const allDynamicFieldsAdded = dynamicFields
+                              .map((field) => field.mappedField)
+                              .every((fieldName) => addedFields?.includes(fieldName));
+
+                            return hasNonPresetFields || nonPresetDynamicFields?.length ? (
+                              <Form.Item
+                                label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                                style={{ lineHeight: '2.5' }}>
+                                {hasUnaddedFields ||
+                                !(allDynamicFieldsAdded || hasInitialValueInAllNonRequiredDynamicField) ? (
+                                  [...section, ...dynamicFields]?.map((field) => {
+                                    let initialValues;
+
+                                    organizationData?.dynamicFields?.forEach((dynamicField) => {
+                                      if (field?.id === dynamicField?.taxonomyId)
+                                        initialValues = dynamicField?.conceptIds;
+                                    });
+
+                                    if (
+                                      !addedFields?.includes(field?.mappedField) &&
+                                      !field?.isPreset &&
+                                      !(initialValues && initialValues?.length > 0)
+                                    )
+                                      return (
+                                        <ChangeType
+                                          key={field?.mappedField}
+                                          primaryIcon={<PlusOutlined />}
+                                          disabled={false}
+                                          label={contentLanguageBilingual({
+                                            data: field?.label,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          promptText={contentLanguageBilingual({
+                                            data: field?.infoPopup,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          secondaryIcon={<InfoCircleOutlined />}
+                                          onClick={() => addFieldsHandler(field?.mappedField)}
+                                        />
+                                      );
+                                  })
+                                ) : (
+                                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                                )}
+                              </Form.Item>
+                            ) : null;
+                          })()}
+                        </ChangeTypeLayout>
+                      )}
                     </>
                   </Card>
                 );
