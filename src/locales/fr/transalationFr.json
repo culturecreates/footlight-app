@@ -311,7 +311,8 @@
           "performer": {
             "title": "Compagnie / groupe / artiste / animateur de l'événement",
             "subHeading": "Ajoutez un interprète principal pour votre événement.",
-            "searchPlaceholder": "Rechercher des organisations ou des personnes"
+            "searchPlaceholder": "Rechercher des interprète, un artiste ou un animateur à l'événement.",
+            "performerTooltip": "Ajouter un interprète, un artiste ou un animateur à l'événement."
           },
           "supporter": {
             "title": "Supporteur / Commanditaire",

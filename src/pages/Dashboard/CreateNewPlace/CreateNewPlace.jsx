@@ -96,6 +96,7 @@ import MapComponent from '../../../components/MapComponent';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import i18next from 'i18next';
 
 const { TextArea } = Input;
 
@@ -238,6 +239,7 @@ function CreateNewPlace() {
     longitude: null,
   });
   const [geocoder, setGeocoder] = useState(null);
+  const [dynamicFields, setDynamicFields] = useState([]);
 
   useEffect(() => {
     if (window.google) {
@@ -928,6 +930,38 @@ function CreateNewPlace() {
       element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
   }, [addedFields]);
+
+  useEffect(() => {
+    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
+    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.place);
+    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
+      (field) => field,
+    );
+
+    allTaxonomyData?.data?.map((taxonomy) => {
+      if (taxonomy?.isDynamicField) {
+        const tooltip = contentLanguageBilingual({
+          data: taxonomy?.disambiguatingDescription,
+          requiredLanguageKey: i18next.language,
+          calendarContentLanguage,
+        });
+        const fieldObject = {
+          type: taxonomy?.id,
+          fieldNames: taxonomy?.id,
+          taxonomy: false,
+          disabled: false,
+          required: requiredTaxonomies?.includes(taxonomy?.id),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
+          ...(tooltip && { tooltip }),
+        };
+        setDynamicFields((prev) => [...prev, fieldObject]);
+      }
+    });
+  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
 
   useEffect(() => {
     if (placeId) {
@@ -1785,15 +1819,25 @@ function CreateNewPlace() {
                     placeData?.dynamicFields?.forEach((dynamicField) => {
                       if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                     });
+
+                    const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
+                    const shouldShowField =
+                      requiredFlag ||
+                      addedFields?.includes(taxonomy?.id) ||
+                      (initialValues && initialValues?.length > 0);
+                    const displayFlag = !shouldShowField;
+
                     return (
                       <Form.Item
                         data-cy={`form-item-place-dynamic-field-title-${index}`}
                         key={index}
+                        className={taxonomy?.id}
                         name={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
                         label={bilingual({
                           data: taxonomy?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
+                        style={{ display: displayFlag && 'none' }}
                         initialValue={initialValues}
                         rules={[
                           {
@@ -1820,7 +1864,60 @@ function CreateNewPlace() {
                   }
                 })}
               </>
-              <></>
+              <ChangeTypeLayout>
+                {(() => {
+                  const nonPresetDynamicFields = dynamicFields?.filter((field) => !field?.required);
+                  const hasInitialValueInAllNonRequiredDynamicField = nonPresetDynamicFields?.every((field) =>
+                    placeData?.dynamicFields?.some(
+                      (dynamicField) =>
+                        field?.fieldNames === dynamicField?.taxonomyId && dynamicField?.conceptIds?.length > 0,
+                    ),
+                  );
+
+                  const allDynamicFieldsAdded = dynamicFields
+                    .map((field) => field.mappedField)
+                    .every((fieldName) => addedFields?.includes(fieldName));
+
+                  return (
+                    nonPresetDynamicFields?.length && (
+                      <Form.Item
+                        label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
+                        style={{ lineHeight: '2.5' }}
+                        data-cy="form-item-add-more-details-title">
+                        {allDynamicFieldsAdded || hasInitialValueInAllNonRequiredDynamicField ? (
+                          <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                        ) : (
+                          [...dynamicFields].map((type) => {
+                            let initialValues;
+                            placeData?.dynamicFields?.forEach((dynamicField) => {
+                              if (type?.fieldNames === dynamicField?.taxonomyId)
+                                initialValues = dynamicField?.conceptIds;
+                            });
+                            if (
+                              !addedFields?.includes(type.fieldNames) &&
+                              !type?.required &&
+                              !(initialValues && initialValues?.length > 0)
+                            ) {
+                              return (
+                                <ChangeType
+                                  key={type.type}
+                                  primaryIcon={<PlusOutlined />}
+                                  disabled={type.disabled}
+                                  label={type.label}
+                                  promptText={type.tooltip}
+                                  secondaryIcon={<InfoCircleOutlined />}
+                                  onClick={() => addFieldsHandler(type?.fieldNames)}
+                                />
+                              );
+                            }
+                            return null;
+                          })
+                        )}
+                      </Form.Item>
+                    )
+                  );
+                })()}
+              </ChangeTypeLayout>
             </Card>
             <Card marginResponsive="0px" title={t('dashboard.places.createNew.addPlace.address.address')}>
               <>

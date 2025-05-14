@@ -30,3 +30,82 @@
 .custom-common-modal-container .ant-modal-footer .quick-create-organization-modal-footer .outlined-label {
   color: rgb(27, 61, 230);
 }
+
+.quick-create-organization-modal-wrapper .ant-popover-inner {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+}
+.quick-create-organization-modal-wrapper .event-popover .ant-popover-inner-content {
+  padding: 0px;
+}
+.quick-create-organization-modal-wrapper .ant-popover-inner-content .search-scrollable-content {
+  max-height: 350px;
+  overflow-y: scroll;
+  padding: 12px;
+}
+
+.quick-create-organization-modal-wrapper .event-popover {
+  width: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.quick-create-organization-modal-wrapper .event-popover .ant-popover-arrow {
+  display: none;
+}
+.quick-create-organization-modal-wrapper .event-popover-options {
+  cursor: pointer;
+}
+
+.quick-create-organization-modal-wrapper .event-popover-options:focus > .selection-item-wrapper {
+  background: #eff2ff;
+}
+
+.quick-create-organization-modal-wrapper .event-popover-options:focus-visible,
+.quick-create-organization-modal-wrapper .event-popover-options:focus > .selection-item-wrapper:focus-visible {
+  outline: none;
+}
+
+/* .quick-create-organization-modal-wrapper .event-popover-options .selection-item-wrapper:focus-visible {
+  outline: none;
+}
+
+.quick-create-organization-modal-wrapper .event-popover-options:focus-visible {
+  outline: none;
+} */
+
+.quick-create-organization-modal-wrapper .recurring-day-buttons {
+  background-color: #f9faff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  color: #222732;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.quick-create-organization-modal-wrapper .event-popover-options:hover,
+.quick-create-organization-modal-wrapper .event-popover-options-active {
+  background: #eff2ff;
+}
+
+.event-popover-options-active-hover > .selection-item-wrapper {
+  background: #eff2ff;
+}
+
+.quick-create-organization-modal-wrapper .quick-create {
+  background-color: #eff2ff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #1b3de6;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  height: 40px;
+  padding: 12px;
+}
+
+.quick-create-organization-modal-wrapper .popover-section-header {
+  padding: 6px 16px 4px 8px;
+  font-weight: 700;
+  color: #646d7b;
+}

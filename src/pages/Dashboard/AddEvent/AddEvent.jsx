@@ -117,6 +117,7 @@ import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import { loadArtsDataEntity, loadArtsDataEventEntity, loadArtsDataPlaceEntity } from '../../../services/artsData';
 import { identifyBestTimezone } from '../../../utils/handleTimeZones';
 import { timeZones } from '../../../constants/calendarSettingsForm';
+import i18next from 'i18next';
 
 const { TextArea } = Input;
 
@@ -215,6 +216,7 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [dynamicFields, setDynamicFields] = useState([]);
 
   setContentBackgroundColor('#F9FAFF');
 
@@ -226,6 +228,7 @@ function AddEvent() {
         ?.map((field) => field?.fieldName)
         ?.concat(requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field))
     : [];
+
   let standardAdminOnlyFields =
     requiredFields && requiredFields?.length > 0
       ? requiredFields[0]?.formFieldProperties?.adminOnlyFields?.standardFields?.map((field) => field?.fieldName)
@@ -2043,6 +2046,39 @@ function AddEvent() {
   };
 
   useEffect(() => {
+    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
+    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.event);
+    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
+      (field) => field,
+    );
+
+    allTaxonomyData?.data?.map((taxonomy) => {
+      if (taxonomy?.isDynamicField) {
+        const tooltip = contentLanguageBilingual({
+          data: taxonomy?.disambiguatingDescription,
+          requiredLanguageKey: i18next.language,
+          calendarContentLanguage,
+        });
+
+        const fieldObject = {
+          type: taxonomy?.id,
+          fieldNames: taxonomy?.id,
+          taxonomy: false,
+          disabled: false,
+          required: requiredTaxonomies?.includes(taxonomy?.id),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
+          ...(tooltip && { tooltip }),
+        };
+        setDynamicFields((prev) => [...prev, fieldObject]);
+      }
+    });
+  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
+
+  useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
     dispatch(setBannerDismissed(false));
   }, []);
@@ -2431,6 +2467,10 @@ function AddEvent() {
       }
     }
   }, [isLoading, currentCalendarData]);
+
+  useEffect(() => {
+    if (!currentCalendarData) return;
+  }, [currentCalendarData]);
 
   useEffect(() => {
     if (currentCalendarData) {
@@ -2899,58 +2939,6 @@ function AddEvent() {
                     data-cy="treeselect-event-discipline"
                   />
                 </Form.Item>
-                {allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (taxonomy?.isDynamicField) {
-                    let initialValues;
-                    eventData?.dynamicFields?.forEach((dynamicField) => {
-                      if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
-                    });
-                    return (
-                      <Form.Item
-                        key={index}
-                        name={['dynamicFields', taxonomy?.id]}
-                        label={bilingual({
-                          data: taxonomy?.name,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        })}
-                        initialValue={
-                          dynamicAdminOnlyFields?.includes(taxonomy?.id)
-                            ? adminCheckHandler({ calendar, user })
-                              ? initialValues
-                              : []
-                            : initialValues
-                        }
-                        hidden={
-                          dynamicAdminOnlyFields?.includes(taxonomy?.id)
-                            ? adminCheckHandler({ calendar, user })
-                              ? false
-                              : true
-                            : false
-                        }
-                        data-cy={`form-item-${taxonomy?.id}`}
-                        rules={[
-                          {
-                            required: requiredFieldNames?.includes(taxonomy?.id),
-                            message: t('common.validations.informationRequired'),
-                          },
-                        ]}>
-                        <SortableTreeSelect
-                          setShowDialog={setShowDialog}
-                          form={form}
-                          draggable
-                          dataCy={`tag-${taxonomy?.id}`}
-                          fieldName={['dynamicFields', taxonomy?.id]}
-                          allowClear
-                          treeDefaultExpandAll
-                          notFoundContent={<NoContent />}
-                          clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                          treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                          data-cy={`treeselect-${taxonomy?.id}`}
-                        />
-                      </Form.Item>
-                    );
-                  }
-                })}
               </Form.Item>
             </>
             <div>
@@ -4830,21 +4818,100 @@ function AddEvent() {
                   data-cy="treeselect-event-language"
                 />
               </Form.Item>
+              {allTaxonomyData?.data?.map((taxonomy, index) => {
+                if (taxonomy?.isDynamicField) {
+                  let initialValues;
+                  eventData?.dynamicFields?.forEach((dynamicField) => {
+                    if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                  });
+
+                  initialValues = dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                    ? adminCheckHandler({ calendar, user })
+                      ? initialValues
+                      : []
+                    : initialValues;
+
+                  const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
+                  const shouldShowField =
+                    requiredFlag || addedFields?.includes(taxonomy?.id) || (initialValues && initialValues?.length > 0);
+                  const displayFlag = !shouldShowField;
+
+                  return (
+                    <Form.Item
+                      key={index}
+                      className={taxonomy?.id}
+                      name={['dynamicFields', taxonomy?.id]}
+                      label={bilingual({
+                        data: taxonomy?.name,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      })}
+                      style={{
+                        display: displayFlag && 'none',
+                      }}
+                      initialValue={initialValues}
+                      hidden={
+                        dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                          ? adminCheckHandler({ calendar, user })
+                            ? false
+                            : true
+                          : false
+                      }
+                      data-cy={`form-item-${taxonomy?.id}`}
+                      rules={[
+                        {
+                          required: requiredFieldNames?.includes(taxonomy?.id),
+                          message: t('common.validations.informationRequired'),
+                        },
+                      ]}>
+                      <SortableTreeSelect
+                        setShowDialog={setShowDialog}
+                        form={form}
+                        draggable
+                        dataCy={`tag-${taxonomy?.id}`}
+                        fieldName={['dynamicFields', taxonomy?.id]}
+                        allowClear
+                        treeDefaultExpandAll
+                        notFoundContent={<NoContent />}
+                        clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                        treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                        data-cy={`treeselect-${taxonomy?.id}`}
+                      />
+                    </Form.Item>
+                  );
+                }
+              })}
             </>
             <ChangeTypeLayout>
               <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                {addedFields?.includes(otherInformationFieldNames.contact) &&
-                addedFields?.includes(otherInformationFieldNames.performerWrap) &&
-                addedFields?.includes(otherInformationFieldNames.supporterWrap) &&
-                addedFields?.includes(otherInformationFieldNames.eventLink) &&
-                addedFields?.includes(otherInformationFieldNames.videoLink) &&
-                addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
-                addedFields?.includes(otherInformationFieldNames.keywords) &&
-                addedFields?.includes(otherInformationFieldNames.inLanguage) ? (
+                {[
+                  otherInformationFieldNames.contact,
+                  otherInformationFieldNames.performerWrap,
+                  otherInformationFieldNames.supporterWrap,
+                  otherInformationFieldNames.eventLink,
+                  otherInformationFieldNames.videoLink,
+                  otherInformationFieldNames.facebookLinkWrap,
+                  otherInformationFieldNames.keywords,
+                  otherInformationFieldNames.inLanguage,
+                  ...dynamicFields.map((field) => field.fieldNames),
+                ].every((field) => addedFields?.includes(field)) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
-                  otherInformationOptions.map((type) => {
-                    if (!addedFields?.includes(type.fieldNames)) {
+                  [...otherInformationOptions, ...dynamicFields].map((type) => {
+                    let initialValues;
+                    eventData?.dynamicFields?.forEach((dynamicField) => {
+                      if (type?.fieldNames === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                    });
+
+                    if (
+                      !addedFields?.includes(type.fieldNames) &&
+                      !type?.required &&
+                      !(initialValues && initialValues?.length > 0)
+                    ) {
+                      /* do not display item if
+                          - its part if addedFields
+                          - if its required
+                          - if it has an initial value
+                      */
                       const taxonomyLabel =
                         type.taxonomy && taxonomyDetails(allTaxonomyData?.data, user, type.mappedField, 'name', false);
                       const label = taxonomyLabel || type.label;
