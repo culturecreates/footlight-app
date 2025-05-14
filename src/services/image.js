@@ -6,13 +6,16 @@ export const imageApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     addImage: builder.mutation({
-      query: ({ data, calendarId }) => ({
-        url: 'images',
+      query: ({ data, calendarId, imageUrl }) => ({
+        url: `images`,
         method: 'POST',
         headers: {
           'calendar-id': calendarId,
         },
         body: data,
+        params: {
+          imageUrl,
+        },
       }),
     }),
   }),

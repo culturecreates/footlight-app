@@ -13,54 +13,64 @@ import StyledSwitch from '../components/Switch/StyledSwitch';
 import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { calendarLanguages } from './contentLanguage';
 
-const timeZones = [
+export const timeZones = [
   {
     label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Atlantic')}</Translation>,
     value: 'Canada/Atlantic',
+    offset: -240, // UTC-04:00
   },
   {
     label: (
       <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.America/Blanc-Sablon')}</Translation>
     ),
     value: 'America/Blanc-Sablon',
+    offset: -240, // UTC-04:00 (no DST)
   },
   {
     label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Central')}</Translation>,
     value: 'Canada/Central',
+    offset: -360, // UTC-06:00
   },
   {
     label: (
       <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Saskatchewan')}</Translation>
     ),
     value: 'Canada/Saskatchewan',
+    offset: -360, // UTC-06:00 (no DST)
   },
   {
     label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Eastern')}</Translation>,
     value: 'Canada/Eastern',
+    offset: -300, // UTC-05:00
   },
   {
     label: (
       <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.America/Coral_Harbour')}</Translation>
     ),
     value: 'America/Coral_Harbour',
+    offset: -300, // UTC-05:00 (no DST)
   },
   {
     label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Mountain')}</Translation>,
     value: 'Canada/Mountain',
+    offset: -420, // UTC-07:00
   },
   {
     label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Yukon')}</Translation>,
     value: 'Canada/Yukon',
+    offset: -420, // UTC-07:00 (permanent DST)
   },
   {
     label: (
       <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Newfoundland')}</Translation>
     ),
     value: 'Canada/Newfoundland',
+    offset: -210, // UTC-03:30
   },
   {
     label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Pacific')}</Translation>,
     value: 'Canada/Pacific',
+    offset: -480, // UTC-08:00
   },
 ];
 
