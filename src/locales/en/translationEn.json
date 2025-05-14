@@ -375,6 +375,7 @@
           "changeToFreeTooltip": "Use when your event is free of charge and does not require registration.",
           "changeToPaidTooltip": "Use when event is ticketed.",
           "changeToRegisterTooltip": "Use when event requires attendee sign up.",
+          "removeOffer": "Remove  offer",
           "price": "Price",
           "description": "Description",
           "enterType": "Enter Type",

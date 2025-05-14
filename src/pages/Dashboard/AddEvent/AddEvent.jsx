@@ -1811,6 +1811,15 @@ function AddEvent() {
           initialDateType,
         });
         setTicketType(eventData?.offerConfiguration?.category);
+        if (
+          eventData?.offerConfiguration?.category === offerTypes.PAYING ||
+          eventData?.offerConfiguration?.category === offerTypes.REGISTER
+        ) {
+          setValidateFields((prev) => [
+            ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'ticketLink', 'registerLink', 'ticketNote']),
+          ]);
+        }
+
         if (initialPlace && initialPlace?.length > 0) {
           initialPlace[0] = {
             ...initialPlace[0],
@@ -4663,13 +4672,23 @@ function AddEvent() {
                         <DateAction
                           iconrender={<Money />}
                           label={t('dashboard.events.addEditEvent.tickets.paid')}
-                          onClick={() => setTicketType(offerTypes.PAYING)}
+                          onClick={() => {
+                            setTicketType(offerTypes.PAYING);
+                            setValidateFields((prev) => [
+                              ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'ticketLink', 'ticketNote']),
+                            ]);
+                          }}
                           data-cy="button-select-ticket-paid"
                         />
                         <DateAction
                           iconrender={<EditOutlined />}
                           label={t('dashboard.events.addEditEvent.tickets.registration')}
-                          onClick={() => setTicketType(offerTypes.REGISTER)}
+                          onClick={() => {
+                            setTicketType(offerTypes.REGISTER);
+                            setValidateFields((prev) => [
+                              ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'registerLink', 'ticketNote']),
+                            ]);
+                          }}
                           data-cy="button-select-ticket-register"
                         />
                       </div>
@@ -4888,32 +4907,46 @@ function AddEvent() {
                 </Form.Item>
               )}
             </>
-            {ticketType && (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER) && (
-              <ChangeTypeLayout>
-                <Form.Item
-                  label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
-                  data-cy="form-item-change-ticket-type-label"
-                  style={{ lineHeight: '2.5' }}>
-                  {offerTypeOptions.map((type) => {
-                    if (ticketType != type.type)
-                      return (
+            {ticketType &&
+              (ticketType === offerTypes.PAYING ||
+                ticketType === offerTypes.REGISTER ||
+                ticketType === offerTypes.FREE) && (
+                <ChangeTypeLayout>
+                  <Form.Item
+                    label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
+                    data-cy="form-item-change-ticket-type-label"
+                    style={{ lineHeight: '2.5' }}>
+                    {offerTypeOptions
+                      .filter((type) => {
+                        if (ticketType === offerTypes.FREE) {
+                          return type.type === null;
+                        }
+                        return type.type !== ticketType;
+                      })
+                      .map((type) => (
                         <ChangeType
-                          key={type.type}
+                          key={type.type ?? 'null-offer'}
                           primaryIcon={<SyncOutlined />}
                           disabled={type.disabled}
                           label={type.label}
                           promptText={type.tooltip}
-                          secondaryIcon={<InfoCircleOutlined />}
+                          secondaryIcon={type.secondaryIcon ?? <InfoCircleOutlined />}
                           onClick={() => {
                             setTicketType(type.type);
                             form.resetFields(['prices', 'ticketLink']);
+                            if (!requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)) {
+                              if (type.type == null) {
+                                setValidateFields((prev) => [
+                                  ...new Set([...prev.filter((field) => !type.removeFields.includes(field))]),
+                                ]);
+                              } else setValidateFields((prev) => [...new Set([...prev, ...type.validateFields])]);
+                            }
                           }}
                         />
-                      );
-                  })}
-                </Form.Item>
-              </ChangeTypeLayout>
-            )}
+                      ))}
+                  </Form.Item>
+                </ChangeTypeLayout>
+              )}
           </CardEvent>
         </Row>
       </Form>

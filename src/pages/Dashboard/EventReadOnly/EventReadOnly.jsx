@@ -1255,115 +1255,118 @@ function EventReadOnly() {
                     {checkIfFieldIsToBeDisplayed(
                       eventFormRequiredFieldNames?.TICKET_INFO,
                       eventData?.offerConfiguration,
-                    ) && (
-                      <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                          <Col flex={'423px'}>
-                            <div
-                              className="read-only-event-section-wrapper"
-                              style={{
-                                display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
-                                  ? adminCheckHandler({ calendar, user })
-                                    ? ''
-                                    : 'none'
-                                  : '',
-                              }}>
-                              <p className="read-only-event-content-title">
-                                {t('dashboard.events.addEditEvent.tickets.title')}
-                              </p>
-                              {eventData?.offerConfiguration?.category === offerTypes.FREE && (
-                                <>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.tickets.description')}
-                                  </p>
-                                  <p>
-                                    <p className="read-only-event-content">
-                                      {t('dashboard.events.addEditEvent.tickets.free')}
+                    ) &&
+                      eventData?.offerConfiguration && (
+                        <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                            <Col flex={'423px'}>
+                              <div
+                                className="read-only-event-section-wrapper"
+                                style={{
+                                  display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
+                                    ? adminCheckHandler({ calendar, user })
+                                      ? ''
+                                      : 'none'
+                                    : '',
+                                }}>
+                                <p className="read-only-event-content-title">
+                                  {t('dashboard.events.addEditEvent.tickets.title')}
+                                </p>
+                                {eventData?.offerConfiguration?.category === offerTypes.FREE && (
+                                  <>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {t('dashboard.events.addEditEvent.tickets.description')}
                                     </p>
-                                  </p>
-                                </>
-                              )}
-                              {(eventData?.offerConfiguration?.url?.uri || eventData?.offerConfiguration?.email) && (
-                                <>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {eventData?.offerConfiguration?.category === offerTypes.PAYING
-                                      ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
-                                      : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
-                                        t('dashboard.events.addEditEvent.tickets.registerLink')}
-                                  </p>
-                                  <p>
-                                    <a
-                                      href={
-                                        eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email
-                                      }
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="url-links">
-                                      {eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
-                                    </a>
-                                  </p>
-                                </>
-                              )}
-                              {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
-                                eventData?.offerConfiguration?.prices?.length > 0 && (
-                                  <table className="ticket-price-table">
-                                    <tr>
-                                      <th>
-                                        <p className="read-only-event-content-sub-title-primary">
-                                          {t('dashboard.events.addEditEvent.tickets.price')}
-                                        </p>
-                                      </th>
-                                      <th>
-                                        <p className="read-only-event-content-sub-title-primary">
-                                          {t('dashboard.events.addEditEvent.tickets.description')}
-                                        </p>
-                                      </th>
-                                    </tr>
-
-                                    {eventData?.offerConfiguration?.prices?.map((offer, key) => {
-                                      return (
-                                        <tr key={key}>
-                                          <td>
-                                            <p className="read-only-event-content">
-                                              {offer?.price}&nbsp;
-                                              <span style={{ fontWeight: '400' }}>
-                                                {t('dashboard.events.addEditEvent.tickets.CAD')}
-                                              </span>
-                                            </p>
-                                          </td>
-                                          <td>
-                                            <FallbackInjectorForReadOnlyPages
-                                              fieldName="offerName"
-                                              data={offer?.name}
-                                              languageKey={activeTabKey}>
-                                              {(processedData) => renderData(processedData)}
-                                            </FallbackInjectorForReadOnlyPages>
-                                          </td>
-                                        </tr>
-                                      );
-                                    })}
-                                  </table>
+                                    <p>
+                                      <p className="read-only-event-content">
+                                        {t('dashboard.events.addEditEvent.tickets.free')}
+                                      </p>
+                                    </p>
+                                  </>
                                 )}
-                              {eventData?.offerConfiguration?.name && (
-                                <>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.tickets.note')}
-                                  </p>
-                                  <FallbackInjectorForReadOnlyPages
-                                    fieldName="offerConfiguration"
-                                    data={eventData?.offerConfiguration?.name}>
-                                    {(processedData) => renderData(processedData)}
-                                  </FallbackInjectorForReadOnlyPages>
-                                </>
-                              )}
-                            </div>
-                          </Col>
-                          <Col flex="233px">
-                            <div style={{ width: '100%' }}></div>
-                          </Col>
-                        </Row>
-                      </Col>
-                    )}
+                                {(eventData?.offerConfiguration?.url?.uri || eventData?.offerConfiguration?.email) && (
+                                  <>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {eventData?.offerConfiguration?.category === offerTypes.PAYING
+                                        ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
+                                        : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
+                                          t('dashboard.events.addEditEvent.tickets.registerLink')}
+                                    </p>
+                                    <p>
+                                      <a
+                                        href={
+                                          eventData?.offerConfiguration?.url?.uri ??
+                                          eventData?.offerConfiguration?.email
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="url-links">
+                                        {eventData?.offerConfiguration?.url?.uri ??
+                                          eventData?.offerConfiguration?.email}
+                                      </a>
+                                    </p>
+                                  </>
+                                )}
+                                {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
+                                  eventData?.offerConfiguration?.prices?.length > 0 && (
+                                    <table className="ticket-price-table">
+                                      <tr>
+                                        <th>
+                                          <p className="read-only-event-content-sub-title-primary">
+                                            {t('dashboard.events.addEditEvent.tickets.price')}
+                                          </p>
+                                        </th>
+                                        <th>
+                                          <p className="read-only-event-content-sub-title-primary">
+                                            {t('dashboard.events.addEditEvent.tickets.description')}
+                                          </p>
+                                        </th>
+                                      </tr>
+
+                                      {eventData?.offerConfiguration?.prices?.map((offer, key) => {
+                                        return (
+                                          <tr key={key}>
+                                            <td>
+                                              <p className="read-only-event-content">
+                                                {offer?.price}&nbsp;
+                                                <span style={{ fontWeight: '400' }}>
+                                                  {t('dashboard.events.addEditEvent.tickets.CAD')}
+                                                </span>
+                                              </p>
+                                            </td>
+                                            <td>
+                                              <FallbackInjectorForReadOnlyPages
+                                                fieldName="offerName"
+                                                data={offer?.name}
+                                                languageKey={activeTabKey}>
+                                                {(processedData) => renderData(processedData)}
+                                              </FallbackInjectorForReadOnlyPages>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </table>
+                                  )}
+                                {eventData?.offerConfiguration?.name && (
+                                  <>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {t('dashboard.events.addEditEvent.tickets.note')}
+                                    </p>
+                                    <FallbackInjectorForReadOnlyPages
+                                      fieldName="offerConfiguration"
+                                      data={eventData?.offerConfiguration?.name}>
+                                      {(processedData) => renderData(processedData)}
+                                    </FallbackInjectorForReadOnlyPages>
+                                  </>
+                                )}
+                              </div>
+                            </Col>
+                            <Col flex="233px">
+                              <div style={{ width: '100%' }}></div>
+                            </Col>
+                          </Row>
+                        </Col>
+                      )}
                   </Row>
                 </Col>
               </ReadOnlyPageTabLayout>

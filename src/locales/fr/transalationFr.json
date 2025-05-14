@@ -375,6 +375,7 @@
           "changeToFreeTooltip": "À utiliser lorsque votre événement est gratuit et ne nécessite pas d'inscription.",
           "changeToPaidTooltip": "A utiliser lorsque l'événement est payant.",
           "changeToRegisterTooltip": "A utiliser lorsque l'événement nécessite l'inscription des participants.",
+          "removeOffer": "Supprimer l'offre",
           "price": "Prix",
           "description": "Description",
           "enterType": "Indiquez le Type",
