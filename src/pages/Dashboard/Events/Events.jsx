@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './events.css';
 import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider, Radio, Grid, Tree } from 'antd';
-import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+import {
+  CloseCircleOutlined,
+  DownOutlined,
+  SortAscendingOutlined,
+  SortDescendingOutlined,
+  MoreOutlined,
+  DownloadOutlined,
+} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -574,23 +581,61 @@ function Events() {
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={24} className="events-wrapper-cloumn">
         <Col style={{ paddingLeft: 0 }}>
-          <Row justify="space-between">
+          <Row justify="space-between" align={'middle'} style={{ marginBottom: '16px' }}>
             <Col>
               <div className="events-heading-wrapper">
-                <h4 className="events-heading" data-cy="heading-events-list">
+                <h4 className="events-heading" data-cy="heading-events-list" style={{ margin: '0px' }}>
                   {t('dashboard.events.heading')}
                 </h4>
               </div>
             </Col>
 
-            <Col>
-              <AddEvent
-                disabled={isReadOnly ? true : false}
-                label={t('dashboard.events.addEvent')}
-                onClick={addEventHandler}
-                data-cy="button-add-new-event"
-              />
-            </Col>
+            <Row align={'middle'} gutter={[12, 0]}>
+              <Col style={{ display: 'flex', alignItems: 'center' }}>
+                <Dropdown
+                  placement="bottomRight"
+                  className="calendar-dropdown-wrapper"
+                  overlayStyle={{
+                    minWidth: '150px',
+                  }}
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  menu={{
+                    items: [
+                      {
+                        key: '0',
+                        label: 'Import Events',
+                        icon: <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
+                      },
+                    ],
+                    onClick: ({ key }) => {
+                      if (key === '0') navigate(`${location.pathname}${PathName.Search}`);
+                    },
+                  }}
+                  trigger={['click']}>
+                  <MoreOutlined
+                    className="event-list-more-icon"
+                    style={{
+                      color: '#1B3DE6',
+                      fontSize: '24px',
+                      height: '40px',
+                      width: '40px',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      display: 'flex',
+                    }}
+                    data-cy="icon-event-list-more-options"
+                  />
+                </Dropdown>
+              </Col>
+              <Col style={{ display: 'flex', alignItems: 'center' }}>
+                <AddEvent
+                  disabled={isReadOnly ? true : false}
+                  label={t('dashboard.events.addEvent')}
+                  onClick={addEventHandler}
+                  data-cy="button-add-new-event"
+                />
+              </Col>
+            </Row>
           </Row>
         </Col>
         <Row gutter={[20, 20]}>
