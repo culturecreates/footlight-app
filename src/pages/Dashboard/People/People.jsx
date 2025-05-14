@@ -68,7 +68,6 @@ function People() {
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
-  let initialSelectedUsers = {};
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PERSON);
   const { currentData: allTaxonomyData } = useGetAllTaxonomyQuery({
@@ -86,7 +85,6 @@ function People() {
   const [deletePerson] = useDeletePersonMutation();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
-  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
   const [selectedUsersData, setSelectedUsersData] = useState([]);
   const [searchKey, setSearchKey] = useState();
   const [usersData, setUsersData] = useState([]);
@@ -94,9 +92,16 @@ function People() {
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
       : sessionStorage.getItem('peopleUsers')
-      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
+      ? decodeURIComponent(sessionStorage.getItem('peopleUsers'))?.split(',')
       : [],
   );
+
+  let initialSelectedUsers = {};
+  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
+  for (let index = 0; index < userFilter?.length; index++) {
+    Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
+  }
+
   const [isUserOpen, setIsUserOpen] = useState(false);
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('peoplePage') ?? 1,
@@ -261,10 +266,12 @@ function People() {
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
-    let usersQuery;
 
-    userFilter?.forEach((user) => query.append('created-by', user));
-    if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
+    let usersQuery;
+    if (Array.isArray(userFilter) && userFilter.length > 0) {
+      usersQuery = encodeURIComponent(userFilter);
+      userFilter.forEach((user) => query.append('created-by', user));
+    }
 
     sortQuery.append(
       'sort',
