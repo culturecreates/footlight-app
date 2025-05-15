@@ -64,7 +64,6 @@ function Organizations() {
   setContentBackgroundColor('#fff');
 
   let taxonomyClassQuery = new URLSearchParams();
-  let initialSelectedUsers = {};
 
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);
   const { currentData: allTaxonomyData } = useGetAllTaxonomyQuery({
@@ -84,7 +83,6 @@ function Organizations() {
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
   const [deleteOrganization] = useDeleteOrganizationMutation();
 
-  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
   const [selectedUsersData, setSelectedUsersData] = useState([]);
   const [searchKey, setSearchKey] = useState();
   const [usersData, setUsersData] = useState([]);
@@ -92,9 +90,16 @@ function Organizations() {
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
       : sessionStorage.getItem('organizationUsers')
-      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
+      ? decodeURIComponent(sessionStorage.getItem('organizationUsers'))?.split(',')
       : [],
   );
+
+  let initialSelectedUsers = {};
+  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
+  for (let index = 0; index < userFilter?.length; index++) {
+    Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
+  }
+
   const [isUserOpen, setIsUserOpen] = useState(false);
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('organizationPage') ?? 1,
@@ -261,10 +266,12 @@ function Organizations() {
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
-    let usersQuery;
 
-    userFilter?.forEach((user) => query.append('created-by', user));
-    if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
+    let usersQuery;
+    if (Array.isArray(userFilter) && userFilter.length > 0) {
+      usersQuery = encodeURIComponent(userFilter);
+      userFilter.forEach((user) => query.append('created-by', user));
+    }
 
     sortQuery.append(
       'sort',

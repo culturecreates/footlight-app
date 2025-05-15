@@ -120,7 +120,9 @@ const Taxonomy = () => {
     sessionStorage.setItem('queryTaxonomy', filters.query);
     sessionStorage.setItem('orderTaxonomy', filters?.order);
     sessionStorage.setItem('sortByTaxonomy', filters?.sort);
-    filters?.class?.length > 0 && sessionStorage.setItem('classTaxonomy', encodeURIComponent(filters?.class));
+    filters?.class?.length > 0
+      ? sessionStorage.setItem('classTaxonomy', encodeURIComponent(filters?.class))
+      : sessionStorage.removeItem('classTaxonomy');
   }, [filters, pageNumber]);
 
   const setFiletrsForApiCall = () => {

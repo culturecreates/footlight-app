@@ -76,7 +76,6 @@ function Places() {
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
-  let initialSelectedUsers = {};
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: allTaxonomyData } = useGetAllTaxonomyQuery({
@@ -99,18 +98,24 @@ function Places() {
   const [placesSearchQuery, setPlacesSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('placesSearchQuery') ?? '',
   );
+  const [userFilter, setUserFilter] = useState(
+    searchParams.get('users')
+      ? decodeURIComponent(searchParams.get('users'))?.split(',')
+      : sessionStorage.getItem('placesUsers')
+      ? decodeURIComponent(sessionStorage.getItem('placesUsers'))?.split(',')
+      : [],
+  );
+
+  let initialSelectedUsers = {};
+  for (let index = 0; index < userFilter?.length; index++) {
+    Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
+  }
 
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
   const [selectedUsersData, setSelectedUsersData] = useState([]);
   const [searchKey, setSearchKey] = useState();
   const [usersData, setUsersData] = useState([]);
-  const [userFilter, setUserFilter] = useState(
-    searchParams.get('users')
-      ? decodeURIComponent(searchParams.get('users'))?.split(',')
-      : sessionStorage.getItem('placesUsers')
-      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
-      : [],
-  );
+
   const [isUserOpen, setIsUserOpen] = useState(false);
 
   const [filter, setFilter] = useState({
@@ -225,6 +230,7 @@ function Places() {
 
   const onCheckboxChange = (e) => {
     let currentUsersFilter = selectedUsers ?? {};
+
     Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
     setSelectedUsers(currentUsersFilter);
     let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
@@ -273,10 +279,12 @@ function Places() {
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
-    let usersQuery;
 
-    userFilter?.forEach((user) => query.append('created-by', user));
-    if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
+    let usersQuery;
+    if (Array.isArray(userFilter) && userFilter.length > 0) {
+      usersQuery = encodeURIComponent(userFilter);
+      userFilter.forEach((user) => query.append('created-by', user));
+    }
 
     sortQuery.append(
       'sort',
