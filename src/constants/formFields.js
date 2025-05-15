@@ -17,6 +17,7 @@ import MultipleImageUpload from '../components/MultipleImageUpload';
 import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
 import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelect';
+import { getEmbedUrl } from '../utils/getEmbedVideoUrl';
 
 const { TextArea } = Input;
 
@@ -42,6 +43,10 @@ export const dataTypes = {
   IMAGE: 'Image',
   EMAIL: 'Email',
   URI_STRING_ARRAY: 'URIString[]',
+};
+
+export const subDataType = {
+  VIDEO_URL: 'VideoUrl',
 };
 
 export const mappedFieldTypes = {
@@ -116,6 +121,7 @@ export const formFieldValue = [
   {
     type: formTypes.INPUT,
     element: ({
+      subdatatype,
       datatype,
       data,
       calendarContentLanguage,
@@ -155,17 +161,45 @@ export const formFieldValue = [
             />
           </CreateMultiLingualFormItems>
         );
-      else if (datatype === dataTypes.URI_STRING)
-        return (
-          <StyledInput
-            addonBefore="URL"
-            autoComplete="off"
-            style={{ width: '100%' }}
-            placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
-            data-cy={`input-${mappedField}`}
-          />
-        );
-      else if (datatype === dataTypes.EMAIL)
+      else if (datatype === dataTypes.URI_STRING) {
+        if (subdatatype === subDataType.VIDEO_URL) {
+          return (
+            <Row style={{ margin: '0px' }} gutter={[12, 12]}>
+              <StyledInput
+                placeholder={contentLanguageBilingual({
+                  data: placeholder,
+                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  calendarContentLanguage: calendarContentLanguage,
+                })}
+                addonBefore="URL"
+                data-cy={`input-${mappedField}`}
+              />
+              {getEmbedUrl(form.getFieldValue(mappedField)) !== '' && (
+                <Col span={24} style={{ padding: '0px' }}>
+                  <iframe
+                    className="iframe-video-embed"
+                    width="100%"
+                    height="315"
+                    src={getEmbedUrl(form.getFieldValue(mappedField))}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen></iframe>
+                </Col>
+              )}
+            </Row>
+          );
+        } else {
+          return (
+            <StyledInput
+              placeholder={contentLanguageBilingual({
+                data: placeholder,
+                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                calendarContentLanguage: calendarContentLanguage,
+              })}
+              data-cy={`input-${mappedField}`}
+            />
+          );
+        }
+      } else if (datatype === dataTypes.EMAIL)
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
@@ -695,6 +729,7 @@ export const returnFormDataWithFields = ({
       mappedField: field?.mappedField,
       data: entityData && entityData[field?.mappedField],
       datatype: field?.datatype,
+      subdatatype: field?.subDataType,
       taxonomyData: allTaxonomyData,
       user: user,
       entityId,

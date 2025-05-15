@@ -1056,6 +1056,9 @@ function CreateNewOrganization() {
           case 'IMAGE':
             setAddedFields((addedFields) => [...addedFields, 'image']);
             break;
+          case 'VIDEO_URL':
+            setAddedFields((addedFields) => [...addedFields, 'videoUrl']);
+            break;
 
           default:
             break;
