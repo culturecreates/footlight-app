@@ -989,7 +989,7 @@ function AddEvent() {
               },
 
               ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
-              ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
+              ...(values?.videoLink && { videoUrl: { uri: urlProtocolCheck(values?.videoLink) } }),
               ...(contactPoint && { contactPoint }),
               ...(locationId && { locationId }),
               ...(keywords && { keywords }),
