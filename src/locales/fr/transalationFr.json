@@ -1034,6 +1034,7 @@
         "date": "Date",
         "audience": "Public",
         "place": "Lieu",
+        "clickToViewChanges": "Cliquez pour voir les changements",
         "region": "Région",
         "location": "Lieu",
         "organizer": "Organisateur",
