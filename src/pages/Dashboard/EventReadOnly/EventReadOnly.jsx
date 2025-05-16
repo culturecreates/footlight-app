@@ -1078,33 +1078,33 @@ function EventReadOnly() {
                             )}
                             {checkIfFieldIsToBeDisplayed(
                               eventFormRequiredFieldNames?.VIDEO_URL,
-                              eventData?.videoUrl,
+                              eventData?.videoUrl?.uri,
                             ) && (
                               <>
                                 <p className="read-only-event-content-sub-title-primary">
                                   {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                                 </p>
-                                {eventData?.videoUrl && (
+                                {eventData?.videoUrl?.uri && (
                                   <p>
                                     <a
-                                      href={eventData?.videoUrl}
+                                      href={eventData?.videoUrl?.uri}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="url-links">
-                                      {eventData?.videoUrl}
+                                      {eventData?.videoUrl?.uri}
                                     </a>
                                   </p>
                                 )}
                               </>
                             )}
-                            {getEmbedUrl(eventData?.videoUrl) !== '' && (
+                            {getEmbedUrl(eventData?.videoUrl?.uri) !== '' && (
                               <Row>
                                 <Col span={24}>
                                   <iframe
                                     className="iframe-video-embed"
                                     width="100%"
                                     height="315"
-                                    src={getEmbedUrl(eventData?.videoUrl)}
+                                    src={getEmbedUrl(eventData?.videoUrl?.uri)}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowfullscreen></iframe>
                                 </Col>

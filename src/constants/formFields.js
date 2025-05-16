@@ -17,7 +17,7 @@ import MultipleImageUpload from '../components/MultipleImageUpload';
 import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
 import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelect';
-import { getEmbedUrl } from '../utils/getEmbedVideoUrl';
+import { getEmbedUrl, validateVideoLink } from '../utils/getEmbedVideoUrl';
 
 const { TextArea } = Input;
 
@@ -163,17 +163,30 @@ export const formFieldValue = [
         );
       else if (datatype === dataTypes.URI_STRING) {
         if (subdatatype === subDataType.VIDEO_URL) {
+          const initialValue = data?.uri || '';
           return (
             <Row style={{ margin: '0px' }} gutter={[12, 12]}>
-              <StyledInput
-                placeholder={contentLanguageBilingual({
-                  data: placeholder,
-                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                  calendarContentLanguage: calendarContentLanguage,
-                })}
-                addonBefore="URL"
-                data-cy={`input-${mappedField}`}
-              />
+              <Form.Item
+                style={{ width: '100%' }}
+                name={name}
+                rules={[
+                  { validator: (rule, value) => validateVideoLink(rule, value) },
+                  {
+                    required: required,
+                    message: t('common.validations.informationRequired'),
+                  },
+                ]}
+                initialValue={initialValue}>
+                <StyledInput
+                  placeholder={contentLanguageBilingual({
+                    data: placeholder,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    calendarContentLanguage: calendarContentLanguage,
+                  })}
+                  addonBefore="URL"
+                  data-cy={`input-${mappedField}`}
+                />
+              </Form.Item>
               {getEmbedUrl(form.getFieldValue(mappedField)) !== '' && (
                 <Col span={24} style={{ padding: '0px' }}>
                   <iframe
