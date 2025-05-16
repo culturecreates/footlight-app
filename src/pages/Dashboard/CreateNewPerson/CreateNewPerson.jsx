@@ -139,6 +139,9 @@ function CreateNewPerson() {
     ...externalEntityData,
     occupation: [],
   };
+  let standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
+    (field) => field?.fieldName,
+  );
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
@@ -239,7 +242,7 @@ function CreateNewPerson() {
     event?.preventDefault();
     let validateFieldList = [];
     let fallbackStatus = activeFallbackFieldsInfo;
-    let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
+    let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
         ?.filter((field) => mandatoryFields?.includes(field?.name))
@@ -547,6 +550,8 @@ function CreateNewPerson() {
             sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
+          let personKeys = Object.keys(personData);
+          if (personKeys?.length > 0) setAddedFields(personKeys);
         } else
           window.location.replace(
             `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
@@ -622,7 +627,20 @@ function CreateNewPerson() {
           sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
+        let personKeys = Object.keys(personData);
+        if (personKeys?.length > 0) setAddedFields(personKeys);
       }
+
+      standardMandatoryFieldNames?.forEach((field) => {
+        switch (field) {
+          case 'VIDEO_URL':
+            setAddedFields((addedFields) => [...addedFields, 'videoUrl']);
+            break;
+
+          default:
+            break;
+        }
+      });
     }
   }, [personLoading, currentCalendarData, externalEntityLoading]);
 

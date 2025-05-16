@@ -163,7 +163,7 @@ function CreateNewOrganization() {
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
-  let standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
+  const standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
     (field) => field?.fieldName,
   );
 
@@ -1055,6 +1055,9 @@ function CreateNewOrganization() {
         switch (field) {
           case 'IMAGE':
             setAddedFields((addedFields) => [...addedFields, 'image']);
+            break;
+          case 'VIDEO_URL':
+            setAddedFields((addedFields) => [...addedFields, 'videoUrl']);
             break;
 
           default:
