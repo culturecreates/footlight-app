@@ -42,6 +42,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import ImageUpload from '../../../components/ImageUpload';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
+import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -518,6 +519,38 @@ function PersonReadOnly() {
                                     }
                                     eventImageData={imageGalleryData}
                                   />
+                                </Col>
+                              )}
+                              {checkIfFieldIsToBeDisplayed(
+                                personFormFieldNames.VIDEO_URL,
+                                personData?.videoUrl?.uri,
+                              ) && (
+                                <Col style={{ marginTop: '1rem' }}>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.organization.readOnly.videoLink')}
+                                  </p>
+                                  {personData?.videoUrl?.uri && (
+                                    <p>
+                                      <a
+                                        href={personData?.videoUrl?.uri}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="url-links">
+                                        {personData?.videoUrl?.uri}
+                                      </a>
+                                    </p>
+                                  )}
+                                </Col>
+                              )}
+                              {getEmbedUrl(personData?.videoUrl?.uri) !== '' && (
+                                <Col span={24}>
+                                  <iframe
+                                    className="iframe-video-embed"
+                                    width="100%"
+                                    height="315"
+                                    src={getEmbedUrl(personData?.videoUrl?.uri)}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen></iframe>
                                 </Col>
                               )}
                             </Row>
