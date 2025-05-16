@@ -1,0 +1,75 @@
+.preview-section-wrapper .mobile-iframe-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #b6c1c9;
+}
+
+.preview-section-wrapper .mobile-iframe-container .loading-indicator-wrapper,
+.widget-settings-page-iframe-modal .loading-indicator-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-section-wrapper .mobile-widget-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  transition: all 0.3s ease-out;
+  filter: blur(8px);
+  transform: scale(0.98);
+  opacity: 0.7;
+}
+
+.preview-section-wrapper .mobile-widget-iframe.visible {
+  filter: blur(0);
+  transform: scale(1);
+  opacity: 1;
+}
+
+.preview-section-wrapper .iframe-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+  transition: all 0.3s ease-out;
+}
+
+.preview-section-wrapper .iframe-mask.visible {
+  opacity: 1;
+  backdrop-filter: blur(4px);
+}
+
+.preview-section-wrapper .iframe-mask.hidden {
+  opacity: 0;
+  backdrop-filter: blur(0);
+  pointer-events: none;
+}
+
+.preview-section-wrapper .mask-content {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+.preview-section-wrapper .iframe-mask.visible:hover .mask-content {
+  transform: scale(1.05);
+}
