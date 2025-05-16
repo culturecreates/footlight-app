@@ -163,7 +163,7 @@ function CreateNewOrganization() {
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
-  let standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
+  const standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
     (field) => field?.fieldName,
   );
 

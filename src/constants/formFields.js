@@ -164,6 +164,7 @@ export const formFieldValue = [
       else if (datatype === dataTypes.URI_STRING) {
         if (subdatatype === subDataType.VIDEO_URL) {
           const initialValue = data?.uri || '';
+          const embedUrl = getEmbedUrl(form.getFieldValue(mappedField));
           return (
             <Row style={{ margin: '0px' }} gutter={[12, 12]}>
               <Form.Item
@@ -187,13 +188,13 @@ export const formFieldValue = [
                   data-cy={`input-${mappedField}`}
                 />
               </Form.Item>
-              {getEmbedUrl(form.getFieldValue(mappedField)) !== '' && (
+              {embedUrl !== '' && (
                 <Col span={24} style={{ padding: '0px' }}>
                   <iframe
                     className="iframe-video-embed"
                     width="100%"
                     height="315"
-                    src={getEmbedUrl(form.getFieldValue(mappedField))}
+                    src={embedUrl}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen></iframe>
                 </Col>
