@@ -331,24 +331,28 @@ function EventReadOnly() {
             </Col>
           )}
           {!routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) && (
-            <Col flex={'723px'} className="top-level-column">
-              {eventPublishStateOptions?.map((state, index) => {
-                if (
-                  (state?.value === eventPublishState?.PENDING_REVIEW ||
-                    state?.value === eventPublishState?.PUBLISHED) &&
-                  eventData?.publishState === state?.value
-                )
-                  return (
-                    <Alert
-                      key={index}
-                      message={state.infoText}
-                      type="info"
-                      showIcon
-                      icon={<InfoCircleOutlined />}
-                      additionalClassName="alert-information"
-                    />
-                  );
-              })}
+            <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
+              <Row>
+                <Col flex={'723px'}>
+                  {eventPublishStateOptions?.map((state, index) => {
+                    if (
+                      (state?.value === eventPublishState?.PENDING_REVIEW ||
+                        state?.value === eventPublishState?.PUBLISHED) &&
+                      eventData?.publishState === state?.value
+                    )
+                      return (
+                        <Alert
+                          key={index}
+                          message={state.infoText}
+                          type="info"
+                          showIcon
+                          icon={<InfoCircleOutlined />}
+                          additionalClassName="alert-information"
+                        />
+                      );
+                  })}
+                </Col>
+              </Row>
             </Col>
           )}
 
