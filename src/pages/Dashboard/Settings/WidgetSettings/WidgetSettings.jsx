@@ -1,7 +1,7 @@
 import { Button, Col, Divider, Form, Grid, Row, Spin, message, notification } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import './widgetSettings.css';
+import './css/widgetSettings.css';
 import Outlined from '../../../../components/Button/Outlined';
 import StyledInput from '../../../../components/Input/Common';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
@@ -25,13 +25,13 @@ import { bilingual } from '../../../../utils/bilingual';
 import { useDebounce } from '../../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../../constants/search';
 import { externalSourceOptions } from '../../../../constants/sourceOptions';
-import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { filterOptions, redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
 import StyledSwitch from '../../../../components/Switch';
 import { eventTaxonomyMappedField } from '../../../../constants/eventTaxonomyMappedField';
 import { EVENT } from '../../../../constants/standardFieldsTranslations';
+import WidgetPreview from './WidgetPreview';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
@@ -74,6 +74,10 @@ const WidgetSettings = ({ tabKey }) => {
   const [url, setUrl] = useState(new URL(widgetUrl));
   const [urlMobile, setUrlMObile] = useState(new URL(widgetUrl));
   const [filterOptionsList, setFilterOptionsList] = useState([]);
+  const [showMobileIframe, setShowMobileIframe] = useState(true);
+  const [isMaskVisible, setIsMaskVisible] = useState(false);
+  const [hasFormChangedSinceLastUpdate, setHasFormChangedSinceLastUpdate] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
 
@@ -163,8 +167,10 @@ const WidgetSettings = ({ tabKey }) => {
     return url;
   };
 
-  const handleFormValuesChange = (changedValues, allValues) => {
-    if (regexForHexCode.test(color)) {
+  const onUpdate = () => {
+    const allValues = form.getFieldsValue(true);
+    if (regexForHexCode.test(color) && hasFormChangedSinceLastUpdate) {
+      setIsLoading(true);
       const formValues = {
         width: form.getFieldValue('width') ?? 0,
         height: form.getFieldValue('height') ?? 1000,
@@ -182,7 +188,7 @@ const WidgetSettings = ({ tabKey }) => {
           arrayToQueryParam([...(allValues?.organizer ?? [])], 'organizer') +
           arrayToQueryParam([...(allValues?.person ?? [])], 'performer'),
         locale: onLanguageSelect(allValues?.language)?.key.toLowerCase(),
-        color: changedValues.color || color,
+        color: allValues.color || color,
       };
 
       const params = {
@@ -209,11 +215,22 @@ const WidgetSettings = ({ tabKey }) => {
 
       setUrl(urlCopy);
       setUrlMObile(urlCopyMobile);
-
       setIframeCode(
         `<iframe src="${urlCopy.href}" width="100%" style="max-width:${formValues.width}px; border:none" height="${formValues.height}px"></iframe>`,
       );
+      setHasFormChangedSinceLastUpdate(false);
+      setTimeout(() => {
+        setIsMaskVisible(false);
+        setShowMobileIframe(true);
+        setIsLoading(false);
+      }, 300);
     }
+  };
+
+  const handleFormValuesChange = () => {
+    setHasFormChangedSinceLastUpdate(true);
+    setIsMaskVisible(true);
+    setShowMobileIframe(false);
   };
 
   const onLanguageSelect = (value) => {
@@ -395,6 +412,7 @@ const WidgetSettings = ({ tabKey }) => {
                   form
                     .validateFields(['width', 'height', 'limit', 'color'])
                     .then(() => {
+                      onUpdate();
                       setPreviewModal(true);
                     })
                     .catch((error) => {
@@ -949,60 +967,18 @@ const WidgetSettings = ({ tabKey }) => {
                   </Form>
                 </div>
               </Col>
-              <Col flex={'448px'} style={{ display: `${!screens.xl ? 'none' : 'block'}` }}>
-                <div className="preview-section-wrapper">
-                  <div className="preview-section-wrapper-header">
-                    <span>{t(`${localePath}.previewMobile`)}</span>
-                    <Outlined
-                      size="large"
-                      label={t(`${localePath}.previewDesktop`)}
-                      data-cy="button-preview"
-                      onClick={() => {
-                        form
-                          .validateFields(['width', 'height', 'limit', 'color'])
-                          .then(() => {
-                            setPreviewModal(true);
-                          })
-                          .catch((error) => {
-                            error?.errorFields?.map((e, index) => {
-                              notify({
-                                index,
-                                messageText: e.errors[0] != ' ' ? e.errors[0] : t(`${localePath}.validation.color`),
-                              });
-                            });
-                          });
-                      }}
-                    />
-                  </div>
-                  <CustomModal
-                    open={previewModal}
-                    centered
-                    className="widget-settings-page-iframe-modal"
-                    width={form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '1000px'}
-                    height={
-                      form.getFieldValue('height') ? `${parseInt(form.getFieldValue('height')) + 100}px` : '700px'
-                    }
-                    title={
-                      <span
-                        className="quick-create-organization-modal-title"
-                        data-cy="widget-settings-page-modal-title">
-                        {!screens.lg ? t(`${localePath}.previewMobileBtn`) : t(`${localePath}.previewDesktop`)}
-                      </span>
-                    }
-                    footer={null}
-                    onCancel={() => setPreviewModal(false)}>
-                    <iframe
-                      width="100%"
-                      height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '1000px'}
-                      style={{
-                        border: 'none',
-                        maxWidth: form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '100%',
-                      }}
-                      src={url.href}></iframe>
-                  </CustomModal>
-                  <iframe src={urlMobile.href}></iframe>
-                </div>
-              </Col>
+              <WidgetPreview
+                setPreviewModal={setPreviewModal}
+                mobileWidgetUrl={urlMobile}
+                fullscreenWidgetUrl={url}
+                form={form}
+                notify={notify}
+                previewModal={previewModal}
+                showMobileIframe={showMobileIframe}
+                handleUpdate={onUpdate}
+                isMaskVisible={isMaskVisible}
+                isLoading={isLoading}
+              />
             </Row>
           </Col>
         </Row>
