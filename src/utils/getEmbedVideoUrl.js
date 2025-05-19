@@ -37,3 +37,15 @@ export const validateVimeoURL = (url) => {
   const vimeoRegex = /^((https?:)?\/\/)?(player\.)?(vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)?([0-9]+)/;
   return vimeoRegex.test(url);
 };
+
+export const validateVideoLink = (rule, value) => {
+  if (!value) {
+    return Promise.resolve();
+  }
+
+  if (!validateYouTubeURL(value) && !validateVimeoURL(value)) {
+    return Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
+  }
+
+  return Promise.resolve();
+};

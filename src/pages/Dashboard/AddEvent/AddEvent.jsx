@@ -89,7 +89,7 @@ import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/K
 import CustomPopover from '../../../components/Popover/Popover';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
-import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
+import { getEmbedUrl, validateVideoLink } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import {
   clearActiveFallbackFieldsInfo,
@@ -347,18 +347,6 @@ function AddEvent() {
 
     // If no differences found, return false
     return false;
-  };
-
-  const validateVideoLink = (rule, value) => {
-    if (!value) {
-      return Promise.resolve();
-    }
-
-    if (!validateYouTubeURL(value) && !validateVimeoURL(value)) {
-      return Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
-    }
-
-    return Promise.resolve();
   };
 
   const detectDateChange = ({
@@ -989,7 +977,7 @@ function AddEvent() {
               },
 
               ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
-              ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
+              ...(values?.videoLink && { videoUrl: { uri: urlProtocolCheck(values?.videoLink) } }),
               ...(contactPoint && { contactPoint }),
               ...(locationId && { locationId }),
               ...(keywords && { keywords }),
@@ -2301,7 +2289,8 @@ function AddEvent() {
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
         if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
-        if (eventData?.videoUrl) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
+        if (eventData?.videoUrl?.uri)
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
         if (eventData?.facebookUrl)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
         if (eventData?.keywords?.length > 0)
@@ -4686,7 +4675,7 @@ function AddEvent() {
                   display: !addedFields?.includes(otherInformationFieldNames.videoLink) && 'none',
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
-                initialValue={eventData?.videoUrl}
+                initialValue={eventData?.videoUrl?.uri}
                 rules={[
                   { validator: (rule, value) => validateVideoLink(rule, value) },
 
