@@ -30,7 +30,7 @@ import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { filterOptions, redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
 import StyledSwitch from '../../../../components/Switch';
 import { eventTaxonomyMappedField } from '../../../../constants/eventTaxonomyMappedField';
-import { EVENT } from '../../../../constants/standardFieldsTranslations';
+import { EVENT, PLACE } from '../../../../constants/standardFieldsTranslations';
 import WidgetPreview from './WidgetPreview';
 
 const { useBreakpoint } = Grid;
@@ -369,7 +369,11 @@ const WidgetSettings = ({ tabKey }) => {
   useEffect(() => {
     if (!taxonomyDataEventType || isEventTaxonomyFetching) return;
 
-    const allowedFields = [eventTaxonomyMappedField.EVENT_TYPE, eventTaxonomyMappedField.AUDIENCE];
+    const allowedFields = [
+      eventTaxonomyMappedField.EVENT_TYPE,
+      eventTaxonomyMappedField.AUDIENCE,
+      placeTaxonomyMappedFieldTypes.REGION,
+    ];
     const selectedStaticFilters = ['DATES', 'PLACE'];
 
     const selectedFilters = filterOptions.filter((option) => selectedStaticFilters.includes(option.value));
@@ -382,7 +386,15 @@ const WidgetSettings = ({ tabKey }) => {
       }))
       .filter(Boolean);
 
-    setFilterOptionsList([...selectedFilters, ...dynamicFilters]);
+    const dynamicPlaceFilters = taxonomyDataRegion.data
+      ?.filter((item) => allowedFields.includes(item.mappedToField))
+      .map((item) => ({
+        label: PLACE.find((translation) => translation.key === item.mappedToField)?.label || '',
+        value: item.id,
+      }))
+      .filter(Boolean);
+
+    setFilterOptionsList([...selectedFilters, ...dynamicFilters, ...dynamicPlaceFilters]);
   }, [taxonomyDataEventType, isEventTaxonomyFetching]);
 
   function arrayToQueryParam(arr, paramName) {
