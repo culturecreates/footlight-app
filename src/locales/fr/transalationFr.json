@@ -1031,7 +1031,7 @@
         "disableGroups": "Afficher les événements séparément",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
-        "filterOptions": "Ajouter d'autres filtres à la vue de la liste.",
+        "filterOptions": "Sélection des filtres",
         "date": "Date",
         "audience": "Public",
         "place": "Lieu",

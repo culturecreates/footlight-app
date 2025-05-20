@@ -1031,7 +1031,7 @@
         "redirectionModeExternal": "Send to my site",
         "redirectionModeDescription": "Choose where to send visitors when they click links in listing.",
         "disableGroups": "Show event occurences separately",
-        "filterOptions": "Add more filters to the list view.",
+        "filterOptions": "Filter selection",
         "language": "Language selection",
         "eventType": "Event type",
         "date": "Date",
