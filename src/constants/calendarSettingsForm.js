@@ -72,6 +72,11 @@ export const timeZones = [
     value: 'Canada/Pacific',
     offset: -480, // UTC-08:00
   },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Asia/Tokyo')}</Translation>,
+    value: 'Asia/Tokyo',
+    offset: 540, // UTC+09:00
+  },
 ];
 
 const dateFormats = [

@@ -557,6 +557,7 @@
         "memberOf": "Member of",
         "location": "Location",
         "edit": "Edit",
+        "videoLink": "Video",
         "Edit": "Edit",
         "socialMediaLinks": "Social media links",
         "image": {
@@ -1034,6 +1035,7 @@
         "language": "Language selection",
         "eventType": "Event type",
         "date": "Date",
+        "clickToViewChanges": "Click to view changes",
         "audience": "Audience",
         "place": "Place",
         "region": "Region",
@@ -1077,7 +1079,8 @@
           "Canada/Mountain": "Mountain Time",
           "Canada/Yukon": "Yukon Time",
           "Canada/Newfoundland": "Newfoundland Time",
-          "Canada/Pacific": "Pacific Time"
+          "Canada/Pacific": "Pacific Time",
+          "Asia/Tokyo": "Japan Time"
         },
         "contact": "Contact",
         "dateFormat": "Date format display",
