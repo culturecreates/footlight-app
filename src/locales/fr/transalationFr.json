@@ -1077,7 +1077,8 @@
           "Canada/Mountain": "Heure des Rocheuses",
           "Canada/Yukon": "Heure du Yukon",
           "Canada/Newfoundland": "Heure de Terre-Neuve",
-          "Canada/Pacific": "Heure du Pacifique"
+          "Canada/Pacific": "Heure du Pacifique",
+          "Asia/Tokyo": "Heure de Japon"
         },
         "contact": "Contact",
         "dateFormat": "Format d'affichage des dates",

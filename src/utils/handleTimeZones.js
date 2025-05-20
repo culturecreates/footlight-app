@@ -12,6 +12,7 @@ const timezonePriority = [
   'Canada/Saskatchewan',
   'America/Blanc-Sablon',
   'America/Coral_Harbour',
+  'Asia/Tokyo',
 ];
 
 export function identifyBestTimezone(timestamp) {

@@ -1079,7 +1079,8 @@
           "Canada/Mountain": "Mountain Time",
           "Canada/Yukon": "Yukon Time",
           "Canada/Newfoundland": "Newfoundland Time",
-          "Canada/Pacific": "Pacific Time"
+          "Canada/Pacific": "Pacific Time",
+          "Asia/Tokyo": "Japan Time"
         },
         "contact": "Contact",
         "dateFormat": "Date format display",
