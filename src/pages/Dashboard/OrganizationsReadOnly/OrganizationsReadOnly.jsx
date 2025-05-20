@@ -43,6 +43,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
+import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -673,6 +674,38 @@ function OrganizationsReadOnly() {
                                   }}
                                 />
                               )}
+                            </Col>
+                          )}
+                          {checkIfFieldIsToBeDisplayed(
+                            organizationFormFieldNames.VIDEO_URL,
+                            organizationData?.videoUrl?.uri,
+                          ) && (
+                            <Col style={{ marginTop: '1rem' }}>
+                              <p className="read-only-event-content-sub-title-primary">
+                                {t('dashboard.organization.readOnly.videoLink')}
+                              </p>
+                              {organizationData?.videoUrl?.uri && (
+                                <p>
+                                  <a
+                                    href={organizationData?.videoUrl?.uri}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="url-links">
+                                    {organizationData?.videoUrl?.uri}
+                                  </a>
+                                </p>
+                              )}
+                            </Col>
+                          )}
+                          {getEmbedUrl(organizationData?.videoUrl?.uri) !== '' && (
+                            <Col span={24}>
+                              <iframe
+                                className="iframe-video-embed"
+                                width="100%"
+                                height="315"
+                                src={getEmbedUrl(organizationData?.videoUrl?.uri)}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen></iframe>
                             </Col>
                           )}
                         </Row>
