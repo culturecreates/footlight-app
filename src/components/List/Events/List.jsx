@@ -22,6 +22,7 @@ import { LinkOutlined, StarFilled } from '@ant-design/icons';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio';
 import Link from 'antd/lib/typography/Link';
+import { truncateText } from '../../../utils/stringManipulations';
 
 const { useBreakpoint } = Grid;
 
@@ -264,21 +265,27 @@ function Lists(props) {
                       </span>
                     )}
                     <span className="event-list-description-name" data-cy="span-event-name">
-                      {contentLanguageBilingual({
-                        data: eventItem?.name,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
+                      {truncateText(
+                        contentLanguageBilingual({
+                          data: eventItem?.name,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        }),
+                        127,
+                      )}
                     </span>
                   </div>
                   <span className="event-list-description-place" data-cy="span-event-location">
                     {eventItem?.location
                       ?.map((place) => {
-                        return contentLanguageBilingual({
-                          data: place?.name,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        });
+                        return truncateText(
+                          contentLanguageBilingual({
+                            data: place?.name,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          }),
+                          127,
+                        );
                       })
                       .join(' | ')}
                   </span>
