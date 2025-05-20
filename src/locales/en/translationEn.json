@@ -1032,6 +1032,7 @@
         "redirectionModeDescription": "Choose where to send visitors when they click links in listing.",
         "disableGroups": "Show event occurences separately",
         "filterOptions": "Filter selection",
+        "filterOptionsHelp": "Add more filters to the list view.",
         "language": "Language selection",
         "eventType": "Event type",
         "date": "Date",

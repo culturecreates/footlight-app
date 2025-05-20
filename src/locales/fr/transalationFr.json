@@ -1032,6 +1032,7 @@
         "language": "Choix de langue",
         "eventType": "Type d'événement",
         "filterOptions": "Sélection des filtres",
+        "filterOptionsHelp": "Ajouter d'autres filtres à la vue de la liste.",
         "date": "Date",
         "audience": "Public",
         "place": "Lieu",

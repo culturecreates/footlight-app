@@ -616,6 +616,9 @@ const WidgetSettings = ({ tabKey }) => {
                             data-cy="widget-settings-treeselect-filter-options"
                           />
                         </Form.Item>
+                        <p className="page-description" data-cy="widget-settings-page-description">
+                          {t(`${localePath}.filterOptionsHelp`)}
+                        </p>
                       </Col>
 
                       <Col
