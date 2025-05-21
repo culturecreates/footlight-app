@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from 'react';
 import './imageCredits.css';
 import { Form, Input } from 'antd';
 import CustomModal from '../Common/CustomModal';
@@ -9,11 +10,26 @@ import { IMAGE_ACTIONS } from '../../../constants/imageUploadOptions';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
 import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { filterNonEmptyValues } from '../../../utils/filterNonEmptyValues';
+import { languageFallbackStatusCreator } from '../../../utils/languageFallbackStatusCreator';
+import { useOutletContext } from 'react-router-dom';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { useDispatch, useSelector } from 'react-redux';
+import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 
 const { TextArea } = Input;
 
 const ImageCredits = (props) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const [currentCalendarData] = useOutletContext();
+
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+
+  const [fallbackStatus, setFallbackStatus] = useState({
+    credit: null,
+    altText: null,
+    caption: null,
+  });
 
   const {
     open,
@@ -53,11 +69,39 @@ const ImageCredits = (props) => {
   ];
   let selectedTitle = formItems.find((item) => item.key === selectedField)?.title;
 
+  const checkIfFieldIsDirty = (values = {}, fieldName) => {
+    const isFieldsDirty = {};
+
+    Object.keys(values).forEach((language) => {
+      isFieldsDirty[language] = form.isFieldTouched([fieldName, language]);
+    });
+    return isFieldsDirty;
+  };
+
   const onFinish = () => {
     form.validateFields(formItems.map((item) => item.name)).then((values) => {
-      const filteredValues = Object.fromEntries(
-        Object.entries(values).map(([key, value]) => [key, filterNonEmptyValues(value)]),
-      );
+      const filteredValues = {};
+
+      Object.keys(values).forEach((key) => {
+        filteredValues[key] = filterNonEmptyValues(values[key]);
+      });
+
+      Object.keys(values).forEach((key) => {
+        const isFieldsDirty = checkIfFieldIsDirty(values, key);
+
+        const computedFallbackStatus = languageFallbackStatusCreator({
+          calendarContentLanguage,
+          fieldData: filteredValues[key],
+          languageFallbacks: currentCalendarData.languageFallbacks,
+          isFieldsDirty,
+          currentActiveDataInFormFields: filteredValues[key],
+        });
+
+        setFallbackStatus((prev) => ({
+          ...prev,
+          [key]: computedFallbackStatus,
+        }));
+      });
 
       if (!isImageGallery) {
         setImageOptions((prev) => ({ ...prev, ...filteredValues }));
@@ -96,6 +140,75 @@ const ImageCredits = (props) => {
     if (selectedUID) setSelectedUID(null);
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (!selectedField) return;
+
+    const formValues = form.getFieldsValue();
+    const itemName = formItems.find((item) => item.key === selectedField)?.name;
+    const currentItemValues = formValues[itemName];
+
+    // Create combined name similar to the hook version
+    let combinedName = '';
+    if (currentItemValues) {
+      combinedName = Object.keys(currentItemValues)
+        .map((langKey) => `${itemName}${langKey}`)
+        .join('-');
+    }
+
+    const isFieldsDirty = checkIfFieldIsDirty(currentItemValues, itemName);
+
+    const modifiedActiveFallbackFieldsInfo = {
+      ...activeFallbackFieldsInfo,
+      [combinedName]: fallbackStatus[itemName],
+    };
+
+    // Check if any language has active fallback for this field
+    const fallbackActiveFlag = calendarContentLanguage.some((language) => {
+      const languageKey = contentLanguageKeyMap[language];
+      return fallbackStatus[itemName]?.[languageKey]?.tagDisplayStatus;
+    });
+
+    const hasDirtyFields = Object.values(isFieldsDirty).some(Boolean);
+
+    if (fallbackActiveFlag) {
+      dispatch(
+        setActiveFallbackFieldsInfo({
+          data: modifiedActiveFallbackFieldsInfo,
+          method: 'add',
+        }),
+      );
+    } else if (hasDirtyFields) {
+      const { [combinedName]: _, ...rest } = activeFallbackFieldsInfo;
+      dispatch(setActiveFallbackFieldsInfo({ data: rest, method: 'remove' }));
+    }
+  }, [fallbackStatus, selectedField]);
+
+  useEffect(() => {
+    if (!selectedField) return;
+
+    const formValues = form.getFieldsValue();
+    const itemName = formItems.find((item) => item.key === selectedField)?.name;
+    const currentItemValues = formValues[itemName];
+
+    // Create combined name similar to the hook version
+    let combinedName = '';
+    if (currentItemValues) {
+      combinedName = Object.keys(currentItemValues)
+        .map((langKey) => `${itemName}${langKey}`)
+        .join('-');
+    }
+
+    if (!combinedName) return;
+
+    const fallbackInfo = activeFallbackFieldsInfo[combinedName] || {};
+
+    Object.keys(fallbackInfo).forEach((key) => {
+      const fallbackLiteralValue = fallbackInfo?.[key]?.fallbackLiteralValue;
+
+      form.setFieldValue([itemName, key], fallbackLiteralValue);
+    });
+  }, [activeFallbackFieldsInfo, selectedField]);
 
   return (
     <CustomModal
