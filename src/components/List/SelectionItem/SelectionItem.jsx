@@ -16,6 +16,7 @@ import { taxonomyClass } from '../../../constants/taxonomyClass.js';
 import { PathName } from '../../../constants/pathName.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import Link from 'antd/lib/typography/Link.js';
+import { truncateText } from '../../../utils/stringManipulations.js';
 function SelectionItem(props) {
   const {
     icon,
@@ -140,13 +141,13 @@ function SelectionItem(props) {
           }
           title={
             <span className="selection-item-title" data-cy="span-entity-name">
-              {name}
+              {truncateText(name, 127)}
               {fallbackFlag && <LiteralBadge tagTitle={literalKey} promptText={promptText} />}
             </span>
           }
           description={
             <span className="selection-item-subheading" data-cy="span-entity-description">
-              {description}
+              {truncateText(description, 70)}
             </span>
           }
         />

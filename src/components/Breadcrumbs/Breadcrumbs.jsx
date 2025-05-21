@@ -3,6 +3,7 @@ import './breadCrumbs.css';
 import { useMatches, useNavigate } from 'react-router-dom';
 import { Breadcrumb } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
+import { truncateText } from '../../utils/stringManipulations';
 
 function Breadcrumbs(props) {
   const { name } = props;
@@ -26,7 +27,7 @@ function Breadcrumbs(props) {
 
       {name && (
         <Breadcrumb.Item className="breadcrumb-item" data-cy="antd-breadcrumb-item-name">
-          {name}
+          {truncateText(name, 90)}
         </Breadcrumb.Item>
       )}
     </Breadcrumb>

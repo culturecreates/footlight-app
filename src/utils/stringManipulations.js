@@ -8,3 +8,8 @@ export const stripHtml = (html) => {
   tempDiv.innerHTML = html;
   return tempDiv.innerText || ''; // Return plain text
 };
+
+export const truncateText = (text, maxLength) => {
+  if (!text) return '';
+  return text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
+};

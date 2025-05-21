@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'antd';
 import TooltipStyled from '../Tooltip/TooltipStyled';
 import './changeType.css';
+import { truncateText } from '../../utils/stringManipulations';
 function ChangeType(props) {
   const { primaryIcon, disabled, label, secondaryIcon, promptText, onClick } = props;
   return (
@@ -22,7 +23,7 @@ function ChangeType(props) {
         onClick={onClick}
         data-cy="button-select-change-type">
         <span>
-          {label}&nbsp;
+          {truncateText(label, 90)}&nbsp;
           <TooltipStyled title={disabled ? '' : promptText}>{secondaryIcon}</TooltipStyled>
         </span>
       </Button>

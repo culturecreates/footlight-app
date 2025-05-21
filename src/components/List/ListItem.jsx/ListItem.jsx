@@ -8,6 +8,7 @@ import i18n from 'i18next';
 import Username from '../../Username/Username';
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 import Link from 'antd/lib/typography/Link';
+import { truncateText } from '../../../utils/stringManipulations';
 
 function ListItem(props) {
   const {
@@ -68,10 +69,10 @@ function ListItem(props) {
         description={
           <div className="event-list-description">
             <span className="event-list-description-name" data-cy="span-entity-title">
-              {title}
+              {truncateText(title, 127)}
             </span>
             <span className="event-list-description-place" style={{ width: '100%' }} data-cy="span-entity-description">
-              {description}
+              {truncateText(description, 127)}
             </span>
           </div>
         }
