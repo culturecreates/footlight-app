@@ -1041,6 +1041,7 @@
         "region": "Region",
         "location": "Location",
         "organizer": "Event Organiser",
+        "personOrganization": "Organization or person participating in event",
         "person": "Performing group/artist/event animator",
         "filterHeading": "Content filters",
         "filterSectionDescription": "Select the content language and events to be included.",
