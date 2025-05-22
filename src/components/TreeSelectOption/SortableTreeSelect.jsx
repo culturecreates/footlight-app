@@ -32,6 +32,10 @@ function SortableTreeSelect({ form, fieldName, draggable = false, dataCy, setSho
     setSelectedValues(uniqueValues);
 
     form.setFieldValue(fieldName, uniqueValues);
+    form.validateFields([fieldName]).catch((error) => {
+      console.error('Validation error:', error);
+    });
+
     setShowDialog(true);
   };
 
