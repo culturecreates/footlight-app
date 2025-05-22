@@ -180,6 +180,7 @@ const Taxonomy = () => {
   };
 
   const classFilterChangeHandler = (values) => {
+    setPageNumber(1);
     setFilters({ ...filters, class: values });
   };
 
