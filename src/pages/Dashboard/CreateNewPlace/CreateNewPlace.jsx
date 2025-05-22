@@ -222,9 +222,12 @@ function CreateNewPlace() {
   const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const [containedInPlace, setContainedInPlace] = useState();
   const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
-  const [allPlacesList, setAllPlacesList] = useState([]);
-  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
-  const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
+  const [allPlacesList, setAllPlacesList] = useState({ containsPlace: [], containedInPlace: [] });
+  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState({ containsPlace: [], containedInPlace: [] });
+  const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState({
+    containsPlace: [],
+    containedInPlace: [],
+  });
   const [descriptionMinimumWordCount] = useState(1);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [addedFields, setAddedFields] = useState([]);
@@ -232,7 +235,10 @@ function CreateNewPlace() {
   const [showDialog, setShowDialog] = useState(false);
   const [address, setAddress] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
+  const [quickCreateKeyword, setQuickCreateKeyword] = useState({
+    containedInPlace: '',
+    containsPlace: '',
+  });
   const [publishValidateFields, setPublishValidateFields] = useState([]);
   const [coordinates, setCoordinates] = useState({
     latitude: null,
@@ -773,7 +779,7 @@ function CreateNewPlace() {
     setAddress(address);
   };
 
-  const placesSearch = (inputValue = '') => {
+  const placesSearch = (inputValue = '', field) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
     let sourceQuery = new URLSearchParams();
@@ -792,8 +798,10 @@ function CreateNewPlace() {
         let containedInPlaceFilter = [];
         if (placeId) containedInPlaceFilter = response?.filter((place) => place?.id != placeId);
         else containedInPlaceFilter = response;
-
-        setAllPlacesList(placesOptions(containedInPlaceFilter, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesList((prev) => ({
+          ...prev,
+          [field]: placesOptions(containedInPlaceFilter, user, calendarContentLanguage, sourceOptions.CMS),
+        }));
       })
       .catch((error) => console.log(error));
     getExternalSource(
@@ -808,12 +816,15 @@ function CreateNewPlace() {
     )
       .unwrap()
       .then((response) => {
-        setAllPlacesArtsdataList(
-          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-        );
-        setAllPlacesImportsFootlight(
-          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-        );
+        setAllPlacesArtsdataList((prev) => ({
+          ...prev,
+          [field]: placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        }));
+
+        setAllPlacesImportsFootlight((prev) => ({
+          ...prev,
+          [field]: placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+        }));
       })
       .catch((error) => console.log(error));
   };
@@ -1389,6 +1400,8 @@ function CreateNewPlace() {
         form.setFieldValue([formFieldNames.NAME, `${langKey}`], newEntityName);
       });
     }
+    placesSearch('', 'containedInPlace');
+    placesSearch('', 'containsPlace');
   }, []);
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading && !isEntityDetailsLoading ? (
@@ -2353,7 +2366,7 @@ function CreateNewPlace() {
                   <Popover
                     open={isPopoverOpen.containsPlace}
                     onOpenChange={(open) => {
-                      debounceSearchPlace(quickCreateKeyword);
+                      debounceSearchPlace(quickCreateKeyword.containsPlace, 'containsPlace');
                       setIsPopoverOpen({ ...isPopoverOpen, containsPlace: open });
                     }}
                     overlayClassName="event-popover"
@@ -2381,8 +2394,8 @@ function CreateNewPlace() {
                                 </div>
                               )}
                               {!isEntitiesFetching &&
-                                (allPlacesList?.length > 0 ? (
-                                  allPlacesList?.map((place, index) => (
+                                (allPlacesList?.containsPlace?.length > 0 ? (
+                                  allPlacesList?.containsPlace?.map((place, index) => (
                                     <div
                                       key={index}
                                       className={`event-popover-options`}
@@ -2402,7 +2415,7 @@ function CreateNewPlace() {
                                 ))}
                             </div>
                           </>
-                          {quickCreateKeyword !== '' && (
+                          {quickCreateKeyword.containsPlace !== '' && (
                             <>
                               <div className="popover-section-header" data-cy="div-place-artsdata-title">
                                 {t('dashboard.organization.createNew.search.importsFromFootlight')}
@@ -2420,8 +2433,8 @@ function CreateNewPlace() {
                                   </div>
                                 )}
                                 {!isExternalSourceFetching &&
-                                  (allPlacesImportsFootlight?.length > 0 ? (
-                                    allPlacesImportsFootlight?.map((place, index) => (
+                                  (allPlacesImportsFootlight?.containsPlace?.length > 0 ? (
+                                    allPlacesImportsFootlight?.containsPlace?.map((place, index) => (
                                       <div
                                         key={index}
                                         className="event-popover-options"
@@ -2442,7 +2455,7 @@ function CreateNewPlace() {
                               </div>
                             </>
                           )}
-                          {quickCreateKeyword !== '' && (
+                          {quickCreateKeyword.containsPlace !== '' && (
                             <>
                               <div className="popover-section-header" data-cy="div-place-artsdata-title">
                                 {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
@@ -2460,8 +2473,8 @@ function CreateNewPlace() {
                                   </div>
                                 )}
                                 {!isExternalSourceFetching &&
-                                  (allPlacesArtsdataList?.length > 0 ? (
-                                    allPlacesArtsdataList?.map((place, index) => (
+                                  (allPlacesArtsdataList?.containsPlace?.length > 0 ? (
+                                    allPlacesArtsdataList?.containsPlace?.map((place, index) => (
                                       <div
                                         key={index}
                                         className="event-popover-options"
@@ -2490,12 +2503,12 @@ function CreateNewPlace() {
                       style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
                       onChange={(e) => {
-                        setQuickCreateKeyword(e.target.value);
-                        debounceSearchPlace(e.target.value);
+                        setQuickCreateKeyword({ ...quickCreateKeyword, containsPlace: e.target.value });
+                        debounceSearchPlace(e.target.value, 'containsPlace');
                         setIsPopoverOpen({ ...isPopoverOpen, containsPlace: true });
                       }}
                       onClick={(e) => {
-                        setQuickCreateKeyword(e.target.value);
+                        setQuickCreateKeyword({ ...quickCreateKeyword, containsPlace: e.target.value });
                         setIsPopoverOpen({ ...isPopoverOpen, containsPlace: true });
                       }}
                     />
@@ -2558,7 +2571,7 @@ function CreateNewPlace() {
                     data-cy="popover-place-contained-in-place"
                     open={isPopoverOpen.containedInPlace}
                     onOpenChange={(open) => {
-                      debounceSearchPlace(quickCreateKeyword);
+                      debounceSearchPlace(quickCreateKeyword.containedInPlace, 'containedInPlace');
                       setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: open });
                     }}
                     overlayClassName="event-popover"
@@ -2586,8 +2599,8 @@ function CreateNewPlace() {
                                 </div>
                               )}
                               {!isEntitiesFetching &&
-                                (allPlacesList?.length > 0 ? (
-                                  allPlacesList?.map((place, index) => (
+                                (allPlacesList?.containedInPlace?.length > 0 ? (
+                                  allPlacesList?.containedInPlace?.map((place, index) => (
                                     <div
                                       data-cy={`div-contained-in-place-footlight-${index}`}
                                       key={index}
@@ -2610,7 +2623,7 @@ function CreateNewPlace() {
                                 ))}
                             </div>
                           </>
-                          {quickCreateKeyword !== '' && (
+                          {quickCreateKeyword.containedInPlace !== '' && (
                             <>
                               <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
                                 {t('dashboard.organization.createNew.search.importsFromFootlight')}
@@ -2628,8 +2641,8 @@ function CreateNewPlace() {
                                   </div>
                                 )}
                                 {!isExternalSourceFetching &&
-                                  (allPlacesImportsFootlight?.length > 0 ? (
-                                    allPlacesImportsFootlight?.map((place, index) => (
+                                  (allPlacesImportsFootlight?.containedInPlace?.length > 0 ? (
+                                    allPlacesImportsFootlight?.containedInPlace?.map((place, index) => (
                                       <div
                                         data-cy={`div-contained-in-place-artsdata-${index}`}
                                         key={index}
@@ -2651,7 +2664,7 @@ function CreateNewPlace() {
                               </div>
                             </>
                           )}
-                          {quickCreateKeyword !== '' && (
+                          {quickCreateKeyword.containedInPlace !== '' && (
                             <>
                               <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
                                 {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
@@ -2669,8 +2682,8 @@ function CreateNewPlace() {
                                   </div>
                                 )}
                                 {!isExternalSourceFetching &&
-                                  (allPlacesArtsdataList?.length > 0 ? (
-                                    allPlacesArtsdataList?.map((place, index) => (
+                                  (allPlacesArtsdataList?.containedInPlace?.length > 0 ? (
+                                    allPlacesArtsdataList?.containedInPlace?.map((place, index) => (
                                       <div
                                         data-cy={`div-contained-in-place-artsdata-${index}`}
                                         key={index}
@@ -2700,12 +2713,12 @@ function CreateNewPlace() {
                       style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
                       onChange={(e) => {
-                        setQuickCreateKeyword(e.target.value);
-                        debounceSearchPlace(e.target.value);
+                        setQuickCreateKeyword({ ...quickCreateKeyword, containedInPlace: e.target.value });
+                        debounceSearchPlace(e.target.value, 'containedInPlace');
                         setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
                       }}
                       onClick={(e) => {
-                        setQuickCreateKeyword(e.target.value);
+                        setQuickCreateKeyword({ ...quickCreateKeyword, containedInPlace: e.target.value });
                         setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
                       }}
                     />
