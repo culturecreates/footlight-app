@@ -1038,6 +1038,7 @@
         "clickToViewChanges": "Cliquez pour voir les changements",
         "region": "Région",
         "location": "Lieu",
+        "personOrganization": "Organisation ou Personne participant à l'événement",
         "organizer": "Organisateur",
         "person": "Compagnie / groupe / artiste / animateur de l'événement",
         "filterHeading": "Filtres de contenu",

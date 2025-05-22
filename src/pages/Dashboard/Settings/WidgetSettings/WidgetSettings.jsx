@@ -38,6 +38,7 @@ const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
 const fieldName = {
   organizer: 'organizer',
   performer: 'performer',
+  performerOrganization: 'performerOrganization',
 };
 
 const WidgetSettings = ({ tabKey }) => {
@@ -68,6 +69,7 @@ const WidgetSettings = ({ tabKey }) => {
   const [locationOptions, setLocationOptions] = useState([]);
   const [organizerOptions, setOrganizerOptions] = useState([]);
   const [performerOptions, setPerformerOptions] = useState([]);
+  const [performerOrganizerOptions, setPerformerOrganizerOptions] = useState([]);
   const [searchKey, setSearchKey] = useState([]);
   const [iframeCode, setIframeCode] = useState('');
   const [previewModal, setPreviewModal] = useState(false);
@@ -171,6 +173,7 @@ const WidgetSettings = ({ tabKey }) => {
     const allValues = form.getFieldsValue(true);
     if (regexForHexCode.test(color) && hasFormChangedSinceLastUpdate) {
       setIsLoading(true);
+
       const formValues = {
         width: form.getFieldValue('width') ?? 0,
         height: form.getFieldValue('height') ?? 1000,
@@ -186,7 +189,8 @@ const WidgetSettings = ({ tabKey }) => {
           arrayToQueryParam(allValues?.location ?? [], 'place') +
           arrayToQueryParam(allValues?.region ?? [], 'region') +
           arrayToQueryParam([...(allValues?.organizer ?? [])], 'organizer') +
-          arrayToQueryParam([...(allValues?.person ?? [])], 'performer'),
+          arrayToQueryParam([...(allValues?.person ?? [])], 'performer') +
+          arrayToQueryParam([...(allValues?.personOrganization ?? [])], 'person-organization'),
         locale: onLanguageSelect(allValues?.language)?.key.toLowerCase(),
         color: allValues.color || color,
       };
@@ -203,12 +207,10 @@ const WidgetSettings = ({ tabKey }) => {
         locale: formValues.locale,
         height: formValues.height,
       };
-      if (process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true') {
-        params.showFooter = formValues.showFooter;
-        params.disableGrouping = formValues.disableGroups;
-        if (formValues.headerText) params.headerTitle = formValues.headerText;
-        params.filterOptions = formValues.filterOptions;
-      }
+      params.showFooter = formValues.showFooter;
+      params.disableGrouping = formValues.disableGroups;
+      if (formValues.headerText) params.headerTitle = formValues.headerText;
+      params.filterOptions = formValues.filterOptions;
 
       const urlCopy = generateUrlWithParams(widgetUrl, params, { color: formValues.color });
       const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { color: formValues.color, height: '600' });
@@ -264,7 +266,19 @@ const WidgetSettings = ({ tabKey }) => {
       .catch((error) => console.log(error));
   };
 
+  const setValueAccoringToType = (value, type) => {
+    if (type === fieldName.organizer) {
+      setOrganizerOptions(value);
+    } else if (type === fieldName.performer) {
+      setPerformerOptions(value);
+    } else if (type === fieldName.performerOrganization) {
+      setPerformerOrganizerOptions(value);
+    }
+  };
+
   const performerOrganizerSearch = (inputValue, field) => {
+    setValueAccoringToType([], field);
+
     getEntities({
       searchKey: inputValue,
       classes: decodeURIComponent(queryPersonOrganization.toString()),
@@ -272,17 +286,17 @@ const WidgetSettings = ({ tabKey }) => {
     })
       .unwrap()
       .then((response) => {
-        if (field === fieldName.organizer || field === fieldName.performer) {
+        if (
+          field === fieldName.organizer ||
+          field === fieldName.performer ||
+          field === fieldName.performerOrganization
+        ) {
           const options = response.map((item) => ({
             value: item?.id,
             label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           }));
 
-          if (field === fieldName.organizer) {
-            setOrganizerOptions(options);
-          } else if (field === fieldName.performer) {
-            setPerformerOptions(options);
-          }
+          setValueAccoringToType(options, field);
         }
       })
       .catch((error) => console.log(error));
@@ -313,6 +327,7 @@ const WidgetSettings = ({ tabKey }) => {
 
       setOrganizerOptions(options);
       setPerformerOptions(options);
+      setPerformerOrganizerOptions(options);
     }
   }, [initialEntitiesPersonOrganization]);
 
@@ -348,12 +363,10 @@ const WidgetSettings = ({ tabKey }) => {
       height: formValues.height,
     };
 
-    if (process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true') {
-      params.showFooter = formValues.showFooter;
-      params.disableGrouping = formValues.disableGroups;
-      if (formValues.headerText) params.headerTitle = formValues.headerText;
-      params.filterOptions = formValues.filterOptions;
-    }
+    params.showFooter = formValues.showFooter;
+    params.disableGrouping = formValues.disableGroups;
+    if (formValues.headerText) params.headerTitle = formValues.headerText;
+    params.filterOptions = formValues.filterOptions;
 
     const urlCopy = generateUrlWithParams(widgetUrl, params);
     const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { height: '600' });
@@ -439,34 +452,19 @@ const WidgetSettings = ({ tabKey }) => {
                     form={form}
                     onValuesChange={handleFormValuesChange}>
                     <Row gutter={[32, 4]} className="form-item-container">
-                      <Col
-                        flex="448px"
-                        className="header-text-wrapper"
-                        style={{
-                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
-                        }}>
+                      <Col flex="448px" className="header-text-wrapper">
                         <Form.Item
                           name="header-text"
                           label={t(`${localePath}.headerText`)}
-                          data-cy="widget-settings-headerText"
-                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
+                          data-cy="widget-settings-headerText">
                           <StyledInput />
                         </Form.Item>
                         <p className="header-text-description" data-cy="widget-settings-header-text-description">
                           {t(`${localePath}.headerTextDescription`)}
                         </p>
                       </Col>
-                      <Col
-                        flex="448px"
-                        className="footer-control-wrapper"
-                        style={{
-                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
-                        }}>
-                        <Form.Item
-                          name="footer-control"
-                          initialValue={false}
-                          data-cy="widget-settings-headerText"
-                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
+                      <Col flex="448px" className="footer-control-wrapper">
+                        <Form.Item name="footer-control" initialValue={false} data-cy="widget-settings-headerText">
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="footer-control" data-cy="widget-settings-footer-control-label">
@@ -584,18 +582,13 @@ const WidgetSettings = ({ tabKey }) => {
                         </Form.Item>
                       </Col>
 
-                      <Col
-                        flex="448px"
-                        style={{
-                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
-                        }}>
+                      <Col flex="448px">
                         <Form.Item
                           name="filterOptions"
                           label={t(`${localePath}.filterOptions`)}
                           initialValue={[filterOptions[0]?.value]}
                           className="widget-settings-filter-options"
-                          data-cy="widget-settings-filter-options"
-                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
+                          data-cy="widget-settings-filter-options">
                           <TreeSelectOption
                             treeDefaultExpandAll
                             notFoundContent={<NoContent />}
@@ -660,18 +653,12 @@ const WidgetSettings = ({ tabKey }) => {
                         </Form.Item>
                       </Col>
 
-                      <Col
-                        flex="448px"
-                        className="disable-grouping-flag-wrapper"
-                        style={{
-                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
-                        }}>
+                      <Col flex="448px" className="disable-grouping-flag-wrapper">
                         <Form.Item
                           name="disableGroups"
                           required
                           initialValue={false}
-                          data-cy="widget-settings-disable-groups"
-                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
+                          data-cy="widget-settings-disable-groups">
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="disable-groups-description" data-cy="disable-groups-description">
@@ -843,6 +830,47 @@ const WidgetSettings = ({ tabKey }) => {
                               );
                             }}
                             data-cy="widget-settings-location-select"
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col flex="448px" className="widget-settings-organizer">
+                        <Form.Item
+                          name="personOrganization"
+                          label={t(`${localePath}.personOrganization`)}
+                          data-cy="widget-settings-person-organization">
+                          <SelectOption
+                            mode="multiple"
+                            filterOption={false}
+                            onSearch={(value) =>
+                              debounceSearchPerformerOrganizer(value, fieldName.performerOrganization)
+                            }
+                            showSearch
+                            allowClear
+                            placeholder={<span>{t(`${localePath}.placeholder.OrganizationsAndPeople`)}</span>}
+                            clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                            notFoundContent={
+                              isEntitiesFetching ? (
+                                <div style={{ width: '100%', display: 'grid', placeContent: 'center' }}>
+                                  <Spin size="medium" />
+                                </div>
+                              ) : (
+                                <NoContent />
+                              )
+                            }
+                            options={performerOrganizerOptions}
+                            tagRender={(props) => {
+                              const { label, closable, onClose } = props;
+                              return (
+                                <Tags
+                                  closable={closable}
+                                  onClose={onClose}
+                                  closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                                  data-cy={`widget-settings-tag-select-${label}`}>
+                                  {label}
+                                </Tags>
+                              );
+                            }}
+                            data-cy="widget-settings-organizer-person-select"
                           />
                         </Form.Item>
                       </Col>
