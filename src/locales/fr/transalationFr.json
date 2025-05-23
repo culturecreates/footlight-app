@@ -741,10 +741,7 @@
             "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu.",
             "placeAccessibilityNote": {
               "note": "Note",
-              "placeholder": {
-                "english": "Ajouter une note en anglais",
-                "french": "Ajouter une note en français"
-              },
+              "placeholder": "Entrer une note",
               "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
             }
           },
