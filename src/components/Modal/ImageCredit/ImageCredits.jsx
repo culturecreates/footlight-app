@@ -15,6 +15,7 @@ import { useOutletContext } from 'react-router-dom';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { useDispatch, useSelector } from 'react-redux';
 import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
+import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 
 const { TextArea } = Input;
 
@@ -83,24 +84,35 @@ const ImageCredits = (props) => {
       const filteredValues = {};
 
       Object.keys(values).forEach((key) => {
-        filteredValues[key] = filterNonEmptyValues(values[key]);
+        filteredValues[key] = filterUneditedFallbackValues({
+          values: filterNonEmptyValues(values[key]),
+          activeFallbackFieldsInfo,
+          fieldName: key,
+        });
       });
 
       Object.keys(values).forEach((key) => {
-        const isFieldsDirty = checkIfFieldIsDirty(values, key);
+        if (values[key]) {
+          const isFieldsDirty = checkIfFieldIsDirty(values[key], key);
 
-        const computedFallbackStatus = languageFallbackStatusCreator({
-          calendarContentLanguage,
-          fieldData: filteredValues[key],
-          languageFallbacks: currentCalendarData.languageFallbacks,
-          isFieldsDirty,
-          currentActiveDataInFormFields: filteredValues[key],
-        });
+          const computedFallbackStatus = languageFallbackStatusCreator({
+            calendarContentLanguage,
+            fieldData: filteredValues[key],
+            languageFallbacks: currentCalendarData.languageFallbacks,
+            isFieldsDirty,
+            currentActiveDataInFormFields: filteredValues[key],
+          });
 
-        setFallbackStatus((prev) => ({
-          ...prev,
-          [key]: computedFallbackStatus,
-        }));
+          setFallbackStatus((prev) => ({
+            ...prev,
+            [key]: computedFallbackStatus,
+          }));
+        } else {
+          setFallbackStatus((prev) => ({
+            ...prev,
+            [key]: null,
+          }));
+        }
       });
 
       if (!isImageGallery) {
@@ -133,7 +145,27 @@ const ImageCredits = (props) => {
   const onClose = () => {
     formItems.forEach((item) => {
       if (item.key === selectedField) {
-        form.setFieldValue(item.name, imageOptions[item.name]);
+        const formValues = form.getFieldsValue();
+
+        const currentItemValues = formValues[item.name];
+
+        // Create combined name similar to the hook version
+        let combinedName = '';
+        if (currentItemValues) {
+          combinedName = Object.keys(currentItemValues)
+            .map((langKey) => `${item.name}${langKey}`)
+            .join('-');
+        }
+
+        let fallbackValidValues = {};
+        Object.keys(activeFallbackFieldsInfo[combinedName] || {}).forEach((key) => {
+          if (activeFallbackFieldsInfo[combinedName][key]?.tagDisplayStatus) {
+            const fallbackLiteralValue = activeFallbackFieldsInfo[combinedName][key]?.fallbackLiteralValue;
+            fallbackValidValues[key] = fallbackLiteralValue?.trim();
+          }
+        });
+
+        form.setFieldValue(item.name, { ...fallbackValidValues, ...imageOptions[item.name] });
         setOpen(false);
       }
     });
@@ -156,7 +188,13 @@ const ImageCredits = (props) => {
         .join('-');
     }
 
-    const isFieldsDirty = checkIfFieldIsDirty(currentItemValues, itemName);
+    const sanitizedValues = filterUneditedFallbackValues({
+      values: currentItemValues,
+      activeFallbackFieldsInfo,
+      fieldName: itemName,
+    });
+
+    const isFieldsDirty = checkIfFieldIsDirty(sanitizedValues, itemName);
 
     const modifiedActiveFallbackFieldsInfo = {
       ...activeFallbackFieldsInfo,
