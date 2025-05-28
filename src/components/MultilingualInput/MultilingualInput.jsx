@@ -89,6 +89,8 @@ function MultilingualInput({ children, ...rest }) {
       return isLabelWarningVisible[langKey] ?? false;
     }
 
+    if (fallbackStatus?.[langKey]?.tagDisplayStatus) return true;
+
     if (entityId && isFieldEmpty) {
       return required || (!required && hasFieldData);
     }
