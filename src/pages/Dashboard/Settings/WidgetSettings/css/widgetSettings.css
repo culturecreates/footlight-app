@@ -63,7 +63,8 @@
 
 .widget-settings .color-select-wrapper .ant-form-item,
 .widget-settings .header-text-wrapper .ant-form-item,
-.widget-settings .redirection-mode-wrapper .ant-form-item {
+.widget-settings .redirection-mode-wrapper .ant-form-item,
+.widget-settings .widget-settings-filter-options {
   margin-bottom: 4px;
 }
 

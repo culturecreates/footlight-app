@@ -741,10 +741,7 @@
             "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu.",
             "placeAccessibilityNote": {
               "note": "Note",
-              "placeholder": {
-                "english": "Ajouter une note en anglais",
-                "french": "Ajouter une note en français"
-              },
+              "placeholder": "Entrer une note",
               "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
             }
           },
@@ -1031,7 +1028,8 @@
         "disableGroups": "Afficher les événements séparément",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
-        "filterOptions": "Ajouter d'autres filtres à la vue de la liste.",
+        "filterOptions": "Sélection des filtres",
+        "filterOptionsHelp": "Ajouter d'autres filtres à la vue de la liste.",
         "date": "Date",
         "audience": "Public",
         "place": "Lieu",
