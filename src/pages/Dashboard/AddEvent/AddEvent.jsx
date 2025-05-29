@@ -524,9 +524,17 @@ function AddEvent() {
               inLanguage = [],
               sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : artsDataId ? artsData?.sameAs : [],
               eventDiscipline = [],
-              timezone = artsDataId
-                ? values?.[dateType === dateTypes.MULTIPLE ? 'customEventTimezone' : 'eventTimezone']
-                : currentCalendarData?.timezone;
+              timezone;
+
+            if (dateType === dateTypes.MULTIPLE && form.getFieldsValue().frequency === 'CUSTOM') {
+              timezone = currentCalendarData?.timezone;
+            } else if (dateType === dateTypes.MULTIPLE) {
+              timezone = values?.customEventTimezone;
+            } else if (dateType === dateTypes.SINGLE) {
+              timezone = values?.eventTimezone;
+            } else {
+              timezone = currentCalendarData?.timezone;
+            }
 
             let eventObj;
 
