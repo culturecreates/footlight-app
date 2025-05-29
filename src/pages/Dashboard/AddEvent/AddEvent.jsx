@@ -3093,8 +3093,7 @@ function AddEvent() {
                                   artsData?.scheduleTimezone ??
                                   eventData?.scheduleTimezone ??
                                   currentCalendarData?.timezone
-                                }
-                                hidden={!(artsDataId && artsData?.scheduleTimezone !== currentCalendarData?.timezone)}>
+                                }>
                                 <Select
                                   options={timeZones}
                                   data-cy="select-calendar-time-zone"
