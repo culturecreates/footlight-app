@@ -34,7 +34,6 @@ const RecurringEvents = function ({
   setCustomDates,
   subEventCount,
   artsData,
-  artsDataId,
   currentCalendarData,
   eventData,
 }) {

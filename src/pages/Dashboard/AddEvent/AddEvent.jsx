@@ -2022,6 +2022,16 @@ function AddEvent() {
           if (data.audience?.length > 0) {
             data.audience = data.audience.filter((audience) => audience?.label);
           }
+          data = {
+            ...data,
+            sameAs: [
+              ...data.sameAs,
+              {
+                type: sameAsTypes.ARTSDATA_IDENTIFIER,
+                uri: data.uri,
+              },
+            ],
+          };
           setArtsData(data);
           setAddedFields(initialAddedFields);
           setArtsDataLoading(false);
