@@ -100,19 +100,12 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
   const handleDbDownload = async () => {
     setIsLoading(true);
     try {
-      notification.success({
-        key: 'entity-db-download-started',
-        description: t('common.entityReport.success'),
-        duration: 0,
-      });
-      downloadDB({ calendarId }).then((response) => {
-        cleanupBlobUrl();
-        const url = window.URL.createObjectURL(new Blob([response], { type: 'application/json' }));
-        setBlobUrl(url);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `database.json`;
-        link.click();
+      downloadDB({ calendarId }).then(() => {
+        notification.success({
+          key: 'entity-db-download-started',
+          description: t('common.entityReport.success'),
+          duration: 0,
+        });
       });
     } catch (error) {
       notification.error({
