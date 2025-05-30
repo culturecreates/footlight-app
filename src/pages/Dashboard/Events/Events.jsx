@@ -38,12 +38,7 @@ import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSe
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import EntityReports from '../../../components/EntityReports/EntityReports';
-import {
-  DATABASE_ACTION_KEY,
-  entitiesClass,
-  IMPORT_ACTION_KEY,
-  REPORT_ACTION_KEY,
-} from '../../../constants/entitiesClass';
+import { entitiesClass, IMPORT_ACTION_KEY, REPORT_ACTION_KEY } from '../../../constants/entitiesClass';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -592,7 +587,7 @@ function Events() {
             <Row align={'middle'} gutter={[12, 0]}>
               <EntityReports
                 entity={entitiesClass.event}
-                includedDropdownKeys={[DATABASE_ACTION_KEY, IMPORT_ACTION_KEY, REPORT_ACTION_KEY]}
+                includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY]}
               />
               <Col style={{ display: 'flex', alignItems: 'center' }}>
                 <AddEvent
