@@ -4,4 +4,9 @@ export const entitiesClass = {
   organization: 'Organization',
   event: 'Event',
   people: 'People',
+  user: 'User',
 };
+
+export const REPORT_ACTION_KEY = 'import';
+export const DATABASE_ACTION_KEY = 'generate-report';
+export const IMPORT_ACTION_KEY = 'download-db';
