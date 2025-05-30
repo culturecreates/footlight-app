@@ -277,10 +277,7 @@ function AddEvent() {
       timeSelected = time;
     }
 
-    // Combine date and time and explicitly set the timezone to 'Canada/Eastern'
-    let dateTime = artsDataId
-      ? moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a')
-      : moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', timezone);
+    let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', timezone);
     return dateTime.toISOString();
   };
 
