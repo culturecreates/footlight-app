@@ -53,6 +53,7 @@ import { isDataValid, renderData } from '../../../utils/MultiLingualFormItemSupp
 import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
+import { getLabelByTimezoneValue } from '../../../utils/handleTimeZones';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -660,12 +661,12 @@ function EventReadOnly() {
                                 </Row>
                               </>
                             )}
-                            <br />
                             <Row justify="space-between">
                               {eventData?.startDateTime &&
                                 eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
                                 !eventData?.subEventConfiguration && (
                                   <Col>
+                                    <br />
                                     <p className="read-only-event-content-sub-title-primary">
                                       {t('dashboard.events.addEditEvent.dates.startTime')}
                                     </p>
@@ -718,6 +719,17 @@ function EventReadOnly() {
                                   })}
                                 </div>
                               )}
+                            {eventData?.scheduleTimezone && (
+                              <>
+                                <br />
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.settings.calendarSettings.timezone')}
+                                </p>
+                                <p className="read-only-event-content">
+                                  {getLabelByTimezoneValue(eventData?.scheduleTimezone)}
+                                </p>
+                              </>
+                            )}
 
                             <br />
                             {checkIfFieldIsToBeDisplayed(

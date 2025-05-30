@@ -268,17 +268,29 @@ function CreateNewPlace() {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
         if (artsDataId && artsData) {
-          let artsDataSameAs = Array.isArray(artsData?.sameAs);
-          if (artsDataSameAs)
-            placeObj = {
-              ...placeObj,
-              sameAs: artsData?.sameAs,
-            };
-          else
-            placeObj = {
-              ...placeObj,
-              sameAs: [artsData?.sameAs],
-            };
+          let sameAsArray = Array.isArray(artsData.sameAs)
+            ? artsData.sameAs
+            : artsData.sameAs && typeof artsData.sameAs === 'object'
+            ? [artsData.sameAs]
+            : [];
+
+          const existingIndex = sameAsArray.findIndex((item) => item.uri === artsData.uri);
+
+          const artsDataIdentifier = {
+            uri: artsData.uri,
+            type: sameAsTypes.ARTSDATA_IDENTIFIER,
+          };
+
+          if (existingIndex !== -1) {
+            sameAsArray[existingIndex] = artsDataIdentifier;
+          } else {
+            sameAsArray.push(artsDataIdentifier);
+          }
+
+          placeObj = {
+            ...placeObj,
+            sameAs: sameAsArray,
+          };
         }
 
         if (externalCalendarEntityId) {

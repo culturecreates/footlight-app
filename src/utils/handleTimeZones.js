@@ -30,3 +30,8 @@ export function identifyBestTimezone(timestamp) {
 
   return matchingZones[0] || null;
 }
+
+export function getLabelByTimezoneValue(value) {
+  const tz = timeZones.find((tz) => tz.value === value);
+  return tz ? tz.label : null;
+}
