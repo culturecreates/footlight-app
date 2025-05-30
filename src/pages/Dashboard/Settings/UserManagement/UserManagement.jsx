@@ -33,6 +33,8 @@ import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { adminCheckHandler } from '../../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import EntityReports from '../../../../components/EntityReports/EntityReports';
+import { entitiesClass } from '../../../../constants/entitiesClass';
 
 const { useBreakpoint } = Grid;
 
@@ -489,11 +491,15 @@ const UserManagement = (props) => {
           <Col flex={'140px'} className="add-btn-container">
             {adminCheckHandler({ calendar, user }) && (
               <ReadOnlyProtectedComponent>
-                <AddEvent
-                  label={t('dashboard.settings.userManagement.addUser')}
-                  onClick={addUserHandler}
-                  data-cy="button-add-user"
-                />
+                <Col style={{ display: 'flex' }}>
+                  <EntityReports entity={entitiesClass.user} />
+
+                  <AddEvent
+                    label={t('dashboard.settings.userManagement.addUser')}
+                    onClick={addUserHandler}
+                    data-cy="button-add-user"
+                  />
+                </Col>
               </ReadOnlyProtectedComponent>
             )}
           </Col>

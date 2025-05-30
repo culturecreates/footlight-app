@@ -1295,6 +1295,24 @@
     "validations": {
       "informationRequired": "Information is required"
     },
+    "entityReport": {
+      "event": {
+        "import": "Import Events"
+      },
+      "validation": {
+        "dateRange": "Invalid date range"
+      },
+      "downloadReport": "Download report",
+      "downloadDB": "Download database",
+      "cancel": "Cancel",
+      "generate": "Generate",
+      "to": "to",
+      "download": "Download",
+      "timeFrame": "Timeframe",
+      "error": "Something went wrong. Please try again later.",
+      "downloadDbReady": "Your database is ready to download.",
+      "success": "Success! Your file is being generated. You will receive an email notifying you when it is ready to download."
+    },
     "dismiss": "Dismiss",
     "forms": {
       "languageLiterals": {
