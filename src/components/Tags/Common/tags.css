@@ -6,9 +6,11 @@
   display: flex;
   gap: 9px;
   text-transform: none;
-  height: 32px;
   align-items: center;
-  padding: 8px 16px;
+  padding: 5px 16px;
+  white-space: normal;
+  word-break: break-word;
+  margin-right: 12px;
 }
 
 .tags-wrapper .ant-tag-close-icon {
