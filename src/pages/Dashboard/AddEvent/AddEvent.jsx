@@ -277,10 +277,7 @@ function AddEvent() {
       timeSelected = time;
     }
 
-    // Combine date and time and explicitly set the timezone to 'Canada/Eastern'
-    let dateTime = artsDataId
-      ? moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a')
-      : moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', timezone);
+    let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', timezone);
     return dateTime.toISOString();
   };
 
@@ -524,9 +521,17 @@ function AddEvent() {
               inLanguage = [],
               sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : artsDataId ? artsData?.sameAs : [],
               eventDiscipline = [],
-              timezone = artsDataId
-                ? values?.[dateType === dateTypes.MULTIPLE ? 'customEventTimezone' : 'eventTimezone']
-                : currentCalendarData?.timezone;
+              timezone;
+
+            if (dateType === dateTypes.MULTIPLE && form.getFieldsValue().frequency === 'CUSTOM') {
+              timezone = currentCalendarData?.timezone;
+            } else if (dateType === dateTypes.MULTIPLE) {
+              timezone = values?.customEventTimezone;
+            } else if (dateType === dateTypes.SINGLE) {
+              timezone = values?.eventTimezone;
+            } else {
+              timezone = currentCalendarData?.timezone;
+            }
 
             let eventObj;
 
@@ -2022,6 +2027,16 @@ function AddEvent() {
           if (data.audience?.length > 0) {
             data.audience = data.audience.filter((audience) => audience?.label);
           }
+          data = {
+            ...data,
+            sameAs: [
+              ...data.sameAs,
+              {
+                type: sameAsTypes.ARTSDATA_IDENTIFIER,
+                uri: data.uri,
+              },
+            ],
+          };
           setArtsData(data);
           setAddedFields(initialAddedFields);
           setArtsDataLoading(false);
@@ -3093,8 +3108,7 @@ function AddEvent() {
                                   artsData?.scheduleTimezone ??
                                   eventData?.scheduleTimezone ??
                                   currentCalendarData?.timezone
-                                }
-                                hidden={!(artsDataId && artsData?.scheduleTimezone !== currentCalendarData?.timezone)}>
+                                }>
                                 <Select
                                   options={timeZones}
                                   data-cy="select-calendar-time-zone"
