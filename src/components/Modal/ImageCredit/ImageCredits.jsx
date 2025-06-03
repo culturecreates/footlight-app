@@ -116,10 +116,9 @@ const ImageCredits = (props) => {
       });
 
       if (!isImageGallery) {
-        setImageOptions((prev) => ({ ...prev, ...filteredValues }));
-        form.setFieldsValue({
-          mainImageOptions: { ...imageOptions, ...filteredValues },
-        });
+        const updatedImageOptions = { ...imageOptions, ...filteredValues };
+        form.setFieldValue('mainImageOptions', updatedImageOptions);
+        setImageOptions(updatedImageOptions);
       } else {
         setFileList((prev) => {
           const index = prev.findIndex((file) => file.uid === selectedUID);
