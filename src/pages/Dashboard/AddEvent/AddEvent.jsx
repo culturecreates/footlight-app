@@ -534,35 +534,41 @@ function AddEvent() {
               values: values?.name,
               activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'name',
+              entityData: eventData || artsData,
             });
 
             const virtualLocation = filterUneditedFallbackValues({
               values: values?.virtualLocation,
               activeFallbackFieldsInfo: fallbackStatus,
+              entityData: eventData || artsData,
               fieldName: 'virtualLocation',
             });
 
             const contactTitle = filterUneditedFallbackValues({
               values: values?.contactTitle,
               activeFallbackFieldsInfo: fallbackStatus,
+              entityData: eventData || artsData,
               fieldName: 'contactTitle',
             });
 
             const ticketNote = filterUneditedFallbackValues({
               values: values?.ticketNote,
               activeFallbackFieldsInfo: fallbackStatus,
+              entityData: eventData || artsData,
               fieldName: 'ticketNote',
             });
 
             accessibilityNote = filterUneditedFallbackValues({
               values: values?.noteWrap,
               activeFallbackFieldsInfo: fallbackStatus,
+              entityData: eventData || artsData,
               fieldName: 'noteWrap',
             });
 
             description = filterUneditedFallbackValues({
               values: values?.editor,
               activeFallbackFieldsInfo: fallbackStatus,
+              entityData: eventData || artsData,
               fieldName: 'editor',
               additionalFilters: form.getFieldValue('editor-wordcount-map'),
             });
