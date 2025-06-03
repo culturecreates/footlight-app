@@ -123,12 +123,6 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
     setIsLoading(true);
     try {
       const values = await form.validateFields(['startDate', 'endDate']);
-      notification.success({
-        key: 'entity-report-success',
-        description: t('common.entityReport.success'),
-        duration: 5,
-        placement: 'center',
-      });
       try {
         const response = await fetchEntityReport({
           calendarId,
@@ -179,22 +173,36 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
     </Typography.Title>
   );
 
+  const downloadFile = () => {
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = `${entity}-report.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    cleanupBlobUrl();
+    setBlobUrl(null);
+  };
+
   const renderOkButton = () => {
     if (isLoading) {
       return <Spin indicator={<LoadingOutlined style={{ fontSize: 20, color: 'white' }} spin />} />;
     }
-    if (blobUrl) {
-      return (
-        <a href={blobUrl} download={`${entity}-report.csv`}>
-          {t('common.entityReport.download')}
-        </a>
-      );
-    }
+    if (blobUrl) return t('common.entityReport.download');
+
     return t('common.entityReport.generate');
   };
 
   const renderDateRangeForm = () => (
-    <Form form={form}>
+    <Form
+      form={form}
+      onValuesChange={() => {
+        if (blobUrl) {
+          cleanupBlobUrl();
+          setBlobUrl(null);
+        }
+      }}>
       <Row gutter={[4, 4]} style={{ padding: '16px 16px' }}>
         <Col span={24} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
           <Typography.Text strong>{t('common.entityReport.timeFrame')}</Typography.Text>
@@ -285,7 +293,7 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
         maskClosable={false}
         destroyOnClose={true}
         visible={isModalVisible}
-        onOk={!blobUrl && generateReport}
+        onOk={!blobUrl ? generateReport : downloadFile}
         onCancel={handleCancel}
         className="entity-report-modal"
         okText={renderOkButton()}
