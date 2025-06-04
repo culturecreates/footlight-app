@@ -34,7 +34,6 @@ const RecurringEvents = function ({
   setCustomDates,
   subEventCount,
   artsData,
-  artsDataId,
   currentCalendarData,
   eventData,
 }) {
@@ -449,8 +448,7 @@ const RecurringEvents = function ({
                     name={'customEventTimezone'}
                     initialValue={
                       artsData?.scheduleTimezone ?? eventData?.scheduleTimezone ?? currentCalendarData?.timezone
-                    }
-                    hidden={!(artsDataId && artsData?.scheduleTimezone !== currentCalendarData?.timezone)}>
+                    }>
                     <SelectOption
                       options={timeZones}
                       data-cy="select-calendar-time-zone"

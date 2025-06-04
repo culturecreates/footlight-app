@@ -63,13 +63,14 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
           }),
         ]
       : undefined;
-
+    const content = data?.[contentLanguageKeyMap[language]];
+    const initialValue = Array.isArray(content) ? content[0] : content;
     return (
       <Form.Item
         name={[`${name}`, contentLanguageKeyMap[language]]}
         key={language}
         dependencies={dependencies}
-        initialValue={data?.[contentLanguageKeyMap[language]]}
+        initialValue={initialValue}
         rules={validationRules}>
         {children}
       </Form.Item>

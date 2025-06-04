@@ -149,17 +149,29 @@ function CreateNewPerson() {
     var promise = new Promise(function (resolve, reject) {
       if (!personId || personId === '') {
         if (artsDataId && artsData) {
-          let artsDataSameAs = Array.isArray(artsData?.sameAs);
-          if (artsDataSameAs)
-            personObj = {
-              ...personObj,
-              sameAs: artsData?.sameAs,
-            };
-          else
-            personObj = {
-              ...personObj,
-              sameAs: [artsData?.sameAs],
-            };
+          let sameAsArray = Array.isArray(artsData.sameAs)
+            ? artsData.sameAs
+            : artsData.sameAs && typeof artsData.sameAs === 'object'
+            ? [artsData.sameAs]
+            : [];
+
+          const existingIndex = sameAsArray.findIndex((item) => item.uri === artsData.uri);
+
+          const artsDataIdentifier = {
+            uri: artsData.uri,
+            type: sameAsTypes.ARTSDATA_IDENTIFIER,
+          };
+
+          if (existingIndex !== -1) {
+            sameAsArray[existingIndex] = artsDataIdentifier;
+          } else {
+            sameAsArray.push(artsDataIdentifier);
+          }
+
+          personObj = {
+            ...personObj,
+            sameAs: sameAsArray,
+          };
         }
 
         if (externalCalendarEntityId) {
