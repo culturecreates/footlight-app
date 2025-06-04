@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './events.css';
 import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider, Radio, Grid, Tree } from 'antd';
-import {
-  CloseCircleOutlined,
-  DownOutlined,
-  SortAscendingOutlined,
-  SortDescendingOutlined,
-  MoreOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
+import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -44,6 +37,8 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import EntityReports from '../../../components/EntityReports/EntityReports';
+import { entitiesClass, IMPORT_ACTION_KEY, REPORT_ACTION_KEY } from '../../../constants/entitiesClass';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -589,44 +584,11 @@ function Events() {
                 </h4>
               </div>
             </Col>
-
             <Row align={'middle'} gutter={[12, 0]}>
-              <Col style={{ display: 'flex', alignItems: 'center' }}>
-                <Dropdown
-                  placement="bottomRight"
-                  className="calendar-dropdown-wrapper"
-                  overlayStyle={{
-                    minWidth: '150px',
-                  }}
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  menu={{
-                    items: [
-                      {
-                        key: '0',
-                        label: 'Import Events',
-                        icon: <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
-                      },
-                    ],
-                    onClick: ({ key }) => {
-                      if (key === '0') navigate(`${location.pathname}${PathName.Search}`);
-                    },
-                  }}
-                  trigger={['click']}>
-                  <MoreOutlined
-                    className="event-list-more-icon"
-                    style={{
-                      color: '#1B3DE6',
-                      fontSize: '24px',
-                      height: '40px',
-                      width: '40px',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      display: 'flex',
-                    }}
-                    data-cy="icon-event-list-more-options"
-                  />
-                </Dropdown>
-              </Col>
+              <EntityReports
+                entity={entitiesClass.event}
+                includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY]}
+              />
               <Col style={{ display: 'flex', alignItems: 'center' }}>
                 <AddEvent
                   disabled={isReadOnly ? true : false}

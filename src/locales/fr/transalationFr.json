@@ -1292,6 +1292,41 @@
     "validations": {
       "informationRequired": "Des informations sont requises"
     },
+    "entityReport": {
+      "event": {
+        "import": "Import Events",
+        "downloadReport": "Télécharger le rapport",
+        "downloadDB": "Télécharger la base de données"
+      },
+      "place": {
+        "import": "Import Place",
+        "downloadReport": "Télécharger le rapport",
+        "downloadDB": "Télécharger la base de données"
+      },
+      "organization": {
+        "import": "Import Organizations",
+        "downloadReport": "Télécharger le rapport",
+        "downloadDB": "Télécharger la base de données"
+      },
+      "person": {
+        "import": "Import Person",
+        "downloadReport": "Télécharger le rapport",
+        "downloadDB": "Télécharger la base de données"
+      },
+      "taxonomy": {
+        "import": "Import Taxonomies",
+        "downloadReport": "Télécharger le rapport",
+        "downloadDB": "Télécharger la base de données"
+      },
+      "user": {
+        "import": "Import Users",
+        "downloadReport": "Télécharger le rapport",
+        "downloadDB": "Télécharger la base de données"
+      },
+
+      "to": "au",
+      "success": "Succès ! La génération du fichier est en cours. Vous recevrez un courriel vous informant que le fichier est prêt à être téléchargé."
+    },
     "dismiss": "J'ai compris",
     "forms": {
       "languageLiterals": {
