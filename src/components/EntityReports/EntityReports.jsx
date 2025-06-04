@@ -9,12 +9,17 @@ import DatePickerStyled from '../DatePicker';
 import './entitiesReport.css';
 import { DATABASE_ACTION_KEY, IMPORT_ACTION_KEY, REPORT_ACTION_KEY } from '../../constants/entitiesClass';
 import { downloadDB, fetchEntityReport } from '../../services/generateReport';
+import { adminCheckHandler } from '../../utils/adminCheckHandler';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../redux/reducer/userSlice';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) => {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { user } = useSelector(getUserDetails);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalActionKey, setModalActionKey] = useState(null);
@@ -49,17 +54,23 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
       label: t(`common.entityReport.${entity.toLowerCase()}.import`),
       icon: <DownloadOutlined style={iconStyle('#1B3DE6')} />,
     },
-    {
-      key: REPORT_ACTION_KEY,
-      label: t(`common.entityReport.downloadReport`),
-      icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
-    },
-    {
-      key: DATABASE_ACTION_KEY,
-      label: t(`common.entityReport.downloadDB`),
-      icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
-    },
-  ].filter((item) => includedDropdownKeys.includes(item.key));
+    ...(adminCheckHandler({ user, calendar: getCurrentCalendarDetailsFromUserDetails(user, calendarId) })
+      ? [
+          {
+            key: REPORT_ACTION_KEY,
+            label: t(`common.entityReport.downloadReport`),
+            icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
+          },
+          {
+            key: DATABASE_ACTION_KEY,
+            label: t(`common.entityReport.downloadDB`),
+            icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
+          },
+        ]
+      : []),
+  ]?.filter((item) => includedDropdownKeys.includes(item.key));
+
+  if (ITEMS.length === 0) return null;
 
   const menuItems = {
     items: ITEMS,
