@@ -534,41 +534,41 @@ function AddEvent() {
               values: values?.name,
               activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'name',
-              entityData: eventData || artsData,
+              initialDataValue: eventData?.name || artsData?.name,
             });
 
             const virtualLocation = filterUneditedFallbackValues({
               values: values?.virtualLocation,
               activeFallbackFieldsInfo: fallbackStatus,
-              entityData: eventData || artsData,
+              initialDataValue: initialVirtualLocation?.length > 0 ? initialVirtualLocation[0]?.name : undefined,
               fieldName: 'virtualLocation',
             });
 
             const contactTitle = filterUneditedFallbackValues({
               values: values?.contactTitle,
               activeFallbackFieldsInfo: fallbackStatus,
-              entityData: eventData || artsData,
+              initialDataValue: eventData?.contactPoint?.name,
               fieldName: 'contactTitle',
             });
 
             const ticketNote = filterUneditedFallbackValues({
               values: values?.ticketNote,
               activeFallbackFieldsInfo: fallbackStatus,
-              entityData: eventData || artsData,
+              initialDataValue: eventData?.offerConfiguration?.name,
               fieldName: 'ticketNote',
             });
 
             accessibilityNote = filterUneditedFallbackValues({
               values: values?.noteWrap,
               activeFallbackFieldsInfo: fallbackStatus,
-              entityData: eventData || artsData,
+              initialDataValue: eventData?.accessibilityNote,
               fieldName: 'noteWrap',
             });
 
             description = filterUneditedFallbackValues({
               values: values?.editor,
               activeFallbackFieldsInfo: fallbackStatus,
-              entityData: eventData || artsData,
+              initialDataValue: eventData?.description || artsData?.description,
               fieldName: 'editor',
               additionalFilters: form.getFieldValue('editor-wordcount-map'),
             });
