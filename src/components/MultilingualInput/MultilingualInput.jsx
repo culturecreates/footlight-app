@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cloneElement, useEffect, useMemo, useRef } from 'react';
 import { Button, Tabs } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import './multilingualInput.css';
@@ -62,6 +62,32 @@ function MultilingualInput({ children, ...rest }) {
       placeholderCollection,
       form,
     });
+
+  const inputRefs = useRef([]);
+
+  const enhancedChildrenWithRefs = useMemo(() => {
+    return React.Children.map(modifiedChildren, (formItem, index) => {
+      if (!React.isValidElement(formItem)) return formItem;
+
+      const childInput = formItem.props?.children;
+      if (!React.isValidElement(childInput)) return formItem;
+
+      // Ensure the ref exists
+      if (!inputRefs.current[index]) {
+        inputRefs.current[index] = React.createRef();
+      }
+
+      const inputWithRef = cloneElement(childInput, {
+        ref: inputRefs.current[index],
+      });
+
+      const newFormItem = cloneElement(formItem, {
+        children: inputWithRef,
+      });
+
+      return newFormItem;
+    });
+  }, [modifiedChildren]);
 
   let labelCollection = {};
   let fallbackPromptTextCollection = {};
@@ -132,7 +158,7 @@ function MultilingualInput({ children, ...rest }) {
       forceRender: true,
       children: (
         <div className="bilingual-child-wrapper">
-          {modifiedChildren[index]}
+          {enhancedChildrenWithRefs[index]}
           {fallbackStatus?.[langKey]?.tagDisplayStatus && (
             <LiteralBadge
               tagTitle={fallbackStatus[langKey]?.fallbackLiteralKey}
@@ -166,6 +192,32 @@ function MultilingualInput({ children, ...rest }) {
   const handleTabChange = (key) => {
     setActiveKey(key);
   };
+
+  useEffect(() => {
+    if (!activeKey) return;
+    if (!calendarContentLanguage || calendarContentLanguage.length === 0) return;
+
+    const newIndex = calendarContentLanguage.findIndex((language) => contentLanguageKeyMap[language] === activeKey);
+
+    const inputRef = inputRefs.current[newIndex];
+
+    setTimeout(() => {
+      const component = inputRef?.current;
+
+      const textArea = component?.resizableTextArea?.textArea;
+
+      if (textArea && typeof textArea.focus === 'function') {
+        textArea.focus();
+
+        const valueLength = textArea.value?.length ?? 0;
+
+        // Safeguard before setting selection range
+        if (typeof textArea.setSelectionRange === 'function') {
+          textArea.setSelectionRange(valueLength, valueLength);
+        }
+      }
+    }, 0);
+  }, [activeKey]);
 
   return (
     <Tabs
