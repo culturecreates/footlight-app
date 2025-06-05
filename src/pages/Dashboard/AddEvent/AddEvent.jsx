@@ -2792,7 +2792,8 @@ function AddEvent() {
                       : true
                     : false
                 }
-                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME)}>
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME)}
+                data-cy="form-item-event-name-label">
                 <CreateMultiLingualFormItems
                   entityId={eventId}
                   calendarContentLanguage={calendarContentLanguage}
@@ -3709,7 +3710,8 @@ function AddEvent() {
                         }
                       },
                     }),
-                  ]}>
+                  ]}
+                  data-cy="form-item-organizers-label">
                   <KeyboardAccessibleLayout
                     setItem={(organizer) => setSelectedOrganizers([...selectedOrganizers, organizer])}
                     data={[organizersList, organizersImportsFootlightList, organizersArtsdataList]}
@@ -4090,6 +4092,7 @@ function AddEvent() {
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
                 name="draggerWrap"
+                data-cy="form-item-event-image"
                 className="draggerWrap"
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
                 hidden={
@@ -4209,7 +4212,8 @@ function AddEvent() {
                         }
                       },
                     }),
-                  ]}>
+                  ]}
+                  data-cy="form-item-event-performer-name">
                   <KeyboardAccessibleLayout
                     setItem={(performer) => setSelectedPerformers([...selectedPerformers, performer])}
                     data={[performerList, performerImportsFootlightList, performerArtsdataList]}
