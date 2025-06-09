@@ -40,6 +40,9 @@ import { useLazyGetAllUsersQuery } from '../../../services/users';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { entitiesClass } from '../../../constants/entitiesClass';
+import EntityReports from '../../../components/EntityReports/EntityReports';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -370,14 +373,20 @@ function Places() {
               {t('dashboard.places.places')}
             </h4>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-              <AddPlace
-                label={t('dashboard.places.place')}
-                disabled={isReadOnly ? true : false}
-                onClick={() => {
-                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
-                }}
-                data-cy="button-add-new-place"
-              />
+              <Col style={{ display: 'flex', gap: '12px' }}>
+                <ReadOnlyProtectedComponent creator={user?.id}>
+                  <EntityReports entity={entitiesClass.place} />
+                </ReadOnlyProtectedComponent>
+
+                <AddPlace
+                  label={t('dashboard.places.place')}
+                  disabled={isReadOnly ? true : false}
+                  onClick={() => {
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
+                  }}
+                  data-cy="button-add-new-place"
+                />
+              </Col>
             </FeatureFlag>
 
             <PlaceSearch

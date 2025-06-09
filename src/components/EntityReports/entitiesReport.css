@@ -1,0 +1,33 @@
+.entity-report-modal {
+  max-width: 500px;
+}
+
+.entity-report-modal .ant-modal-footer {
+  height: 72px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.entity-report-modal .ant-modal-footer .ant-btn {
+  border-radius: 4px;
+  background: var(--content-action-default, #1b3de6);
+  border: none;
+  color: var(--background-neutrals-ground, #fff);
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 150% */
+  width: 95px;
+  height: 35px;
+}
+
+.entity-report-modal .ant-modal-footer > :nth-child(1) {
+  background: var(--background-neutrals-ground, #fff);
+  color: var(--content-action-default, #1b3de6);
+}
+.entity-report-modal .ant-modal-footer > :nth-child(2) {
+  background: var(--content-action-default, #1b3de6);
+  color: var(--background-neutrals-ground, #fff);
+}

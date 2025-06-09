@@ -40,6 +40,9 @@ import { useLazyGetAllUsersQuery } from '../../../services/users';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
+import { entitiesClass } from '../../../constants/entitiesClass';
+import EntityReports from '../../../components/EntityReports/EntityReports';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -358,14 +361,20 @@ function People() {
               {t('dashboard.people.people')}
             </h4>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-              <AddPerson
-                disabled={isReadOnly ? true : false}
-                label={t('dashboard.people.person')}
-                onClick={() => {
-                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
-                }}
-                data-cy="button-add-new-person"
-              />
+              <Col style={{ display: 'flex', gap: '12px' }}>
+                <ReadOnlyProtectedComponent creator={user?.id}>
+                  <EntityReports entity={entitiesClass.person} />
+                </ReadOnlyProtectedComponent>
+
+                <AddPerson
+                  disabled={isReadOnly ? true : false}
+                  label={t('dashboard.people.person')}
+                  onClick={() => {
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                  }}
+                  data-cy="button-add-new-person"
+                />
+              </Col>
             </FeatureFlag>
             <PersonSearch
               placeholder={t('dashboard.people.search.placeholder')}
