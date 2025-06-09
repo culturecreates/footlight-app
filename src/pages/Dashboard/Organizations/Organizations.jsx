@@ -41,6 +41,9 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
+import { entitiesClass } from '../../../constants/entitiesClass';
+import EntityReports from '../../../components/EntityReports/EntityReports';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 
 const { useBreakpoint } = Grid;
 
@@ -345,14 +348,20 @@ function Organizations() {
               {t('dashboard.organization.organizations')}
             </h4>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-              <AddOrganization
-                disabled={isReadOnly ? true : false}
-                label={t('dashboard.organization.organization')}
-                onClick={() =>
-                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)
-                }
-                data-cy="button-add-organization"
-              />
+              <Col style={{ display: 'flex', gap: '12px' }}>
+                <ReadOnlyProtectedComponent creator={user?.id}>
+                  <EntityReports entity={entitiesClass.organization} />
+                </ReadOnlyProtectedComponent>
+
+                <AddOrganization
+                  disabled={isReadOnly ? true : false}
+                  label={t('dashboard.organization.organization')}
+                  onClick={() =>
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)
+                  }
+                  data-cy="button-add-organization"
+                />
+              </Col>
             </FeatureFlag>
 
             <OrganizationSearch

@@ -15,6 +15,7 @@ export const filterUneditedFallbackValues = ({
   activeFallbackFieldsInfo = {},
   fieldName,
   additionalFilters,
+  initialDataValue = {},
 }) => {
   let requiredFallbackKeyForCurrentField;
 
@@ -56,7 +57,12 @@ export const filterUneditedFallbackValues = ({
     }
   });
 
-  return emptyValueFilter(additionalFilters, modifiedValues);
+  if (initialDataValue && Object.keys(initialDataValue).length > 0) {
+    modifiedValues = { ...initialDataValue, ...modifiedValues };
+  }
+  const filteredData = emptyValueFilter(additionalFilters, modifiedValues);
+
+  return filteredData;
 };
 
 const emptyValueFilter = (additionalFilters, modifiedValues) => {
