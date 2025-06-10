@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './imageCredits.css';
 import { Form, Input } from 'antd';
 import CustomModal from '../Common/CustomModal';
@@ -31,6 +31,8 @@ const ImageCredits = (props) => {
     altText: null,
     caption: null,
   });
+
+  const modalContentRef = useRef(null);
 
   const {
     open,
@@ -247,11 +249,26 @@ const ImageCredits = (props) => {
     });
   }, [activeFallbackFieldsInfo, selectedField]);
 
+  useEffect(() => {
+    if (modalContentRef.current) {
+      const firstInput = modalContentRef.current.querySelector('textarea');
+
+      if (firstInput) {
+        setTimeout(function () {
+          firstInput.focus();
+        }, 100);
+      }
+    }
+  }, [props.open]);
+
   return (
     <CustomModal
       closable={true}
       maskClosable={true}
       onCancel={onClose}
+      modalRender={(node) => {
+        return <div ref={modalContentRef}>{node}</div>;
+      }}
       title={
         <div className="custom-modal-title-wrapper" data-cy="div-image-options-heading">
           <span className="custom-modal-title-heading" data-cy="span-image-options-heading">
