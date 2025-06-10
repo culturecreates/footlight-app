@@ -2861,6 +2861,8 @@ function AddEvent() {
                     setShowDialog={setShowDialog}
                     dataCy={`tag-event-type`}
                     draggable
+                    treeCheckStrictly={true}
+                    treeCheckable={true}
                     fieldName="eventType"
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
                     allowClear
@@ -2907,6 +2909,8 @@ function AddEvent() {
                     dataCy={`tag-audience`}
                     form={form}
                     draggable
+                    treeCheckStrictly={true}
+                    treeCheckable={true}
                     fieldName="targetAudience"
                     allowClear
                     treeDefaultExpandAll
@@ -2946,6 +2950,8 @@ function AddEvent() {
                     fieldName="eventDiscipline"
                     allowClear
                     treeDefaultExpandAll
+                    treeCheckStrictly={true}
+                    treeCheckable={true}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(
@@ -4826,6 +4832,8 @@ function AddEvent() {
                   dataCy={`tag-event-language`}
                   form={form}
                   draggable
+                  treeCheckStrictly={true}
+                  treeCheckable={true}
                   fieldName={otherInformationFieldNames.inLanguage}
                   allowClear
                   treeDefaultExpandAll
@@ -4889,6 +4897,8 @@ function AddEvent() {
                         fieldName={['dynamicFields', taxonomy?.id]}
                         allowClear
                         treeDefaultExpandAll
+                        treeCheckStrictly={true}
+                        treeCheckable={true}
                         notFoundContent={<NoContent />}
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
@@ -5007,6 +5017,8 @@ function AddEvent() {
                     form={form}
                     draggable
                     fieldName="eventAccessibility"
+                    treeCheckStrictly={true}
+                    treeCheckable={true}
                     allowClear
                     treeDefaultExpandAll
                     style={{ width: '423px' }}
