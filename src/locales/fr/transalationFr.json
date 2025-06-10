@@ -267,7 +267,8 @@
               "deleteImage": "Supprimer l’image",
               "editImageCredit": "Éditer les crédits photos à l'image",
               "editAltText": "Éditer le texte alternatif à l’image",
-              "editImageCaptions": "Éditer la légende à l’image"
+              "editImageCaptions": "Éditer la légende à l’image",
+              "downloadOriginalImage": "Télécharger l'image originale"
             },
             "modalTexts": {
               "cancel": "Annuler",
@@ -298,6 +299,7 @@
               "savedFrameSize": "Ratios d'images disponibles",
               "ratio": "Ratio",
               "thumbnailImage": "Vignette",
+              "originalImage": "Image originale",
               "largeImage": "Image grand format",
               "save": "Sauvegarder",
               "cancel": "Annuler"
