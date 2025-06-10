@@ -93,13 +93,13 @@ function SortableTreeSelect({
   let strictCheckEnabled = treeCheckStrictly && treeCheckable;
 
   const markSelectedNodes = (data, selectedValues) => {
-    return data.map((node) => {
-      const isSelected = selectedValues.includes(node.key);
+    return data?.map((node) => {
+      const isSelected = selectedValues?.includes(node?.key);
 
       return {
         ...node,
         className: isSelected ? 'custom-selected-node' : '',
-        children: node.children ? markSelectedNodes(node.children, selectedValues) : undefined,
+        children: node?.children ? markSelectedNodes(node.children, selectedValues) : undefined,
       };
     });
   };
