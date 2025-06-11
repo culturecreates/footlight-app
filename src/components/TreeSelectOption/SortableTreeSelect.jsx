@@ -6,6 +6,7 @@ import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-
 import SortableTag from '../Tags/SortableTag/SortableTag';
 import Tags from '../Tags/Common/Tags';
 import './treeSelectOption.css';
+import { safeArray } from '../../utils/safteyCheckUtils';
 
 const { SHOW_ALL } = TreeSelect;
 
@@ -15,16 +16,16 @@ function SortableTreeSelect({
   draggable = false,
   dataCy,
   setShowDialog,
-  treeData,
+  treeData = [],
   treeCheckStrictly = false,
   treeCheckable = false,
   ...props
 }) {
-  const initialValue = props.value || [];
+  const initialValue = safeArray(props.value);
   const [selectedValues, setSelectedValues] = useState(initialValue.map((v) => (typeof v === 'object' ? v.value : v)));
 
   useEffect(() => {
-    const flattened = (props.value || []).map((v) => (typeof v === 'object' ? v.value : v));
+    const flattened = safeArray(props.value).map((v) => (typeof v === 'object' ? v.value : v));
     setSelectedValues(flattened);
   }, [props.value]);
 
@@ -94,12 +95,12 @@ function SortableTreeSelect({
 
   const markSelectedNodes = (data, selectedValues) => {
     return data.map((node) => {
-      const isSelected = selectedValues.includes(node.key);
+      const isSelected = selectedValues?.includes(node?.key);
 
       return {
         ...node,
         className: isSelected ? 'custom-selected-node' : '',
-        children: node.children ? markSelectedNodes(node.children, selectedValues) : undefined,
+        children: node?.children ? markSelectedNodes(safeArray(node?.children), selectedValues) : undefined,
       };
     });
   };
@@ -109,7 +110,7 @@ function SortableTreeSelect({
       <SortableContext items={selectedValues} strategy={horizontalListSortingStrategy}>
         <TreeSelect
           {...props}
-          treeData={!strictCheckEnabled ? treeData : markSelectedNodes(treeData, selectedValues)}
+          treeData={!strictCheckEnabled ? treeData : markSelectedNodes(safeArray(treeData), selectedValues)}
           value={selectedValues}
           onChange={handleChange}
           getPopupContainer={(trigger) => trigger.parentNode}
