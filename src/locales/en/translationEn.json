@@ -267,7 +267,8 @@
               "deleteImage": "Delete image",
               "editImageCredit": "Edit image credit",
               "editAltText": "Edit alt text",
-              "editImageCaptions": "Edit image caption"
+              "editImageCaptions": "Edit image caption",
+              "downloadOriginalImage": "Download original image"
             },
             "modalTexts": {
               "cancel": "Cancel",
@@ -298,6 +299,7 @@
               "savedFrameSize": "Available image ratios",
               "ratio": "Ratio",
               "thumbnailImage": "Thumbnail image",
+              "originalImage": "Original image",
               "largeImage": "Large image",
               "save": "Save",
               "cancel": "Cancel"

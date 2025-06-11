@@ -2,6 +2,7 @@ import { Translation } from 'react-i18next';
 
 export const IMAGE_ACTIONS = {
   ADD: 'ADD',
+  DOWNLOAD: 'DOWNLOAD',
   EDIT: 'EDIT',
   DELETE: 'DELETE',
   CROP: 'CROP',
@@ -75,6 +76,14 @@ export const mainImageUploadOptions = ({ credits, altText, caption }) => {
       key: IMAGE_ACTIONS.CROP,
       label: (
         <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.image.options.cropImage')}</Translation>
+      ),
+    },
+    {
+      key: IMAGE_ACTIONS.DOWNLOAD,
+      label: (
+        <Translation>
+          {(t) => t('dashboard.events.addEditEvent.otherInformation.image.options.downloadOriginalImage')}
+        </Translation>
       ),
     },
     {

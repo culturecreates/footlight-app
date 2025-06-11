@@ -82,6 +82,31 @@ function ImageUpload(props) {
     width = getWidthFromAspectRatio(aspectRatio, 48);
   }
 
+  const downloadImage = async ({ url, name }) => {
+    // direct download
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', name ?? 'image.jpg');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
+    } catch (error) {
+      console.error('Image download failed:', error);
+      message.error('Image download failed');
+    }
+  };
+
   const normFile = (e) => {
     if (Array.isArray(e)) {
       return e;
@@ -266,6 +291,9 @@ function ImageUpload(props) {
                                   break;
                                 case IMAGE_ACTIONS.DELETE:
                                   actions.remove();
+                                  break;
+                                case IMAGE_ACTIONS.DOWNLOAD:
+                                  downloadImage({ url: imageUrl, name: file?.name });
                                   break;
                                 default:
                                   break;

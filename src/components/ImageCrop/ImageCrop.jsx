@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './imageCrop.css';
-import { Row, Col, Space, Radio, Button } from 'antd';
+import { Row, Col, Space, Radio, Button, Image } from 'antd';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import Cropper from 'react-easy-crop';
 import CustomModal from '../Modal/Common/CustomModal';
@@ -37,6 +37,11 @@ function ImageCrop(props) {
         cropValues?.thumbnail?.y !== undefined
           ? cropValues?.thumbnail
           : undefined,
+    },
+    original: {
+      type: 'ORIGINAL',
+      value: 1,
+      initial: image,
     },
   };
 
@@ -98,8 +103,10 @@ function ImageCrop(props) {
       case ASPECT_RATIO_TYPE.thumbnail.type:
         setAspectRatioType(ASPECT_RATIO_TYPE.thumbnail.type);
         break;
-      default:
+      case ASPECT_RATIO_TYPE.original.type:
+        setAspectRatioType(ASPECT_RATIO_TYPE.original.type);
         break;
+      default:
     }
   };
 
@@ -209,6 +216,12 @@ function ImageCrop(props) {
                   className="image-ratio-text">
                   {thumbnailAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.thumbnailImage')}
                 </Radio>
+                <Radio
+                  value={ASPECT_RATIO_TYPE.original.type}
+                  data-cy="radio-button-original-aspect"
+                  className="image-ratio-text">
+                  {t('dashboard.events.addEditEvent.otherInformation.image.crop.originalImage')}
+                </Radio>
               </Space>
             </Radio.Group>
           </Col>
@@ -302,6 +315,14 @@ function ImageCrop(props) {
                   onCropComplete={onCropAreaChange}
                   initialCroppedAreaPixels={initialThumbnailCroppedArea}
                   data-cy="thumbnail-cropper"
+                />
+              )}
+              {aspectRatioType === ASPECT_RATIO_TYPE.original.type && (
+                <Image
+                  src={image}
+                  alt="Cropped"
+                  style={{ width: '100%', height: '350px', objectFit: 'contain' }}
+                  data-cy="original-image"
                 />
               )}
             </div>
