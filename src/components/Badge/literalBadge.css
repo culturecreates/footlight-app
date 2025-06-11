@@ -13,4 +13,5 @@
   border: 1px solid #1b3de6;
   color: #0f0e98;
   text-transform: capitalize;
+  word-break: keep-all;
 }
