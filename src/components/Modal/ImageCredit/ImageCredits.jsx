@@ -250,16 +250,23 @@ const ImageCredits = (props) => {
   }, [activeFallbackFieldsInfo, selectedField]);
 
   useEffect(() => {
-    if (modalContentRef.current) {
-      const firstInput = modalContentRef.current.querySelector('textarea');
-
-      if (firstInput) {
-        setTimeout(function () {
-          firstInput.focus();
-        }, 100);
-      }
+    if (open) {
+      let attempts = 0;
+      const maxAttempts = 10;
+      const interval = setInterval(() => {
+        const firstTextArea = document.querySelector(`.image-credit-textarea-${selectedField}`);
+        if (firstTextArea) {
+          firstTextArea.focus();
+          clearInterval(interval);
+        }
+        attempts += 1;
+        if (attempts >= maxAttempts) {
+          clearInterval(interval);
+        }
+      }, 100);
+      return () => clearInterval(interval);
     }
-  }, [props.open]);
+  }, [open]);
 
   return (
     <CustomModal
@@ -318,6 +325,7 @@ const ImageCredits = (props) => {
             })}>
             <TextArea
               autoSize
+              className={`image-credit-textarea-${item.key}`}
               autoComplete="off"
               style={{
                 borderRadius: '4px',
