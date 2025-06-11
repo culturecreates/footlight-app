@@ -61,7 +61,7 @@ const WidgetSettings = ({ tabKey }) => {
     currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
     currentCalendarData?.widgetSettings?.listEventsUrlTemplate
   );
-  const redirectionModesModified = redirectionModes.map((mode) =>
+  const redirectionModesModified = redirectionModes?.map((mode) =>
     isWidgetUrlAvailable ? { ...mode, disabled: false } : mode,
   );
 
@@ -135,7 +135,7 @@ const WidgetSettings = ({ tabKey }) => {
     return requiredLanguages.length === 0 ? userLanguages : requiredLanguages;
   };
 
-  const languageOptions = lanFormat().map((item) => {
+  const languageOptions = lanFormat()?.map((item) => {
     return { label: item.label, value: item.key };
   });
 
@@ -255,7 +255,7 @@ const WidgetSettings = ({ tabKey }) => {
       .unwrap()
       .then((response) => {
         setLocationOptions(
-          response.map((item) => {
+          response?.map((item) => {
             return {
               value: item?.id,
               label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
@@ -291,7 +291,7 @@ const WidgetSettings = ({ tabKey }) => {
           field === fieldName.performer ||
           field === fieldName.performerOrganization
         ) {
-          const options = response.map((item) => ({
+          const options = response?.map((item) => ({
             value: item?.id,
             label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           }));
@@ -391,23 +391,23 @@ const WidgetSettings = ({ tabKey }) => {
 
     const selectedFilters = filterOptions.filter((option) => selectedStaticFilters.includes(option.value));
 
-    const dynamicFilters = taxonomyDataEventType.data
-      ?.filter((item) => allowedFields.includes(item.mappedToField))
-      .map((item) => ({
-        label: EVENT.find((translation) => translation.key === item.mappedToField)?.label || '',
-        value: item.id,
+    const dynamicFilters = (taxonomyDataEventType?.data ?? [])
+      .filter((item) => allowedFields.includes(item?.mappedToField))
+      ?.map((item) => ({
+        label: EVENT.find((translation) => translation.key === item?.mappedToField)?.label || '',
+        value: item?.id,
       }))
       .filter(Boolean);
 
-    const dynamicPlaceFilters = taxonomyDataRegion.data
-      ?.filter((item) => allowedFields.includes(item.mappedToField))
-      .map((item) => ({
-        label: PLACE.find((translation) => translation.key === item.mappedToField)?.label || '',
-        value: item.id,
+    const dynamicPlaceFilters = (taxonomyDataRegion?.data ?? [])
+      .filter((item) => allowedFields.includes(item?.mappedToField))
+      ?.map((item) => ({
+        label: PLACE.find((translation) => translation.key === item?.mappedToField)?.label || '',
+        value: item?.id,
       }))
       .filter(Boolean);
 
-    setFilterOptionsList([...selectedFilters, ...dynamicFilters, ...dynamicPlaceFilters]);
+    setFilterOptionsList([...(selectedFilters ?? []), ...(dynamicFilters ?? []), ...(dynamicPlaceFilters ?? [])]);
   }, [taxonomyDataEventType, isEventTaxonomyFetching]);
 
   function arrayToQueryParam(arr, paramName) {
