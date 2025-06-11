@@ -391,23 +391,23 @@ const WidgetSettings = ({ tabKey }) => {
 
     const selectedFilters = filterOptions.filter((option) => selectedStaticFilters.includes(option.value));
 
-    const dynamicFilters = taxonomyDataEventType?.data
-      ?.filter((item) => allowedFields.includes(item?.mappedToField))
+    const dynamicFilters = (taxonomyDataEventType?.data ?? [])
+      .filter((item) => allowedFields.includes(item?.mappedToField))
       ?.map((item) => ({
         label: EVENT.find((translation) => translation.key === item?.mappedToField)?.label || '',
         value: item?.id,
       }))
       .filter(Boolean);
 
-    const dynamicPlaceFilters = taxonomyDataRegion?.data
-      ?.filter((item) => allowedFields.includes(item?.mappedToField))
+    const dynamicPlaceFilters = (taxonomyDataRegion?.data ?? [])
+      .filter((item) => allowedFields.includes(item?.mappedToField))
       ?.map((item) => ({
         label: PLACE.find((translation) => translation.key === item?.mappedToField)?.label || '',
         value: item?.id,
       }))
       .filter(Boolean);
 
-    setFilterOptionsList([...selectedFilters, ...dynamicFilters, ...dynamicPlaceFilters]);
+    setFilterOptionsList([...(selectedFilters ?? []), ...(dynamicFilters ?? []), ...(dynamicPlaceFilters ?? [])]);
   }, [taxonomyDataEventType, isEventTaxonomyFetching]);
 
   function arrayToQueryParam(arr, paramName) {
