@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './imageCredits.css';
 import { Form, Input } from 'antd';
 import CustomModal from '../Common/CustomModal';
@@ -31,6 +31,8 @@ const ImageCredits = (props) => {
     altText: null,
     caption: null,
   });
+
+  const modalContentRef = useRef(null);
 
   const {
     open,
@@ -247,11 +249,33 @@ const ImageCredits = (props) => {
     });
   }, [activeFallbackFieldsInfo, selectedField]);
 
+  useEffect(() => {
+    if (open) {
+      let attempts = 0;
+      const maxAttempts = 10;
+      const interval = setInterval(() => {
+        const firstTextArea = document.querySelector(`.image-credit-textarea-${selectedField}`);
+        if (firstTextArea) {
+          firstTextArea.focus();
+          clearInterval(interval);
+        }
+        attempts += 1;
+        if (attempts >= maxAttempts) {
+          clearInterval(interval);
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [open]);
+
   return (
     <CustomModal
       closable={true}
       maskClosable={true}
       onCancel={onClose}
+      modalRender={(node) => {
+        return <div ref={modalContentRef}>{node}</div>;
+      }}
       title={
         <div className="custom-modal-title-wrapper" data-cy="div-image-options-heading">
           <span className="custom-modal-title-heading" data-cy="span-image-options-heading">
@@ -301,6 +325,7 @@ const ImageCredits = (props) => {
             })}>
             <TextArea
               autoSize
+              className={`image-credit-textarea-${item.key}`}
               autoComplete="off"
               style={{
                 borderRadius: '4px',
