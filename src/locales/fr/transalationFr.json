@@ -1296,36 +1296,19 @@
     },
     "entityReport": {
       "event": {
-        "import": "Import Events",
-        "downloadReport": "Télécharger le rapport",
-        "downloadDB": "Télécharger la base de données"
+        "import": "Importer un événement"
       },
-      "place": {
-        "import": "Import Place",
-        "downloadReport": "Télécharger le rapport",
-        "downloadDB": "Télécharger la base de données"
+      "validation": {
+        "dateRange": "Plage de dates invalide"
       },
-      "organization": {
-        "import": "Import Organizations",
-        "downloadReport": "Télécharger le rapport",
-        "downloadDB": "Télécharger la base de données"
-      },
-      "person": {
-        "import": "Import Person",
-        "downloadReport": "Télécharger le rapport",
-        "downloadDB": "Télécharger la base de données"
-      },
-      "taxonomy": {
-        "import": "Import Taxonomies",
-        "downloadReport": "Télécharger le rapport",
-        "downloadDB": "Télécharger la base de données"
-      },
-      "user": {
-        "import": "Import Users",
-        "downloadReport": "Télécharger le rapport",
-        "downloadDB": "Télécharger la base de données"
-      },
-
+      "downloadReport": "Télécharger un rapport",
+      "downloadDB": "Télécharger la base de données",
+      "cancel": "Annuler",
+      "generate": "Générer",
+      "download": "Télécharger",
+      "timeFrame": "Plage de dates",
+      "error": "Un problème s'est produit. Veuillez réessayer plus tard.",
+      "downloadDbReady": "Votre base de données est prête à être téléchargée.",
       "to": "au",
       "success": "Succès ! La génération du fichier est en cours. Vous recevrez un courriel vous informant que le fichier est prêt à être téléchargé."
     },
