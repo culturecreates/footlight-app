@@ -218,6 +218,16 @@
   width: 68px;
 }
 
+.widget-settings .footer-text-wrapper .ant-form-item-row {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+
+.widget-settings .footer-control .upload-wrapper {
+  display: none;
+}
+
 @media screen and (max-width: 480px) {
   .widget-settings-wrapper .heading {
     font-size: 20px;
