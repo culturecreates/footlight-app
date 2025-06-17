@@ -6,7 +6,7 @@ import Outlined from '../../../../components/Button/Outlined';
 import StyledInput from '../../../../components/Input/Common';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
 import TreeSelectOption from '../../../../components/TreeSelectOption';
-import { CloseCircleOutlined, CopyOutlined, InfoCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, CopyOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
@@ -181,7 +181,6 @@ const WidgetSettings = ({ tabKey }) => {
         limit: form.getFieldValue('limit') ?? 9,
         font: form.getFieldValue('font') ?? 'Roboto',
         redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
-        showFooter: form.getFieldValue('footer-control') ?? false,
         showFooterLogo: form.getFieldValue('footer-logo-control') ?? false,
         footerText: form.getFieldValue('footer-text') ?? '',
         headerText: form.getFieldValue('header-text'),
@@ -210,12 +209,10 @@ const WidgetSettings = ({ tabKey }) => {
         height: formValues.height,
       };
 
-      const showFooter = formValues.showFooter;
-      params.showFooter = showFooter;
       params.disableGrouping = formValues.disableGroups;
       if (formValues.headerText) params.headerTitle = formValues.headerText;
-      if (formValues.footerText && showFooter) params.footerText = formValues.footerText;
-      if (formValues.showFooterLogo && showFooter) params.showFooterLogo = formValues.showFooterLogo;
+      if (formValues.footerText) params.footerText = formValues.footerText;
+      if (formValues.showFooterLogo) params.showFooterLogo = formValues.showFooterLogo;
 
       params.filterOptions = formValues.filterOptions;
 
@@ -236,14 +233,7 @@ const WidgetSettings = ({ tabKey }) => {
     }
   };
 
-  const handleFormValuesChange = (changedValues) => {
-    if (changedValues['footer-control'] === false) {
-      form.setFieldsValue({
-        'footer-text': '',
-        'footer-logo-control': false,
-      });
-    }
-
+  const handleFormValuesChange = () => {
     setHasFormChangedSinceLastUpdate(true);
     setIsMaskVisible(true);
     setShowMobileIframe(false);
@@ -358,7 +348,6 @@ const WidgetSettings = ({ tabKey }) => {
       font: form.getFieldValue('font') ?? 'Roboto',
       redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
       locale: onLanguageSelect(form.getFieldValue('locale') ?? languageOptions[0]?.value)?.key.toLowerCase(),
-      showFooter: form.getFieldValue('footer-control') ?? false,
       showFooterLogo: form.getFieldValue('footer-logo-control') ?? false,
       footerText: form.getFieldValue('footer-text') ?? '',
       headerText: form.getFieldValue('header-text'),
@@ -378,12 +367,10 @@ const WidgetSettings = ({ tabKey }) => {
       height: formValues.height,
     };
 
-    const showFooter = formValues.showFooter;
-    params.showFooter = showFooter;
     params.disableGrouping = formValues.disableGroups;
     if (formValues.headerText) params.headerTitle = formValues.headerText;
-    if (formValues.footerText && showFooter) params.footerText = formValues.footerText;
-    if (formValues.showFooterLogo && showFooter) params.showFooterLogo = formValues.showFooterLogo;
+    if (formValues.footerText) params.footerText = formValues.footerText;
+    if (formValues.showFooterLogo) params.showFooterLogo = formValues.showFooterLogo;
 
     params.filterOptions = formValues.filterOptions;
 
@@ -495,89 +482,53 @@ const WidgetSettings = ({ tabKey }) => {
                         </p>
                       </Col>
                       <Col flex="448px" className="footer-control-wrapper">
-                        <Row gutter={[0, 16]}>
-                          <Col flex="448px">
-                            <p
-                              className="footer-text-label"
-                              style={{ color: '#222732', fontSize: '16px', fontWeight: '700', lineHeight: '24px' }}>
-                              {t(`${localePath}.footerText`)}
-                            </p>
-                            <p className="header-text-description">{t(`${localePath}.footerTextDescription`)}</p>
-                          </Col>
+                        <Form.Item label={t(`${localePath}.footerText`)}>
+                          <Row gutter={[0, 16]}>
+                            <Col flex="448px">
+                              <Form.Item name="footer-text">
+                                <StyledInput />
+                              </Form.Item>
+                              <span
+                                style={{
+                                  fontSize: '16px',
+                                  fontWeight: 400,
+                                  lineHeight: '24px',
+                                  letterSpacing: '0em',
+                                  textAlign: 'left',
+                                  color: '#646d7b',
+                                  marginTop: '4px',
+                                }}>
+                                {t(`${localePath}.footerTitle`)}
+                              </span>
+                            </Col>
 
-                          <Col flex="448px">
-                            <Form.Item name="footer-control" valuePropName="checked" initialValue={false}>
-                              <StyledSwitch />
-                            </Form.Item>
-                            <p className="footer-control">{t(`${localePath}.showFooter`)}</p>
-                          </Col>
-
-                          <Form.Item noStyle shouldUpdate>
-                            {({ getFieldValue }) => (
-                              <Col flex="448px" className="footer-text-wrapper">
-                                <Tooltip
-                                  title={!getFieldValue('footer-control') ? t(`${localePath}.footerInfoTooltip`) : ''}
-                                  placement="topLeft">
-                                  <Form.Item
-                                    name="footer-text"
-                                    label={
-                                      <span
-                                        style={{
-                                          fontSize: '16px',
-                                          fontWeight: 400,
-                                          lineHeight: '24px',
-                                          letterSpacing: '0em',
-                                          textAlign: 'left',
-                                          color: '#646d7b',
-                                        }}>
-                                        {t(`${localePath}.footerTitle`)}
-                                        {!getFieldValue('footer-control') && (
-                                          <InfoCircleOutlined style={{ marginLeft: 4, color: '#1890ff' }} />
-                                        )}
-                                      </span>
-                                    }>
-                                    <StyledInput disabled={!getFieldValue('footer-control')} />
-                                  </Form.Item>
-                                </Tooltip>
-                              </Col>
-                            )}
-                          </Form.Item>
-
-                          <Form.Item noStyle shouldUpdate>
-                            {({ getFieldValue }) => (
-                              <Col flex="448px" className="footer-control">
-                                <Tooltip
-                                  title={!getFieldValue('footer-control') ? t(`${localePath}.footerInfoTooltip`) : ''}
-                                  placement="topLeft">
-                                  <div>
+                            <Form.Item noStyle shouldUpdate>
+                              {({ getFieldValue }) => (
+                                <Col flex="448px" className="footer-control">
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                     <Form.Item name="footer-logo-control" valuePropName="checked">
-                                      <StyledSwitch disabled={!getFieldValue('footer-control')} />
+                                      <StyledSwitch />
                                     </Form.Item>
-                                    <p className="footer-control">
-                                      {t(`${localePath}.showFooterLogo`)}
-                                      {!getFieldValue('footer-control') && (
-                                        <InfoCircleOutlined style={{ marginLeft: 4, color: '#1890ff' }} />
-                                      )}
-                                    </p>
+                                    <p className="footer-control">{t(`${localePath}.showFooterLogo`)}</p>
                                   </div>
-                                </Tooltip>
 
-                                {getFieldValue('footer-logo-control') && (
-                                  <Tooltip title={t(`${localePath}.footerLogoInfoTooltip`)} placement="topLeft">
-                                    <div style={{ display: 'inline-block', width: '100%' }}>
-                                      <ImageUpload
-                                        imageUrl={calendarLogoUri}
-                                        imageReadOnly={true}
-                                        preview={false}
-                                        isCalendarLogo={true}
-                                      />
-                                    </div>
-                                  </Tooltip>
-                                )}
-                              </Col>
-                            )}
-                          </Form.Item>
-                        </Row>
+                                  {getFieldValue('footer-logo-control') && (
+                                    <Tooltip title={t(`${localePath}.footerLogoInfoTooltip`)} placement="topLeft">
+                                      <div style={{ display: 'inline-block', width: '100%' }}>
+                                        <ImageUpload
+                                          imageUrl={calendarLogoUri}
+                                          imageReadOnly={true}
+                                          preview={false}
+                                          isCalendarLogo={true}
+                                        />
+                                      </div>
+                                    </Tooltip>
+                                  )}
+                                </Col>
+                              )}
+                            </Form.Item>
+                          </Row>
+                        </Form.Item>
                       </Col>
                       <Col flex="448px" className="color-select-wrapper">
                         <Form.Item

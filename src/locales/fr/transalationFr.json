@@ -1008,11 +1008,9 @@
       "widgetSettings": {
         "title": "Apparence",
         "headerTextDescription": "Indiquez un titre si vous souhaitez qu'il apparaisse en haut de la page.",
-        "footerTextDescription": "Personnaliser le pied de page",
         "headerText": "L'en-tête",
-        "footerText": "L'en-tête",
-        "footerTitle": "Ajouter un titre à afficher dans le pied de page",
-        "footerInfoTooltip": "Activer le pied de page pour configurer ceci.",
+        "footerText": "Pied de page",
+        "footerTitle": "Ajoutez un texte de bas de page si vous souhaitez qu'il apparaisse en bas de page.",
         "footerLogoInfoTooltip": "Le logo peut être personnalisé dans les paramètres généraux.",
         "showFooter": "Afficher le pied de page",
         "showFooterLogo": "Afficher le logo du calendrier dans le pied de page",
