@@ -513,6 +513,11 @@ const RecurringEvents = function ({
         parentSetFormState={setFormFields}
         subEventCount={subEventCount}
         setSubEventCount={setSubEventCount}
+        defaultSelectedStartDate={
+          Array.isArray(formFields?.startDateRecur) && formFields?.startDateRecur.length > 0
+            ? formFields?.startDateRecur[0].toDate()
+            : null
+        }
       />
     </div>
   );
