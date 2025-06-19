@@ -587,7 +587,11 @@ function Events() {
             <Row align={'middle'} gutter={[12, 0]}>
               <EntityReports
                 entity={entitiesClass.event}
-                includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY]}
+                includedDropdownKeys={[
+                  IMPORT_ACTION_KEY,
+                  REPORT_ACTION_KEY,
+                  // DATABASE_ACTION_KEY
+                ]}
               />
               <Col style={{ display: 'flex', alignItems: 'center' }}>
                 <AddEvent

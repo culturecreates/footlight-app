@@ -1305,7 +1305,7 @@
         "dateRange": "Invalid date range"
       },
       "downloadReport": "Download report",
-      "downloadDB": "Download database",
+      "downloadDB": "Download all data",
       "cancel": "Cancel",
       "generate": "Generate",
       "to": "to",
