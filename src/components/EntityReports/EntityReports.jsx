@@ -63,6 +63,7 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
           },
           {
             key: DATABASE_ACTION_KEY,
+            disabled: true,
             label: t(`common.entityReport.downloadDB`),
             icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
           },
@@ -288,7 +289,7 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
   };
 
   return (
-    <Col style={{ display: 'flex', alignItems: 'center' }}>
+    <Col className="entity-options-dropdown-wrapper" style={{ display: 'flex', alignItems: 'center' }}>
       <Dropdown
         placement="bottomRight"
         className="calendar-dropdown-wrapper"
