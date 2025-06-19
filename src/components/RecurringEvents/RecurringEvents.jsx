@@ -43,10 +43,17 @@ const RecurringEvents = function ({
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [dateModified, setDateModified] = useState(false);
+
   const startDateRecur = Form.useWatch('startDateRecur', form);
+  const frequency = Form.useWatch('frequency', form);
+
   const { t } = useTranslation();
   Form.useWatch('endTimeRecur', form);
   Form.useWatch('startTimeRecur', form);
+
+  useEffect(() => {
+    if (frequency === 'CUSTOM' && !isModalVisible) setIsModalVisible(true);
+  }, [frequency]);
 
   useEffect(() => {
     if (eventDetails) {
