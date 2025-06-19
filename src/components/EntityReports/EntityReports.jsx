@@ -63,6 +63,7 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
           },
           {
             key: DATABASE_ACTION_KEY,
+            disabled: true,
             label: t(`common.entityReport.downloadDB`),
             icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
           },
