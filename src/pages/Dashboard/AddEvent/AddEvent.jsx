@@ -2050,8 +2050,43 @@ function AddEvent() {
           if (data.audience?.length > 0) {
             data.audience = data.audience.filter((audience) => audience?.label);
           }
+          let objectKeywords = [],
+            stringKeywords = [];
+          if (data.keywords?.length > 0) {
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+            objectKeywords = data.keywords.map((keyword) => {
+              if (typeof keyword === 'object' && keyword['@value']) {
+                stringKeywords.push(keyword['@value']);
+                return {
+                  label: {
+                    [keyword['@language']]: keyword['@value'],
+                  },
+                };
+              }
+              stringKeywords.push(keyword);
+              return {
+                label: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                  acc[contentLanguageKeyMap[lang]] = keyword;
+                  return acc;
+                }, {}),
+              };
+            });
+          }
           data = {
             ...data,
+            additionalType: [
+              ...(Array.isArray(data.additionalType) ? data.additionalType : []),
+              ...objectKeywords,
+            ].filter((type) => type),
+
+            audience: [...(Array.isArray(data.audience) ? data.audience : []), ...objectKeywords].filter(
+              (audience) => audience,
+            ),
+
+            discipline: [...(Array.isArray(data.discipline) ? data.discipline : []), ...objectKeywords].filter(
+              (discipline) => discipline,
+            ),
+            keywords: stringKeywords,
             sameAs: [
               ...data.sameAs,
               {
