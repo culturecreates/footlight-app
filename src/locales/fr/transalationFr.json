@@ -1302,7 +1302,7 @@
         "dateRange": "Plage de dates invalide"
       },
       "downloadReport": "Télécharger un rapport",
-      "downloadDB": "Télécharger la base de données",
+      "downloadDB": "Télécharger toutes les données",
       "cancel": "Annuler",
       "generate": "Générer",
       "download": "Télécharger",

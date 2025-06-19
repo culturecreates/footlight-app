@@ -7,6 +7,6 @@ export const entitiesClass = {
   user: 'User',
 };
 
-export const REPORT_ACTION_KEY = 'import';
-export const DATABASE_ACTION_KEY = 'generate-report';
-export const IMPORT_ACTION_KEY = 'download-db';
+export const REPORT_ACTION_KEY = 'generate-report';
+export const DATABASE_ACTION_KEY = 'download-db';
+export const IMPORT_ACTION_KEY = 'import';
