@@ -2052,26 +2052,9 @@ function AddEvent() {
           }
           let objectKeywords = [],
             stringKeywords = [];
-
           if (data.keywords?.length > 0) {
             initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
-
-            // Flatten keywords if any are stringified arrays
-            const flattenKeywords = data.keywords.flatMap((keyword) => {
-              if (typeof keyword === 'string') {
-                try {
-                  const parsed = JSON.parse(keyword);
-                  if (Array.isArray(parsed)) {
-                    return parsed;
-                  }
-                } catch {
-                  // Not a JSON array, treat as plain string
-                }
-              }
-              return [keyword];
-            });
-
-            objectKeywords = flattenKeywords.map((keyword) => {
+            objectKeywords = data.keywords.map((keyword) => {
               if (typeof keyword === 'object' && keyword['@value']) {
                 stringKeywords.push(keyword['@value']);
                 return {
