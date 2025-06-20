@@ -145,6 +145,28 @@ function EventReadOnly() {
     }
   };
 
+  const checkOfferConfigValid = (offerConfig) => {
+    if (!offerConfig) return false;
+    if (!offerConfig?.category) return false;
+
+    let flag = false;
+    const offerUri = offerConfig?.url?.uri || offerConfig?.email;
+    switch (offerConfig?.category) {
+      case offerTypes.FREE:
+        flag = true;
+        break;
+      case offerTypes.PAYING:
+        if (offerUri || (offerConfig?.prices && offerConfig?.prices?.length > 0)) flag = true;
+        break;
+      case offerTypes.REGISTER:
+        if (offerUri) flag = true;
+        break;
+      default:
+        break;
+    }
+    return flag;
+  };
+
   useEffect(() => {
     if (!isLoading && isSuccess) {
       if (eventData?.recurringEvent || eventData?.subEventConfiguration?.length > 0) setDateType(dateTypes.MULTIPLE);
@@ -1272,7 +1294,7 @@ function EventReadOnly() {
                       eventFormRequiredFieldNames?.TICKET_INFO,
                       eventData?.offerConfiguration,
                     ) &&
-                      eventData?.offerConfiguration && (
+                      checkOfferConfigValid(eventData?.offerConfiguration) && (
                         <Col flex={'723px'} className="read-only-event-section-col top-level-column">
                           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                             <Col flex={'423px'}>
