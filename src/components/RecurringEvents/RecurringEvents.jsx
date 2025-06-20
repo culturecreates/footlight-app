@@ -1,7 +1,7 @@
 import { Form, Select, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../constants/dateTypes';
 import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
@@ -51,8 +51,14 @@ const RecurringEvents = function ({
   Form.useWatch('endTimeRecur', form);
   Form.useWatch('startTimeRecur', form);
 
+  const initialRenderRef = useRef(true);
+
   useEffect(() => {
-    if (frequency === 'CUSTOM' && !isModalVisible) setIsModalVisible(true);
+    if (!frequency) return;
+
+    if (frequency === 'CUSTOM' && !isModalVisible && !initialRenderRef.current) setIsModalVisible(true);
+
+    initialRenderRef.current = false;
   }, [frequency]);
 
   useEffect(() => {
