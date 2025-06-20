@@ -29,6 +29,7 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, par
           calendarContentLanguage: calendarContentLanguage,
         }),
       key: child?.id,
+      originalName: child?.name,
     };
   });
 };
@@ -70,6 +71,7 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
           calendarContentLanguage: calendarContentLanguage,
         }),
         key: concept?.id,
+        originalName: concept?.name,
       };
     });
   return options;
@@ -205,16 +207,31 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
 };
 
 export const findMatchingItems = (array2 = [], searchTerms = []) => {
+  const loweredTerms = searchTerms.map((t) => t?.toLowerCase?.() ?? '');
+
+  const titleMatches = (title) => {
+    if (!title) return false;
+
+    if (typeof title === 'string') {
+      return loweredTerms.includes(title.toLowerCase());
+    }
+
+    if (typeof title === 'object') {
+      return Object.values(title).some((val) => loweredTerms.includes((val ?? '').toLowerCase()));
+    }
+
+    return false;
+  };
+
   const results = [];
 
   for (const item of array2) {
-    const titleMatch = searchTerms?.includes(item?.title?.toLowerCase());
-    if (titleMatch) {
+    if (titleMatches(item?.originalName)) {
       results.push(item);
     }
 
-    if (item?.children) {
-      const childMatches = item.children.filter((child) => searchTerms?.includes(child?.title?.toLowerCase()));
+    if (Array.isArray(item?.children) && item.children.length) {
+      const childMatches = item.children.filter((child) => titleMatches(child?.originalName));
       results.push(...childMatches);
     }
   }
