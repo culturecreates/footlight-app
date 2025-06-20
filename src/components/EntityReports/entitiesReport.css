@@ -22,6 +22,10 @@
   height: 35px;
 }
 
+.entity-options-dropdown-wrapper .ant-dropdown-menu-item-disabled svg path {
+  fill: #bfbfbf;
+}
+
 .entity-report-modal .ant-modal-footer > :nth-child(1) {
   background: var(--background-neutrals-ground, #fff);
   color: var(--content-action-default, #1b3de6);
