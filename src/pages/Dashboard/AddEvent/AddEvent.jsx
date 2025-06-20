@@ -862,44 +862,52 @@ function AddEvent() {
             }
 
             if (ticketType) {
-              const name = ticketNote;
+              const name = ticketNote && ticketNote !== '' ? { name: ticketNote } : {};
+              const prices = values?.prices?.filter((element) => element != null || element != undefined);
+              const getLinkObject = (link, isUrl) =>
+                isUrl ? { url: { uri: urlProtocolCheck(link) } } : { email: link };
 
-              offerConfiguration = {
-                category: ticketType,
-                ...(name && {
-                  name,
-                }),
-                ...(ticketType === offerTypes.PAYING &&
-                  values?.prices?.length > 0 &&
-                  values?.prices[0] && {
-                    prices: values?.prices?.filter((element) => element != null || element != undefined),
-                  }),
-                priceCurrency: 'CAD',
-                ...(ticketType === offerTypes.PAYING &&
-                  values?.ticketLink &&
-                  values?.ticketLinkType == ticketLinkOptions[0].value && {
-                    url: {
-                      uri: urlProtocolCheck(values?.ticketLink),
-                    },
-                  }),
-                ...(ticketType === offerTypes.PAYING &&
-                  values?.ticketLink &&
-                  values?.ticketLinkType == ticketLinkOptions[1].value && {
-                    email: values?.ticketLink,
-                  }),
-                ...(ticketType === offerTypes.REGISTER &&
-                  values?.registerLink &&
-                  values?.ticketLinkType === ticketLinkOptions[0].value && {
-                    url: {
-                      uri: urlProtocolCheck(values?.registerLink),
-                    },
-                  }),
-                ...(ticketType === offerTypes.REGISTER &&
-                  values?.registerLink &&
-                  values?.ticketLinkType === ticketLinkOptions[1].value && {
-                    email: values?.registerLink,
-                  }),
-              };
+              offerConfiguration = {};
+
+              switch (ticketType) {
+                case offerTypes.FREE:
+                  offerConfiguration = {
+                    ...name,
+                    category: ticketType,
+                  };
+                  break;
+                case offerTypes.PAYING:
+                  if (prices?.length > 0 || values?.ticketLink) {
+                    const ticketLink = getLinkObject(
+                      values.ticketLink,
+                      values.ticketLinkType === ticketLinkOptions[0].value,
+                    );
+
+                    offerConfiguration = {
+                      ...name,
+                      prices,
+                      priceCurrency: 'CAD',
+                      ...(values?.ticketLink && ticketLink),
+                      category: ticketType,
+                    };
+                  }
+                  break;
+
+                case offerTypes.REGISTER:
+                  if (values?.registerLink) {
+                    const registerLink = getLinkObject(
+                      values.registerLink,
+                      values.ticketLinkType === ticketLinkOptions[0].value,
+                    );
+
+                    offerConfiguration = {
+                      ...name,
+                      ...(values?.registerLink && registerLink),
+                      category: ticketType,
+                    };
+                  }
+                  break;
+              }
             }
 
             if (values?.organizers) {
