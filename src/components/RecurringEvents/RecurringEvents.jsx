@@ -1,7 +1,7 @@
 import { Form, Select, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../constants/dateTypes';
 import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
@@ -43,10 +43,23 @@ const RecurringEvents = function ({
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [dateModified, setDateModified] = useState(false);
+
   const startDateRecur = Form.useWatch('startDateRecur', form);
+  const frequency = Form.useWatch('frequency', form);
+
   const { t } = useTranslation();
   Form.useWatch('endTimeRecur', form);
   Form.useWatch('startTimeRecur', form);
+
+  const initialRenderRef = useRef(true);
+
+  useEffect(() => {
+    if (!frequency) return;
+
+    if (frequency === 'CUSTOM' && !isModalVisible && !initialRenderRef.current) setIsModalVisible(true);
+
+    initialRenderRef.current = false;
+  }, [frequency]);
 
   useEffect(() => {
     if (eventDetails) {
@@ -513,6 +526,11 @@ const RecurringEvents = function ({
         parentSetFormState={setFormFields}
         subEventCount={subEventCount}
         setSubEventCount={setSubEventCount}
+        defaultSelectedStartDate={
+          Array.isArray(formFields?.startDateRecur) && formFields?.startDateRecur.length > 0
+            ? formFields?.startDateRecur[0].toDate()
+            : null
+        }
       />
     </div>
   );

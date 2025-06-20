@@ -35,6 +35,7 @@ const RecurringModal = ({
   setNumberOfTimes,
   subEventCount,
   setSubEventCount,
+  defaultSelectedStartDate,
 }) => {
   const [dateSource, setDataSource] = useState([]);
   const [test, setTest] = useState();
@@ -108,8 +109,25 @@ const RecurringModal = ({
   }, [dateSource]);
 
   useEffect(() => {
-    setDataSource(customDates);
+    if (isModalVisible) {
+      setDataSource(customDates);
+
+      if (defaultSelectedStartDate && (!customDates || customDates.length === 0)) {
+        const obj = {
+          id: uniqid(),
+          name: 'test name',
+          location: 'test Location',
+          startDate: defaultSelectedStartDate,
+          endDate: defaultSelectedStartDate,
+          initDate: moment(defaultSelectedStartDate),
+          isDeleted: false,
+          color: '#607EFC',
+        };
+        setTest(obj);
+      }
+    }
   }, [isModalVisible]);
+
   useEffect(() => {
     const el1 = document.getElementsByClassName(selectedDateId);
     if (el1) el1[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -148,6 +166,7 @@ const RecurringModal = ({
           }),
         );
       } else setDataSource([...dateSource, test].sort((a, b) => (b.initDate < a.initDate ? 1 : -1)));
+
       setTest(null);
     }
   }, [test]);
