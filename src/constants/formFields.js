@@ -18,6 +18,7 @@ import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
 import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelect';
 import { getEmbedUrl, validateVideoLink } from '../utils/getEmbedVideoUrl';
+import AdditionalLinks from '../components/AdditonalLinks/AdditionalLinks';
 
 const { TextArea } = Input;
 
@@ -43,6 +44,7 @@ export const dataTypes = {
   IMAGE: 'Image',
   EMAIL: 'Email',
   URI_STRING_ARRAY: 'URIString[]',
+  LINKS: 'LINKS',
 };
 
 export const subDataType = {
@@ -287,6 +289,17 @@ export const formFieldValue = [
               </>
             )}
           </Form.List>
+        );
+      } else if (datatype === dataTypes.LINKS) {
+        return (
+          <AdditionalLinks
+            form={form}
+            name={name}
+            validations={validations}
+            calendarContentLanguage={calendarContentLanguage}
+            entityId={entityId}
+            initialData={data}
+          />
         );
       } else
         return (

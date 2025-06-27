@@ -600,7 +600,8 @@
             "people": "People",
             "organizations": "Organizations"
           },
-          "addSocialMediaLinks": "Add media link"
+          "addSocialMediaLinks": "Add media link",
+          "addLinkText": "Add text"
         },
         "notification": {
           "addSuccess": "Success! Your organization has been created.",
@@ -1294,6 +1295,16 @@
     "copied": "Copied to clipboard",
     "discard": "Discard",
     "day": "day",
+    "components": {
+      "additionalLinks": {
+        "addLink": "Add additional link",
+        "validations": {
+          "required": "This field is required.",
+          "url": "Please enter a valid URL.",
+          "email": "Please enter a valid email address."
+        }
+      }
+    },
     "validations": {
       "informationRequired": "Information is required"
     },

@@ -600,7 +600,8 @@
             "people": "Personnes",
             "organizations": "Organisations"
           },
-          "addSocialMediaLinks": "Ajouter un lien"
+          "addSocialMediaLinks": "Ajouter un lien",
+          "addLinkText": "Ajouter un texte"
         },
         "notification": {
           "addSuccess": "Succès ! La fiche de cette organisation a été créée.",

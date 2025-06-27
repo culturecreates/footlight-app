@@ -76,6 +76,30 @@ export const formPayloadHandler = (
           payload = value?.filter((link) => link != undefined);
           return { [mappedField]: payload };
         } else return { [mappedField]: [] };
+
+      case dataTypes.LINKS:
+        if (value?.length > 0) {
+          payload = value?.map((link) => {
+            let labelType;
+
+            switch (link?.type) {
+              case 'url':
+                labelType = 'uri';
+                break;
+              case 'email':
+                labelType = 'email';
+                break;
+            }
+            if (!labelType || !(link?.value && link?.value.trim() !== '')) return null;
+            return {
+              [labelType]: link?.value,
+              name: link?.name,
+            };
+          });
+
+          return { [mappedField]: payload.filter(Boolean) };
+        } else return { [mappedField]: [] };
+
       default:
         break;
     }
