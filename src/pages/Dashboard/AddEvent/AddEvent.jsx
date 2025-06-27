@@ -862,44 +862,52 @@ function AddEvent() {
             }
 
             if (ticketType) {
-              const name = ticketNote;
+              const name = ticketNote && ticketNote !== '' ? { name: ticketNote } : {};
+              const prices = values?.prices?.filter((element) => element != null || element != undefined);
+              const getLinkObject = (link, isUrl) =>
+                isUrl ? { url: { uri: urlProtocolCheck(link) } } : { email: link };
 
-              offerConfiguration = {
-                category: ticketType,
-                ...(name && {
-                  name,
-                }),
-                ...(ticketType === offerTypes.PAYING &&
-                  values?.prices?.length > 0 &&
-                  values?.prices[0] && {
-                    prices: values?.prices?.filter((element) => element != null || element != undefined),
-                  }),
-                priceCurrency: 'CAD',
-                ...(ticketType === offerTypes.PAYING &&
-                  values?.ticketLink &&
-                  values?.ticketLinkType == ticketLinkOptions[0].value && {
-                    url: {
-                      uri: urlProtocolCheck(values?.ticketLink),
-                    },
-                  }),
-                ...(ticketType === offerTypes.PAYING &&
-                  values?.ticketLink &&
-                  values?.ticketLinkType == ticketLinkOptions[1].value && {
-                    email: values?.ticketLink,
-                  }),
-                ...(ticketType === offerTypes.REGISTER &&
-                  values?.registerLink &&
-                  values?.ticketLinkType === ticketLinkOptions[0].value && {
-                    url: {
-                      uri: urlProtocolCheck(values?.registerLink),
-                    },
-                  }),
-                ...(ticketType === offerTypes.REGISTER &&
-                  values?.registerLink &&
-                  values?.ticketLinkType === ticketLinkOptions[1].value && {
-                    email: values?.registerLink,
-                  }),
-              };
+              offerConfiguration = {};
+
+              switch (ticketType) {
+                case offerTypes.FREE:
+                  offerConfiguration = {
+                    ...name,
+                    category: ticketType,
+                  };
+                  break;
+                case offerTypes.PAYING:
+                  if (prices?.length > 0 || values?.ticketLink) {
+                    const ticketLink = getLinkObject(
+                      values.ticketLink,
+                      values.ticketLinkType === ticketLinkOptions[0].value,
+                    );
+
+                    offerConfiguration = {
+                      ...name,
+                      prices,
+                      priceCurrency: 'CAD',
+                      ...(values?.ticketLink && ticketLink),
+                      category: ticketType,
+                    };
+                  }
+                  break;
+
+                case offerTypes.REGISTER:
+                  if (values?.registerLink) {
+                    const registerLink = getLinkObject(
+                      values.registerLink,
+                      values.ticketLinkType === ticketLinkOptions[0].value,
+                    );
+
+                    offerConfiguration = {
+                      ...name,
+                      ...(values?.registerLink && registerLink),
+                      category: ticketType,
+                    };
+                  }
+                  break;
+              }
             }
 
             if (values?.organizers) {
@@ -1862,124 +1870,143 @@ function AddEvent() {
             data.scheduleTimezone = identifyBestTimezone(data.startDateTime)?.value;
           }
           if (data.organizers?.length > 0) {
-            let initialOrganizers = await loadArtsDataDetails(data?.organizers);
-            initialOrganizers = initialOrganizers?.filter((org) => org?.uri !== undefined);
-            initialOrganizers?.length > 0 &&
-              setSelectedOrganizers(
-                treeEntitiesOption(
-                  initialOrganizers,
-                  user,
-                  calendarContentLanguage,
-                  sourceOptions.ARTSDATA,
-                  currentCalendarData,
-                ),
-              );
+            try {
+              let initialOrganizers = await loadArtsDataDetails(data?.organizers);
+              initialOrganizers = initialOrganizers?.filter((org) => org?.uri !== undefined);
+              if (initialOrganizers?.length > 0) {
+                setSelectedOrganizers(
+                  treeEntitiesOption(
+                    initialOrganizers,
+                    user,
+                    calendarContentLanguage,
+                    sourceOptions.ARTSDATA,
+                    currentCalendarData,
+                  ),
+                );
+              }
+            } catch (e) {
+              console.error('Failed to load organizers', e);
+            }
           }
 
           if (data.performers?.length > 0) {
-            let initialPerformers = await loadArtsDataDetails(data?.performers);
-            initialPerformers = initialPerformers?.filter((org) => org?.uri !== undefined);
-            if (initialPerformers?.length > 0) {
-              setSelectedPerformers(
-                treeEntitiesOption(
-                  initialPerformers,
-                  user,
-                  calendarContentLanguage,
-                  sourceOptions.ARTSDATA,
-                  currentCalendarData,
-                ),
-              );
-              initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
+            try {
+              let initialPerformers = await loadArtsDataDetails(data?.performers);
+              initialPerformers = initialPerformers?.filter((org) => org?.uri !== undefined);
+              if (initialPerformers?.length > 0) {
+                setSelectedPerformers(
+                  treeEntitiesOption(
+                    initialPerformers,
+                    user,
+                    calendarContentLanguage,
+                    sourceOptions.ARTSDATA,
+                    currentCalendarData,
+                  ),
+                );
+                initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
+              }
+            } catch (e) {
+              console.error('Failed to load performers', e);
             }
           }
 
           if (data.sponsors?.length > 0) {
-            let initialSupporters = await loadArtsDataDetails(data?.sponsors);
-            initialSupporters = initialSupporters?.filter((org) => org?.uri !== undefined);
-            if (initialSupporters?.length > 0) {
-              setSelectedSupporters(
-                treeEntitiesOption(
-                  initialSupporters,
-                  user,
-                  calendarContentLanguage,
-                  sourceOptions.ARTSDATA,
-                  currentCalendarData,
-                ),
-              );
-
-              initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
+            try {
+              let initialSupporters = await loadArtsDataDetails(data?.sponsors);
+              initialSupporters = initialSupporters?.filter((org) => org?.uri !== undefined);
+              if (initialSupporters?.length > 0) {
+                setSelectedSupporters(
+                  treeEntitiesOption(
+                    initialSupporters,
+                    user,
+                    calendarContentLanguage,
+                    sourceOptions.ARTSDATA,
+                    currentCalendarData,
+                  ),
+                );
+                initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
+              }
+            } catch (e) {
+              console.error('Failed to load sponsors', e);
             }
           }
-          if (data.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
 
           if (data.location) {
-            const entityId = extractLastSegment(data.location);
-            const response = await loadArtsDataPlaceEntity({ entityId });
+            try {
+              const entityId = extractLastSegment(data.location);
+              const response = await loadArtsDataPlaceEntity({ entityId });
 
-            const placeData = response?.data?.[0];
-            const primaryAddress = placeData?.address?.[0];
+              const placeData = response?.data?.[0];
+              const primaryAddress = placeData?.address?.[0];
 
-            const updatedPlaceData =
-              placeData && primaryAddress ? { ...placeData, address: primaryAddress } : placeData;
+              const updatedPlaceData =
+                placeData && primaryAddress ? { ...placeData, address: primaryAddress } : placeData;
 
-            const entityData = updatedPlaceData ? [updatedPlaceData] : [];
+              const entityData = updatedPlaceData ? [updatedPlaceData] : [];
 
-            const [location] = placesOptions(
-              entityData,
-              user,
-              calendarContentLanguage,
-              sourceOptions.ARTSDATA,
-              currentCalendarData,
-            );
+              const [location] = placesOptions(
+                entityData,
+                user,
+                calendarContentLanguage,
+                sourceOptions.ARTSDATA,
+                currentCalendarData,
+              );
 
-            setLocationPlace(location);
+              setLocationPlace(location);
+            } catch (e) {
+              console.error('Failed to load location place', e);
+            }
           }
 
           if (data.image?.url?.uri || data.image) {
-            let artsDataImage = await addImage({
-              imageUrl: data.image?.url?.uri ?? data.image?.uri ?? data.image,
-              calendarId,
-            }).unwrap();
-            const getLocalized = (field) => (field ? normalizeLanguageData(field) : undefined);
+            try {
+              let artsDataImage = await addImage({
+                imageUrl: data.image?.url?.uri ?? data.image?.uri ?? data.image,
+                calendarId,
+              }).unwrap();
+              const getLocalized = (field) => (field ? normalizeLanguageData(field) : undefined);
 
-            data['image'] = {
-              original: {
-                ...artsDataImage.data?.original,
-                uri: artsDataImage.data?.url?.uri,
-              },
-              large: {
-                uri: artsDataImage.data?.url?.uri,
-              },
-              thumbnail: {
-                uri: artsDataImage.data?.url?.uri,
-              },
-              isMain: true,
-              creditText: getLocalized(data?.image?.creditText),
-              description: getLocalized(data?.image?.description),
-              caption: getLocalized(data?.image?.caption),
-            };
-            form.setFieldsValue({
-              imageCrop: {
+              data['image'] = {
+                original: {
+                  ...artsDataImage.data?.original,
+                  uri: artsDataImage.data?.url?.uri,
+                },
                 large: {
-                  x: undefined,
-                  y: undefined,
-                  height: undefined,
-                  width: undefined,
+                  uri: artsDataImage.data?.url?.uri,
                 },
-                original: artsDataImage.data?.original,
                 thumbnail: {
-                  x: undefined,
-                  y: undefined,
-                  height: undefined,
-                  width: undefined,
+                  uri: artsDataImage.data?.url?.uri,
                 },
-              },
-              mainImageOptions: {
-                credit: getLocalized(data?.image?.creditText),
-                altText: getLocalized(data?.image?.description),
+                isMain: true,
+                creditText: getLocalized(data?.image?.creditText),
+                description: getLocalized(data?.image?.description),
                 caption: getLocalized(data?.image?.caption),
-              },
-            });
+              };
+              form.setFieldsValue({
+                imageCrop: {
+                  large: {
+                    x: undefined,
+                    y: undefined,
+                    height: undefined,
+                    width: undefined,
+                  },
+                  original: artsDataImage.data?.original,
+                  thumbnail: {
+                    x: undefined,
+                    y: undefined,
+                    height: undefined,
+                    width: undefined,
+                  },
+                },
+                mainImageOptions: {
+                  credit: getLocalized(data?.image?.creditText),
+                  altText: getLocalized(data?.image?.description),
+                  caption: getLocalized(data?.image?.caption),
+                },
+              });
+            } catch (e) {
+              console.error('Failed to add/process image', e);
+            }
           }
           const isRecurring = !!data.subEventConfiguration;
           let initialDateType = dateTimeTypeHandler(
@@ -2018,9 +2045,7 @@ function AddEvent() {
           if (data?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
           if (data?.offers) {
             const offerConfig = handleArtsdataOffers(data?.offers);
-
             setTicketType(offerConfig?.category);
-
             data = {
               ...data,
               offerConfiguration: offerConfig,
@@ -2033,8 +2058,43 @@ function AddEvent() {
           if (data.audience?.length > 0) {
             data.audience = data.audience.filter((audience) => audience?.label);
           }
+          let objectKeywords = [],
+            stringKeywords = [];
+          if (data.keywords?.length > 0) {
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+            objectKeywords = data.keywords.map((keyword) => {
+              if (typeof keyword === 'object' && keyword['@value']) {
+                stringKeywords.push(keyword['@value']);
+                return {
+                  label: {
+                    [keyword['@language']]: keyword['@value'],
+                  },
+                };
+              }
+              stringKeywords.push(keyword);
+              return {
+                label: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                  acc[contentLanguageKeyMap[lang]] = keyword;
+                  return acc;
+                }, {}),
+              };
+            });
+          }
           data = {
             ...data,
+            additionalType: [
+              ...(Array.isArray(data.additionalType) ? data.additionalType : []),
+              ...objectKeywords,
+            ].filter((type) => type),
+
+            audience: [...(Array.isArray(data.audience) ? data.audience : []), ...objectKeywords].filter(
+              (audience) => audience,
+            ),
+
+            discipline: [...(Array.isArray(data.discipline) ? data.discipline : []), ...objectKeywords].filter(
+              (discipline) => discipline,
+            ),
+            keywords: stringKeywords,
             sameAs: [
               ...data.sameAs,
               {
@@ -2043,6 +2103,7 @@ function AddEvent() {
               },
             ],
           };
+
           setArtsData(data);
           setAddedFields(initialAddedFields);
           setArtsDataLoading(false);
@@ -2925,7 +2986,15 @@ function AddEvent() {
                 <Form.Item
                   name="eventDiscipline"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
-                  initialValue={eventData?.discipline?.map((type) => type?.entityId)}
+                  initialValue={
+                    eventData?.discipline?.map((type) => type?.entityId) ??
+                    findMatchingItems(
+                      treeTaxonomyOptions(allTaxonomyData, user, 'EventDiscipline', false, calendarContentLanguage),
+                      artsData?.discipline
+                        ?.map((type) => type?.label)
+                        ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+                    )?.map((concept) => concept?.value)
+                  }
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE)
                       ? adminCheckHandler({ calendar, user })
