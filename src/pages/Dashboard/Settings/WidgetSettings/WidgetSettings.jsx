@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Form, Grid, Row, Spin, message, notification } from 'antd';
+import { Button, Col, Divider, Form, Grid, Row, Spin, Tooltip, message, notification } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './css/widgetSettings.css';
@@ -32,6 +32,7 @@ import StyledSwitch from '../../../../components/Switch';
 import { eventTaxonomyMappedField } from '../../../../constants/eventTaxonomyMappedField';
 import { EVENT, PLACE } from '../../../../constants/standardFieldsTranslations';
 import WidgetPreview from './WidgetPreview';
+import ImageUpload from '../../../../components/ImageUpload';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
@@ -180,7 +181,8 @@ const WidgetSettings = ({ tabKey }) => {
         limit: form.getFieldValue('limit') ?? 9,
         font: form.getFieldValue('font') ?? 'Roboto',
         redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
-        showFooter: form.getFieldValue('footer-control') ?? false,
+        showFooterLogo: form.getFieldValue('footer-logo-control') ?? false,
+        footerText: form.getFieldValue('footer-text') ?? '',
         headerText: form.getFieldValue('header-text'),
         disableGroups: form.getFieldValue('disableGroups') ?? false,
         filterOptions: form.getFieldValue('filterOptions')?.join('|'),
@@ -202,14 +204,16 @@ const WidgetSettings = ({ tabKey }) => {
         limit: formValues.limit,
         calendar: calendarSlug,
         calendarName,
-        logo: calendarLogoUri,
         searchEventsFilters: formValues.searchEventsFilters,
         locale: formValues.locale,
         height: formValues.height,
       };
-      params.showFooter = formValues.showFooter;
+
       params.disableGrouping = formValues.disableGroups;
       if (formValues.headerText) params.headerTitle = formValues.headerText;
+      if (formValues.footerText) params.footerText = formValues.footerText;
+      if (formValues.showFooterLogo) params.showFooterLogo = formValues.showFooterLogo;
+
       params.filterOptions = formValues.filterOptions;
 
       const urlCopy = generateUrlWithParams(widgetUrl, params, { color: formValues.color });
@@ -344,7 +348,8 @@ const WidgetSettings = ({ tabKey }) => {
       font: form.getFieldValue('font') ?? 'Roboto',
       redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
       locale: onLanguageSelect(form.getFieldValue('locale') ?? languageOptions[0]?.value)?.key.toLowerCase(),
-      showFooter: form.getFieldValue('footer-control') ?? false,
+      showFooterLogo: form.getFieldValue('footer-logo-control') ?? false,
+      footerText: form.getFieldValue('footer-text') ?? '',
       headerText: form.getFieldValue('header-text'),
       disableGroups: form.getFieldValue('disableGroups') ?? false,
       filterOptions: form.getFieldValue('filterOptions')?.join('|'),
@@ -352,7 +357,6 @@ const WidgetSettings = ({ tabKey }) => {
     };
 
     const params = {
-      logo: calendarLogoUri,
       locale: formValues.locale,
       limit: formValues.limit,
       color: formValues.color,
@@ -363,9 +367,11 @@ const WidgetSettings = ({ tabKey }) => {
       height: formValues.height,
     };
 
-    params.showFooter = formValues.showFooter;
     params.disableGrouping = formValues.disableGroups;
     if (formValues.headerText) params.headerTitle = formValues.headerText;
+    if (formValues.footerText) params.footerText = formValues.footerText;
+    if (formValues.showFooterLogo) params.showFooterLogo = formValues.showFooterLogo;
+
     params.filterOptions = formValues.filterOptions;
 
     const urlCopy = generateUrlWithParams(widgetUrl, params);
@@ -476,12 +482,53 @@ const WidgetSettings = ({ tabKey }) => {
                         </p>
                       </Col>
                       <Col flex="448px" className="footer-control-wrapper">
-                        <Form.Item name="footer-control" initialValue={false} data-cy="widget-settings-headerText">
-                          <StyledSwitch defaultChecked={false} />
+                        <Form.Item label={t(`${localePath}.footerText`)}>
+                          <Row gutter={[0, 16]}>
+                            <Col flex="448px">
+                              <Form.Item name="footer-text">
+                                <StyledInput />
+                              </Form.Item>
+                              <span
+                                style={{
+                                  fontSize: '16px',
+                                  fontWeight: 400,
+                                  lineHeight: '24px',
+                                  letterSpacing: '0em',
+                                  textAlign: 'left',
+                                  color: '#646d7b',
+                                  marginTop: '4px',
+                                }}>
+                                {t(`${localePath}.footerTitle`)}
+                              </span>
+                            </Col>
+
+                            <Form.Item noStyle shouldUpdate>
+                              {({ getFieldValue }) => (
+                                <Col flex="448px" className="footer-control">
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <Form.Item name="footer-logo-control" valuePropName="checked">
+                                      <StyledSwitch />
+                                    </Form.Item>
+                                    <p className="footer-control">{t(`${localePath}.showFooterLogo`)}</p>
+                                  </div>
+
+                                  {getFieldValue('footer-logo-control') && (
+                                    <Tooltip title={t(`${localePath}.footerLogoInfoTooltip`)} placement="topLeft">
+                                      <div style={{ display: 'inline-block', width: '100%' }}>
+                                        <ImageUpload
+                                          imageUrl={calendarLogoUri}
+                                          imageReadOnly={true}
+                                          preview={false}
+                                          isCalendarLogo={true}
+                                        />
+                                      </div>
+                                    </Tooltip>
+                                  )}
+                                </Col>
+                              )}
+                            </Form.Item>
+                          </Row>
                         </Form.Item>
-                        <p className="footer-control" data-cy="widget-settings-footer-control-label">
-                          {t(`${localePath}.showFooter`)}
-                        </p>
                       </Col>
                       <Col flex="448px" className="color-select-wrapper">
                         <Form.Item
