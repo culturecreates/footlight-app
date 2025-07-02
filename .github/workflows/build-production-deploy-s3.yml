@@ -38,8 +38,8 @@ jobs:
       - name: Add extra env variables
         run: |
           echo "" >> .env.production
-          echo "REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.production
-          echo "REACT_APP_GOOGLE_MAPS_ID=${{ secrets.GOOGLE_MAPS_ID }}" >> .env.production  
+          echo "VITE_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.production
+          echo "VITE_APP_GOOGLE_MAPS_ID=${{ secrets.GOOGLE_MAPS_ID }}" >> .env.production  
         
       - name: build
         run: npm run build:production
