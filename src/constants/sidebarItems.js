@@ -33,7 +33,7 @@ export const sidebarItems = [
     name: 'dashboard.sidebar.organizations',
     path: '/organizations',
     component: <div>organizations</div>,
-    icon: <Icon component={Organizations} style={iconStyle} />,
+    icon: <Icon component={() => <Organizations style={iconStyle} />} />,
     disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
     adminOnly: false,
   },

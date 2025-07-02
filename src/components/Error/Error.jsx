@@ -20,7 +20,7 @@ function ErrorAlert(props) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  let image, message, heading;
+  let message, heading;
 
   useEffect(() => {
     // effect to trigger api reload when browser back button is pressed
@@ -38,7 +38,7 @@ function ErrorAlert(props) {
   }, [dispatch]);
 
   heading = t('errorPage.heading');
-  image = <GeneralErrors />;
+  let image = <img src={GeneralErrors} alt="Error illustration" />;
 
   if (errorType === 'serverDown') {
     heading = t('errorPage.serverDown');
@@ -48,7 +48,7 @@ function ErrorAlert(props) {
   if (errorType === 'general' && !errorDetails.isError) {
     message = error?.message;
   } else if (errorType === 'pageNotFound') {
-    image = <Error404 />;
+    image = <img src={Error404} alt="404 illustration" />;
     message = t('errorPage.notFoundMessage');
   }
 
