@@ -1,6 +1,6 @@
 import { useNavigate, useRouteError } from 'react-router-dom';
-import { ReactComponent as GeneralErrors } from '../../assets/images/general-error.svg';
-import { ReactComponent as Error404 } from '../../assets/images/404-error.svg';
+import GeneralErrors from '../../assets/images/general-error.svg?react';
+import Error404 from '../../assets/images/404-error.svg?react';
 import './error.css';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';

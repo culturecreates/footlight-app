@@ -3,7 +3,7 @@
 import Cookies from 'js-cookie';
 
 export async function fetchEntityReport({ calendarId, startDate, endDate, entity }) {
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = import.meta.env.VITE_APP_API_URL;
 
   const accessToken = Cookies.get('accessToken');
   const url = `${baseUrl}/entities/generate-report?entity=${entity}&start-date=${startDate}&end-date=${endDate}`;
@@ -38,7 +38,7 @@ export async function fetchEntityReport({ calendarId, startDate, endDate, entity
 }
 
 export async function downloadDB({ calendarId }) {
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = import.meta.env.VITE_APP_API_URL;
 
   const accessToken = Cookies.get('accessToken');
   const url = `${baseUrl}/export/raw-dump`;

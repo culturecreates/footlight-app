@@ -152,7 +152,7 @@ function TextEditor(props) {
     // //Note: Replace "|" with "\|"
     newString = newString?.replace(/\|/g, '\\|');
     newString = encodeURIComponent(newString);
-    window.open(`${process.env.REACT_APP_DEEPL_URL}${editorLanguage}/${translateTo}/${newString}`);
+    window.open(`${import.meta.env.VITE_APP_DEEPL_URL}${editorLanguage}/${translateTo}/${newString}`);
   };
 
   const onDropHandler = (e) => {

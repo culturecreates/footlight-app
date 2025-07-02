@@ -1,7 +1,7 @@
 import { contentLanguageBilingual } from '../../utils/bilingual';
 import SelectionItem from '../List/SelectionItem';
 import Icon, { UserOutlined } from '@ant-design/icons';
-import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
+import Organizations from '../../assets/icons/organisations.svg?react';
 import { taxonomyClass } from '../../constants/taxonomyClass';
 import { sourceOptions } from '../../constants/sourceOptions';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';

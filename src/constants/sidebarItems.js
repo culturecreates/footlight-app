@@ -5,7 +5,7 @@ import Icon, {
   TeamOutlined,
   EnvironmentOutlined,
 } from '@ant-design/icons';
-import { ReactComponent as Organizations } from '../assets/icons/organisations.svg';
+import Organizations from '../assets/icons/organisations.svg?react';
 import { featureFlags } from '../utils/featureFlags';
 
 const iconStyle = {

@@ -4,7 +4,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { entitiesClass } from '../../../constants/entitiesClass';
-import { ReactComponent as Logo } from '../../../assets/icons/organization-light.svg';
+import Logo from '../../../assets/icons/organization-light.svg?react';
 import { useTranslation } from 'react-i18next';
 import './searchOrganizations.css';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
