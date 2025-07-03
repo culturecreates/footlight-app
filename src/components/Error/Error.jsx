@@ -38,7 +38,7 @@ function ErrorAlert(props) {
   }, [dispatch]);
 
   heading = t('errorPage.heading');
-  let image = <img src={GeneralErrors} alt="Error illustration" />;
+  let image = <GeneralErrors className="error-image" alt="General error illustration" />;
 
   if (errorType === 'serverDown') {
     heading = t('errorPage.serverDown');
@@ -48,7 +48,7 @@ function ErrorAlert(props) {
   if (errorType === 'general' && !errorDetails.isError) {
     message = error?.message;
   } else if (errorType === 'pageNotFound') {
-    image = <img src={Error404} alt="404 illustration" />;
+    image = <Error404 className="error-image" alt="404 illustration" />;
     message = t('errorPage.notFoundMessage');
   }
 

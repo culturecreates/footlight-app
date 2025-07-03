@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
+  base: '/build/',
   plugins: [
     react({
       babel: {
@@ -24,6 +25,10 @@ export default defineConfig({
         '.js': 'jsx',
       },
     },
+  },
+  build: {
+    outDir: 'build',
+    manifest: true,
   },
   server: {
     port: 3000,
