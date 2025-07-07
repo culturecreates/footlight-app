@@ -1613,7 +1613,7 @@ function AddEvent() {
   };
 
   const onValuesChangeHandler = (changedValues, allValues) => {
-    if (eventId) {
+    if (eventId || artsDataId) {
       if (!updateEventSuccess) {
         //Check if the initial values are changed by quill editor
         if (changedValues?.editor) {
