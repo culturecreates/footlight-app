@@ -19,3 +19,4 @@ jobs:
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
         STAGING_SERVER_IP: ${{ secrets.STAGING_SERVER_IP }}
         AWS_PRIVATE_KEY_UBUNTU_USER: ${{ secrets.AWS_PRIVATE_KEY_UBUNTU_USER }}
+        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
