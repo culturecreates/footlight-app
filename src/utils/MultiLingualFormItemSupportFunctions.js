@@ -6,8 +6,17 @@ export const placeHolderCollectionCreator = ({
   placeholderBase, // The base key for the placeholder text translation.
   t, // i18n translation function.
   hasCommonPlaceHolder = false, // If true, the same key will be used for all languages. Default is false.
+  isDataCentricPlaceholder = false, // If true, the placeholder will be data-centric.
 }) => {
   let placeholderCollection = {};
+
+  if (isDataCentricPlaceholder) {
+    // If the placeholder is data-centric, placeHolderbase will be the placeholder string instead of an i18next translation.
+    calendarContentLanguage?.map((language) => {
+      placeholderCollection[contentLanguageKeyMap[language]] = placeholderBase || '';
+    });
+    return placeholderCollection;
+  }
 
   calendarContentLanguage?.map((language) => {
     const languageTranslation = t(`common.tab${capitalizeFirstLetter(language)}`);

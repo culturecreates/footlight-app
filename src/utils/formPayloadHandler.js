@@ -77,7 +77,7 @@ export const formPayloadHandler = (
           return { [mappedField]: payload };
         } else return { [mappedField]: [] };
 
-      case dataTypes.LINKS:
+      case dataTypes.ADDITIONAL_LINKS:
         if (value?.length > 0) {
           payload = value?.map((link) => {
             let labelType;

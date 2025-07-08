@@ -19,6 +19,7 @@ import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLi
 import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelect';
 import { getEmbedUrl, validateVideoLink } from '../utils/getEmbedVideoUrl';
 import AdditionalLinks from '../components/AdditonalLinks/AdditionalLinks';
+import { formFieldPlaceholderHandler } from '../utils/formFieldPlaceholderHandler';
 
 const { TextArea } = Input;
 
@@ -44,7 +45,7 @@ export const dataTypes = {
   IMAGE: 'Image',
   EMAIL: 'Email',
   URI_STRING_ARRAY: 'URIString[]',
-  LINKS: 'LINKS',
+  ADDITIONAL_LINKS: 'ADDITIONAL_LINKS',
 };
 
 export const subDataType = {
@@ -290,7 +291,7 @@ export const formFieldValue = [
             )}
           </Form.List>
         );
-      } else if (datatype === dataTypes.LINKS) {
+      } else if (datatype === dataTypes.ADDITIONAL_LINKS) {
         return (
           <AdditionalLinks
             form={form}
@@ -299,6 +300,7 @@ export const formFieldValue = [
             calendarContentLanguage={calendarContentLanguage}
             entityId={entityId}
             initialData={data}
+            placeholder={placeholder}
           />
         );
       } else
@@ -765,7 +767,7 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage,
       name: field?.mappedField && [field?.mappedField],
       preview: true,
-      placeholder: bilingual({
+      placeholder: formFieldPlaceholderHandler({
         data: field?.placeholder,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),

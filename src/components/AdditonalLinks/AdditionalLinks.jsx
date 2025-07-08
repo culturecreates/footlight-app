@@ -17,6 +17,7 @@ const AdditionalLinks = ({
   calendarContentLanguage,
   entityId,
   initialData,
+  placeholder,
   required,
 }) => {
   const { t } = useTranslation();
@@ -139,12 +140,8 @@ const AdditionalLinks = ({
                     style={{ flex: 1, marginBottom: 0, width: '100%' }}>
                     <StyledInput
                       autoComplete="off"
-                      placeholder={
-                        currentType === 'email'
-                          ? t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')
-                          : t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
-                      }
-                      data-cy="input-ticket-registration-link"
+                      placeholder={currentType === 'email' ? placeholder?.email : placeholder?.url}
+                      data-cy="input-additional-link"
                     />
                   </Form.Item>
 
@@ -175,12 +172,13 @@ const AdditionalLinks = ({
                     name={[fieldName, 'name']}
                     entityId={entityId}
                     validations={validations && validations.trim() !== '' ? validations : ''}
-                    dataCy={`input-text-area-description-${index}`}
+                    dataCy={`input-text-area-additional-link-${index}`}
                     placeholder={placeHolderCollectionCreator({
                       t,
                       calendarContentLanguage,
                       hasCommonPlaceHolder: true,
-                      placeholderBase: t('dashboard.organization.createNew.addOrganization.addLinkText'),
+                      placeholderBase: placeholder?.name,
+                      isDataCentricPlaceholder: true,
                     })}
                     required={false}>
                     <TextArea
