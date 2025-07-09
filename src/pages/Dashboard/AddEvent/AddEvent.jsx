@@ -1613,11 +1613,16 @@ function AddEvent() {
   };
 
   const onValuesChangeHandler = (changedValues, allValues) => {
-    if (eventId) {
+    if (eventId || artsDataId) {
       if (!updateEventSuccess) {
         //Check if the initial values are changed by quill editor
         if (changedValues?.editor) {
-          if (changedValues?.editor && allValues?.editor) setShowDialog(true);
+          if (
+            changedValues?.editor &&
+            allValues?.editor &&
+            Object.keys(changedValues.editor).some((key) => key in allValues.editor)
+          )
+            setShowDialog(true);
         } else if (!showDialog) setShowDialog(true);
       }
     } else {
