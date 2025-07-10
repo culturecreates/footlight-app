@@ -873,6 +873,13 @@ function CreateNewPerson() {
                               imageCropOpen,
                               setImageCropOpen,
                               form,
+                              style: {
+                                display: !field?.isPreset
+                                  ? !addedFields?.includes(field?.mappedField)
+                                    ? 'none'
+                                    : ''
+                                  : '',
+                              },
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                               setShowDialog,
