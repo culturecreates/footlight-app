@@ -582,8 +582,6 @@ const AddTaxonomy = () => {
                             <Row gutter={[8, 8]} justify="space-between">
                               <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
                             </Row>
-                          </Col>
-                          <Col>
                             <Row>
                               <Col flex="423px" className="text-concepts">
                                 {t('dashboard.taxonomy.addNew.concepts.description')}

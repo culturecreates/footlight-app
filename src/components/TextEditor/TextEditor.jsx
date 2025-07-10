@@ -13,6 +13,7 @@ import Quill from 'quill';
 const Delta = Quill.import('delta');
 
 import i18next from 'i18next';
+
 function TextEditor(props) {
   const {
     formName,
@@ -26,10 +27,12 @@ function TextEditor(props) {
     calendarContentLanguage,
     form,
   } = props;
-  let translateTo;
 
+  const [initialized, setInitialized] = useState(false);
+  let translateTo;
   const currentInterfaceLanguage = i18next.language;
   const languageKeys = Object.keys(contentLanguageKeyMap);
+
   languageKeys.map((key) => {
     if (editorLanguage != contentLanguageKeyMap[key]) return;
 
@@ -40,16 +43,18 @@ function TextEditor(props) {
           calendarContentLanguage.find((language) => contentLanguageKeyMap[language] != editorLanguage)
         ];
   });
+
   const { calendarId } = useParams();
   const [addImage] = useAddImageMutation();
-
   const { t } = useTranslation();
+
   const [wordCount, setWordCount] = useState(
     currentReactQuillRef?.current?.unprivilegedEditor
       ?.getText()
-      .split(' ')
-      ?.filter((n) => n != '').length,
+      ?.split(' ')
+      ?.filter((n) => n != '').length || 0,
   );
+
   var formats = [
     'background',
     'bold',
@@ -147,9 +152,7 @@ function TextEditor(props) {
 
   const translateHandler = () => {
     let newString = currentReactQuillRef?.current?.unprivilegedEditor?.getText();
-    //Note: Replace "/" with "\/"// //Note: Replace "/" with "\/"
     newString = newString?.replace(/\//g, '\\/');
-    // //Note: Replace "|" with "\|"
     newString = newString?.replace(/\|/g, '\\|');
     newString = encodeURIComponent(newString);
     window.open(`${process.env.REACT_APP_DEEPL_URL}${editorLanguage}/${translateTo}/${newString}`);
@@ -174,6 +177,28 @@ function TextEditor(props) {
   }, [wordCount]);
 
   useEffect(() => {
+    if (currentReactQuillRef.current && initialValue && !initialized) {
+      const editor = currentReactQuillRef.current.getEditor();
+      const currentContent = editor.getContents();
+      const initialContent = editor.clipboard.convert(initialValue);
+
+      if (JSON.stringify(currentContent) !== JSON.stringify(initialContent)) {
+        editor.setContents(initialContent);
+      }
+      setInitialized(true);
+
+      // Reset form dirtiness after initialization
+      form.setFields([
+        {
+          name: formName,
+          touched: false,
+          dirty: false,
+        },
+      ]);
+    }
+  }, [initialValue, initialized, form, formName]);
+
+  useEffect(() => {
     const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
       ?.getText()
       ?.split(' ')
@@ -193,7 +218,13 @@ function TextEditor(props) {
 
   return (
     <div onDrop={onDropHandler} data-cy={`editor-description-${editorLanguage}`}>
-      <Form.Item name={formName} initialValue={initialValue} dependencies={dependencies} rules={rules}>
+      <Form.Item
+        name={formName}
+        initialValue={initialValue}
+        dependencies={dependencies}
+        rules={rules}
+        getValueFromEvent={(value) => value}
+        valuePropName="value">
         <ReactQuill
           ref={currentReactQuillRef}
           placeholder={placeholder}
@@ -234,4 +265,5 @@ function TextEditor(props) {
     </div>
   );
 }
+
 export default TextEditor;
