@@ -1305,6 +1305,7 @@
       "validation": {
         "dateRange": "Plage de dates invalide"
       },
+      "moreDetails": "Ajouter des détails au rapport.",
       "downloadReport": "Télécharger un rapport",
       "downloadDB": "Télécharger toutes les données",
       "cancel": "Annuler",

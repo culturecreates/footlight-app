@@ -1308,6 +1308,7 @@
       "validation": {
         "dateRange": "Invalid date range"
       },
+      "moreDetails": "Add more details to the report.",
       "downloadReport": "Download report",
       "downloadDB": "Download all data",
       "cancel": "Cancel",
