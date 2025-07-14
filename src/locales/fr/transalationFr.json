@@ -593,6 +593,9 @@
             "secondPart": "créer une nouvelle fiche organisation",
             "thirdPart": ", ne pas modifier celle-ci."
           },
+          "validations": {
+            "videoUrl": "Indiquez un lien vidéo valide."
+          },
           "associatedEntities": {
             "title": "Associé à",
             "place": "Lieu",

@@ -270,10 +270,9 @@ function CreateNewOrganization() {
     event?.preventDefault();
     let validateFieldList = [];
     let fallbackStatus = activeFallbackFieldsInfo;
-    let mandatoryFields = standardMandatoryFieldNames;
+
     validateFieldList = validateFieldList?.concat(
       formFields
-        ?.filter((field) => mandatoryFields?.includes(field?.name))
         ?.map((field) => {
           let collection = [];
           if (field?.datatype === dataTypes.MULTI_LINGUAL) {

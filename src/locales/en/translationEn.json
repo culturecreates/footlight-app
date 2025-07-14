@@ -600,6 +600,9 @@
             "people": "People",
             "organizations": "Organizations"
           },
+          "validations": {
+            "videoUrl": "Enter a valid video link."
+          },
           "addSocialMediaLinks": "Add media link"
         },
         "notification": {
