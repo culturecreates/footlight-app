@@ -324,7 +324,7 @@
           },
           "eventLink": "Event link",
           "eventLinkTooltip": "Add a link to the event page on a website.",
-          "videoLink": "Video",
+          "videoLink": "Video link",
           "videoLinks": "Video link",
           "videoLinkTooltip": "Add a video to your content. Youtube and Vimeo are supported.",
           "facebookLink": "Facebook event",
