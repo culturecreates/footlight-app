@@ -200,7 +200,7 @@ const AdditionalLinks = ({
           <Form.Item>
             <Outlined
               size="large"
-              label={t('dashboard.organization.createNew.addOrganization.addSocialMediaLinks')}
+              label={t('dashboard.organization.createNew.addOrganization.addSocialAdditionalLinks')}
               onClick={() => add({ type: 'url', value: '', name: {} })}
               data-cy={`button-add-${mappedField}`}
             />

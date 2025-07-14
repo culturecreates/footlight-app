@@ -601,6 +601,7 @@
             "organizations": "Organisations"
           },
           "addSocialMediaLinks": "Ajouter un lien",
+          "addSocialAdditionalLinks": "Ajouter un lien",
           "addLinkText": "Ajouter un texte"
         },
         "notification": {
@@ -807,7 +808,8 @@
         "description": "Description",
         "website": "Site web",
         "edit": "Editer",
-        "socialMediaLinks": "Liens vers les réseaux sociaux."
+        "socialMediaLinks": "Liens vers les réseaux sociaux.",
+        "additionalLinks": "Liens supplémentaires"
       },
       "createNew": {
         "search": {

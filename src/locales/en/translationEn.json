@@ -601,6 +601,7 @@
             "organizations": "Organizations"
           },
           "addSocialMediaLinks": "Add media link",
+          "addSocialAdditionalLinks": "Add link",
           "addLinkText": "Add text"
         },
         "notification": {
@@ -809,7 +810,8 @@
         "description": "Description",
         "website": "Website",
         "edit": "Edit",
-        "socialMediaLinks": "Social media links"
+        "socialMediaLinks": "Social media links",
+        "additionalLinks": "Additional links"
       },
       "createNew": {
         "search": {
