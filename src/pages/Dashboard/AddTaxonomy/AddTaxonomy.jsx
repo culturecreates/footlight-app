@@ -34,7 +34,9 @@ import {
   clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getIsBannerDismissed,
+  getLanguageLiteralBannerDisplayStatus,
   setBannerDismissed,
+  setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 
@@ -59,6 +61,8 @@ const AddTaxonomy = () => {
   const { calendarId } = useParams();
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
+
   const { user } = useSelector(getUserDetails);
   const location = useLocation();
   const navigate = useNavigate();
@@ -72,7 +76,6 @@ const AddTaxonomy = () => {
 
   const [transformedConceptData, setTransformedConceptData] = useState([]);
   const [standardFields, setStandardFields] = useState([]);
-  const [languageLiteralBannerDisplayStatus, setLanguageLiteralBannerDisplayStatus] = useState(null);
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
   const [fallbackStatus, setFallbackStatus] = useState({});
   const [userAccess, setUserAccess] = useState();
@@ -348,7 +351,7 @@ const AddTaxonomy = () => {
 
   const handleClearAllFallbackStatus = () => {
     dispatch(setBannerDismissed(true));
-    setLanguageLiteralBannerDisplayStatus(false);
+    dispatch(setLanguageLiteralBannerDisplayStatus(false));
 
     const sanitizedData = sanitizeData(transformedConceptData, fallbackStatus);
     const filteredConceptData = transformLanguageKeys(sanitizedData);
@@ -372,14 +375,29 @@ const AddTaxonomy = () => {
         : [value.tagdisplaystatus],
     );
 
+    let shouldDisplay = true;
+
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
+      }
+    });
+
     if (!isBannerDismissed) {
-      allTagDisplayStatuses.every((status) => status === false)
-        ? setLanguageLiteralBannerDisplayStatus(false)
-        : setLanguageLiteralBannerDisplayStatus(true);
+      const draggableTreeBannerStatus = allTagDisplayStatuses.every((status) => status === false);
+      draggableTreeBannerStatus && shouldDisplay
+        ? dispatch(setLanguageLiteralBannerDisplayStatus(false))
+        : dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
-      setLanguageLiteralBannerDisplayStatus(false);
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
     }
-  }, [fallbackStatus]);
+  }, [fallbackStatus, activeFallbackFieldsInfo]);
 
   return (
     <>
@@ -500,7 +518,7 @@ const AddTaxonomy = () => {
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
                         entityId={taxonomyId}
-                        name="name"
+                        name={['name']}
                         data={Object.fromEntries(
                           Object.entries(taxonomyData?.name || {}).filter(([, value]) => value !== ''),
                         )}
@@ -541,8 +559,12 @@ const AddTaxonomy = () => {
                         calendarContentLanguage={calendarContentLanguage}
                         entityId={taxonomyId}
                         form={form}
-                        name="disambiguatingDescription"
-                        data={taxonomyData?.disambiguatingDescription}
+                        name={['disambiguatingDescription']}
+                        data={Object.fromEntries(
+                          Object.entries(taxonomyData?.disambiguatingDescription || {}).filter(
+                            ([, value]) => value !== '',
+                          ),
+                        )}
                         dataCy="input-text-area-taxonomy-description-"
                         placeholder={placeHolderCollectionCreator({
                           calendarContentLanguage,
