@@ -96,6 +96,9 @@ function Organizations() {
       ? decodeURIComponent(sessionStorage.getItem('organizationUsers'))?.split(',')
       : [],
   );
+  const [organizationIdFilter, setOrganizationIdFilter] = useState(
+    searchParams.getAll('ids')?.length > 0 ? decodeURIComponent(searchParams.getAll('ids'))?.split(',') : [],
+  );
 
   let initialSelectedUsers = {};
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
@@ -202,6 +205,7 @@ function Organizations() {
     });
     setTaxonomyFilter({});
     setUserFilter([]);
+    setOrganizationIdFilter([]);
     setPageNumber(1);
 
     let usersToClear = selectedUsers;
@@ -270,10 +274,14 @@ function Organizations() {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
 
-    let usersQuery;
+    let usersQuery, organizationIdQuery;
     if (Array.isArray(userFilter) && userFilter.length > 0) {
       usersQuery = encodeURIComponent(userFilter);
       userFilter.forEach((user) => query.append('created-by', user));
+    }
+    if (Array.isArray(organizationIdFilter) && organizationIdFilter.length > 0) {
+      organizationIdQuery = encodeURIComponent(organizationIdFilter);
+      organizationIdFilter.forEach((organization) => query.append('ids', organization));
     }
 
     sortQuery.append(
@@ -301,6 +309,7 @@ function Organizations() {
     let params = {
       page: pageNumber,
       order: filter?.order,
+      ...(organizationIdQuery && { ids: organizationIdQuery }),
       ...(usersQuery && { users: usersQuery }),
       sortBy: filter?.sort,
       ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
@@ -323,7 +332,15 @@ function Organizations() {
     if (Object.keys(standardTaxonomyFilter)?.length > 0)
       sessionStorage.setItem('standardOrganizationTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
     else sessionStorage.removeItem('standardOrganizationTaxonomyFilter');
-  }, [pageNumber, organizationSearchQuery, userFilter, filter, taxonomyFilter, standardTaxonomyFilter]);
+  }, [
+    pageNumber,
+    organizationSearchQuery,
+    userFilter,
+    organizationIdFilter,
+    filter,
+    taxonomyFilter,
+    standardTaxonomyFilter,
+  ]);
   return (
     <>
       {dependencyDetailsFetching && (
@@ -599,6 +616,7 @@ function Organizations() {
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
                   userFilter.length > 0 ||
+                  organizationIdFilter.length > 0 ||
                   filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button
                     size="large"
