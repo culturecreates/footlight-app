@@ -562,8 +562,27 @@ function CreateNewPerson() {
             sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
-          let personKeys = Object.keys(personData);
-          if (personKeys?.length > 0) setAddedFields(personKeys);
+          const personKeys = Object.keys(personData).filter((key) => {
+            const value = personData[key];
+
+            if (typeof value === 'string') {
+              return value.trim() !== '';
+            }
+
+            if (Array.isArray(value)) {
+              return value.length > 0;
+            }
+
+            if (typeof value === 'object' && value !== null) {
+              return Object.keys(value).length > 0;
+            }
+
+            return false;
+          });
+
+          if (personKeys.length > 0) {
+            setAddedFields(personKeys);
+          }
         } else
           window.location.replace(
             `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
@@ -647,6 +666,9 @@ function CreateNewPerson() {
         switch (field) {
           case 'VIDEO_URL':
             setAddedFields((addedFields) => [...addedFields, 'videoUrl']);
+            break;
+          case 'ADDITIONAL_LINKS':
+            setAddedFields((addedFields) => [...addedFields, 'additionalLinks']);
             break;
 
           default:
