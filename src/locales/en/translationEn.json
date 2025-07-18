@@ -600,7 +600,9 @@
             "people": "People",
             "organizations": "Organizations"
           },
-          "addSocialMediaLinks": "Add media link"
+          "addSocialMediaLinks": "Add media link",
+          "addSocialAdditionalLinks": "Add link",
+          "addLinkText": "Add text"
         },
         "notification": {
           "addSuccess": "Success! Your organization has been created.",
@@ -808,7 +810,8 @@
         "description": "Description",
         "website": "Website",
         "edit": "Edit",
-        "socialMediaLinks": "Social media links"
+        "socialMediaLinks": "Social media links",
+        "additionalLinks": "Additional links"
       },
       "createNew": {
         "search": {
@@ -1298,6 +1301,15 @@
     "copied": "Copied to clipboard",
     "discard": "Discard",
     "day": "day",
+    "components": {
+      "additionalLinks": {
+        "validations": {
+          "required": "This field is required.",
+          "url": "Enter a valid url.",
+          "email": "Enter a valid email address."
+        }
+      }
+    },
     "validations": {
       "informationRequired": "Information is required"
     },
