@@ -1298,6 +1298,15 @@
     "discard": "Ignorer",
     "day": "jour",
     "copied": "Copié dans le presse-papiers",
+    "components": {
+      "additionalLinks": {
+        "validations": {
+          "required": "Ce champ est requis.",
+          "url": "Indiquez un lien valide.",
+          "email": "Indiquez une adresse courriel valide."
+        }
+      }
+    },
     "validations": {
       "informationRequired": "Des informations sont requises"
     },

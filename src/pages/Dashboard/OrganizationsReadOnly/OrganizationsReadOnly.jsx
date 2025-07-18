@@ -485,7 +485,11 @@ function OrganizationsReadOnly() {
                                         fieldName="additionalLinkName"
                                         data={link?.name}
                                         languageKey={activeTabKey}>
-                                        {(processedData) => renderData(processedData, 'para-person-additionalLinks-')}
+                                        {(processedData) =>
+                                          renderData(processedData, 'para-person-additionalLinks-', {
+                                            marginBottom: '0px',
+                                          })
+                                        }
                                       </FallbackInjectorForReadOnlyPages>
                                     )}
 

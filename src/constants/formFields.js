@@ -137,6 +137,8 @@ export const formFieldValue = [
       required,
       mappedField,
       form,
+      position,
+      userTips,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
@@ -301,6 +303,9 @@ export const formFieldValue = [
             entityId={entityId}
             initialData={data}
             placeholder={placeholder}
+            position={position}
+            datatype={datatype}
+            userTips={userTips}
           />
         );
       } else
@@ -664,7 +669,9 @@ export const renderFormFields = ({
 }) => {
   return (
     <>
-      {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+      {position === 'top' && datatype !== dataTypes.IMAGE && datatype !== dataTypes.ADDITIONAL_LINKS && (
+        <p className="add-event-date-heading">{userTips}</p>
+      )}
       <Form.Item
         data-cy={`form-item-${mappedField ?? fieldName?.toLowerCase()}`}
         label={label}

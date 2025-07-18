@@ -503,7 +503,9 @@ function PersonReadOnly() {
                                             data={link?.name}
                                             languageKey={activeTabKey}>
                                             {(processedData) =>
-                                              renderData(processedData, 'para-person-additionalLinks-')
+                                              renderData(processedData, 'para-person-additionalLinks-', {
+                                                marginBottom: '0px',
+                                              })
                                             }
                                           </FallbackInjectorForReadOnlyPages>
                                         )}

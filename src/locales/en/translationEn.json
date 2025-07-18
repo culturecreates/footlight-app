@@ -1303,11 +1303,10 @@
     "day": "day",
     "components": {
       "additionalLinks": {
-        "addLink": "Add additional link",
         "validations": {
           "required": "This field is required.",
-          "url": "Please enter a valid URL.",
-          "email": "Please enter a valid email address."
+          "url": "Enter a valid url.",
+          "email": "Enter a valid email address."
         }
       }
     },
