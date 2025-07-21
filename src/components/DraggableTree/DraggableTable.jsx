@@ -169,6 +169,7 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
           editable: col.editable,
           dataIndex: col.dataIndex,
           title: col.title,
+          lanKey: col?.key,
           handleSave: (row, data) => handleSave(row, data, col.dataIndex),
           fallbackStatus: fallbackStatus[record.key],
         };
