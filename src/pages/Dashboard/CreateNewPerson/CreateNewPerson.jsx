@@ -254,16 +254,15 @@ function CreateNewPerson() {
     event?.preventDefault();
     let validateFieldList = [];
     let fallbackStatus = activeFallbackFieldsInfo;
-    let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
-        ?.filter((field) => mandatoryFields?.includes(field?.name))
         ?.map((field) => {
           if (field?.datatype === dataTypes.MULTI_LINGUAL) {
-            return [
-              [field?.mappedField, 'en'],
-              [field?.mappedField, 'fr'],
-            ];
+            const multiLingualFields = calendarContentLanguage?.map((language) => {
+              return [field?.mappedField, contentLanguageKeyMap[language]];
+            });
+
+            return multiLingualFields;
           } else return field?.mappedField;
         })
         ?.flat(),
@@ -895,6 +894,13 @@ function CreateNewPerson() {
                               imageCropOpen,
                               setImageCropOpen,
                               form,
+                              style: {
+                                display: !field?.isPreset
+                                  ? !addedFields?.includes(field?.mappedField)
+                                    ? 'none'
+                                    : ''
+                                  : '',
+                              },
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                               setShowDialog,
