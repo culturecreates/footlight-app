@@ -18,6 +18,8 @@ import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
 import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelect';
 import { getEmbedUrl, validateVideoLink } from '../utils/getEmbedVideoUrl';
+import AdditionalLinks from '../components/AdditonalLinks/AdditionalLinks';
+import { formFieldPlaceholderHandler } from '../utils/formFieldPlaceholderHandler';
 
 const { TextArea } = Input;
 
@@ -43,6 +45,7 @@ export const dataTypes = {
   IMAGE: 'Image',
   EMAIL: 'Email',
   URI_STRING_ARRAY: 'URIString[]',
+  ADDITIONAL_LINKS: 'ADDITIONAL_LINKS',
 };
 
 export const subDataType = {
@@ -142,6 +145,8 @@ export const formFieldValue = [
       required,
       mappedField,
       form,
+      position,
+      userTips,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
@@ -286,6 +291,21 @@ export const formFieldValue = [
               </>
             )}
           </Form.List>
+        );
+      } else if (datatype === dataTypes.ADDITIONAL_LINKS) {
+        return (
+          <AdditionalLinks
+            form={form}
+            name={name}
+            validations={validations}
+            calendarContentLanguage={calendarContentLanguage}
+            entityId={entityId}
+            initialData={data}
+            placeholder={placeholder}
+            position={position}
+            datatype={datatype}
+            userTips={userTips}
+          />
         );
       } else
         return (
@@ -649,7 +669,9 @@ export const renderFormFields = ({
 }) => {
   return (
     <>
-      {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+      {position === 'top' && datatype !== dataTypes.IMAGE && datatype !== dataTypes.ADDITIONAL_LINKS && (
+        <p className="add-event-date-heading">{userTips}</p>
+      )}
       <Form.Item
         data-cy={`form-item-${mappedField ?? fieldName?.toLowerCase()}`}
         label={label}
@@ -753,7 +775,7 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage,
       name: field?.mappedField && [field?.mappedField],
       preview: true,
-      placeholder: bilingual({
+      placeholder: formFieldPlaceholderHandler({
         data: field?.placeholder,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),

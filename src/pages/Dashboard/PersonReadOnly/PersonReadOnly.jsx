@@ -486,6 +486,46 @@ function PersonReadOnly() {
                                     ))}
                                 </Col>
                               )}
+                              {checkIfFieldIsToBeDisplayed(
+                                personFormFieldNames.ADDITIONAL_LINKS,
+                                personData?.additionalLinks,
+                              ) && (
+                                <Col span={24}>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.people.readOnly.additionalLinks')}
+                                  </p>
+                                  {personData?.additionalLinks?.length > 0 &&
+                                    personData?.additionalLinks?.map((link, index) => (
+                                      <div key={index}>
+                                        {Object.keys(link?.name ?? {})?.length > 0 && (
+                                          <FallbackInjectorForReadOnlyPages
+                                            fieldName="additionalLinkName"
+                                            data={link?.name}
+                                            languageKey={activeTabKey}>
+                                            {(processedData) =>
+                                              renderData(processedData, 'para-person-additionalLinks-', {
+                                                marginBottom: '0px',
+                                              })
+                                            }
+                                          </FallbackInjectorForReadOnlyPages>
+                                        )}
+
+                                        {(link.uri || link.email) && (
+                                          <p>
+                                            <a
+                                              href={link.email ? `mailto:${link.email}` : link.uri}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="url-links"
+                                              data-cy="anchor-person-social-media-links">
+                                              {link.uri || link.email}
+                                            </a>
+                                          </p>
+                                        )}
+                                      </div>
+                                    ))}
+                                </Col>
+                              )}
                               {checkIfFieldIsToBeDisplayed(personFormFieldNames.IMAGE, mainImageData) &&
                                 mainImageData?.large?.uri && (
                                   <div>
