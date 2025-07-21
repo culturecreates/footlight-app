@@ -19,7 +19,7 @@ import { Popover } from 'antd';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 
@@ -39,6 +39,7 @@ function SearchOrganizations() {
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const activePromiseRef = useRef(null);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -63,20 +64,11 @@ function SearchOrganizations() {
   sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
   sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
 
-  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sources: decodeURIComponent(sourceQuery.toString()),
-    sessionId: timestampRef,
-  });
-
   // effects
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+    if (initialEntities && currentCalendarData) {
       setOrganizationList(initialEntities);
-      setOrganizationListExternalSource(initialExternalSource);
     }
   }, [initialOrganizersLoading]);
 
@@ -88,7 +80,30 @@ function SearchOrganizations() {
     });
   };
 
-  const searchHandler = (value) => {
+  const searchExternalSourceHandler = async (value) => {
+    if (activePromiseRef.current) {
+      activePromiseRef.current.abort();
+    }
+
+    const promise = getExternalSource({
+      searchKey: value,
+      classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    });
+
+    activePromiseRef.current = promise;
+
+    try {
+      const data = await promise.unwrap();
+      setOrganizationListExternalSource(data ?? []);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const entitiesSearchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
@@ -97,26 +112,18 @@ function SearchOrganizations() {
         setOrganizationList(response);
       })
       .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: value,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
-      .unwrap()
-      .then((response) => {
-        setOrganizationListExternalSource(response);
-      })
-      .catch((error) => console.log(error));
   };
+
   useEffect(() => {
     if (isReadOnly) {
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`, { replace: true });
     }
   }, [isReadOnly]);
 
-  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
+  const debounceEntitiesSearch = useCallback(useDebounce(entitiesSearchHandler, SEARCH_DELAY), []);
+  const debounceExternalSourceSearch = useCallback(useDebounce(searchExternalSourceHandler, SEARCH_DELAY), [
+    getExternalSource,
+  ]);
 
   return (
     !initialOrganizersLoading && (
@@ -133,7 +140,7 @@ function SearchOrganizations() {
             placement="bottom"
             onOpenChange={(open) => {
               setIsPopoverOpen(open);
-              searchHandler(quickCreateKeyword);
+              debounceEntitiesSearch(quickCreateKeyword);
             }}
             autoAdjustOverflow={false}
             getPopupContainer={(trigger) => trigger.parentNode}
@@ -320,7 +327,10 @@ function SearchOrganizations() {
               autoFocus={true}
               onChange={(e) => {
                 setQuickCreateKeyword(e.target.value);
-                debounceSearch(e.target.value);
+                debounceEntitiesSearch(e.target.value);
+                if (e.target.value !== '') {
+                  debounceExternalSourceSearch(e.target.value);
+                }
                 setIsPopoverOpen(true);
               }}
             />

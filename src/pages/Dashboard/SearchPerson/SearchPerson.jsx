@@ -19,7 +19,7 @@ import './searchPerson.css';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 
@@ -39,6 +39,7 @@ function SearchPerson() {
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const activePromiseRef = useRef(null);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -64,20 +65,12 @@ function SearchPerson() {
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
   });
-  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sources: decodeURIComponent(sourceQuery.toString()),
-    sessionId: timestampRef,
-  });
 
   // effects
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+    if (initialEntities && currentCalendarData) {
       setPeopleList(initialEntities);
-      setPeopleListExternalSource(initialExternalSource);
     }
   }, [initialPersonLoading]);
 
@@ -87,25 +80,36 @@ function SearchPerson() {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}`, { state: { data: entity } });
   };
 
-  const searchHandler = (value) => {
+  const searchExternalSourceHandler = async (value) => {
+    if (activePromiseRef.current) {
+      activePromiseRef.current.abort();
+    }
+
+    const promise = getExternalSource({
+      searchKey: value,
+      classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    });
+
+    activePromiseRef.current = promise;
+
+    try {
+      const data = await promise.unwrap();
+      setPeopleListExternalSource(data ?? []);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const entitiesSearchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.person);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
         setPeopleList(response);
-      })
-      .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: value,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
-      .unwrap()
-      .then((response) => {
-        setPeopleListExternalSource(response);
       })
       .catch((error) => console.log(error));
   };
@@ -116,7 +120,10 @@ function SearchPerson() {
     }
   }, [isReadOnly]);
 
-  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
+  const debounceEntitiesSearch = useCallback(useDebounce(entitiesSearchHandler, SEARCH_DELAY), []);
+  const debounceExternalSourceSearch = useCallback(useDebounce(searchExternalSourceHandler, SEARCH_DELAY), [
+    getExternalSource,
+  ]);
 
   return (
     <NewEntityLayout
@@ -132,7 +139,7 @@ function SearchPerson() {
           placement="bottom"
           onOpenChange={(open) => {
             setIsPopoverOpen(open);
-            searchHandler(quickCreateKeyword);
+            debounceEntitiesSearch(quickCreateKeyword);
           }}
           autoAdjustOverflow={false}
           getPopupContainer={(trigger) => trigger.parentNode}
@@ -325,7 +332,10 @@ function SearchPerson() {
             autoFocus={true}
             onChange={(e) => {
               setQuickCreateKeyword(e.target.value);
-              debounceSearch(e.target.value);
+              debounceEntitiesSearch(e.target.value);
+              if (e.target.value !== '') {
+                debounceExternalSourceSearch(e.target.value);
+              }
               setIsPopoverOpen(true);
             }}
           />
