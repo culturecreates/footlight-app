@@ -71,7 +71,7 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
@@ -150,7 +150,7 @@ function CreateNewPlace() {
   const placeId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -929,9 +929,9 @@ function CreateNewPlace() {
     }
   };
 
-  const getArtsDataPlace = (id) => {
+  const getArtsDataPlace = (uri) => {
     setArtsDataLoading(true);
-    loadArtsDataPlaceEntity({ entityId: id })
+    loadArtsDataPlaceEntity({ entityId: uri })
       .then((response) => {
         if (response?.data?.length > 0) {
           setArtsData(response?.data[0]);
@@ -1041,7 +1041,7 @@ function CreateNewPlace() {
         if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
           if (placeData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(placeData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
+            // sourceId = getExternalSourceId(sourceId);
             getArtsDataPlace(sourceId);
           }
           if (placeData?.containedInPlace?.entityId) {
@@ -1188,7 +1188,7 @@ function CreateNewPlace() {
       if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          sourceId = getExternalSourceId(sourceId);
+          // sourceId = getExternalSourceId(sourceId);
           getArtsDataPlace(sourceId);
         }
 

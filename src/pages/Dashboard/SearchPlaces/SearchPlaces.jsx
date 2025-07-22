@@ -19,9 +19,10 @@ import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
+import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -39,6 +40,10 @@ function SearchPlaces() {
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const activePromiseRef = useRef(null);
+
+  useAbortControllersOnUnmount([activePromiseRef]);
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -64,18 +69,10 @@ function SearchPlaces() {
   let sourceQuery = new URLSearchParams();
   sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
   sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sources: decodeURIComponent(sourceQuery.toString()),
-    sessionId: timestampRef,
-  });
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+    if (initialEntities && currentCalendarData) {
       setPlacesList(initialEntities);
-      setPlaceListExternalSource(initialExternalSource);
     }
   }, [initialPlacesLoading]);
 
@@ -85,7 +82,7 @@ function SearchPlaces() {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}`, { state: { data: entity } });
   };
 
-  const searchHandler = (value) => {
+  const entitiesSearchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
@@ -94,18 +91,29 @@ function SearchPlaces() {
         setPlacesList(response);
       })
       .catch((error) => console.log(error));
-    getExternalSource({
+  };
+
+  const searchExternalSourceHandler = async (value) => {
+    if (activePromiseRef.current) {
+      activePromiseRef.current.abort();
+    }
+
+    const promise = getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
       sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
-    })
-      .unwrap()
-      .then((response) => {
-        setPlaceListExternalSource(response);
-      })
-      .catch((error) => console.log(error));
+    });
+
+    activePromiseRef.current = promise;
+
+    try {
+      const data = await promise.unwrap();
+      setPlaceListExternalSource(data ?? []);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {
@@ -114,7 +122,10 @@ function SearchPlaces() {
     }
   }, [isReadOnly]);
 
-  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
+  const debounceEntitiesSearch = useCallback(useDebounce(entitiesSearchHandler, SEARCH_DELAY), []);
+  const debounceExternalSourceSearch = useCallback(useDebounce(searchExternalSourceHandler, SEARCH_DELAY), [
+    getExternalSource,
+  ]);
 
   return (
     !initialPlacesLoading && (
@@ -131,7 +142,7 @@ function SearchPlaces() {
             placement="bottom"
             onOpenChange={(open) => {
               setIsPopoverOpen(open);
-              searchHandler(quickCreateKeyword);
+              debounceEntitiesSearch(quickCreateKeyword);
             }}
             autoAdjustOverflow={false}
             getPopupContainer={(trigger) => trigger.parentNode}
@@ -324,7 +335,10 @@ function SearchPlaces() {
               }}
               onChange={(e) => {
                 setQuickCreateKeyword(e.target.value);
-                debounceSearch(e.target.value);
+                debounceEntitiesSearch(e.target.value);
+                if (e.target.value != '') {
+                  debounceExternalSourceSearch(e.target.value);
+                }
                 setIsPopoverOpen(true);
               }}
             />

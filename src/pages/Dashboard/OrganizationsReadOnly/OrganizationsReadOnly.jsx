@@ -28,7 +28,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { CalendarOutlined, UserOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
@@ -170,7 +170,7 @@ function OrganizationsReadOnly() {
     if (organizationSuccess) {
       if (organizationData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(organizationData?.sameAs);
-        sourceId = getExternalSourceId(sourceId);
+        // sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
       if (organizationData?.place?.entityId) {
