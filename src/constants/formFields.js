@@ -77,12 +77,19 @@ export const formNames = {
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
-    rule: () => [
-      {
-        type: 'url',
-        message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-      },
-    ],
+    rule: ({ subType }) =>
+      subType === subDataType.VIDEO_URL
+        ? [
+            {
+              validator: (rule, value) => validateVideoLink(rule, value),
+            },
+          ]
+        : [
+            {
+              type: 'url',
+              message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+            },
+          ],
   },
   {
     dataType: dataTypes.EMAIL,
@@ -95,13 +102,14 @@ const rules = [
   },
   {
     dataType: dataTypes.IMAGE,
-    rule: ({ image, t }) => [
+    rule: ({ image, t, required }) => [
       ({ getFieldValue }) => ({
         validator() {
           if (
             (getFieldValue('image') != undefined && getFieldValue('image')?.length > 0) ||
             (image && !getFieldValue('image')) ||
-            (image && getFieldValue('image')?.length > 0)
+            (image && getFieldValue('image')?.length > 0) ||
+            !required
           ) {
             return Promise.resolve();
           } else
@@ -170,19 +178,10 @@ export const formFieldValue = [
         if (subdatatype === subDataType.VIDEO_URL) {
           const initialValue = data?.uri || '';
           const embedUrl = getEmbedUrl(form.getFieldValue(mappedField));
+
           return (
             <Row style={{ margin: '0px' }} gutter={[12, 12]}>
-              <Form.Item
-                style={{ width: '100%' }}
-                name={name}
-                rules={[
-                  { validator: (rule, value) => validateVideoLink(rule, value) },
-                  {
-                    required: required,
-                    message: t('common.validations.informationRequired'),
-                  },
-                ]}
-                initialValue={initialValue}>
+              <Form.Item style={{ width: '100%', marginBottom: '0px' }} name={name} initialValue={initialValue}>
                 <StyledInput
                   placeholder={contentLanguageBilingual({
                     data: placeholder,
@@ -651,6 +650,7 @@ export const formFieldValue = [
 
 export const renderFormFields = ({
   datatype,
+  subDataType,
   element,
   initialValue = undefined,
   name,
@@ -693,7 +693,7 @@ export const renderFormFields = ({
         rules={rules
           ?.map((rule) => {
             if (datatype === rule?.dataType) {
-              return rule.rule({ image: originalUrl, t, required, fieldName });
+              return rule.rule({ subType: subDataType, image: originalUrl, t, required, fieldName });
             }
           })
           .concat([
@@ -759,6 +759,7 @@ export const returnFormDataWithFields = ({
     mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
+    subDataType: field?.subDataType,
     required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     element: formField?.element({
       fieldName: field?.name?.toLowerCase(),
