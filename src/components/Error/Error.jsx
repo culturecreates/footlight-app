@@ -1,6 +1,6 @@
 import { useNavigate, useRouteError } from 'react-router-dom';
-import { ReactComponent as GeneralErrors } from '../../assets/images/general-error.svg';
-import { ReactComponent as Error404 } from '../../assets/images/404-error.svg';
+import GeneralErrors from '../../assets/images/general-error.svg?react';
+import Error404 from '../../assets/images/404-error.svg?react';
 import './error.css';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
@@ -20,7 +20,7 @@ function ErrorAlert(props) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  let image, message, heading;
+  let message, heading;
 
   useEffect(() => {
     // effect to trigger api reload when browser back button is pressed
@@ -38,7 +38,7 @@ function ErrorAlert(props) {
   }, [dispatch]);
 
   heading = t('errorPage.heading');
-  image = <GeneralErrors />;
+  let image = <GeneralErrors className="error-image" alt="General error illustration" />;
 
   if (errorType === 'serverDown') {
     heading = t('errorPage.serverDown');
@@ -48,7 +48,7 @@ function ErrorAlert(props) {
   if (errorType === 'general' && !errorDetails.isError) {
     message = error?.message;
   } else if (errorType === 'pageNotFound') {
-    image = <Error404 />;
+    image = <Error404 className="error-image" alt="404 illustration" />;
     message = t('errorPage.notFoundMessage');
   }
 

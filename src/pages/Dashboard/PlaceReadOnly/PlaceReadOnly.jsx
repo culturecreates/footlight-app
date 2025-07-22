@@ -15,7 +15,7 @@ import {
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
+import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import OutlinedButton from '../../../components/Button/Outlined';

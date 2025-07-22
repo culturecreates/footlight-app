@@ -3,7 +3,7 @@ import CustomModal from '../Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd';
 import DateAction from '../../Button/DateAction/DateAction';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
+import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
 import Icon, { UserOutlined } from '@ant-design/icons';
 import './quickSelect.css';
 import { featureFlags } from '../../../utils/featureFlags';
