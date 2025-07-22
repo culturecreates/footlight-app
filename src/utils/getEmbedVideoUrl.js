@@ -1,4 +1,7 @@
 /* eslint-disable no-useless-escape */
+
+import { Translation } from 'react-i18next';
+
 /* eslint-disable no-undef */
 export function getEmbedUrl(url) {
   const embedUrlRegex = /(?:https?:)?\/\/(?:www\.)?(?:youtube\.com\/embed\/|player\.vimeo\.com\/video\/)(.+)/;
@@ -44,7 +47,9 @@ export const validateVideoLink = (rule, value) => {
   }
 
   if (!validateYouTubeURL(value) && !validateVimeoURL(value)) {
-    return Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
+    return Promise.reject(
+      <Translation>{(t) => t('dashboard.organization.createNew.addOrganization.validations.videoUrl')}</Translation>,
+    );
   }
 
   return Promise.resolve();

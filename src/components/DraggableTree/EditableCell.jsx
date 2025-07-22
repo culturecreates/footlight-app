@@ -1,5 +1,4 @@
 import LiteralBadge from '../Badge/LiteralBadge';
-import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from 'antd';
@@ -18,7 +17,7 @@ import { Input } from 'antd';
 
 const { TextArea } = Input;
 
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, fallbackStatus, ...restProps }) => {
+const EditableCell = ({ editable, children, dataIndex, record, handleSave, lanKey, fallbackStatus, ...restProps }) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState();
   const inputRef = useRef(null);
@@ -47,7 +46,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   let isFallbackPresent = false;
   let fallbackPromptText = '';
-  const recordKey = contentLanguageKeyMap[title?.toUpperCase()];
+  const recordKey = lanKey;
 
   if (fallbackStatus && recordKey && fallbackStatus[recordKey]) {
     isFallbackPresent = fallbackStatus[recordKey]?.tagDisplayStatus;

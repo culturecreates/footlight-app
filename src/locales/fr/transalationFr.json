@@ -324,8 +324,8 @@
           },
           "eventLink": "Lien de l’événement",
           "eventLinkTooltip": "Ajoutez le lien vers la page de l'événement sur un site Web.",
-          "videoLink": "Vidéo",
-          "videoLinks": "Vidéo",
+          "videoLink": "Lien vidéo",
+          "videoLinks": "Lien vidéo",
           "videoLinkTooltip": "Ajoutez une vidéo à votre contenu. Les liens vers Youtube et Vimeo sont acceptés.",
           "facebookLink": "Lien vers l'événement Facebook",
           "facebookLinkFooter": "Collez le lien de votre événement Facebook ici.",
@@ -593,6 +593,9 @@
             "secondPart": "créer une nouvelle fiche organisation",
             "thirdPart": ", ne pas modifier celle-ci."
           },
+          "validations": {
+            "videoUrl": "Indiquez un lien vidéo valide."
+          },
           "associatedEntities": {
             "title": "Associé à",
             "place": "Lieu",
@@ -600,7 +603,9 @@
             "people": "Personnes",
             "organizations": "Organisations"
           },
-          "addSocialMediaLinks": "Ajouter un lien"
+          "addSocialMediaLinks": "Ajouter un lien",
+          "addSocialAdditionalLinks": "Ajouter un lien",
+          "addLinkText": "Ajouter un texte"
         },
         "notification": {
           "addSuccess": "Succès ! La fiche de cette organisation a été créée.",
@@ -806,7 +811,8 @@
         "description": "Description",
         "website": "Site web",
         "edit": "Editer",
-        "socialMediaLinks": "Liens vers les réseaux sociaux."
+        "socialMediaLinks": "Liens vers les réseaux sociaux.",
+        "additionalLinks": "Liens supplémentaires"
       },
       "createNew": {
         "search": {
@@ -1295,6 +1301,15 @@
     "discard": "Ignorer",
     "day": "jour",
     "copied": "Copié dans le presse-papiers",
+    "components": {
+      "additionalLinks": {
+        "validations": {
+          "required": "Ce champ est requis.",
+          "url": "Indiquez un lien valide.",
+          "email": "Indiquez une adresse courriel valide."
+        }
+      }
+    },
     "validations": {
       "informationRequired": "Des informations sont requises"
     },
@@ -1305,6 +1320,7 @@
       "validation": {
         "dateRange": "Plage de dates invalide"
       },
+      "moreDetails": "Ajouter des détails au rapport.",
       "downloadReport": "Télécharger un rapport",
       "downloadDB": "Télécharger toutes les données",
       "cancel": "Annuler",

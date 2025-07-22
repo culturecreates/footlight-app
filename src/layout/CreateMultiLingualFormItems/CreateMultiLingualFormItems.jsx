@@ -13,11 +13,11 @@ import MultilingualInput from '../../components/MultilingualInput';
  * @param {React.ReactNode} props.children - React elements to be rendered inside form items.
  * @param {Array<string>} props.calendarContentLanguage - An array of languages to be displayed as form items.
  * @param {Object} props.form - The form instance from Ant Design.
- * @param {Array<string>} props.name - The name of the form field.
- * @param {Object} props.data - The initial data for the form fields.
- * @param {boolean} props.required - Whether the form items are required.
+ * @param {Array<string>} props.name - Field name/path.
+ * @param {Object} props.data - Initial field values
+ * @param {boolean} props.required - Whether the field is required.
  * @param {string} [props.validations] - Custom validation message.
- * @param {string} props.dataCy - The data-cy attribute for testing purposes.
+ * @param {string} props.dataCy - Test attribute prefix
  * @param {string} props.entityId - The entity id.
  * @param {Object} props.placeholder - Placeholder texts for the form items.
  *
@@ -25,29 +25,46 @@ import MultilingualInput from '../../components/MultilingualInput';
  */
 
 const CreateMultiLingualFormItems = ({ children, ...rest }) => {
-  const { calendarContentLanguage, form, name, data, required, validations, dataCy, placeholder, entityId } = rest;
-  Form.useWatch(name[0], form);
+  const {
+    calendarContentLanguage,
+    form,
+    name,
+    data,
+    required,
+    validations,
+    dataCy,
+    placeholder,
+    entityId,
+    formItemProps = {},
+    ...additionalProps
+  } = rest;
+
   const { t } = useTranslation();
 
-  let isFieldDirty = {}; // to keep track of dirty fields
-  let dataCyCollection = [];
-  let placeholderCollection = [];
+  // Determine if this is in a Form.List context by checking name structure
+  const isListContext = Array.isArray(name) && name.length > 1;
+
+  // Track dirty fields
+  const isFieldDirty = {};
+  const dataCyCollection = [];
+  const placeholderCollection = [];
 
   calendarContentLanguage?.forEach((language) => {
     const lanKey = contentLanguageKeyMap[language];
-    const fieldName = name.concat([lanKey]);
+    const fieldName = isListContext ? [...name, lanKey] : [name, lanKey];
     isFieldDirty[lanKey] = form.isFieldTouched(fieldName);
   });
 
   const formItemList = calendarContentLanguage?.map((language) => {
-    const dependencies = calendarContentLanguage // dependencies for each form item
+    const lanKey = contentLanguageKeyMap[language];
+    const dependencies = calendarContentLanguage
       .filter((lan) => lan !== language)
-      .map((lan) => [name, contentLanguageKeyMap[lan]]);
+      .map((lan) => (isListContext ? [...name, contentLanguageKeyMap[lan]] : [name, contentLanguageKeyMap[lan]]));
 
     dataCyCollection.push(`${dataCy}${language.toLowerCase()}`);
-    placeholderCollection.push(placeholder[contentLanguageKeyMap[language]] ?? '');
+    placeholderCollection.push(placeholder[lanKey] ?? '');
 
-    const validationRules = required // validation rules for each form item
+    const validationRules = required
       ? [
           ({ getFieldValue }) => ({
             validator(_, value) {
@@ -58,19 +75,23 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
 
               if (value || isAnyDependencyFilled) {
                 return Promise.resolve();
-              } else return Promise.reject(new Error(validations ?? t('common.validations.informationRequired')));
+              }
+              return Promise.reject(new Error(validations ?? t('common.validations.informationRequired')));
             },
           }),
         ]
       : undefined;
-    const content = data?.[contentLanguageKeyMap[language]];
+
+    const content = data?.[lanKey];
     const initialValue = Array.isArray(content) ? content[0] : content;
+
     return (
       <Form.Item
-        name={[`${name}`, contentLanguageKeyMap[language]]}
+        {...formItemProps}
+        name={isListContext ? [...name, lanKey] : [name, lanKey]}
         key={language}
         dependencies={dependencies}
-        initialValue={initialValue}
+        initialValue={!isListContext ? initialValue : undefined}
         rules={validationRules}>
         {children}
       </Form.Item>
@@ -86,7 +107,8 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
       dataCyCollection={dataCyCollection}
       required={required}
       form={form}
-      placeholderCollection={placeholderCollection}>
+      placeholderCollection={placeholderCollection}
+      {...additionalProps}>
       {formItemList}
     </MultilingualInput>
   );

@@ -254,16 +254,15 @@ function CreateNewPerson() {
     event?.preventDefault();
     let validateFieldList = [];
     let fallbackStatus = activeFallbackFieldsInfo;
-    let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
-        ?.filter((field) => mandatoryFields?.includes(field?.name))
         ?.map((field) => {
           if (field?.datatype === dataTypes.MULTI_LINGUAL) {
-            return [
-              [field?.mappedField, 'en'],
-              [field?.mappedField, 'fr'],
-            ];
+            const multiLingualFields = calendarContentLanguage?.map((language) => {
+              return [field?.mappedField, contentLanguageKeyMap[language]];
+            });
+
+            return multiLingualFields;
           } else return field?.mappedField;
         })
         ?.flat(),
@@ -562,8 +561,27 @@ function CreateNewPerson() {
             sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
-          let personKeys = Object.keys(personData);
-          if (personKeys?.length > 0) setAddedFields(personKeys);
+          const personKeys = Object.keys(personData).filter((key) => {
+            const value = personData[key];
+
+            if (typeof value === 'string') {
+              return value.trim() !== '';
+            }
+
+            if (Array.isArray(value)) {
+              return value.length > 0;
+            }
+
+            if (typeof value === 'object' && value !== null) {
+              return Object.keys(value).length > 0;
+            }
+
+            return false;
+          });
+
+          if (personKeys.length > 0) {
+            setAddedFields(personKeys);
+          }
         } else
           window.location.replace(
             `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
@@ -647,6 +665,9 @@ function CreateNewPerson() {
         switch (field) {
           case 'VIDEO_URL':
             setAddedFields((addedFields) => [...addedFields, 'videoUrl']);
+            break;
+          case 'ADDITIONAL_LINKS':
+            setAddedFields((addedFields) => [...addedFields, 'additionalLinks']);
             break;
 
           default:
@@ -873,6 +894,13 @@ function CreateNewPerson() {
                               imageCropOpen,
                               setImageCropOpen,
                               form,
+                              style: {
+                                display: !field?.isPreset
+                                  ? !addedFields?.includes(field?.mappedField)
+                                    ? 'none'
+                                    : ''
+                                  : '',
+                              },
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                               setShowDialog,
