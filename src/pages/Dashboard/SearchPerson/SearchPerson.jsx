@@ -22,6 +22,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
+import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -38,9 +39,12 @@ function SearchPerson() {
   const navigate = useNavigate();
 
   const { calendarId } = useParams();
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
   const timestampRef = useRef(Date.now()).current;
   const activePromiseRef = useRef(null);
-  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
+  useAbortControllersOnUnmount([activePromiseRef]);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [peopleList, setPeopleList] = useState([]);

@@ -23,6 +23,7 @@ import { useLazyGetExternalSourceQuery } from '../../../services/externalSource'
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 import { loadArtsDataEventEntity } from '../../../services/artsData';
+import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -41,6 +42,8 @@ function SearchEvents() {
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const activePromiseRef = useRef(null);
+
+  useAbortControllersOnUnmount([activePromiseRef]);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 

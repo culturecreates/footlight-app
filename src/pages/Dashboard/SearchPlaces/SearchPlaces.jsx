@@ -22,6 +22,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
+import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -40,6 +41,8 @@ function SearchPlaces() {
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const activePromiseRef = useRef(null);
+
+  useAbortControllersOnUnmount([activePromiseRef]);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
