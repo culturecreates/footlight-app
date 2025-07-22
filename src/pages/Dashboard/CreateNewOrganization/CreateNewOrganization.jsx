@@ -270,10 +270,9 @@ function CreateNewOrganization() {
     event?.preventDefault();
     let validateFieldList = [];
     let fallbackStatus = activeFallbackFieldsInfo;
-    let mandatoryFields = standardMandatoryFieldNames;
+
     validateFieldList = validateFieldList?.concat(
       formFields
-        ?.filter((field) => mandatoryFields?.includes(field?.name))
         ?.map((field) => {
           let collection = [];
           if (field?.datatype === dataTypes.MULTI_LINGUAL) {
@@ -963,8 +962,25 @@ function CreateNewOrganization() {
               .catch((error) => console.log(error));
             form.setFieldValue('place', organizationData?.place?.entityId);
           }
-          let organizationKeys = Object.keys(organizationData);
-          if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
+          const organizationKeys = Object.keys(organizationData).filter((key) => {
+            const value = organizationData[key];
+
+            if (typeof value === 'string') {
+              return value.trim() !== '';
+            }
+
+            if (Array.isArray(value)) {
+              return value.length > 0;
+            }
+
+            if (typeof value === 'object' && value !== null) {
+              return Object.keys(value).length > 0;
+            }
+
+            return false;
+          });
+
+          if (organizationKeys.length > 0) setAddedFields(organizationKeys);
         } else
           window.location.replace(
             `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
@@ -1060,7 +1076,25 @@ function CreateNewOrganization() {
             .catch((error) => console.log(error));
           form.setFieldValue('place', externalCalendarEntityData[0]?.place?.entityId);
         }
-        let organizationKeys = Object.keys(externalCalendarEntityData[0]);
+
+        const organizationKeys = Object.keys(externalCalendarEntityData[0])?.filter((key) => {
+          const value = externalCalendarEntityData[0][key];
+
+          if (typeof value === 'string') {
+            return value.trim() !== '';
+          }
+
+          if (Array.isArray(value)) {
+            return value.length > 0;
+          }
+
+          if (typeof value === 'object' && value !== null) {
+            return Object.keys(value).length > 0;
+          }
+
+          return false;
+        });
+
         if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
       }
       standardMandatoryFieldNames?.forEach((field) => {
@@ -1070,6 +1104,9 @@ function CreateNewOrganization() {
             break;
           case 'VIDEO_URL':
             setAddedFields((addedFields) => [...addedFields, 'videoUrl']);
+            break;
+          case 'ADDITIONAL_LINKS':
+            setAddedFields((addedFields) => [...addedFields, 'additionalLinks']);
             break;
 
           default:

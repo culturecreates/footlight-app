@@ -13,6 +13,7 @@ export const organizationFormFieldNames = {
   EMAIL: 'CONTACT_POINT_EMAIL',
   ORGANIZATION_TYPE: 'ADDITIONAL_TYPE',
   VIDEO_URL: 'VIDEO_URL',
+  ADDITIONAL_LINKS: 'ADDITIONAL_LINKS',
 };
 
 export const personFormFieldNames = {
@@ -24,4 +25,5 @@ export const personFormFieldNames = {
   IMAGE: 'IMAGE',
   OCCUPATION: 'OCCUPATION',
   VIDEO_URL: 'VIDEO_URL',
+  ADDITIONAL_LINKS: 'ADDITIONAL_LINKS',
 };

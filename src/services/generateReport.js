@@ -2,11 +2,17 @@
 
 import Cookies from 'js-cookie';
 
-export async function fetchEntityReport({ calendarId, startDate, endDate, entity }) {
+export async function fetchEntityReport({ calendarId, startDate, endDate, entity, taxonomyIds = [] }) {
   const baseUrl = import.meta.env.VITE_APP_API_URL;
-
   const accessToken = Cookies.get('accessToken');
-  const url = `${baseUrl}/entities/generate-report?entity=${entity}&start-date=${startDate}&end-date=${endDate}`;
+
+  const params = new URLSearchParams();
+  params.append('entity', entity);
+  params.append('start-date', startDate);
+  params.append('end-date', endDate);
+  taxonomyIds.forEach((id) => params.append('taxonomy-ids', id));
+
+  const url = `${baseUrl}/entities/generate-report?${params.toString()}`;
 
   try {
     const response = await fetch(url, {
@@ -21,8 +27,7 @@ export async function fetchEntityReport({ calendarId, startDate, endDate, entity
     if (response.status === 401) {
       const newAccessToken = await tryRefreshToken(baseUrl);
       if (!newAccessToken) throw new Error('Unauthorized');
-
-      return await fetchEntityReport({ calendarId, startDate, endDate, entity });
+      return await fetchEntityReport({ calendarId, startDate, endDate, entity, taxonomyIds });
     }
 
     if (!response.ok) {

@@ -30,7 +30,15 @@ import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormI
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import DraggableTable from '../../../components/DraggableTree/DraggableTable';
 import { sanitizeData, transformLanguageKeys } from '../../../utils/draggableTableUtilFunctions';
-import { getIsBannerDismissed, setBannerDismissed } from '../../../redux/reducer/languageLiteralSlice';
+import {
+  clearActiveFallbackFieldsInfo,
+  getActiveFallbackFieldsInfo,
+  getIsBannerDismissed,
+  getLanguageLiteralBannerDisplayStatus,
+  setBannerDismissed,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
+import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -52,6 +60,9 @@ const AddTaxonomy = () => {
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const isBannerDismissed = useSelector(getIsBannerDismissed);
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
+
   const { user } = useSelector(getUserDetails);
   const location = useLocation();
   const navigate = useNavigate();
@@ -65,7 +76,6 @@ const AddTaxonomy = () => {
 
   const [transformedConceptData, setTransformedConceptData] = useState([]);
   const [standardFields, setStandardFields] = useState([]);
-  const [languageLiteralBannerDisplayStatus, setLanguageLiteralBannerDisplayStatus] = useState(null);
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
   const [fallbackStatus, setFallbackStatus] = useState({});
   const [userAccess, setUserAccess] = useState();
@@ -214,9 +224,24 @@ const AddTaxonomy = () => {
       .validateFields(['name', 'disambiguatingDescription'])
       .then(() => {
         var values = form.getFieldsValue(true);
+        const fallbackStatus = activeFallbackFieldsInfo;
 
-        const body = {
-          name: values?.name,
+        const name = filterUneditedFallbackValues({
+          values: values?.name,
+          activeFallbackFieldsInfo: fallbackStatus,
+          initialDataValue: taxonomyData?.name,
+          fieldName: 'name',
+        });
+
+        const disambiguatingDescription = filterUneditedFallbackValues({
+          values: values?.disambiguatingDescription,
+          activeFallbackFieldsInfo: fallbackStatus,
+          initialDataValue: taxonomyData?.disambiguatingDescription,
+          fieldName: 'disambiguatingDescription',
+        });
+
+        const rawBody = {
+          name: name,
           taxonomyClass: values?.class?.value,
           isDynamicField: dynamic ?? false,
           includeInFullTextSearch: true,
@@ -224,10 +249,13 @@ const AddTaxonomy = () => {
             mappedToField: values?.mappedToField?.key ?? values?.mappedToField,
           }),
           isAdminOnly: userAccess?.length > 0,
-          disambiguatingDescription: values?.disambiguatingDescription,
+          disambiguatingDescription: disambiguatingDescription,
           concepts: cleanConcepts({ concepts: [...filteredConceptData] }),
           addToFilter: values?.addToFilter,
         };
+
+        // Filter out undefined values
+        const body = Object.fromEntries(Object.entries(rawBody).filter(([, value]) => value !== undefined));
 
         if (taxonomyId) {
           updateTaxonomy({ calendarId, body, taxonomyId })
@@ -323,7 +351,7 @@ const AddTaxonomy = () => {
 
   const handleClearAllFallbackStatus = () => {
     dispatch(setBannerDismissed(true));
-    setLanguageLiteralBannerDisplayStatus(false);
+    dispatch(setLanguageLiteralBannerDisplayStatus(false));
 
     const sanitizedData = sanitizeData(transformedConceptData, fallbackStatus);
     const filteredConceptData = transformLanguageKeys(sanitizedData);
@@ -331,6 +359,7 @@ const AddTaxonomy = () => {
   };
 
   useEffect(() => {
+    dispatch(clearActiveFallbackFieldsInfo());
     dispatch(setBannerDismissed(false));
   }, []);
 
@@ -346,14 +375,29 @@ const AddTaxonomy = () => {
         : [value.tagdisplaystatus],
     );
 
+    let shouldDisplay = true;
+
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
+      }
+    });
+
     if (!isBannerDismissed) {
-      allTagDisplayStatuses.every((status) => status === false)
-        ? setLanguageLiteralBannerDisplayStatus(false)
-        : setLanguageLiteralBannerDisplayStatus(true);
+      const draggableTreeBannerStatus = allTagDisplayStatuses.every((status) => status === false);
+      draggableTreeBannerStatus && shouldDisplay
+        ? dispatch(setLanguageLiteralBannerDisplayStatus(false))
+        : dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
-      setLanguageLiteralBannerDisplayStatus(false);
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
     }
-  }, [fallbackStatus]);
+  }, [fallbackStatus, activeFallbackFieldsInfo]);
 
   return (
     <>
@@ -398,6 +442,33 @@ const AddTaxonomy = () => {
                     </div>
                   </Row>
                 </Col>
+              </Row>
+              <Row>
+                {languageLiteralBannerDisplayStatus && (
+                  <Col span={24} className="language-literal-banner">
+                    <Row>
+                      <Col flex={'780px'}>
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col span={24}>
+                            <Alert
+                              message={t('common.forms.languageLiterals.bannerTitle')}
+                              type="info"
+                              showIcon={false}
+                              action={
+                                <OutlinedButton
+                                  data-cy="button-change-fallback-banner"
+                                  size="large"
+                                  label={t('common.dismiss')}
+                                  onClick={() => handleClearAllFallbackStatus()}
+                                />
+                              }
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Col>
+                )}
               </Row>
             </Col>
             <CardEvent marginResponsive="0px">
@@ -447,8 +518,10 @@ const AddTaxonomy = () => {
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
                         entityId={taxonomyId}
-                        name="name"
-                        data={taxonomyData?.name}
+                        name={['name']}
+                        data={Object.fromEntries(
+                          Object.entries(taxonomyData?.name || {}).filter(([, value]) => value !== ''),
+                        )}
                         required={true}
                         validations={t('dashboard.taxonomy.addNew.validations.name')}
                         dataCy="input-text-area-taxonomy-name-"
@@ -486,8 +559,12 @@ const AddTaxonomy = () => {
                         calendarContentLanguage={calendarContentLanguage}
                         entityId={taxonomyId}
                         form={form}
-                        name="disambiguatingDescription"
-                        data={taxonomyData?.disambiguatingDescription}
+                        name={['disambiguatingDescription']}
+                        data={Object.fromEntries(
+                          Object.entries(taxonomyData?.disambiguatingDescription || {}).filter(
+                            ([, value]) => value !== '',
+                          ),
+                        )}
                         dataCy="input-text-area-taxonomy-description-"
                         placeholder={placeHolderCollectionCreator({
                           calendarContentLanguage,
@@ -582,41 +659,10 @@ const AddTaxonomy = () => {
                             <Row gutter={[8, 8]} justify="space-between">
                               <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
                             </Row>
-                          </Col>
-                          <Col>
                             <Row>
                               <Col flex="423px" className="text-concepts">
                                 {t('dashboard.taxonomy.addNew.concepts.description')}
                               </Col>
-                            </Row>
-                          </Col>
-                          <Col>
-                            <Row>
-                              {languageLiteralBannerDisplayStatus && (
-                                <Col span={24} className="language-literal-banner">
-                                  <Row>
-                                    <Col flex={'780px'}>
-                                      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                                        <Col span={24}>
-                                          <Alert
-                                            message={t('common.forms.languageLiterals.bannerTitle')}
-                                            type="info"
-                                            showIcon={false}
-                                            action={
-                                              <OutlinedButton
-                                                data-cy="button-change-fallback-banner"
-                                                size="large"
-                                                label={t('common.dismiss')}
-                                                onClick={() => handleClearAllFallbackStatus()}
-                                              />
-                                            }
-                                          />
-                                        </Col>
-                                      </Row>
-                                    </Col>
-                                  </Row>
-                                </Col>
-                              )}
                             </Row>
                           </Col>
                         </Row>
