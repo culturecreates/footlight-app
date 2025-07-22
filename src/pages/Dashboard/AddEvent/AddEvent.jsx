@@ -137,7 +137,8 @@ function AddEvent() {
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
+
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -1938,8 +1939,8 @@ function AddEvent() {
 
           if (data.location) {
             try {
-              const entityId = extractLastSegment(data.location);
-              const response = await loadArtsDataPlaceEntity({ entityId });
+              // const entityId = extractLastSegment(data.location);
+              const response = await loadArtsDataPlaceEntity({ entityId: data.location });
 
               const placeData = response?.data?.[0];
               const primaryAddress = placeData?.address?.[0];
