@@ -38,7 +38,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useGetEntitiesByIdQuery, useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import moment from 'moment';
@@ -88,7 +88,7 @@ function CreateNewPerson() {
   const personId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
@@ -559,7 +559,7 @@ function CreateNewPerson() {
           }
           if (personData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(personData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
+            // sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           let personKeys = Object.keys(personData);
@@ -636,7 +636,7 @@ function CreateNewPerson() {
         }
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          sourceId = getExternalSourceId(sourceId);
+          // sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
         let personKeys = Object.keys(personData);

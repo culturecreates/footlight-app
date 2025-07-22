@@ -55,7 +55,7 @@ import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
@@ -104,7 +104,7 @@ function CreateNewOrganization() {
   const organizationId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
@@ -910,7 +910,7 @@ function CreateNewOrganization() {
           }
           if (organizationData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(organizationData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
+            // sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           if (organizationData?.place?.entityId) {
@@ -1036,8 +1036,8 @@ function CreateNewOrganization() {
           }
         }
         if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
-          getArtsData(sourceId);
+          // let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
+          getArtsData(externalCalendarEntityData[0]?.derivedFrom?.uri);
         }
         if (externalCalendarEntityData[0]?.place?.entityId) {
           let organizationIdsQuery = new URLSearchParams();

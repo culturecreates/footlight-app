@@ -27,7 +27,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import Icon, { EnvironmentOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import SelectionItem from '../../../components/List/SelectionItem';
@@ -165,7 +165,7 @@ function PersonReadOnly() {
     if (personData) {
       if (personData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(personData?.sameAs);
-        sourceId = getExternalSourceId(sourceId);
+        // sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
     }
