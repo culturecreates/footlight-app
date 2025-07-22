@@ -324,7 +324,7 @@
           },
           "eventLink": "Event link",
           "eventLinkTooltip": "Add a link to the event page on a website.",
-          "videoLink": "Video",
+          "videoLink": "Video link",
           "videoLinks": "Video link",
           "videoLinkTooltip": "Add a video to your content. Youtube and Vimeo are supported.",
           "facebookLink": "Facebook event",
@@ -600,7 +600,12 @@
             "people": "People",
             "organizations": "Organizations"
           },
-          "addSocialMediaLinks": "Add media link"
+          "validations": {
+            "videoUrl": "Enter a valid video link."
+          },
+          "addSocialMediaLinks": "Add media link",
+          "addSocialAdditionalLinks": "Add link",
+          "addLinkText": "Add text"
         },
         "notification": {
           "addSuccess": "Success! Your organization has been created.",
@@ -808,7 +813,8 @@
         "description": "Description",
         "website": "Website",
         "edit": "Edit",
-        "socialMediaLinks": "Social media links"
+        "socialMediaLinks": "Social media links",
+        "additionalLinks": "Additional links"
       },
       "createNew": {
         "search": {
@@ -1298,6 +1304,15 @@
     "copied": "Copied to clipboard",
     "discard": "Discard",
     "day": "day",
+    "components": {
+      "additionalLinks": {
+        "validations": {
+          "required": "This field is required.",
+          "url": "Enter a valid url.",
+          "email": "Enter a valid email address."
+        }
+      }
+    },
     "validations": {
       "informationRequired": "Information is required"
     },
@@ -1308,6 +1323,7 @@
       "validation": {
         "dateRange": "Invalid date range"
       },
+      "moreDetails": "Add more details to the report.",
       "downloadReport": "Download report",
       "downloadDB": "Download all data",
       "cancel": "Cancel",

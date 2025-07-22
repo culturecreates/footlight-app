@@ -18,6 +18,8 @@ import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
 import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelect';
 import { getEmbedUrl, validateVideoLink } from '../utils/getEmbedVideoUrl';
+import AdditionalLinks from '../components/AdditonalLinks/AdditionalLinks';
+import { formFieldPlaceholderHandler } from '../utils/formFieldPlaceholderHandler';
 
 const { TextArea } = Input;
 
@@ -43,6 +45,7 @@ export const dataTypes = {
   IMAGE: 'Image',
   EMAIL: 'Email',
   URI_STRING_ARRAY: 'URIString[]',
+  ADDITIONAL_LINKS: 'ADDITIONAL_LINKS',
 };
 
 export const subDataType = {
@@ -74,12 +77,19 @@ export const formNames = {
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
-    rule: () => [
-      {
-        type: 'url',
-        message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-      },
-    ],
+    rule: ({ subType }) =>
+      subType === subDataType.VIDEO_URL
+        ? [
+            {
+              validator: (rule, value) => validateVideoLink(rule, value),
+            },
+          ]
+        : [
+            {
+              type: 'url',
+              message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+            },
+          ],
   },
   {
     dataType: dataTypes.EMAIL,
@@ -92,13 +102,14 @@ const rules = [
   },
   {
     dataType: dataTypes.IMAGE,
-    rule: ({ image, t }) => [
+    rule: ({ image, t, required }) => [
       ({ getFieldValue }) => ({
         validator() {
           if (
             (getFieldValue('image') != undefined && getFieldValue('image')?.length > 0) ||
             (image && !getFieldValue('image')) ||
-            (image && getFieldValue('image')?.length > 0)
+            (image && getFieldValue('image')?.length > 0) ||
+            !required
           ) {
             return Promise.resolve();
           } else
@@ -134,6 +145,8 @@ export const formFieldValue = [
       required,
       mappedField,
       form,
+      position,
+      userTips,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
@@ -165,19 +178,10 @@ export const formFieldValue = [
         if (subdatatype === subDataType.VIDEO_URL) {
           const initialValue = data?.uri || '';
           const embedUrl = getEmbedUrl(form.getFieldValue(mappedField));
+
           return (
             <Row style={{ margin: '0px' }} gutter={[12, 12]}>
-              <Form.Item
-                style={{ width: '100%' }}
-                name={name}
-                rules={[
-                  { validator: (rule, value) => validateVideoLink(rule, value) },
-                  {
-                    required: required,
-                    message: t('common.validations.informationRequired'),
-                  },
-                ]}
-                initialValue={initialValue}>
+              <Form.Item style={{ width: '100%', marginBottom: '0px' }} name={name} initialValue={initialValue}>
                 <StyledInput
                   placeholder={contentLanguageBilingual({
                     data: placeholder,
@@ -287,6 +291,21 @@ export const formFieldValue = [
               </>
             )}
           </Form.List>
+        );
+      } else if (datatype === dataTypes.ADDITIONAL_LINKS) {
+        return (
+          <AdditionalLinks
+            form={form}
+            name={name}
+            validations={validations}
+            calendarContentLanguage={calendarContentLanguage}
+            entityId={entityId}
+            initialData={data}
+            placeholder={placeholder}
+            position={position}
+            datatype={datatype}
+            userTips={userTips}
+          />
         );
       } else
         return (
@@ -631,6 +650,7 @@ export const formFieldValue = [
 
 export const renderFormFields = ({
   datatype,
+  subDataType,
   element,
   initialValue = undefined,
   name,
@@ -649,7 +669,9 @@ export const renderFormFields = ({
 }) => {
   return (
     <>
-      {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+      {position === 'top' && datatype !== dataTypes.IMAGE && datatype !== dataTypes.ADDITIONAL_LINKS && (
+        <p className="add-event-date-heading">{userTips}</p>
+      )}
       <Form.Item
         data-cy={`form-item-${mappedField ?? fieldName?.toLowerCase()}`}
         label={label}
@@ -671,7 +693,7 @@ export const renderFormFields = ({
         rules={rules
           ?.map((rule) => {
             if (datatype === rule?.dataType) {
-              return rule.rule({ image: originalUrl, t, required, fieldName });
+              return rule.rule({ subType: subDataType, image: originalUrl, t, required, fieldName });
             }
           })
           .concat([
@@ -737,6 +759,7 @@ export const returnFormDataWithFields = ({
     mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
+    subDataType: field?.subDataType,
     required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     element: formField?.element({
       fieldName: field?.name?.toLowerCase(),
@@ -752,7 +775,7 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage,
       name: field?.mappedField && [field?.mappedField],
       preview: true,
-      placeholder: bilingual({
+      placeholder: formFieldPlaceholderHandler({
         data: field?.placeholder,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),

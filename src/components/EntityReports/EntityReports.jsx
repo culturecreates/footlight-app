@@ -1,11 +1,10 @@
-import { Col, Dropdown, Form, message, notification, Row, Spin, Typography } from 'antd';
+import { Col, Dropdown, Form, message, notification, Spin, Typography } from 'antd';
 import React, { useState, useCallback } from 'react';
 import { MoreOutlined, DownloadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as ReportIcon } from '../../assets/icons/report.svg';
 import CustomModal from '../Modal/Common';
-import DatePickerStyled from '../DatePicker';
 import './entitiesReport.css';
 import { DATABASE_ACTION_KEY, IMPORT_ACTION_KEY, REPORT_ACTION_KEY } from '../../constants/entitiesClass';
 import { downloadDB, fetchEntityReport } from '../../services/generateReport';
@@ -13,6 +12,7 @@ import { adminCheckHandler } from '../../utils/adminCheckHandler';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../utils/getCurrentCalendarDetailsFromUserDetails';
+import ReportForm from './ReportForm';
 
 const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) => {
   const { t } = useTranslation();
@@ -134,13 +134,15 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
   const handleReportGeneration = async () => {
     setIsLoading(true);
     try {
-      const values = await form.validateFields(['startDate', 'endDate']);
+      const values = await form.validateFields();
+
       try {
         const response = await fetchEntityReport({
           calendarId,
           startDate: values.startDate.format('YYYY-MM-DD'),
           endDate: values.endDate.format('YYYY-MM-DD'),
           entity,
+          taxonomyIds: values?.taxonomies || [],
         });
 
         cleanupBlobUrl();
@@ -206,88 +208,6 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
     return t('common.entityReport.generate');
   };
 
-  const renderDateRangeForm = () => (
-    <Form
-      form={form}
-      onValuesChange={() => {
-        if (blobUrl) {
-          cleanupBlobUrl();
-          setBlobUrl(null);
-        }
-      }}>
-      <Row gutter={[4, 4]} style={{ padding: '16px 16px' }}>
-        <Col span={24} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-          <Typography.Text strong>{t('common.entityReport.timeFrame')}</Typography.Text>
-          <Typography.Text type="danger">*</Typography.Text>
-        </Col>
-        <Col span={24} style={dateRangeContainerStyle}>
-          <Form.Item
-            name="startDate"
-            style={formItemStyle}
-            rules={[
-              { required: true, message: t('common.entityReport.validation.dateRange') },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  const endDate = getFieldValue('endDate');
-                  if (!value || !endDate || value.isSameOrBefore(endDate, 'day')) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error(t('common.entityReport.validation.startBeforeEnd')));
-                },
-              }),
-            ]}>
-            <DatePickerStyled
-              disabledDate={(current) => {
-                const endDate = form.getFieldValue('endDate');
-                return endDate && current && current.isAfter(endDate, 'day');
-              }}
-            />
-          </Form.Item>
-
-          <Typography.Text type="secondary" style={{ alignSelf: 'center' }}>
-            {t('common.entityReport.to')}
-          </Typography.Text>
-
-          <Form.Item
-            name="endDate"
-            style={formItemStyle}
-            rules={[
-              { required: true, message: t('common.entityReport.validation.dateRange') },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  const startDate = getFieldValue('startDate');
-                  if (!value || !startDate || value.isSameOrAfter(startDate, 'day')) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error(t('common.entityReport.validation.endAfterStart')));
-                },
-              }),
-            ]}>
-            <DatePickerStyled
-              disabledDate={(current) => {
-                const startDate = form.getFieldValue('startDate');
-                return startDate && current && current.isBefore(startDate, 'day');
-              }}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-    </Form>
-  );
-
-  // Styles for components
-  const dateRangeContainerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '16px',
-  };
-
-  const formItemStyle = {
-    flex: 1,
-    marginBottom: 0,
-  };
-
   return (
     <Col className="entity-options-dropdown-wrapper" style={{ display: 'flex', alignItems: 'center' }}>
       <Dropdown
@@ -312,7 +232,15 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
         cancelText={t('common.entityReport.cancel')}>
         <div className="modal-content-wrapper">
           {modalActionKey === DATABASE_ACTION_KEY && t('common.entityReport.downloadDbDescription')}
-          {modalActionKey === REPORT_ACTION_KEY && renderDateRangeForm()}
+          {modalActionKey === REPORT_ACTION_KEY && (
+            <ReportForm
+              entity={entity}
+              blobUrl={blobUrl}
+              cleanupBlobUrl={cleanupBlobUrl}
+              setBlobUrl={setBlobUrl}
+              form={form}
+            />
+          )}
         </div>
       </CustomModal>
     </Col>
