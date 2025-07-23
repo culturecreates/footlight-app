@@ -97,6 +97,7 @@ import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallb
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import i18next from 'i18next';
+import { setInitialValueForStandardTaxonomyFieldsForPlaceForm } from '../../../utils/setFieldvalueForTaxonomies';
 
 const { TextArea } = Input;
 
@@ -1421,7 +1422,19 @@ function CreateNewPlace() {
       <RouteLeavingGuard isBlocking={showDialog} />
 
       <div className="add-edit-wrapper create-new-place-wrapper">
-        <Form form={form} layout="vertical" name="place" onFieldsChange={onFieldsChange}>
+        <Form
+          form={form}
+          initialValues={setInitialValueForStandardTaxonomyFieldsForPlaceForm({
+            data: placeData,
+            artsData,
+            allTaxonomyData,
+            user,
+            formFieldNames,
+            artsDataId,
+          })}
+          layout="vertical"
+          name="place"
+          onFieldsChange={onFieldsChange}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
@@ -1614,9 +1627,6 @@ function CreateNewPlace() {
                     'name',
                     false,
                   )}
-                  initialValue={placeData?.additionalType?.map((type) => {
-                    return type?.entityId;
-                  })}
                   rules={[
                     {
                       required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.PLACE_TYPE),
@@ -1851,6 +1861,12 @@ function CreateNewPlace() {
                       addedFields?.includes(taxonomy?.id) ||
                       (initialValues && initialValues?.length > 0);
                     const displayFlag = !shouldShowField;
+
+                    taxonomy?.concept?.forEach((concept) => {
+                      if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
+                        initialValues = [concept?.id];
+                      }
+                    });
 
                     return (
                       <Form.Item
@@ -2240,18 +2256,6 @@ function CreateNewPlace() {
                         ? false
                         : true
                       : false
-                  }
-                  initialValue={
-                    placeData?.regions
-                      ? placeData?.regions?.map((type) => {
-                          return type?.entityId;
-                        })
-                      : artsDataId
-                      ? artsData?.regions &&
-                        artsData?.regions?.map((region) => {
-                          return region?.entityId;
-                        })
-                      : []
                   }
                   style={{
                     display:
@@ -2792,9 +2796,6 @@ function CreateNewPlace() {
                       'name',
                       false,
                     )}
-                    initialValue={placeData?.accessibility?.map((type) => {
-                      return type?.entityId;
-                    })}
                     hidden={
                       standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
                         ? adminCheckHandler({ calendar, user })
