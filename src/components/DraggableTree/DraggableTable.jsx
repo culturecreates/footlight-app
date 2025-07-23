@@ -6,7 +6,7 @@ import { useOutletContext } from 'react-router-dom';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import './draggableTable.css';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined, StarFilled } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
@@ -38,6 +38,34 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
     const transformedData = transformLanguageKeys(sanitizedData);
 
     setData(transformedData);
+  };
+
+  const markNodeAsDefault = (data, key, defaultValue) => {
+    const newData = deepCopy(data);
+
+    const traverse = (items) => {
+      for (let item of items) {
+        item.isDefault = false;
+
+        if (item.key === key) {
+          item.isDefault = !defaultValue;
+        }
+
+        if (item.children) {
+          traverse(item.children);
+        }
+      }
+    };
+
+    traverse(newData);
+    return newData;
+  };
+
+  const setAsDefault = (key, isDefault) => {
+    const updatedData = markNodeAsDefault(transformedData, key, isDefault);
+    const sanitizedData = sanitizeData(updatedData, fallbackStatus);
+    const filteredConceptData = transformLanguageKeys(sanitizedData);
+    setData(filteredConceptData);
   };
 
   const handleDelete = (key) => {
@@ -131,6 +159,7 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
     const newRow = {
       key: newKey,
       isNew: true,
+      isDefault: false,
       ...columns.reduce((acc, col) => {
         acc[col.dataIndex] = `Concept ${col.title}`;
         return acc;
@@ -151,13 +180,36 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
     },
   };
 
-  const menu = (record) => (
-    <Menu>
-      <Menu.Item key="delete" onClick={() => handleDelete(record?.key)} data-cy="taxonomy-concept-row-delete-btn">
-        {t('dashboard.taxonomy.addNew.concepts.delete')}
-      </Menu.Item>
-    </Menu>
-  );
+  const menu = (record) => {
+    const { key, isDefault } = record;
+
+    const menuItems = [
+      {
+        key: 'delete',
+        onClick: () => handleDelete(key),
+        label: t('dashboard.taxonomy.addNew.concepts.delete'),
+        'data-cy': 'taxonomy-concept-row-delete-btn',
+      },
+      {
+        key: 'toggleDefault',
+        onClick: () => setAsDefault(key, isDefault),
+        label: !isDefault
+          ? t('dashboard.taxonomy.addNew.concepts.setDefault')
+          : t('dashboard.taxonomy.addNew.concepts.clearDefault'),
+        'data-cy': 'taxonomy-concept-row-default-btn',
+      },
+    ];
+
+    return (
+      <Menu>
+        {menuItems.map(({ key, onClick, label, ...dataAttrs }) => (
+          <Menu.Item key={key} onClick={onClick} {...dataAttrs}>
+            {label}
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
+  };
 
   const modifiedColumns = [
     ...columns.map((col) => ({
@@ -216,24 +268,27 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
             indentSize={20}
             expandable={{
               expandIcon: ({ expanded, onExpand, record }) => {
-                if (!record.children || record.children.length === 0) return null;
-                return expanded ? (
-                  <div
-                    className="icon-container"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      return onExpand(record, e);
-                    }}>
-                    <MinusOutlined />
+                const defaultIcon = record?.isDefault ? (
+                  <div className="default-star" data-cy="row-default-indicator">
+                    <StarFilled style={{ color: '#0F0E98', fontSize: 16 }} />
                   </div>
-                ) : (
+                ) : null;
+                if (!record.children || record.children.length === 0) return defaultIcon;
+
+                const isDefault = record?.isDefault;
+                const containerStyle = isDefault ? { display: 'flex', gap: '4px' } : {};
+                const iconStyle = { fontSize: 16, display: 'grid', placeContent: 'center' };
+
+                return (
                   <div
-                    className="icon-container"
+                    className="icon-container expand-icon-container"
+                    style={containerStyle}
                     onClick={(e) => {
                       e.stopPropagation();
                       return onExpand(record, e);
                     }}>
-                    <PlusOutlined />
+                    {expanded ? <MinusOutlined style={iconStyle} /> : <PlusOutlined style={iconStyle} />}
+                    {defaultIcon}
                   </div>
                 );
               },
