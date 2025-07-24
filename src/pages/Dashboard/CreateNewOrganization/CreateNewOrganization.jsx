@@ -1381,8 +1381,8 @@ function CreateNewOrganization() {
 
                             if (artsDataId || externalCalendarEntityId) {
                               taxonomy?.concept?.forEach((concept) => {
-                                if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
-                                  initialValues = [concept?.id];
+                                if (concept?.isDefault && Array.isArray(initialValues)) {
+                                  initialValues = [...initialValues, concept?.id];
                                 }
                               });
                             }

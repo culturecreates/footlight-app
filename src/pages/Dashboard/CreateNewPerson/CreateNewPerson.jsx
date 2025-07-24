@@ -878,6 +878,7 @@ function CreateNewPerson() {
                               formField,
                               allTaxonomyData,
                               user,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                               calendarContentLanguage,
                               entityId: personId,
                               entityData: personData
@@ -923,6 +924,14 @@ function CreateNewPerson() {
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||
                               (initialValues && initialValues?.length > 0);
+
+                            if (artsDataId || externalCalendarEntityId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault && Array.isArray(initialValues)) {
+                                  initialValues = [...initialValues, concept?.id];
+                                }
+                              });
+                            }
 
                             const displayFlag = !shouldShowField;
                             return (
