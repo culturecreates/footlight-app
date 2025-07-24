@@ -65,6 +65,7 @@
 
 .custom-table .ant-table-tbody .ant-table-cell > div .icon-container {
   padding: 0px 8px;
+  padding-right: 4px;
   margin-left: -12px;
   display: grid;
   place-content: center;

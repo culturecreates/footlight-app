@@ -276,7 +276,7 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
                 if (!record.children || record.children.length === 0) return defaultIcon;
 
                 const isDefault = record?.isDefault;
-                const containerStyle = isDefault ? { display: 'flex', gap: '4px' } : {};
+                const containerStyle = isDefault ? { display: 'flex' } : {};
                 const iconStyle = { fontSize: 16, display: 'grid', placeContent: 'center' };
 
                 return (
