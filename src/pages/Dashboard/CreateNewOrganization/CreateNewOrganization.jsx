@@ -1373,11 +1373,6 @@ function CreateNewOrganization() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
-                            const shouldShowField =
-                              requiredFlag ||
-                              addedFields?.includes(taxonomy?.id) ||
-                              (initialValues && initialValues?.length > 0);
-                            const displayFlag = !shouldShowField;
 
                             if (artsDataId || externalCalendarEntityId) {
                               taxonomy?.concept?.forEach((concept) => {
@@ -1386,6 +1381,12 @@ function CreateNewOrganization() {
                                 }
                               });
                             }
+
+                            const shouldShowField =
+                              requiredFlag ||
+                              addedFields?.includes(taxonomy?.id) ||
+                              (initialValues && initialValues?.length > 0);
+                            const displayFlag = !shouldShowField;
 
                             return (
                               <Form.Item

@@ -920,10 +920,6 @@ function CreateNewPerson() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
-                            const shouldShowField =
-                              requiredFlag ||
-                              addedFields?.includes(taxonomy?.id) ||
-                              (initialValues && initialValues?.length > 0);
 
                             if (artsDataId || externalCalendarEntityId) {
                               taxonomy?.concept?.forEach((concept) => {
@@ -932,6 +928,11 @@ function CreateNewPerson() {
                                 }
                               });
                             }
+
+                            const shouldShowField =
+                              requiredFlag ||
+                              addedFields?.includes(taxonomy?.id) ||
+                              (initialValues && initialValues?.length > 0);
 
                             const displayFlag = !shouldShowField;
                             return (

@@ -1424,14 +1424,18 @@ function CreateNewPlace() {
       <div className="add-edit-wrapper create-new-place-wrapper">
         <Form
           form={form}
-          initialValues={setInitialValueForStandardTaxonomyFieldsForPlaceForm({
-            data: placeData,
-            artsData,
-            allTaxonomyData,
-            user,
-            formFieldNames,
-            artsDataId,
-          })}
+          initialValues={
+            !artsDataId && !externalCalendarEntityId
+              ? setInitialValueForStandardTaxonomyFieldsForPlaceForm({
+                  data: placeData,
+                  artsData,
+                  allTaxonomyData,
+                  user,
+                  formFieldNames,
+                  artsDataId,
+                })
+              : {}
+          }
           layout="vertical"
           name="place"
           onFieldsChange={onFieldsChange}>
@@ -1856,17 +1860,21 @@ function CreateNewPlace() {
                     });
 
                     const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
+
+                    if (artsDataId || externalCalendarEntityId) {
+                      taxonomy?.concept?.forEach((concept) => {
+                        if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
+                          initialValues = [concept?.id];
+                        }
+                      });
+                    }
+
                     const shouldShowField =
                       requiredFlag ||
                       addedFields?.includes(taxonomy?.id) ||
                       (initialValues && initialValues?.length > 0);
-                    const displayFlag = !shouldShowField;
 
-                    taxonomy?.concept?.forEach((concept) => {
-                      if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
-                        initialValues = [concept?.id];
-                      }
-                    });
+                    const displayFlag = !shouldShowField;
 
                     return (
                       <Form.Item
