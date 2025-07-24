@@ -1,3 +1,5 @@
+import { findMatchingItems, treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
+import { eventTaxonomyMappedField } from '../constants/eventTaxonomyMappedField';
 import { placeTaxonomyMappedFieldTypes } from '../constants/placeMappedFieldTypes';
 import { taxonomyDetails } from './taxonomyDetails';
 
@@ -89,5 +91,90 @@ export const setInitialValueForStandardTaxonomyFieldsForPlaceForm = ({
       });
     },
   });
+  return initialValues;
+};
+
+export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
+  data,
+  artsData,
+  allTaxonomyData,
+  user,
+  formFieldNames,
+  calendarContentLanguage,
+  eventId,
+}) => {
+  let initialValues = {};
+
+  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_TYPE]] = setFieldvalueForTaxonomies({
+    concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.EVENT_TYPE, 'concept', false)
+      ?.concept,
+    fn: () =>
+      data?.additionalType?.map((type) => {
+        return type?.entityId;
+      }) ??
+      findMatchingItems(
+        treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage),
+        artsData?.additionalType
+          ?.map((type) => type?.label)
+          ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+      )?.map((concept) => concept?.value),
+  });
+
+  initialValues[formFieldNames[eventTaxonomyMappedField.AUDIENCE]] = setFieldvalueForTaxonomies({
+    concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.AUDIENCE, 'concept', false)
+      ?.concept,
+    fn: () =>
+      data?.audience?.map((audience) => {
+        return audience?.entityId;
+      }) ??
+      findMatchingItems(
+        treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage),
+        artsData?.audience
+          ?.map((type) => type?.label)
+          ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+      )?.map((concept) => concept?.value),
+  });
+
+  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_DISCIPLINE]] = setFieldvalueForTaxonomies({
+    concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.EVENT_DISCIPLINE, 'concept', false)
+      ?.concept,
+    fn: () =>
+      data?.discipline?.map((type) => type?.entityId) ??
+      findMatchingItems(
+        treeTaxonomyOptions(allTaxonomyData, user, 'EventDiscipline', false, calendarContentLanguage),
+        artsData?.discipline
+          ?.map((type) => type?.label)
+          ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+      )?.map((concept) => concept?.value),
+  });
+
+  initialValues[formFieldNames[eventTaxonomyMappedField.IN_LANGUAGE]] = setFieldvalueForTaxonomies({
+    concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.IN_LANGUAGE, 'concept', false)
+      ?.concept,
+    fn: () =>
+      eventId
+        ? data?.inLanguage?.map((inLanguage) => {
+            return inLanguage?.entityId;
+          })
+        : allTaxonomyData?.data
+            ?.find((taxonomy) => taxonomy?.mappedToField === 'inLanguage')
+            ?.concept?.map((concept) => (concept?.isDefault === true ? concept?.id : null))
+            ?.filter((id) => id),
+  });
+
+  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_ACCESSIBILITY]] = setFieldvalueForTaxonomies({
+    concepts: taxonomyDetails(
+      allTaxonomyData?.data,
+      user,
+      eventTaxonomyMappedField.EVENT_ACCESSIBILITY,
+      'concept',
+      false,
+    )?.concept,
+    fn: () =>
+      data?.accessibility?.map((type) => {
+        return type?.entityId;
+      }),
+  });
+
   return initialValues;
 };
