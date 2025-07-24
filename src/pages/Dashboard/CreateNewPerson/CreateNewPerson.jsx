@@ -657,7 +657,7 @@ function CreateNewPerson() {
           sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
-        let personKeys = Object.keys(personData);
+        let personKeys = Object.keys(personData || {});
         if (personKeys?.length > 0) setAddedFields(personKeys);
       }
 
