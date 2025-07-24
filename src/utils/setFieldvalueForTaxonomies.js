@@ -12,14 +12,14 @@ import { taxonomyDetails } from './taxonomyDetails';
  * @returns {Array<string>} - The updated values array.
  */
 function setFieldvalueForTaxonomies({ concepts, fn }) {
-  let values = fn();
+  let values = fn() || [];
 
   if (!Array.isArray(concepts)) return values;
 
-  if (!values || (Array.isArray(values) && !values.length)) {
+  if (Array.isArray(values) && !values.length) {
     concepts.forEach((concept) => {
       if (concept?.isDefault) {
-        values.push(concept?.id);
+        values?.push(concept?.id);
       }
     });
   }

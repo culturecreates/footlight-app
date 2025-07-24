@@ -1357,6 +1357,7 @@ function CreateNewOrganization() {
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                               setShowDialog,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                             });
                           }
                         });
@@ -1377,6 +1378,14 @@ function CreateNewOrganization() {
                               addedFields?.includes(taxonomy?.id) ||
                               (initialValues && initialValues?.length > 0);
                             const displayFlag = !shouldShowField;
+
+                            if (artsDataId || externalCalendarEntityId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
+                                  initialValues = [concept?.id];
+                                }
+                              });
+                            }
 
                             return (
                               <Form.Item
