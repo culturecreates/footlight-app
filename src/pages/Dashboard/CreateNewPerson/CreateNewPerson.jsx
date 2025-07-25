@@ -657,7 +657,7 @@ function CreateNewPerson() {
           sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
-        let personKeys = Object.keys(personData);
+        let personKeys = Object.keys(personData || {});
         if (personKeys?.length > 0) setAddedFields(personKeys);
       }
 
@@ -878,6 +878,7 @@ function CreateNewPerson() {
                               formField,
                               allTaxonomyData,
                               user,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                               calendarContentLanguage,
                               entityId: personId,
                               entityData: personData
@@ -919,6 +920,15 @@ function CreateNewPerson() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
+
+                            if (artsDataId || externalCalendarEntityId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault && Array.isArray(initialValues)) {
+                                  initialValues = [...initialValues, concept?.id];
+                                }
+                              });
+                            }
+
                             const shouldShowField =
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||

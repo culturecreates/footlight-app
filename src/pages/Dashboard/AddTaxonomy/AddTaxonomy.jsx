@@ -329,6 +329,7 @@ const AddTaxonomy = () => {
         return {
           ...(item.id && { id: item.id }),
           name: filteredName,
+          isDefault: item?.isDefault || false,
           children: item.children ? modifyConceptData(item.children) : [],
         };
       }) || []

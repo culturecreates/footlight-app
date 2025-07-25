@@ -752,6 +752,7 @@ export const returnFormDataWithFields = ({
   mandatoryFields,
   setShowDialog,
   entityId,
+  isImportedEntity,
 }) => {
   return renderFormFields({
     fieldName: field?.name,
@@ -832,7 +833,15 @@ export const returnFormDataWithFields = ({
       setShowDialog,
     }),
     key: index,
-    initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
+    initialValue: formInitialValueHandler(
+      field?.type,
+      field?.mappedField,
+      field?.datatype,
+      entityData,
+      isImportedEntity,
+      allTaxonomyData,
+      field?.taxonomyAlias,
+    ),
     label: bilingual({
       data: field?.label,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
