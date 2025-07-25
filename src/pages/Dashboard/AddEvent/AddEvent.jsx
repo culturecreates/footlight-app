@@ -3639,7 +3639,7 @@ function AddEvent() {
                     openingHours={locationPlace?.openingHours}
                     calendarContentLanguage={calendarContentLanguage}
                     region={locationPlace?.region}
-                    {...(!locationPlace?.validationReport?.hasAllMandatoryFields && { borderColor: 'red' })}
+                    {...(locationPlace?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                     bordered
                     closable
                     onClose={() => {
@@ -4003,7 +4003,7 @@ function AddEvent() {
                         icon={organizer?.label?.props?.icon}
                         name={organizer?.name}
                         description={organizer?.description}
-                        {...(!organizer?.validationReport?.hasAllMandatoryFields && { borderColor: 'red' })}
+                        {...(organizer?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                         bordered
                         closable
                         itemWidth="100%"
@@ -4500,6 +4500,7 @@ function AddEvent() {
                         icon={performer?.label?.props?.icon}
                         name={performer?.name}
                         description={performer?.description}
+                        {...(performer?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                         calendarContentLanguage={calendarContentLanguage}
                         bordered
                         closable
@@ -4739,6 +4740,7 @@ function AddEvent() {
                         icon={supporter?.label?.props?.icon}
                         name={supporter?.name}
                         description={supporter?.description}
+                        {...(supporter?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                         bordered
                         itemWidth="100%"
                         closable
