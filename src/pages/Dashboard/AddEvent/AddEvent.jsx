@@ -1404,7 +1404,7 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         setAllPlacesList(
-          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
         );
       })
       .catch((error) => console.log(error));
@@ -1449,15 +1449,15 @@ function AddEvent() {
       .then((response) => {
         if (type == 'organizers') {
           setOrganizersList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         } else if (type == 'performers') {
           setPerformerList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         } else if (type == 'supporters') {
           setSupporterList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         }
       })
@@ -2292,6 +2292,7 @@ function AddEvent() {
                         calendarContentLanguage,
                         sourceOptions.CMS,
                         currentCalendarData,
+                        true,
                       )[0],
                     );
                   }
@@ -2302,7 +2303,14 @@ function AddEvent() {
                   ['accessibility']: [],
                 };
                 setLocationPlace(
-                  placesOptions(initialPlace, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData)[0],
+                  placesOptions(
+                    initialPlace,
+                    user,
+                    calendarContentLanguage,
+                    sourceOptions.CMS,
+                    currentCalendarData,
+                    true,
+                  )[0],
                 );
               }
               res?.data?.map((taxonomy) => {
@@ -2317,6 +2325,7 @@ function AddEvent() {
                           calendarContentLanguage,
                           sourceOptions.CMS,
                           currentCalendarData,
+                          true,
                         )[0],
                       );
                     }
@@ -2344,6 +2353,7 @@ function AddEvent() {
               calendarContentLanguage,
               sourceOptions.CMS,
               currentCalendarData,
+              true,
             ),
           );
         }
@@ -2357,6 +2367,7 @@ function AddEvent() {
               calendarContentLanguage,
               sourceOptions.CMS,
               currentCalendarData,
+              true,
             ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
@@ -2371,6 +2382,7 @@ function AddEvent() {
               calendarContentLanguage,
               sourceOptions.CMS,
               currentCalendarData,
+              true,
             ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
@@ -3627,6 +3639,7 @@ function AddEvent() {
                     openingHours={locationPlace?.openingHours}
                     calendarContentLanguage={calendarContentLanguage}
                     region={locationPlace?.region}
+                    {...(!locationPlace?.validationReport?.hasAllMandatoryFields && { borderColor: 'red' })}
                     bordered
                     closable
                     onClose={() => {
@@ -3990,6 +4003,7 @@ function AddEvent() {
                         icon={organizer?.label?.props?.icon}
                         name={organizer?.name}
                         description={organizer?.description}
+                        {...(!organizer?.validationReport?.hasAllMandatoryFields && { borderColor: 'red' })}
                         bordered
                         closable
                         itemWidth="100%"

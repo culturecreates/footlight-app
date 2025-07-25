@@ -39,7 +39,9 @@ function SelectionItem(props) {
     creatorId,
     fallbackConfig,
     onClickHandle = { navigationFlag: false },
+    borderColor = '#607EFC',
   } = props;
+
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
   const navigate = useNavigate();
@@ -85,7 +87,7 @@ function SelectionItem(props) {
       className="selection-item-wrapper"
       onClick={onClickHandle?.navigationFlag ? routinghandler : null}
       style={{
-        border: bordered ? '1px solid #607EFC' : undefined,
+        border: bordered ? `1px solid ${borderColor}` : undefined,
         width: itemWidth || undefined,
         cursor: onClickHandle?.navigationFlag ? 'pointer' : undefined,
       }}>
