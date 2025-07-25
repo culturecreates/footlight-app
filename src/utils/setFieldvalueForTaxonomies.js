@@ -12,22 +12,44 @@ import { taxonomyDetails } from './taxonomyDetails';
  *
  * @returns {Array<string>} - The updated values array.
  */
+
 function setFieldvalueForTaxonomies({ concepts, fn }) {
   let values = fn() || [];
 
   if (!Array.isArray(concepts)) return values;
 
-  if (Array.isArray(values) && !values.length) {
-    concepts.forEach((concept) => {
-      if (concept?.isDefault) {
-        values?.push(concept?.id);
-      }
-    });
+  if (Array.isArray(values) && values.length === 0) {
+    const defaultConceptId = findDefaultConceptId(concepts);
+
+    if (defaultConceptId) values.push(defaultConceptId);
   }
 
   return values;
 }
 export default setFieldvalueForTaxonomies;
+
+/**
+ * DFS traversal to find first node with isDefault flag.
+ * @param {Array} nodes - Taxonomy nodes with:
+ *   @property {string} id - Unique identifier (required)
+ *   @property {boolean} [isDefault] - Mark as default
+ *   @property {Array} [children] - Optional - Child nodes
+ *   @property {*} [...] - Other fields ignored by this function
+ * @returns {string|null} - ID of first default node found
+ */
+function findDefaultConceptId(nodes) {
+  if (!Array.isArray(nodes)) return null;
+
+  for (const node of nodes) {
+    if (node?.isDefault) return node.id;
+    if (node.children) {
+      const found = findDefaultConceptId(node.children);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
 
 /**
  * Sets initial values for standard taxonomy fields in the Place form.
