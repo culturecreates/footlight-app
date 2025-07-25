@@ -25,7 +25,14 @@ export const taxonomyOptions = (data, user, mappedToField, calendarContentLangua
   return options;
 };
 
-export const placesOptions = (data, user, calendarContentLanguage, source = sourceOptions.CMS, currentCalendarData) => {
+export const placesOptions = (
+  data,
+  user,
+  calendarContentLanguage,
+  source = sourceOptions.CMS,
+  currentCalendarData,
+  enableDynamicBorder,
+) => {
   let isFieldsDirty = {};
   calendarContentLanguage.forEach((language) => {
     const langKey = contentLanguageKeyMap[language];
@@ -33,11 +40,16 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
   });
 
   let options = data?.map((place) => {
+    const isValidated = place?.validationReport?.hasAllMandatoryFields;
     return {
       label: (
         <SelectionItem
           itemWidth="100%"
           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+          {...(enableDynamicBorder && {
+            borderColor: isValidated ? undefined : 'red',
+          })}
+          bordered={enableDynamicBorder ? !isValidated : false}
           region={place?.regions}
           name={
             isDataValid(place?.name)
@@ -85,6 +97,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
       sameAs: place?.sameAs,
       source: source,
       uri: place?.uri,
+      validationReport: place?.validationReport,
       type: place?.type,
       creatorId: place?.creator?.userId ?? place?.createdByUserId,
       fallBackStatus: currentCalendarData
