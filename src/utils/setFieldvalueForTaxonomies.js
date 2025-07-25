@@ -4,8 +4,7 @@ import { placeTaxonomyMappedFieldTypes } from '../constants/placeMappedFieldType
 import { taxonomyDetails } from './taxonomyDetails';
 
 /**
- * Sets initial field values for taxonomies based form items.
- * If data is not available for the entity, it sets the default concepts as initial value.
+ * Add the default concept in to the set of initial values.
  *
  * @param {Object} params - The parameters object.
  * @param {Array<Object>} params.concepts - Array of concept objects.
@@ -94,6 +93,19 @@ export const setInitialValueForStandardTaxonomyFieldsForPlaceForm = ({
   return initialValues;
 };
 
+/**
+ * Sets initial values for standard taxonomy fields in the event form.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {Object} params.data - The event data object form CMS.
+ * @param {Object} params.artsData - The event data object form arts data.
+ * @param {Object} params.allTaxonomyData - The complete taxonomy data object.
+ * @param {Object} params.user - The current user object.
+ * @param {Object} params.formFieldNames - Mapping of form field names to taxonomy field types.
+ * @param {string[]} params.calendarContentLanguage - Array of languages used in the calendar.
+ * @param {string} params.eventId - The event ID.
+ * @returns {Object} initialValues - An object containing initial values for the event form's taxonomy fields.
+ */
 export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
   data,
   artsData,
