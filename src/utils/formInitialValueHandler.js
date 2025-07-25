@@ -1,5 +1,5 @@
 import { dataTypes, formTypes } from '../constants/formFields';
-import setFieldvalueForTaxonomies from './setFieldvalueForTaxonomies';
+import resolveTaxonomyValues from './setFieldvalueForTaxonomies';
 
 export const formInitialValueHandler = (
   type,
@@ -23,9 +23,9 @@ export const formInitialValueHandler = (
 
     case formTypes.MULTISELECT:
       if (isImportedEntity && allTaxonomyData && taxonomyAlias) {
-        return setFieldvalueForTaxonomies({
+        return resolveTaxonomyValues({
           concepts: allTaxonomyData?.data?.find((taxonomy) => taxonomy?.mappedToField === taxonomyAlias)?.concept,
-          fn: () => initialData?.map((concept) => concept?.entityId),
+          getInitialValues: () => initialData?.map((concept) => concept?.entityId),
         });
       } else if (initialData?.length > 0) {
         return initialData?.map((concept) => concept?.entityId);

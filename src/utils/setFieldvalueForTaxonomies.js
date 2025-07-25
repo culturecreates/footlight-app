@@ -4,17 +4,18 @@ import { placeTaxonomyMappedFieldTypes } from '../constants/placeMappedFieldType
 import { taxonomyDetails } from './taxonomyDetails';
 
 /**
- * Add the default concept in to the set of initial values.
+ * Resolves initial taxonomy values, injecting default concept.
+ *
  *
  * @param {Object} params - The parameters object.
  * @param {Array<Object>} params.concepts - Array of concept objects.
- * @param {Function} params.fn - Function that returns the initial values array that is available in api data.
+ * @param {Function} params.getInitialValues - Function that returns the initial values array that is available in api data.
  *
  * @returns {Array<string>} - The updated values array.
  */
 
-function setFieldvalueForTaxonomies({ concepts, fn }) {
-  let values = fn() || [];
+function resolveTaxonomyValues({ concepts, getInitialValues }) {
+  let values = getInitialValues() || [];
 
   if (!Array.isArray(concepts)) return values;
 
@@ -26,7 +27,7 @@ function setFieldvalueForTaxonomies({ concepts, fn }) {
 
   return values;
 }
-export default setFieldvalueForTaxonomies;
+export default resolveTaxonomyValues;
 
 /**
  * DFS traversal to find first node with isDefault flag.
@@ -73,19 +74,19 @@ export const setInitialValueForStandardTaxonomyFieldsForPlaceForm = ({
   artsDataId,
 }) => {
   let initialValues = {};
-  initialValues[formFieldNames.TYPE] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames.TYPE] = resolveTaxonomyValues({
     concepts: taxonomyDetails(allTaxonomyData?.data, user, placeTaxonomyMappedFieldTypes.TYPE, 'concept', false)
       ?.concept,
-    fn: () => {
+    getInitialValues: () => {
       return data?.additionalType?.map((type) => {
         return type?.entityId;
       });
     },
   });
-  initialValues[formFieldNames.REGION] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames.REGION] = resolveTaxonomyValues({
     concepts: taxonomyDetails(allTaxonomyData?.data, user, placeTaxonomyMappedFieldTypes.REGION, 'concept', false)
       ?.concept,
-    fn: () => {
+    getInitialValues: () => {
       return data?.regions
         ? data?.regions?.map((type) => {
             return type?.entityId;
@@ -98,7 +99,7 @@ export const setInitialValueForStandardTaxonomyFieldsForPlaceForm = ({
         : [];
     },
   });
-  initialValues[formFieldNames.PLACE_ACCESSIBILITY] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames.PLACE_ACCESSIBILITY] = resolveTaxonomyValues({
     concepts: taxonomyDetails(
       allTaxonomyData?.data,
       user,
@@ -106,7 +107,7 @@ export const setInitialValueForStandardTaxonomyFieldsForPlaceForm = ({
       'concept',
       false,
     )?.concept,
-    fn: () => {
+    getInitialValues: () => {
       return data?.accessibility?.map((type) => {
         return type?.entityId;
       });
@@ -139,10 +140,10 @@ export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
 }) => {
   let initialValues = {};
 
-  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_TYPE]] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_TYPE]] = resolveTaxonomyValues({
     concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.EVENT_TYPE, 'concept', false)
       ?.concept,
-    fn: () =>
+    getInitialValues: () =>
       data?.additionalType?.map((type) => {
         return type?.entityId;
       }) ??
@@ -154,10 +155,10 @@ export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
       )?.map((concept) => concept?.value),
   });
 
-  initialValues[formFieldNames[eventTaxonomyMappedField.AUDIENCE]] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames[eventTaxonomyMappedField.AUDIENCE]] = resolveTaxonomyValues({
     concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.AUDIENCE, 'concept', false)
       ?.concept,
-    fn: () =>
+    getInitialValues: () =>
       data?.audience?.map((audience) => {
         return audience?.entityId;
       }) ??
@@ -169,10 +170,10 @@ export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
       )?.map((concept) => concept?.value),
   });
 
-  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_DISCIPLINE]] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_DISCIPLINE]] = resolveTaxonomyValues({
     concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.EVENT_DISCIPLINE, 'concept', false)
       ?.concept,
-    fn: () =>
+    getInitialValues: () =>
       data?.discipline?.map((type) => type?.entityId) ??
       findMatchingItems(
         treeTaxonomyOptions(allTaxonomyData, user, 'EventDiscipline', false, calendarContentLanguage),
@@ -182,10 +183,10 @@ export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
       )?.map((concept) => concept?.value),
   });
 
-  initialValues[formFieldNames[eventTaxonomyMappedField.IN_LANGUAGE]] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames[eventTaxonomyMappedField.IN_LANGUAGE]] = resolveTaxonomyValues({
     concepts: taxonomyDetails(allTaxonomyData?.data, user, eventTaxonomyMappedField.IN_LANGUAGE, 'concept', false)
       ?.concept,
-    fn: () =>
+    getInitialValues: () =>
       eventId
         ? data?.inLanguage?.map((inLanguage) => {
             return inLanguage?.entityId;
@@ -196,7 +197,7 @@ export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
             ?.filter((id) => id),
   });
 
-  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_ACCESSIBILITY]] = setFieldvalueForTaxonomies({
+  initialValues[formFieldNames[eventTaxonomyMappedField.EVENT_ACCESSIBILITY]] = resolveTaxonomyValues({
     concepts: taxonomyDetails(
       allTaxonomyData?.data,
       user,
@@ -204,7 +205,7 @@ export const setInitialValueForStandardTaxonomyFieldsForEventForm = ({
       'concept',
       false,
     )?.concept,
-    fn: () =>
+    getInitialValues: () =>
       data?.accessibility?.map((type) => {
         return type?.entityId;
       }),
