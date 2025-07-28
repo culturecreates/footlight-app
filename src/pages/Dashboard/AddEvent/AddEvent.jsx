@@ -118,6 +118,7 @@ import { loadArtsDataEntity, loadArtsDataEventEntity, loadArtsDataPlaceEntity } 
 import { identifyBestTimezone } from '../../../utils/handleTimeZones';
 import { timeZones } from '../../../constants/calendarSettingsForm';
 import i18next from 'i18next';
+import updateValidationStateOfSelectedEntities from '../../../utils/updateValidationStateOfSelectedEntities';
 
 const { TextArea } = Input;
 
@@ -446,6 +447,49 @@ function AddEvent() {
           .then((res) => {
             resolve(eventId ?? newEventId);
 
+            if ((res?.statusCode == 409 || res?.statusCode == 205) && res?.inCompleteLinkedEntityIds) {
+              updateValidationStateOfSelectedEntities({
+                inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
+                setSelectedOrganizers,
+                setSelectedPerformers,
+                setSelectedSupporters,
+                setLocationPlace,
+              });
+              const { isValid, firstInvalidField } = validateNestedEntities(
+                { ...form.getFieldsValue(true), locationPlace },
+                form,
+              );
+
+              if (!isValid) {
+                if (firstInvalidField) {
+                  const element = document.getElementsByClassName(firstInvalidField);
+                  element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+
+                throw new Error('Please fix invalid fields before publishing');
+              }
+
+              message.warning({
+                duration: 10,
+                maxCount: 1,
+                key: 'event-review-publish-warning',
+                content: (
+                  <>
+                    {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                    &nbsp;
+                    <Button
+                      type="text"
+                      data-cy="button-close-review-publish-warning"
+                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                      onClick={() => message.destroy('event-review-publish-warning')}
+                    />
+                  </>
+                ),
+                icon: <ExclamationCircleOutlined />,
+              });
+              return;
+            }
+
             if (!toggle) {
               if (res?.statusCode == 205 && eventData?.publishState === eventPublishState.PUBLISHED) {
                 notification.info({
@@ -476,6 +520,42 @@ function AddEvent() {
     return promise;
   };
 
+  function validateNestedEntities(data, form) {
+    if (!data) return { isValid: true, firstInvalidField: null };
+
+    let isValid = true;
+    const errors = {};
+    let firstInvalidField = null;
+
+    const isInvalidEntity = (entity) => entity?.validationReport?.hasAllMandatoryFields === false;
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        const invalidItems = value.filter((item) => isInvalidEntity(item));
+        if (invalidItems.length > 0 && !firstInvalidField) {
+          firstInvalidField = key;
+          errors[key] = { errors: [t('common.validations.informationRequired')] };
+          isValid = false;
+        }
+      } else if (isInvalidEntity(value) && !firstInvalidField) {
+        firstInvalidField = key;
+        errors[key] = { errors: [t('common.validations.informationRequired')] };
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      form.setFields(
+        Object.keys(errors).map((fieldName) => ({
+          name: fieldName,
+          errors: errors[fieldName].errors,
+        })),
+      );
+    }
+
+    return { isValid, firstInvalidField };
+  }
+
   const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
     const previousShowDialog = showDialog;
@@ -499,6 +579,19 @@ function AddEvent() {
           .then(async () => {
             let fallbackStatus = activeFallbackFieldsInfo;
             var values = form.getFieldsValue(true);
+
+            if (type === eventPublishState.PUBLISHED || type === 'PUBLISH') {
+              const { isValid, firstInvalidField } = validateNestedEntities({ ...values, locationPlace }, form);
+
+              if (!isValid) {
+                if (firstInvalidField) {
+                  const element = document.getElementsByClassName(firstInvalidField);
+                  element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+
+                throw new Error('Please fix invalid fields before publishing');
+              }
+            }
 
             var startDateTime,
               endDateTime,
@@ -1199,7 +1292,50 @@ function AddEvent() {
           saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id, calendarId })
-                .then(() => {
+                .then((res) => {
+                  if (res?.statusCode == 409) {
+                    updateValidationStateOfSelectedEntities({
+                      inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
+                      setSelectedOrganizers,
+                      setSelectedPerformers,
+                      setSelectedSupporters,
+                      setLocationPlace,
+                    });
+
+                    const { isValid, firstInvalidField } = validateNestedEntities(
+                      { ...form.getFieldsValue(true), locationPlace },
+                      form,
+                    );
+
+                    if (!isValid) {
+                      if (firstInvalidField) {
+                        const element = document.getElementsByClassName(firstInvalidField);
+                        element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                      }
+
+                      throw new Error('Please fix invalid fields before publishing');
+                    }
+
+                    message.warning({
+                      duration: 10,
+                      maxCount: 1,
+                      key: 'event-review-publish-warning',
+                      content: (
+                        <>
+                          {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                          &nbsp;
+                          <Button
+                            type="text"
+                            data-cy="button-close-review-publish-warning"
+                            icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                            onClick={() => message.destroy('event-review-publish-warning')}
+                          />
+                        </>
+                      ),
+                      icon: <ExclamationCircleOutlined />,
+                    });
+                    return;
+                  }
                   notification.success({
                     description:
                       calendar[0]?.role === userRoles.GUEST
@@ -1225,7 +1361,51 @@ function AddEvent() {
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
-                .then(() => {
+                .then((res) => {
+                  if (res?.statusCode == 409) {
+                    updateValidationStateOfSelectedEntities({
+                      inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
+                      setSelectedOrganizers,
+                      setSelectedPerformers,
+                      setSelectedSupporters,
+                      setLocationPlace,
+                    });
+
+                    const { isValid, firstInvalidField } = validateNestedEntities(
+                      { ...form.getFieldsValue(true), locationPlace },
+                      form,
+                    );
+
+                    if (!isValid) {
+                      if (firstInvalidField) {
+                        const element = document.getElementsByClassName(firstInvalidField);
+                        element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                      }
+
+                      throw new Error('Please fix invalid fields before publishing');
+                    }
+
+                    message.warning({
+                      duration: 10,
+                      maxCount: 1,
+                      key: 'event-review-publish-warning',
+                      content: (
+                        <>
+                          {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                          &nbsp;
+                          <Button
+                            type="text"
+                            data-cy="button-close-review-publish-warning"
+                            icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                            onClick={() => message.destroy('event-review-publish-warning')}
+                          />
+                        </>
+                      ),
+                      icon: <ExclamationCircleOutlined />,
+                    });
+                    return;
+                  }
+
                   notification.success({
                     description:
                       calendar[0]?.role === userRoles.GUEST
@@ -1247,7 +1427,51 @@ function AddEvent() {
           if (eventId) {
             updateEventState({ id: eventId, calendarId, publishState })
               .unwrap()
-              .then(() => {
+              .then((res) => {
+                if (res?.statusCode == 409) {
+                  updateValidationStateOfSelectedEntities({
+                    inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
+                    setSelectedOrganizers,
+                    setSelectedPerformers,
+                    setSelectedSupporters,
+                    setLocationPlace,
+                  });
+
+                  const { isValid, firstInvalidField } = validateNestedEntities(
+                    { ...form.getFieldsValue(true), locationPlace },
+                    form,
+                  );
+
+                  if (!isValid) {
+                    if (firstInvalidField) {
+                      const element = document.getElementsByClassName(firstInvalidField);
+                      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    }
+
+                    throw new Error('Please fix invalid fields before publishing');
+                  }
+
+                  message.warning({
+                    duration: 10,
+                    maxCount: 1,
+                    key: 'event-review-publish-warning',
+                    content: (
+                      <>
+                        {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                        &nbsp;
+                        <Button
+                          type="text"
+                          data-cy="button-close-review-publish-warning"
+                          icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                          onClick={() => message.destroy('event-review-publish-warning')}
+                        />
+                      </>
+                    ),
+                    icon: <ExclamationCircleOutlined />,
+                  });
+                  return;
+                }
+
                 notification.success({
                   description:
                     calendar[0]?.role === userRoles.GUEST
@@ -3437,6 +3661,7 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
+                className="locationPlace"
                 initialValue={initialPlace ? initialPlace[0]?.id : artsDataId && locationPlace?.uri}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
@@ -3794,6 +4019,7 @@ function AddEvent() {
                 </Row>
                 <Form.Item
                   name="organizers"
+                  className="organizers"
                   initialValue={selectedOrganizers}
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.ORGANIZERS)}
                   rules={[
