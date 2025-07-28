@@ -460,14 +460,16 @@ function AddEvent() {
                 form,
               );
 
-              if (!isValid) {
-                if (firstInvalidField) {
-                  const element = document.getElementsByClassName(firstInvalidField);
-                  element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                }
+              setTimeout(() => {
+                if (!isValid) {
+                  if (firstInvalidField) {
+                    const element = document.getElementsByClassName(firstInvalidField);
+                    element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  }
 
-                throw new Error('Please fix invalid fields before publishing');
-              }
+                  throw new Error('Please fix invalid fields before publishing');
+                }
+              }, [500]);
 
               message.warning({
                 duration: 10,
@@ -1307,15 +1309,16 @@ function AddEvent() {
                       form,
                     );
 
-                    if (!isValid) {
-                      if (firstInvalidField) {
-                        const element = document.getElementsByClassName(firstInvalidField);
-                        element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    setTimeout(() => {
+                      if (!isValid) {
+                        if (firstInvalidField) {
+                          const element = document.getElementsByClassName(firstInvalidField);
+                          element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        }
+
+                        throw new Error('Please fix invalid fields before publishing');
                       }
-
-                      throw new Error('Please fix invalid fields before publishing');
-                    }
-
+                    }, [500]);
                     message.warning({
                       duration: 10,
                       maxCount: 1,
@@ -1376,14 +1379,16 @@ function AddEvent() {
                       form,
                     );
 
-                    if (!isValid) {
-                      if (firstInvalidField) {
-                        const element = document.getElementsByClassName(firstInvalidField);
-                        element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                      }
+                    setTimeout(() => {
+                      if (!isValid) {
+                        if (firstInvalidField) {
+                          const element = document.getElementsByClassName(firstInvalidField);
+                          element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        }
 
-                      throw new Error('Please fix invalid fields before publishing');
-                    }
+                        throw new Error('Please fix invalid fields before publishing');
+                      }
+                    }, [500]);
 
                     message.warning({
                       duration: 10,
@@ -1442,14 +1447,16 @@ function AddEvent() {
                     form,
                   );
 
-                  if (!isValid) {
-                    if (firstInvalidField) {
-                      const element = document.getElementsByClassName(firstInvalidField);
-                      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                    }
+                  setTimeout(() => {
+                    if (!isValid) {
+                      if (firstInvalidField) {
+                        const element = document.getElementsByClassName(firstInvalidField);
+                        element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                      }
 
-                    throw new Error('Please fix invalid fields before publishing');
-                  }
+                      throw new Error('Please fix invalid fields before publishing');
+                    }
+                  }, [500]);
 
                   message.warning({
                     duration: 10,
