@@ -469,7 +469,7 @@ function AddEvent() {
 
                   throw new Error('Please fix invalid fields before publishing');
                 }
-              }, [500]);
+              }, 500);
 
               message.warning({
                 duration: 10,
@@ -1318,7 +1318,7 @@ function AddEvent() {
 
                         throw new Error('Please fix invalid fields before publishing');
                       }
-                    }, [500]);
+                    }, 500);
                     message.warning({
                       duration: 10,
                       maxCount: 1,
@@ -1388,7 +1388,7 @@ function AddEvent() {
 
                         throw new Error('Please fix invalid fields before publishing');
                       }
-                    }, [500]);
+                    }, 500);
 
                     message.warning({
                       duration: 10,
@@ -1456,7 +1456,7 @@ function AddEvent() {
 
                       throw new Error('Please fix invalid fields before publishing');
                     }
-                  }, [500]);
+                  }, 500);
 
                   message.warning({
                     duration: 10,
