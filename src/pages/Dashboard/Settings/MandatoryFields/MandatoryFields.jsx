@@ -9,6 +9,7 @@ import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { entitiesClass } from '../../../../constants/entitiesClass';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
+import LoadingIndicator from '../../../../components/LoadingIndicator';
 
 function MandatoryFields({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const [updatedFormFields, setUpdatedFormFields] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   let query = new URLSearchParams();
   query.append('taxonomy-class', taxonomyClass.ORGANIZATION);
@@ -189,6 +191,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
           },
         },
       };
+    setLoading(true);
 
     updateCalendar({ data: calendarData, calendarId: currentCalendarData.id })
       .unwrap()
@@ -210,6 +213,9 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -218,6 +224,21 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
 
     refetch();
   }, [tabKey]);
+
+  if (loading)
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          minHeight: '300px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <LoadingIndicator />
+      </div>
+    );
 
   return (
     allTaxonomyData &&
