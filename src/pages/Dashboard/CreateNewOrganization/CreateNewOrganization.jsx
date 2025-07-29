@@ -55,7 +55,6 @@ import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
-// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
