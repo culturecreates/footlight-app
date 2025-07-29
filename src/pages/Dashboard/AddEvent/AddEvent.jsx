@@ -121,6 +121,7 @@ import i18next from 'i18next';
 import updateValidationStateOfSelectedEntities from '../../../utils/updateValidationStateOfSelectedEntities';
 
 const { TextArea } = Input;
+const SCROLL_TIMEOUT = 500;
 
 function AddEvent() {
   const navigate = useNavigate();
@@ -469,7 +470,7 @@ function AddEvent() {
 
                   throw new Error('Please fix invalid fields before publishing');
                 }
-              }, 500);
+              }, SCROLL_TIMEOUT);
 
               message.warning({
                 duration: 10,
@@ -1318,7 +1319,7 @@ function AddEvent() {
 
                         throw new Error('Please fix invalid fields before publishing');
                       }
-                    }, 500);
+                    }, SCROLL_TIMEOUT);
                     message.warning({
                       duration: 10,
                       maxCount: 1,
@@ -1388,7 +1389,7 @@ function AddEvent() {
 
                         throw new Error('Please fix invalid fields before publishing');
                       }
-                    }, 500);
+                    }, SCROLL_TIMEOUT);
 
                     message.warning({
                       duration: 10,
@@ -1456,7 +1457,7 @@ function AddEvent() {
 
                       throw new Error('Please fix invalid fields before publishing');
                     }
-                  }, 500);
+                  }, SCROLL_TIMEOUT);
 
                   message.warning({
                     duration: 10,
