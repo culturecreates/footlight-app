@@ -97,7 +97,7 @@ function Organizations() {
       : [],
   );
   const [organizationIdFilter, setOrganizationIdFilter] = useState(
-    searchParams.getAll('ids')?.length > 0 ? decodeURIComponent(searchParams.getAll('ids'))?.split(',') : [],
+    searchParams.get('ids') ? decodeURIComponent(searchParams.get('ids'))?.split(',') : [],
   );
 
   let initialSelectedUsers = {};
