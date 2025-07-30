@@ -169,6 +169,10 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
         element: <AddUser />,
       },
+      {
+        path: `:calendarId${PathName.Messages}${PathName.SystemUpdate}`,
+        element: <></>,
+      },
     ],
   },
   {

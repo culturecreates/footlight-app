@@ -24,4 +24,6 @@ export const PathName = {
   Search: '/search',
   AddUser: '/add-user',
   NotFound: '/*',
+  Messages: '/messages',
+  SystemUpdate: '/system-updates',
 };
