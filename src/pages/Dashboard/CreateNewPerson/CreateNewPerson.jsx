@@ -921,10 +921,12 @@ function CreateNewPerson() {
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
 
-                            if (artsDataId || externalCalendarEntityId) {
+                            if (artsDataId || externalCalendarEntityId || !personId) {
                               taxonomy?.concept?.forEach((concept) => {
-                                if (concept?.isDefault && Array.isArray(initialValues)) {
-                                  initialValues = [...initialValues, concept?.id];
+                                if (concept?.isDefault) {
+                                  initialValues = Array.isArray(initialValues)
+                                    ? [...initialValues, concept?.id]
+                                    : [concept?.id];
                                 }
                               });
                             }
@@ -935,6 +937,7 @@ function CreateNewPerson() {
                               (initialValues && initialValues?.length > 0);
 
                             const displayFlag = !shouldShowField;
+
                             return (
                               <Form.Item
                                 key={index}
@@ -1014,6 +1017,20 @@ function CreateNewPerson() {
                                     if (field?.id === dynamicField?.taxonomyId)
                                       initialValues = dynamicField?.conceptIds;
                                   });
+
+                                  if (artsDataId || externalCalendarEntityId || !personId) {
+                                    allTaxonomyData?.data?.forEach((taxonomy) => {
+                                      if (field?.id === taxonomy?.id) {
+                                        taxonomy?.concept?.forEach((concept) => {
+                                          if (concept?.isDefault) {
+                                            initialValues = Array.isArray(initialValues)
+                                              ? [...initialValues, concept?.id]
+                                              : [concept?.id];
+                                          }
+                                        });
+                                      }
+                                    });
+                                  }
 
                                   if (
                                     !addedFields?.includes(field?.mappedField) &&
