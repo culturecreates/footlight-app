@@ -1282,6 +1282,10 @@
       }
     }
   },
+  "notification": {
+    "today": "Today",
+    "daysAgo": "{{count}} days ago"
+  },
   "errorPage": {
     "heading": "Oops, something went wrong!",
     "notFoundMessage": "The requested page could not be found (404)",
