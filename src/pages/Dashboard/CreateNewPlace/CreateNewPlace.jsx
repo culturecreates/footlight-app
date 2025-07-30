@@ -1861,10 +1861,12 @@ function CreateNewPlace() {
 
                     const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
 
-                    if (artsDataId || externalCalendarEntityId) {
+                    if (artsDataId || externalCalendarEntityId || !placeId) {
                       taxonomy?.concept?.forEach((concept) => {
-                        if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
-                          initialValues = [concept?.id];
+                        if (concept?.isDefault) {
+                          initialValues = Array.isArray(initialValues)
+                            ? [...initialValues, concept?.id]
+                            : [concept?.id];
                         }
                       });
                     }
@@ -1939,9 +1941,23 @@ function CreateNewPlace() {
                           [...dynamicFields].map((type) => {
                             let initialValues;
                             placeData?.dynamicFields?.forEach((dynamicField) => {
-                              if (type?.fieldNames === dynamicField?.taxonomyId)
+                              if (type?.fieldNames === dynamicField?.taxonomyId) {
                                 initialValues = dynamicField?.conceptIds;
+                              }
                             });
+                            if (artsDataId || externalCalendarEntityId || !placeId) {
+                              allTaxonomyData?.data?.forEach((taxonomy) => {
+                                if (type?.fieldNames === taxonomy?.id) {
+                                  taxonomy?.concept?.forEach((concept) => {
+                                    if (concept?.isDefault) {
+                                      initialValues = Array.isArray(initialValues)
+                                        ? [...initialValues, concept?.id]
+                                        : [concept?.id];
+                                    }
+                                  });
+                                }
+                              });
+                            }
                             if (
                               !addedFields?.includes(type.fieldNames) &&
                               !type?.required &&
