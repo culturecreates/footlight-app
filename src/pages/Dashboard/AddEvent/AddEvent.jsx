@@ -4959,7 +4959,7 @@ function AddEvent() {
 
                   const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
 
-                  if (artsDataId) {
+                  if (artsDataId || !eventId) {
                     taxonomy?.concept?.forEach((concept) => {
                       if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
                         initialValues = [concept?.id];
@@ -5038,6 +5038,20 @@ function AddEvent() {
                     eventData?.dynamicFields?.forEach((dynamicField) => {
                       if (type?.fieldNames === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                     });
+
+                    if (artsDataId || !eventId) {
+                      allTaxonomyData?.data?.forEach((taxonomy) => {
+                        if (type?.fieldNames === taxonomy?.id) {
+                          taxonomy?.concept?.forEach((concept) => {
+                            if (concept?.isDefault) {
+                              initialValues = Array.isArray(initialValues)
+                                ? [...initialValues, concept?.id]
+                                : [concept?.id];
+                            }
+                          });
+                        }
+                      });
+                    }
 
                     if (
                       !addedFields?.includes(type.fieldNames) &&
