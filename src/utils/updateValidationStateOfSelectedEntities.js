@@ -1,47 +1,45 @@
 /**
- * Updates validation state for linked entities (organizers, performers, supporters, locations)
- * @param {Object} params
- * @param {Object} params.inCompleteLinkedEntityIds - IDs of invalid entities grouped by type
- * @param {Function} params.setSelectedOrganizers - State setter for organizers
- * @param {Function} params.setSelectedPerformers - State setter for performers
- * @param {Function} params.setSelectedSupporters - State setter for supporters
- * @param {Function} params.setLocationPlace - State setter for location
+ * Returns updated entities with validation state applied to those missing mandatory fields.
+ *
+ * For each entity type (organizers, performers, supporters, location), checks if its ID is present
+ * in the corresponding list of incomplete IDs. If so, adds a validationReport indicating missing fields.
+ *
+ * @param {Object} params - Parameters object.
+ * @param {Object} params.inCompleteLinkedEntityIds - Object containing arrays of IDs for invalid organizations, people, and places.
+ * @param {Array} [params.selectedOrganizers=[]] - Array of selected organizer entities.
+ * @param {Array} [params.selectedPerformers=[]] - Array of selected performer entities.
+ * @param {Array} [params.selectedSupporters=[]] - Array of selected supporter entities.
+ * @param {Object} [params.locationPlace={}] - Selected location entity.
+ * @returns {Object} Object containing updated arrays/objects for organizers, performers, supporters, and location.
  */
 const updateValidationStateOfSelectedEntities = ({
   inCompleteLinkedEntityIds,
-  setSelectedOrganizers,
-  setSelectedPerformers,
-  setSelectedSupporters,
-  setLocationPlace,
+  selectedOrganizers = [],
+  selectedPerformers = [],
+  selectedSupporters = [],
+  locationPlace = {},
 }) => {
-  if (!inCompleteLinkedEntityIds) return;
+  if (!inCompleteLinkedEntityIds) return {};
 
-  const { organizations, people, places } = inCompleteLinkedEntityIds;
+  const { organizations = [], people = [], places = [] } = inCompleteLinkedEntityIds;
   const invalidFlag = { validationReport: { hasAllMandatoryFields: false } };
 
-  // Generic updater function
-  const updateEntities = (ids, entity) => (ids.includes(entity?.id) ? { ...entity, ...invalidFlag } : entity);
+  const isInvalid = (id) => organizations.includes(id) || people.includes(id);
 
-  // Update organization-type entities
-  if (organizations?.length) {
-    const updateFn = (prev) => prev.map((org) => updateEntities(organizations, org));
-    setSelectedOrganizers(updateFn);
-    setSelectedPerformers(updateFn);
-    setSelectedSupporters(updateFn);
-  }
+  const updateArray = (arr) => arr.map((entity) => (isInvalid(entity?.id) ? { ...entity, ...invalidFlag } : entity));
 
-  // Update people-type entities
-  if (people?.length) {
-    const updateFn = (prev) => prev.map((person) => updateEntities(people, person));
-    setSelectedOrganizers(updateFn);
-    setSelectedPerformers(updateFn);
-    setSelectedSupporters(updateFn);
-  }
+  const updatedOrganizers = updateArray(selectedOrganizers);
+  const updatedPerformers = updateArray(selectedPerformers);
+  const updatedSupporters = updateArray(selectedSupporters);
 
-  // Update location
-  if (places?.length) {
-    setLocationPlace((prev) => ({ ...prev, ...invalidFlag }));
-  }
+  const updatedLocation = places.length ? { ...locationPlace, ...invalidFlag } : locationPlace;
+
+  return {
+    updatedOrganizers,
+    updatedPerformers,
+    updatedSupporters,
+    updatedLocation,
+  };
 };
 
 export default updateValidationStateOfSelectedEntities;
