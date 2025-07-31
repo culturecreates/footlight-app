@@ -333,26 +333,28 @@ function QuickCreatePlace(props) {
         setAllPlacesList(placesOptions(containedInPlaceFilter, user, calendarContentLanguage, sourceOptions.CMS));
       })
       .catch((error) => console.log(error));
-    getExternalSource(
-      {
-        searchKey: inputValue,
-        classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
-        calendarId,
-        excludeExistingCMS: true,
-      },
-      true,
-    )
-      .unwrap()
-      .then((response) => {
-        setAllPlacesArtsdataList(
-          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-        );
-        setAllPlacesImportsFootlight(
-          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-        );
-      })
-      .catch((error) => console.log(error));
+    if (inputValue && inputValue != '') {
+      getExternalSource(
+        {
+          searchKey: inputValue,
+          classes: decodeURIComponent(query.toString()),
+          sources: decodeURIComponent(sourceQuery.toString()),
+          calendarId,
+          excludeExistingCMS: true,
+        },
+        true,
+      )
+        .unwrap()
+        .then((response) => {
+          setAllPlacesArtsdataList(
+            placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          );
+          setAllPlacesImportsFootlight(
+            placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          );
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
