@@ -3,3 +3,7 @@ export const messageStatusMap = {
   READ: 'Read',
   FAULED: 'Fauled',
 };
+
+export const messageTypeMap = {
+  SYSTEM: 'SystemUpdate',
+};

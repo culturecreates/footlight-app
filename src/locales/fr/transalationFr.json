@@ -1279,6 +1279,13 @@
       }
     }
   },
+  "notification": {
+    "today": "Aujourd'hui",
+    "daysAgo": "{{count}} jours auparavant",
+    "systemUpdates": {
+      "title": "Mises à jour dans Footlight"
+    }
+  },
   "errorPage": {
     "heading": "Oups, une erreur s'est produite",
     "notFoundMessage": "La page demandée n'a pas été trouvée (404)",

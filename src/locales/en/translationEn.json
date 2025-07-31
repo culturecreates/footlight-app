@@ -1284,7 +1284,10 @@
   },
   "notification": {
     "today": "Today",
-    "daysAgo": "{{count}} days ago"
+    "daysAgo": "{{count}} days ago",
+    "systemUpdates": {
+      "title": "Updates in Footlight"
+    }
   },
   "errorPage": {
     "heading": "Oops, something went wrong!",

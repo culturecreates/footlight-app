@@ -7,11 +7,12 @@ export const notificationApi = createApi({
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     getNotifications: builder.query({
-      query: ({ calendarId, sinceNdays }) => ({
+      query: ({ calendarId, sinceNdays, messageType }) => ({
         url: 'messages',
         headers: {
           'calendar-id': calendarId,
-          'since-n-days': sinceNdays,
+          ...(sinceNdays ? { 'since-n-days': sinceNdays } : {}),
+          ...(messageType ? { 'message-type': messageType } : {}),
         },
       }),
       transformResponse: (response) => {
