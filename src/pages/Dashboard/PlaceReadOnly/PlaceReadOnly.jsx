@@ -30,7 +30,6 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataPlaceEntity } from '../../../services/artsData';
-// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import './placeReadOnly.css';
 import moment from 'moment';

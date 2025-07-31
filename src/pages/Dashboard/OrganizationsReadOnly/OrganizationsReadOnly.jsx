@@ -28,7 +28,6 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
-// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { CalendarOutlined, UserOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';

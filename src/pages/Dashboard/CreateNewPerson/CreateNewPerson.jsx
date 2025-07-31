@@ -38,7 +38,6 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
-// import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useGetEntitiesByIdQuery, useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import moment from 'moment';

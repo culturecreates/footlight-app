@@ -1770,16 +1770,9 @@ function AddEvent() {
       ?.filter((mappedEntity) => mappedEntity);
   };
 
-  // function extractLastSegment(url) {
-  //   if (typeof url !== 'string') return null;
-  //   const segments = url.trim().split('/');
-  //   return segments.pop() || null;
-  // }
-
   const loadArtsDataDetails = async (entities = []) => {
     return await Promise.all(
       entities.map(async (entityUri) => {
-        // const entityId = extractLastSegment(entityUri);
         let response = await loadArtsDataEntity({ entityId: entityUri });
         const entityData = response?.data?.[0];
         if (entityData) {
@@ -1980,7 +1973,6 @@ function AddEvent() {
 
           if (data.location) {
             try {
-              // const entityId = extractLastSegment(data.location);
               const response = await loadArtsDataPlaceEntity({ entityId: data.location });
 
               const placeData = response?.data?.[0];
