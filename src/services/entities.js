@@ -49,7 +49,9 @@ export const entitiesApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      transformResponse: (response) => response,
+      transformResponse: (response) => {
+        return Array.isArray(response) ? response : [];
+      },
     }),
   }),
 });
