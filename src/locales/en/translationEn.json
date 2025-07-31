@@ -128,7 +128,7 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
-        "addMoreDetails": "Add more details to your event",
+        "addMoreDetails": "Add more details",
         "allDone": "All done",
         "featuredEvent": "Featured event",
         "fallbackConfirm": {
@@ -586,7 +586,7 @@
         "addOrganization": {
           "newOrganization": "New Organization",
           "editOrganization": "Edit Organization",
-          "addMoreDetails": "Add more details to your organization",
+          "addMoreDetails": "Add more details",
           "dataSource": "Data source",
           "question": {
             "firstPart": "Is this the right organization? If not, ",

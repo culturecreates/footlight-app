@@ -128,7 +128,7 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
-        "addMoreDetails": "Ajouter plus de détails à votre événement",
+        "addMoreDetails": "Ajoutez plus de détails",
         "allDone": "Tous les détails sont ajoutés.",
         "featuredEvent": "Événement vedette",
         "fallbackConfirm": {
@@ -586,7 +586,7 @@
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
           "editOrganization": "Modifier l’organisation",
-          "addMoreDetails": "Ajouter des détails à votre organisation",
+          "addMoreDetails": "Ajoutez plus de détails",
           "dataSource": "Data source",
           "question": {
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
@@ -765,7 +765,7 @@
             "additionalImages": "Images supplémentaires",
             "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
           },
-          "addMoreDetails": "Ajouter plus de détails.",
+          "addMoreDetails": "Ajoutez plus de détails",
           "dataSource": "Source de la donnée.",
           "notification": {
             "addSuccess": "Succès ! Votre fiche de lieu a été créée.",
