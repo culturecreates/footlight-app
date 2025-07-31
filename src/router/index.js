@@ -30,6 +30,7 @@ import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
 import SelectTaxonomyType from '../pages/Dashboard/SelectTaxonomyType/SelectTaxonomyType';
 import AddTaxonomy from '../pages/Dashboard/AddTaxonomy/AddTaxonomy';
 import SearchEvents from '../pages/Dashboard/SearchEvents';
+import SystemUpdates from '../pages/Dashboard/Messages/SystemUpdates/SystemUpdates';
 
 export const router = createBrowserRouter([
   {
@@ -168,6 +169,10 @@ export const router = createBrowserRouter([
       {
         path: `:calendarId${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
         element: <AddUser />,
+      },
+      {
+        path: `:calendarId${PathName.Messages}${PathName.SystemUpdate}`,
+        element: <SystemUpdates />,
       },
     ],
   },
