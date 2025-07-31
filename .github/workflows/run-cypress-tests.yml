@@ -47,6 +47,10 @@ on:
         required: true
       SENDGRID_API_KEY:
         required: true
+      GOOGLE_MAPS_API_KEY:
+        required: true
+      GOOGLE_MAPS_ID:
+        required: true
 
 
 jobs:
