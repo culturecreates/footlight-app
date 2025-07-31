@@ -4,6 +4,7 @@ import React from 'react';
 import Cookies from 'js-cookie';
 import { getUserDetails, clearUser } from '../../redux/reducer/userSlice';
 import { infiniteLoopHandler } from '../../utils/infiniteLoopHandler';
+import { errorTypes } from '../../constants/errors';
 
 class ErrorLayout extends React.Component {
   constructor(props) {
@@ -65,12 +66,17 @@ class ErrorLayout extends React.Component {
   render() {
     const asyncError = this.props?.asycErrorDetails;
 
-    if (this.state.hasError) return <ErrorAlert errorType="general" />;
+    if (this.state.hasError) return <ErrorAlert errorType={errorTypes.GENERAL} />;
 
     if (asyncError?.isError) {
-      if (asyncError.errorCode === '503') return <ErrorAlert errorType="serverDown" />;
-
-      return <ErrorAlert errorType="failedAPI" />;
+      switch (asyncError.errorCode) {
+        case '503':
+          return <ErrorAlert errorType={errorTypes.SERVER_DOWN} />;
+        case '409':
+          return <ErrorAlert errorType={errorTypes.CONFLICT} />;
+        default:
+          return <ErrorAlert errorType={errorTypes.FAILED_API} />;
+      }
     }
 
     return this.props.children;
