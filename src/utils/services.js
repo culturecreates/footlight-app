@@ -48,6 +48,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
         errorCode: '409',
         isError: true,
         message: result.error?.data?.error,
+        data: result.error?.data,
       }),
     );
   }

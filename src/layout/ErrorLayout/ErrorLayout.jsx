@@ -73,7 +73,10 @@ class ErrorLayout extends React.Component {
         case '503':
           return <ErrorAlert errorType={errorTypes.SERVER_DOWN} />;
         case '409':
-          return <ErrorAlert errorType={errorTypes.CONFLICT} />;
+          // No specific UI for this error.
+          // It is handled in the component where the API call is made.
+          // user might be able to resolve the conflict and resubmit the request.
+          return this.props.children;
         default:
           return <ErrorAlert errorType={errorTypes.FAILED_API} />;
       }
