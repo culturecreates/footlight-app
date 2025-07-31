@@ -72,7 +72,7 @@
       "readOnlyMode": {
         "readOnlyMode": "Read-only mode",
         "heading": "Calendar in read only mode",
-        "content": "The calendar is currently read only. Editing is unavailable for users. Try again later or contact your admin for details."
+        "content": "The calendar is currently read only. Editing is unavailable for users. Try again later or contact your admin at {{adminEmail}} for details."
       }
     },
     "topNavigation": {
