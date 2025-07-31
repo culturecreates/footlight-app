@@ -165,7 +165,6 @@ function PersonReadOnly() {
     if (personData) {
       if (personData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(personData?.sameAs);
-        // sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
     }

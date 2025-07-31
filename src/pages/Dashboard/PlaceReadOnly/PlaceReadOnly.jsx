@@ -172,7 +172,6 @@ function PlaceReadOnly() {
     if (placeSuccess) {
       if (placeData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(placeData?.sameAs);
-        // sourceId = getExternalSourceId(sourceId);
         getArtsDataPlace(sourceId);
       }
       if (placeData?.containedInPlace?.entityId) {

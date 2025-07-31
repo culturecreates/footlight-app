@@ -170,7 +170,6 @@ function OrganizationsReadOnly() {
     if (organizationSuccess) {
       if (organizationData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(organizationData?.sameAs);
-        // sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
       if (organizationData?.place?.entityId) {

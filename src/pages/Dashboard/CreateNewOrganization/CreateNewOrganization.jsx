@@ -908,7 +908,6 @@ function CreateNewOrganization() {
           }
           if (organizationData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(organizationData?.sameAs);
-            // sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           if (organizationData?.place?.entityId) {
@@ -1051,7 +1050,6 @@ function CreateNewOrganization() {
           }
         }
         if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
-          // let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
           getArtsData(externalCalendarEntityData[0]?.derivedFrom?.uri);
         }
         if (externalCalendarEntityData[0]?.place?.entityId) {

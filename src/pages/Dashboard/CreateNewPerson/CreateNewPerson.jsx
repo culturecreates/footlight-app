@@ -558,7 +558,6 @@ function CreateNewPerson() {
           }
           if (personData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(personData?.sameAs);
-            // sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           const personKeys = Object.keys(personData).filter((key) => {
@@ -654,7 +653,6 @@ function CreateNewPerson() {
         }
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          // sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
         let personKeys = Object.keys(personData);

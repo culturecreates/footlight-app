@@ -1039,9 +1039,8 @@ function CreateNewPlace() {
         initialPlace;
       if (placeData) {
         if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
-          if (placeData?.sameAs?.length > 0) {
+          if (placeData?.sameAs?.length) {
             let sourceId = artsDataLinkChecker(placeData?.sameAs);
-            // sourceId = getExternalSourceId(sourceId);
             getArtsDataPlace(sourceId);
           }
           if (placeData?.containedInPlace?.entityId) {
@@ -1188,7 +1187,6 @@ function CreateNewPlace() {
       if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          // sourceId = getExternalSourceId(sourceId);
           getArtsDataPlace(sourceId);
         }
 
