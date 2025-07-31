@@ -5,6 +5,7 @@ import { Translation } from 'react-i18next';
 import Cookies from 'js-cookie';
 import { Mutex } from 'async-mutex';
 import { setErrorStates } from '../redux/reducer/ErrorSlice';
+import { ErrorMessages, ErrorStatus } from '../constants/errors';
 
 const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
@@ -24,6 +25,7 @@ const baseQuery = fetchBaseQuery({
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
+
   if (result.error && (result.error.status === 400 || result.error.status === 409)) {
     //HTTP 400 Bad Request
     //The server cannot or will not process the request due to something that is perceived to be a client error.
@@ -138,11 +140,15 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       placement: 'top',
     });
   }
-  if (result.error && result.error.status === 'FETCH_ERROR') {
+
+  if (result.error && result.error?.status === ErrorStatus.FetchError) {
     // Error when the local internet is down. There is no HTTP code.
+    if (result.error?.error === ErrorMessages.ABORT) {
+      return { error: { ...result.error, silent: true } };
+    }
 
     notification.info({
-      key: 'FETCH_ERROR',
+      key: ErrorStatus.FetchError,
       message: <Translation>{(t) => t('common.server.status.FETCH_ERROR.message')}</Translation>,
       placement: 'top',
     });
