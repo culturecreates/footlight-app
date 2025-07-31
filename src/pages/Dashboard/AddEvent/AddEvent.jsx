@@ -119,9 +119,9 @@ import { identifyBestTimezone } from '../../../utils/handleTimeZones';
 import { timeZones } from '../../../constants/calendarSettingsForm';
 import i18next from 'i18next';
 import updateValidationStateOfSelectedEntities from '../../../utils/updateValidationStateOfSelectedEntities';
+import { clearErrors, getErrorDetails } from '../../../redux/reducer/ErrorSlice';
 
 const { TextArea } = Input;
-const SCROLL_TIMEOUT = 500;
 
 function AddEvent() {
   const navigate = useNavigate();
@@ -131,19 +131,16 @@ function AddEvent() {
   const start_Time = Form.useWatch('startTime', form);
   const end_Time = Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
-
-  const activePromiseRef = useRef(null);
-
   const { calendarId, eventId } = useParams();
   let [searchParams] = useSearchParams();
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
+  const errorDetails = useSelector(getErrorDetails);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
-  const artsDataId = location?.state?.data?.uri ?? null;
-
+  const artsDataId = location?.state?.data?.id ?? null;
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -451,51 +448,6 @@ function AddEvent() {
           .unwrap()
           .then((res) => {
             resolve(eventId ?? newEventId);
-
-            if ((res?.statusCode == 409 || res?.statusCode == 205) && res?.inCompleteLinkedEntityIds) {
-              updateValidationStateOfSelectedEntities({
-                inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
-                setSelectedOrganizers,
-                setSelectedPerformers,
-                setSelectedSupporters,
-                setLocationPlace,
-              });
-              const { isValid, firstInvalidField } = validateNestedEntities(
-                { ...form.getFieldsValue(true), locationPlace },
-                form,
-              );
-
-              setTimeout(() => {
-                if (!isValid) {
-                  if (firstInvalidField) {
-                    const element = document.getElementsByClassName(firstInvalidField);
-                    element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                  }
-
-                  throw new Error('Please fix invalid fields before publishing');
-                }
-              }, SCROLL_TIMEOUT);
-
-              message.warning({
-                duration: 10,
-                maxCount: 1,
-                key: 'event-review-publish-warning',
-                content: (
-                  <>
-                    {t('dashboard.events.addEditEvent.validations.errorPublishing')}
-                    &nbsp;
-                    <Button
-                      type="text"
-                      data-cy="button-close-review-publish-warning"
-                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                      onClick={() => message.destroy('event-review-publish-warning')}
-                    />
-                  </>
-                ),
-                icon: <ExclamationCircleOutlined />,
-              });
-              return;
-            }
 
             if (!toggle) {
               if (res?.statusCode == 205 && eventData?.publishState === eventPublishState.PUBLISHED) {
@@ -1299,51 +1251,7 @@ function AddEvent() {
           saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id, calendarId })
-                .then((res) => {
-                  if (res?.statusCode == 409) {
-                    updateValidationStateOfSelectedEntities({
-                      inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
-                      setSelectedOrganizers,
-                      setSelectedPerformers,
-                      setSelectedSupporters,
-                      setLocationPlace,
-                    });
-
-                    const { isValid, firstInvalidField } = validateNestedEntities(
-                      { ...form.getFieldsValue(true), locationPlace },
-                      form,
-                    );
-
-                    setTimeout(() => {
-                      if (!isValid) {
-                        if (firstInvalidField) {
-                          const element = document.getElementsByClassName(firstInvalidField);
-                          element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                        }
-
-                        throw new Error('Please fix invalid fields before publishing');
-                      }
-                    }, SCROLL_TIMEOUT);
-                    message.warning({
-                      duration: 10,
-                      maxCount: 1,
-                      key: 'event-review-publish-warning',
-                      content: (
-                        <>
-                          {t('dashboard.events.addEditEvent.validations.errorPublishing')}
-                          &nbsp;
-                          <Button
-                            type="text"
-                            data-cy="button-close-review-publish-warning"
-                            icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                            onClick={() => message.destroy('event-review-publish-warning')}
-                          />
-                        </>
-                      ),
-                      icon: <ExclamationCircleOutlined />,
-                    });
-                    return;
-                  }
+                .then(() => {
                   notification.success({
                     description:
                       calendar[0]?.role === userRoles.GUEST
@@ -1369,53 +1277,7 @@ function AddEvent() {
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
-                .then((res) => {
-                  if (res?.statusCode == 409) {
-                    updateValidationStateOfSelectedEntities({
-                      inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
-                      setSelectedOrganizers,
-                      setSelectedPerformers,
-                      setSelectedSupporters,
-                      setLocationPlace,
-                    });
-
-                    const { isValid, firstInvalidField } = validateNestedEntities(
-                      { ...form.getFieldsValue(true), locationPlace },
-                      form,
-                    );
-
-                    setTimeout(() => {
-                      if (!isValid) {
-                        if (firstInvalidField) {
-                          const element = document.getElementsByClassName(firstInvalidField);
-                          element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                        }
-
-                        throw new Error('Please fix invalid fields before publishing');
-                      }
-                    }, SCROLL_TIMEOUT);
-
-                    message.warning({
-                      duration: 10,
-                      maxCount: 1,
-                      key: 'event-review-publish-warning',
-                      content: (
-                        <>
-                          {t('dashboard.events.addEditEvent.validations.errorPublishing')}
-                          &nbsp;
-                          <Button
-                            type="text"
-                            data-cy="button-close-review-publish-warning"
-                            icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                            onClick={() => message.destroy('event-review-publish-warning')}
-                          />
-                        </>
-                      ),
-                      icon: <ExclamationCircleOutlined />,
-                    });
-                    return;
-                  }
-
+                .then(() => {
                   notification.success({
                     description:
                       calendar[0]?.role === userRoles.GUEST
@@ -1437,53 +1299,7 @@ function AddEvent() {
           if (eventId) {
             updateEventState({ id: eventId, calendarId, publishState })
               .unwrap()
-              .then((res) => {
-                if (res?.statusCode == 409) {
-                  updateValidationStateOfSelectedEntities({
-                    inCompleteLinkedEntityIds: res?.inCompleteLinkedEntityIds,
-                    setSelectedOrganizers,
-                    setSelectedPerformers,
-                    setSelectedSupporters,
-                    setLocationPlace,
-                  });
-
-                  const { isValid, firstInvalidField } = validateNestedEntities(
-                    { ...form.getFieldsValue(true), locationPlace },
-                    form,
-                  );
-
-                  setTimeout(() => {
-                    if (!isValid) {
-                      if (firstInvalidField) {
-                        const element = document.getElementsByClassName(firstInvalidField);
-                        element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                      }
-
-                      throw new Error('Please fix invalid fields before publishing');
-                    }
-                  }, SCROLL_TIMEOUT);
-
-                  message.warning({
-                    duration: 10,
-                    maxCount: 1,
-                    key: 'event-review-publish-warning',
-                    content: (
-                      <>
-                        {t('dashboard.events.addEditEvent.validations.errorPublishing')}
-                        &nbsp;
-                        <Button
-                          type="text"
-                          data-cy="button-close-review-publish-warning"
-                          icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                          onClick={() => message.destroy('event-review-publish-warning')}
-                        />
-                      </>
-                    ),
-                    icon: <ExclamationCircleOutlined />,
-                  });
-                  return;
-                }
-
+              .then(() => {
                 notification.success({
                   description:
                     calendar[0]?.role === userRoles.GUEST
@@ -1622,137 +1438,6 @@ function AddEvent() {
     return isFieldDirty;
   };
 
-  const searchExternalSourcePlace = async (value) => {
-    if (activePromiseRef.current) {
-      activePromiseRef.current.abort();
-    }
-
-    let query = new URLSearchParams();
-    query.append('classes', entitiesClass.place);
-
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-
-    const promise = getExternalSource({
-      searchKey: value,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    });
-
-    activePromiseRef.current = promise;
-
-    try {
-      const response = await promise.unwrap();
-      setAllPlacesArtsdataList(
-        placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA, currentCalendarData),
-      );
-      setAllPlacesImportsFootlightList(
-        placesOptions(
-          response?.footlight,
-          user,
-          calendarContentLanguage,
-          externalSourceOptions.FOOTLIGHT,
-          currentCalendarData,
-        ),
-      );
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const externalOrganizationPersonSearch = async (value, type) => {
-    if (activePromiseRef.current) {
-      activePromiseRef.current.abort();
-    }
-
-    let query = new URLSearchParams();
-    query.append('classes', entitiesClass.organization);
-    query.append('classes', entitiesClass.person);
-
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-    const promise = getExternalSource(
-      {
-        searchKey: value,
-        classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
-        calendarId,
-        excludeExistingCMS: true,
-      },
-      true,
-    );
-
-    activePromiseRef.current = promise;
-
-    try {
-      const response = await promise.unwrap();
-      if (type == 'organizers') {
-        setOrganizersArtsdataList(
-          treeEntitiesOption(
-            response?.artsdata,
-            user,
-            calendarContentLanguage,
-            sourceOptions.ARTSDATA,
-            currentCalendarData,
-          ),
-        );
-        setOrganizersImportsFootlightList(
-          treeEntitiesOption(
-            response?.footlight,
-            user,
-            calendarContentLanguage,
-            externalSourceOptions.FOOTLIGHT,
-            currentCalendarData,
-          ),
-        );
-      } else if (type == 'performers') {
-        setPerformerArtsdataList(
-          treeEntitiesOption(
-            response?.artsdata,
-            user,
-            calendarContentLanguage,
-            sourceOptions.ARTSDATA,
-            currentCalendarData,
-          ),
-        );
-        setPerformerImportsFootlightList(
-          treeEntitiesOption(
-            response?.footlight,
-            user,
-            calendarContentLanguage,
-            externalSourceOptions.FOOTLIGHT,
-            currentCalendarData,
-          ),
-        );
-      } else if (type == 'supporters') {
-        setSupporterArtsdataList(
-          treeEntitiesOption(
-            response?.artsdata,
-            user,
-            calendarContentLanguage,
-            sourceOptions.ARTSDATA,
-            currentCalendarData,
-          ),
-        );
-        setSupporterImportsFootlightList(
-          treeEntitiesOption(
-            response?.footlight,
-            user,
-            calendarContentLanguage,
-            externalSourceOptions.FOOTLIGHT,
-            currentCalendarData,
-          ),
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
@@ -1772,6 +1457,32 @@ function AddEvent() {
       .then((response) => {
         setAllPlacesList(
           placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
+        );
+      })
+      .catch((error) => console.log(error));
+    getExternalSource(
+      {
+        searchKey: inputValue,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
+      },
+      true,
+    )
+      .unwrap()
+      .then((response) => {
+        setAllPlacesArtsdataList(
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA, currentCalendarData),
+        );
+        setAllPlacesImportsFootlightList(
+          placesOptions(
+            response?.footlight,
+            user,
+            calendarContentLanguage,
+            externalSourceOptions.FOOTLIGHT,
+            currentCalendarData,
+          ),
         );
       })
       .catch((error) => console.log(error));
@@ -1803,15 +1514,82 @@ function AddEvent() {
         }
       })
       .catch((error) => console.log(error));
+    getExternalSource(
+      {
+        searchKey: value,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
+      },
+      true,
+    )
+      .unwrap()
+      .then((response) => {
+        if (type == 'organizers') {
+          setOrganizersArtsdataList(
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
+          );
+          setOrganizersImportsFootlightList(
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
+          );
+        } else if (type == 'performers') {
+          setPerformerArtsdataList(
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
+          );
+          setPerformerImportsFootlightList(
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
+          );
+        } else if (type == 'supporters') {
+          setSupporterArtsdataList(
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
+          );
+          setSupporterImportsFootlightList(
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
+          );
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
-  const debounceSearchExternalSourcePlaces = useCallback(useDebounce(searchExternalSourcePlace, SEARCH_DELAY), []);
   const debounceSearchOrganizationPersonSearch = useCallback(useDebounce(organizationPersonSearch, SEARCH_DELAY), []);
-  const debounceSearchExternalSourceOrganizationPerson = useCallback(
-    useDebounce(externalOrganizationPersonSearch, SEARCH_DELAY),
-    [],
-  );
 
   const addFieldsHandler = (fieldNames) => {
     let array = addedFields?.concat(fieldNames);
@@ -2002,10 +1780,17 @@ function AddEvent() {
       ?.filter((mappedEntity) => mappedEntity);
   };
 
+  function extractLastSegment(url) {
+    if (typeof url !== 'string') return null;
+    const segments = url.trim().split('/');
+    return segments.pop() || null;
+  }
+
   const loadArtsDataDetails = async (entities = []) => {
     return await Promise.all(
       entities.map(async (entityUri) => {
-        let response = await loadArtsDataEntity({ entityId: entityUri });
+        const entityId = extractLastSegment(entityUri);
+        let response = await loadArtsDataEntity({ entityId });
         const entityData = response?.data?.[0];
         if (entityData) {
           return {
@@ -2205,7 +1990,8 @@ function AddEvent() {
 
           if (data.location) {
             try {
-              const response = await loadArtsDataPlaceEntity({ entityId: data.location });
+              const entityId = extractLastSegment(data.location);
+              const response = await loadArtsDataPlaceEntity({ entityId });
 
               const placeData = response?.data?.[0];
               const primaryAddress = placeData?.address?.[0];
@@ -2966,6 +2752,73 @@ function AddEvent() {
     }
   }, [taxonomyLoading]);
 
+  useEffect(() => {
+    const { isError, errorCode, data } = errorDetails;
+
+    if (!isError) return;
+
+    if (errorCode == 409 && data?.inCompleteLinkedEntityIds) {
+      const { updatedOrganizers, updatedPerformers, updatedSupporters, updatedLocation } =
+        updateValidationStateOfSelectedEntities({
+          inCompleteLinkedEntityIds: data?.inCompleteLinkedEntityIds,
+          selectedOrganizers,
+          selectedPerformers,
+          selectedSupporters,
+          locationPlace,
+        });
+
+      setSelectedOrganizers(updatedOrganizers);
+      setSelectedPerformers(updatedPerformers);
+      setSelectedSupporters(updatedSupporters);
+      setLocationPlace(updatedLocation);
+
+      const { isValid, firstInvalidField } = validateNestedEntities(
+        {
+          ...form.getFieldsValue(true),
+          locationPlace: updatedLocation,
+          organizers: updatedOrganizers,
+          performers: updatedPerformers,
+          supporters: updatedSupporters,
+        },
+        form,
+      );
+
+      if (isValid || !firstInvalidField) return;
+
+      const scrollAttempt = (attempt = 0) => {
+        const field = document.getElementsByClassName(firstInvalidField);
+
+        if (field && field.length > 0) {
+          field[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          dispatch(clearErrors());
+        } else if (attempt < 3) {
+          setTimeout(() => scrollAttempt(attempt + 1), 100 * (attempt + 1));
+        }
+      };
+      scrollAttempt();
+
+      message.warning({
+        duration: 10,
+        maxCount: 1,
+        key: 'event-review-publish-warning',
+        content: (
+          <>
+            {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+            &nbsp;
+            <Button
+              type="text"
+              data-cy="button-close-review-publish-warning"
+              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+              onClick={() => message.destroy('event-review-publish-warning')}
+            />
+          </>
+        ),
+        icon: <ExclamationCircleOutlined />,
+      });
+      return;
+    }
+  }, [errorDetails]);
+
   return !isLoading &&
     !taxonomyLoading &&
     currentCalendarData &&
@@ -3724,8 +3577,6 @@ function AddEvent() {
                     open={isPopoverOpen.locationPlace}
                     onOpenChange={(open) => {
                       debounceSearchPlace(quickCreateKeyword);
-                      if (quickCreateKeyword !== '') debounceSearchExternalSourcePlaces(quickCreateKeyword);
-
                       setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
                     }}
                     destroyTooltipOnHide={true}
@@ -3886,9 +3737,6 @@ function AddEvent() {
                       onChange={(e) => {
                         setQuickCreateKeyword(e.target.value);
                         debounceSearchPlace(e.target.value);
-                        if (e.target.value != '') {
-                          debounceSearchExternalSourcePlaces(e.target.value);
-                        }
                         setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
                       }}
                       onClick={(e) => {
@@ -4096,9 +3944,6 @@ function AddEvent() {
                       open={isPopoverOpen.organizer}
                       onOpenChange={(open) => {
                         debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'organizers');
-                        if (quickCreateKeyword !== '') {
-                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'organizers');
-                        }
                         setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
                       }}
                       destroyTooltipOnHide={true}
@@ -4260,9 +4105,6 @@ function AddEvent() {
                         onChange={(e) => {
                           setQuickCreateKeyword(e.target.value);
                           debounceSearchOrganizationPersonSearch(e.target.value, 'organizers');
-                          if (e.target.value !== '') {
-                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'organizers');
-                          }
                           setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                         }}
                         onClick={(e) => {
@@ -4605,9 +4447,6 @@ function AddEvent() {
                       open={isPopoverOpen.performer}
                       onOpenChange={(open) => {
                         debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'performers');
-                        if (quickCreateKeyword !== '') {
-                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'performers');
-                        }
                         setIsPopoverOpen({ ...isPopoverOpen, performer: open });
                       }}
                       overlayClassName="event-popover"
@@ -4763,9 +4602,6 @@ function AddEvent() {
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
                         onChange={(e) => {
                           debounceSearchOrganizationPersonSearch(e.target.value, 'performers');
-                          if (e.target.value !== '') {
-                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'performers');
-                          }
                           setIsPopoverOpen({ ...isPopoverOpen, performer: true });
                           setQuickCreateKeyword(e.target.value);
                         }}
@@ -4849,9 +4685,6 @@ function AddEvent() {
                       open={isPopoverOpen.supporter}
                       onOpenChange={(open) => {
                         debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'supporters');
-                        if (quickCreateKeyword !== '') {
-                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'supporters');
-                        }
                         setIsPopoverOpen({ ...isPopoverOpen, supporter: open });
                       }}
                       overlayClassName="event-popover"
@@ -5008,9 +4841,6 @@ function AddEvent() {
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
                         onChange={(e) => {
                           debounceSearchOrganizationPersonSearch(e.target.value, 'supporters');
-                          if (e.target.value !== '') {
-                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'supporters');
-                          }
                           setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
                           setQuickCreateKeyword(e.target.value);
                         }}
