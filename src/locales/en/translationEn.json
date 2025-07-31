@@ -1277,7 +1277,9 @@
           "placeHolder": "Enter {{language}} name",
           "deleteConceptMessage": "Are you sure that you want to permanently delete this concept? This action will also delete subconcepts and everywhere the concepts are used, including in events.",
           "deleteConceptHeading": "Delete concept",
-          "delete": "Delete"
+          "delete": "Delete",
+          "setDefault": "Set as default",
+          "clearDefault": "Clear default"
         }
       }
     }
