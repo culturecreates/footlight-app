@@ -815,29 +815,31 @@ function CreateNewPlace() {
         }));
       })
       .catch((error) => console.log(error));
-    getExternalSource(
-      {
-        searchKey: inputValue,
-        classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
-        calendarId,
-        excludeExistingCMS: true,
-      },
-      true,
-    )
-      .unwrap()
-      .then((response) => {
-        setAllPlacesArtsdataList((prev) => ({
-          ...prev,
-          [field]: placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-        }));
+    if (inputValue && inputValue != '') {
+      getExternalSource(
+        {
+          searchKey: inputValue,
+          classes: decodeURIComponent(query.toString()),
+          sources: decodeURIComponent(sourceQuery.toString()),
+          calendarId,
+          excludeExistingCMS: true,
+        },
+        true,
+      )
+        .unwrap()
+        .then((response) => {
+          setAllPlacesArtsdataList((prev) => ({
+            ...prev,
+            [field]: placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          }));
 
-        setAllPlacesImportsFootlight((prev) => ({
-          ...prev,
-          [field]: placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-        }));
-      })
-      .catch((error) => console.log(error));
+          setAllPlacesImportsFootlight((prev) => ({
+            ...prev,
+            [field]: placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          }));
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);

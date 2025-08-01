@@ -215,7 +215,7 @@ function Dashboard() {
                   <Row gutter={[0, 10]}>
                     <Col span={24}>
                       <div className="calendar-read-only-content" data-cy="div-calendar-read-only-content">
-                        {t('dashboard.calendar.readOnlyMode.content')}
+                        {t('dashboard.calendar.readOnlyMode.content', { adminEmail: currentCalendarData?.contact })}
                       </div>
                     </Col>
                   </Row>
