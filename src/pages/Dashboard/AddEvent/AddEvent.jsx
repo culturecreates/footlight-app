@@ -482,23 +482,41 @@ function AddEvent() {
   function validateNestedEntities(data, form) {
     if (!data) return { isValid: true, firstInvalidField: null };
 
+    const desiredOrder = ['locationPlace', 'organizers', 'performers', 'supporters'];
     let isValid = true;
     const errors = {};
     let firstInvalidField = null;
 
     const isInvalidEntity = (entity) => entity?.validationReport?.hasAllMandatoryFields === false;
 
+    const getOrderIndex = (key) => desiredOrder.indexOf(key);
+
     Object.entries(data).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         const invalidItems = value.filter((item) => isInvalidEntity(item));
-        if (invalidItems.length > 0 && !firstInvalidField) {
-          firstInvalidField = key;
+
+        if (invalidItems.length > 0) {
+          const currentIndex = getOrderIndex(key);
+          const firstInvalidIndex = firstInvalidField ? getOrderIndex(firstInvalidField) : Infinity;
+
+          if (currentIndex !== -1 && currentIndex < firstInvalidIndex) {
+            firstInvalidField = key;
+          }
+
           errors[key] = { errors: [t('common.validations.informationRequired')] };
           isValid = false;
+          errors[key].value = value;
         }
-      } else if (isInvalidEntity(value) && !firstInvalidField) {
-        firstInvalidField = key;
+      } else if (isInvalidEntity(value)) {
+        const currentIndex = getOrderIndex(key);
+        const firstInvalidIndex = firstInvalidField ? getOrderIndex(firstInvalidField) : Infinity;
+
+        if (currentIndex !== -1 && currentIndex < firstInvalidIndex) {
+          firstInvalidField = key;
+        }
+
         errors[key] = { errors: [t('common.validations.informationRequired')] };
+        errors[key].value = value;
         isValid = false;
       }
     });
@@ -508,6 +526,7 @@ function AddEvent() {
         Object.keys(errors).map((fieldName) => ({
           name: fieldName,
           errors: errors[fieldName].errors,
+          value: data,
         })),
       );
     }
@@ -2755,7 +2774,7 @@ function AddEvent() {
   useEffect(() => {
     const { isError, errorCode, data } = errorDetails;
 
-    if (!isError) return;
+    if (!isError || updateEventStateLoading || updateEventLoading) return;
 
     if (errorCode == 409 && data?.inCompleteLinkedEntityIds) {
       const { updatedOrganizers, updatedPerformers, updatedSupporters, updatedLocation } =
@@ -2790,12 +2809,13 @@ function AddEvent() {
 
         if (field && field.length > 0) {
           field[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          dispatch(clearErrors());
         } else if (attempt < 3) {
           setTimeout(() => scrollAttempt(attempt + 1), 100 * (attempt + 1));
         }
       };
       scrollAttempt();
+
+      dispatch(clearErrors());
 
       message.warning({
         duration: 10,
@@ -2817,7 +2837,7 @@ function AddEvent() {
       });
       return;
     }
-  }, [errorDetails]);
+  }, [errorDetails, updateEventStateLoading, updateEventLoading]);
 
   return !isLoading &&
     !taxonomyLoading &&
