@@ -30,7 +30,6 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataPlaceEntity } from '../../../services/artsData';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import './placeReadOnly.css';
 import moment from 'moment';
@@ -172,7 +171,6 @@ function PlaceReadOnly() {
     if (placeSuccess) {
       if (placeData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(placeData?.sameAs);
-        sourceId = getExternalSourceId(sourceId);
         getArtsDataPlace(sourceId);
       }
       if (placeData?.containedInPlace?.entityId) {

@@ -15,18 +15,22 @@ export async function getArtsDataEntities({ searchKeyword, entityType }) {
 }
 
 export async function loadArtsDataEntity({ entityId }) {
-  const query = `query?adid=${entityId}&format=json&frame=ranked_org_person_footlight&sparql=ranked_org_person_footlight`;
+  const sparqlQuery = 'footlight_cms/org_person';
+  const query = `query?uri=${entityId}&format=json&frame=ranked_org_person_footlight&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
 export async function loadArtsDataPlaceEntity({ entityId }) {
-  const query = `query?adid=${entityId}&format=json&frame=ranked_place_footlight&sparql=ranked_place_footlight`;
+  const sparqlQuery = 'footlight_cms/place';
+  const query = `query?uri=${entityId}&format=json&frame=ranked_place_footlight&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
 
 export async function loadArtsDataEventEntity({ entityId }) {
-  const query = `query?adid=${entityId}&format=json&frame=ranked_event_footlight&sparql=ranked_event_footlight`;
+  const sparqlQuery = 'footlight_cms/event';
+
+  const query = `query?uri=${entityId}&format=json&frame=ranked_event_footlight&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
 
   return fetchData(url);

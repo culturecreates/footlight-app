@@ -10,9 +10,10 @@ import { useEffect } from 'react';
 import { clearUser } from '../../redux/reducer/userSlice';
 import { infiniteLoopHandler } from '../../utils/infiniteLoopHandler';
 import { removeCachedData } from '../../utils/removeCachedData';
+import { errorTypes } from '../../constants/errors';
 
 function ErrorAlert(props) {
-  const { errorType = 'general' } = props;
+  const { errorType = errorTypes.GENERAL } = props;
 
   const errorDetails = useSelector(getErrorDetails);
   const error = useRouteError();
@@ -20,11 +21,8 @@ function ErrorAlert(props) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  let message, heading;
-
   useEffect(() => {
     // effect to trigger api reload when browser back button is pressed
-
     const handlePopstate = () => {
       infiniteLoopHandler(() => {
         dispatch(clearUser());
@@ -37,20 +35,52 @@ function ErrorAlert(props) {
     };
   }, [dispatch]);
 
-  heading = t('errorPage.heading');
-  let image = <GeneralErrors className="error-image" alt="General error illustration" />;
+  // Get error display configuration
+  const getErrorConfig = () => {
+    const config = {
+      image: <GeneralErrors />,
+      heading: t('errorPage.heading'),
+      message: error?.message,
+    };
 
-  if (errorType === 'serverDown') {
-    heading = t('errorPage.serverDown');
-  } else if (errorType === 'failedAPI' && errorDetails?.isError) {
-    message = errorDetails?.message;
-  }
-  if (errorType === 'general' && !errorDetails.isError) {
-    message = error?.message;
-  } else if (errorType === 'pageNotFound') {
-    image = <Error404 className="error-image" alt="404 illustration" />;
-    message = t('errorPage.notFoundMessage');
-  }
+    switch (errorType) {
+      case errorTypes.SERVER_DOWN:
+        config.heading = t('errorPage.serverDown');
+        break;
+      case errorTypes.FAILED_API:
+        if (errorDetails?.isError) {
+          config.message = errorDetails?.message;
+        }
+        break;
+      case errorTypes.PAGE_NOT_FOUND:
+        config.image = <Error404 />;
+        config.message = t('errorPage.notFoundMessage');
+        break;
+      case errorTypes.GENERAL:
+        if (!errorDetails?.isError) {
+          config.message = error?.message;
+        }
+        break;
+      default:
+        break;
+    }
+
+    return config;
+  };
+
+  const { image, heading, message } = getErrorConfig();
+
+  const handleNavigation = () => {
+    navigate('/');
+    infiniteLoopHandler(() => dispatch(clearUser()));
+    dispatch(clearErrors());
+  };
+
+  const handleExit = () => {
+    removeCachedData();
+    dispatch(clearErrors());
+    navigate('/');
+  };
 
   return (
     <div className="error-page">
@@ -58,34 +88,19 @@ function ErrorAlert(props) {
         <div className="image-container">{image}</div>
         <section>
           <h1>{heading}</h1>
-          <>
-            <p className="error-message">{message}</p>
-            <p className="error-time">{new Date().toISOString()}</p>
-            <div className="btn-container">
-              <Button
-                onClick={() => {
-                  navigate('/');
-                  infiniteLoopHandler(() => {
-                    dispatch(clearUser());
-                  });
-                  dispatch(clearErrors());
-                }}>
-                {t('errorPage.buttonText')}
-              </Button>
-            </div>
-            <div className="escape-guide-container">
-              <span className="error-message">{t('errorPage.backTologin')}</span>
-              <span
-                className="exit-button"
-                onClick={() => {
-                  removeCachedData();
-                  dispatch(clearErrors());
-                  navigate('/');
-                }}>
-                {t('errorPage.exit')}
-              </span>
-            </div>
-          </>
+          <p className="error-message">{message}</p>
+          <p className="error-time">{new Date().toISOString()}</p>
+
+          <div className="btn-container">
+            <Button onClick={handleNavigation}>{t('errorPage.buttonText')}</Button>
+          </div>
+
+          <div className="escape-guide-container">
+            <span className="error-message">{t('errorPage.backTologin')}</span>
+            <span className="exit-button" onClick={handleExit}>
+              {t('errorPage.exit')}
+            </span>
+          </div>
         </section>
       </div>
     </div>

@@ -54,6 +54,7 @@ import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 import { getLabelByTimezoneValue } from '../../../utils/handleTimeZones';
+import { Translation } from 'react-i18next';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -362,17 +363,27 @@ function EventReadOnly() {
                       (state?.value === eventPublishState?.PENDING_REVIEW ||
                         state?.value === eventPublishState?.PUBLISHED) &&
                       eventData?.publishState === state?.value
-                    )
+                    ) {
+                      const translationKey =
+                        state?.value === eventPublishState?.PUBLISHED
+                          ? 'dashboard.events.readOnlyEvent.notification.underPublished'
+                          : 'dashboard.events.readOnlyEvent.notification.underReview';
+
                       return (
                         <Alert
                           key={index}
-                          message={state.infoText}
+                          message={
+                            <Translation>
+                              {(t) => t(translationKey, { adminEmail: currentCalendarData.contact })}
+                            </Translation>
+                          }
                           type="info"
                           showIcon
                           icon={<InfoCircleOutlined />}
                           additionalClassName="alert-information"
                         />
                       );
+                    }
                   })}
                 </Col>
               </Row>

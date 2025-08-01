@@ -98,6 +98,9 @@ function People() {
       ? decodeURIComponent(sessionStorage.getItem('peopleUsers'))?.split(',')
       : [],
   );
+  const [peopleIdFilter, setPeopleIdFilter] = useState(
+    searchParams.get('ids') ? decodeURIComponent(searchParams.get('ids'))?.split(',') : [],
+  );
 
   let initialSelectedUsers = {};
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
@@ -203,6 +206,7 @@ function People() {
     setStandardTaxonomyFilter({});
     setPageNumber(1);
     setUserFilter([]);
+    setPeopleIdFilter([]);
 
     let usersToClear = selectedUsers;
     Object.keys(usersToClear)?.forEach(function (key) {
@@ -270,10 +274,14 @@ function People() {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
 
-    let usersQuery;
+    let usersQuery, peopleIdsQuery;
     if (Array.isArray(userFilter) && userFilter.length > 0) {
       usersQuery = encodeURIComponent(userFilter);
       userFilter.forEach((user) => query.append('created-by', user));
+    }
+    if (Array.isArray(peopleIdFilter) && peopleIdFilter.length > 0) {
+      peopleIdsQuery = encodeURIComponent(peopleIdFilter);
+      peopleIdFilter.forEach((person) => query.append('ids', person));
     }
 
     sortQuery.append(
@@ -312,6 +320,7 @@ function People() {
       order: filter?.order,
       sortBy: filter?.sort,
       ...(usersQuery && { users: usersQuery }),
+      ...(peopleIdsQuery && { ids: peopleIdsQuery }),
       ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
       ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
         standardTaxonomyFilter: JSON.stringify(standardTaxonomyFilter),
@@ -335,7 +344,7 @@ function People() {
     if (Object.keys(standardTaxonomyFilter)?.length > 0)
       sessionStorage.setItem('standardPeopleTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
     else sessionStorage.removeItem('standardPeopleTaxonomyFilter');
-  }, [pageNumber, peopleSearchQuery, userFilter, filter, taxonomyFilter, standardTaxonomyFilter]);
+  }, [pageNumber, peopleSearchQuery, userFilter, peopleIdFilter, filter, taxonomyFilter, standardTaxonomyFilter]);
 
   return (
     <>
@@ -610,6 +619,7 @@ function People() {
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
                   userFilter.length > 0 ||
+                  peopleIdFilter.length > 0 ||
                   Object.keys(standardTaxonomyFilter)?.length > 0 ||
                   filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button

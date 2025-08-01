@@ -108,6 +108,9 @@ function Places() {
       ? decodeURIComponent(sessionStorage.getItem('placesUsers'))?.split(',')
       : [],
   );
+  const [placeIds, setPlaceIds] = useState(
+    searchParams.get('ids') ? decodeURIComponent(searchParams.get('ids'))?.split(',') : [],
+  );
 
   let initialSelectedUsers = {};
   for (let index = 0; index < userFilter?.length; index++) {
@@ -215,6 +218,7 @@ function Places() {
     setStandardTaxonomyFilter({});
     setPageNumber(1);
     setUserFilter([]);
+    setPlaceIds([]);
 
     let usersToClear = selectedUsers;
     Object.keys(usersToClear)?.forEach(function (key) {
@@ -283,10 +287,14 @@ function Places() {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
 
-    let usersQuery;
+    let usersQuery, placeIdsQuery;
     if (Array.isArray(userFilter) && userFilter.length > 0) {
       usersQuery = encodeURIComponent(userFilter);
       userFilter.forEach((user) => query.append('created-by', user));
+    }
+    if (Array.isArray(placeIds) && placeIds.length > 0) {
+      placeIdsQuery = encodeURIComponent(placeIds);
+      placeIds.forEach((place) => query.append('ids', place));
     }
 
     sortQuery.append(
@@ -325,6 +333,7 @@ function Places() {
       order: filter?.order,
       sortBy: filter?.sort,
       ...(usersQuery && { users: usersQuery }),
+      ...(placeIdsQuery && { ids: placeIdsQuery }),
       ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
       ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
         standardTaxonomyFilter: JSON.stringify(standardTaxonomyFilter),
@@ -348,7 +357,7 @@ function Places() {
     if (Object.keys(standardTaxonomyFilter)?.length > 0)
       sessionStorage.setItem('standardPlaceTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
     else sessionStorage.removeItem('standardPlaceTaxonomyFilter');
-  }, [pageNumber, placesSearchQuery, userFilter, filter, taxonomyFilter, standardTaxonomyFilter]);
+  }, [pageNumber, placesSearchQuery, userFilter, placeIds, filter, taxonomyFilter, standardTaxonomyFilter]);
   return (
     <>
       {dependencyDetailsFetching && (
@@ -622,6 +631,7 @@ function Places() {
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
                   userFilter.length > 0 ||
+                  placeIds.length > 0 ||
                   Object.keys(standardTaxonomyFilter)?.length > 0 ||
                   filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button
