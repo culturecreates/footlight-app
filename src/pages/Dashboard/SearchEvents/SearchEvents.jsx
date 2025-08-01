@@ -10,7 +10,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { PathName } from '../../../constants/pathName';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { EnvironmentOutlined } from '@ant-design/icons';
 // import './searchPlaces.css';
@@ -262,7 +262,11 @@ function SearchEvents() {
                                     <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                   )
                                 }
-                                linkText={t('dashboard.events.createNew.search.linkText')}
+                                linkText={
+                                  isArtsdataUri(event?.uri)
+                                    ? t('dashboard.events.createNew.search.linkText')
+                                    : t('dashboard.events.createNew.search.datafeed')
+                                }
                                 onClick={() => artsDataClickHandler(event)}
                               />
                             </div>
