@@ -26,7 +26,7 @@ const updateValidationStateOfSelectedEntities = ({
 
   const isInvalid = (id) => organizations.includes(id) || people.includes(id);
 
-  const updateArray = (arr) => arr.map((entity) => (isInvalid(entity?.id) ? { ...entity, ...invalidFlag } : entity));
+  const updateArray = (arr) => arr.map((entity) => (isInvalid(entity?.value) ? { ...entity, ...invalidFlag } : entity));
 
   const updatedOrganizers = updateArray(selectedOrganizers);
   const updatedPerformers = updateArray(selectedPerformers);
