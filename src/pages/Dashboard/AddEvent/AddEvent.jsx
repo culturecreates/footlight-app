@@ -131,6 +131,7 @@ function AddEvent() {
   const start_Time = Form.useWatch('startTime', form);
   const end_Time = Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
+  const activePromiseRef = useRef(null);
   const { calendarId, eventId } = useParams();
   let [searchParams] = useSearchParams();
   let duplicateId = searchParams.get('duplicateId');
@@ -1457,6 +1458,137 @@ function AddEvent() {
     return isFieldDirty;
   };
 
+  const searchExternalSourcePlace = async (value) => {
+    if (activePromiseRef.current) {
+      activePromiseRef.current.abort();
+    }
+
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.place);
+
+    let sourceQuery = new URLSearchParams();
+    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
+
+    const promise = getExternalSource({
+      searchKey: value,
+      classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    });
+
+    activePromiseRef.current = promise;
+
+    try {
+      const response = await promise.unwrap();
+      setAllPlacesArtsdataList(
+        placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA, currentCalendarData),
+      );
+      setAllPlacesImportsFootlightList(
+        placesOptions(
+          response?.footlight,
+          user,
+          calendarContentLanguage,
+          externalSourceOptions.FOOTLIGHT,
+          currentCalendarData,
+        ),
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const externalOrganizationPersonSearch = async (value, type) => {
+    if (activePromiseRef.current) {
+      activePromiseRef.current.abort();
+    }
+
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.organization);
+    query.append('classes', entitiesClass.person);
+
+    let sourceQuery = new URLSearchParams();
+    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
+    const promise = getExternalSource(
+      {
+        searchKey: value,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
+      },
+      true,
+    );
+
+    activePromiseRef.current = promise;
+
+    try {
+      const response = await promise.unwrap();
+      if (type == 'organizers') {
+        setOrganizersArtsdataList(
+          treeEntitiesOption(
+            response?.artsdata,
+            user,
+            calendarContentLanguage,
+            sourceOptions.ARTSDATA,
+            currentCalendarData,
+          ),
+        );
+        setOrganizersImportsFootlightList(
+          treeEntitiesOption(
+            response?.footlight,
+            user,
+            calendarContentLanguage,
+            externalSourceOptions.FOOTLIGHT,
+            currentCalendarData,
+          ),
+        );
+      } else if (type == 'performers') {
+        setPerformerArtsdataList(
+          treeEntitiesOption(
+            response?.artsdata,
+            user,
+            calendarContentLanguage,
+            sourceOptions.ARTSDATA,
+            currentCalendarData,
+          ),
+        );
+        setPerformerImportsFootlightList(
+          treeEntitiesOption(
+            response?.footlight,
+            user,
+            calendarContentLanguage,
+            externalSourceOptions.FOOTLIGHT,
+            currentCalendarData,
+          ),
+        );
+      } else if (type == 'supporters') {
+        setSupporterArtsdataList(
+          treeEntitiesOption(
+            response?.artsdata,
+            user,
+            calendarContentLanguage,
+            sourceOptions.ARTSDATA,
+            currentCalendarData,
+          ),
+        );
+        setSupporterImportsFootlightList(
+          treeEntitiesOption(
+            response?.footlight,
+            user,
+            calendarContentLanguage,
+            externalSourceOptions.FOOTLIGHT,
+            currentCalendarData,
+          ),
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
@@ -1475,33 +1607,7 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         setAllPlacesList(
-          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
-        );
-      })
-      .catch((error) => console.log(error));
-    getExternalSource(
-      {
-        searchKey: inputValue,
-        classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
-        calendarId,
-        excludeExistingCMS: true,
-      },
-      true,
-    )
-      .unwrap()
-      .then((response) => {
-        setAllPlacesArtsdataList(
-          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA, currentCalendarData),
-        );
-        setAllPlacesImportsFootlightList(
-          placesOptions(
-            response?.footlight,
-            user,
-            calendarContentLanguage,
-            externalSourceOptions.FOOTLIGHT,
-            currentCalendarData,
-          ),
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
         );
       })
       .catch((error) => console.log(error));
@@ -1520,87 +1626,15 @@ function AddEvent() {
       .then((response) => {
         if (type == 'organizers') {
           setOrganizersList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
           );
         } else if (type == 'performers') {
           setPerformerList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
           );
         } else if (type == 'supporters') {
           setSupporterList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
-          );
-        }
-      })
-      .catch((error) => console.log(error));
-    getExternalSource(
-      {
-        searchKey: value,
-        classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
-        calendarId,
-        excludeExistingCMS: true,
-      },
-      true,
-    )
-      .unwrap()
-      .then((response) => {
-        if (type == 'organizers') {
-          setOrganizersArtsdataList(
-            treeEntitiesOption(
-              response?.artsdata,
-              user,
-              calendarContentLanguage,
-              sourceOptions.ARTSDATA,
-              currentCalendarData,
-            ),
-          );
-          setOrganizersImportsFootlightList(
-            treeEntitiesOption(
-              response?.footlight,
-              user,
-              calendarContentLanguage,
-              externalSourceOptions.FOOTLIGHT,
-              currentCalendarData,
-            ),
-          );
-        } else if (type == 'performers') {
-          setPerformerArtsdataList(
-            treeEntitiesOption(
-              response?.artsdata,
-              user,
-              calendarContentLanguage,
-              sourceOptions.ARTSDATA,
-              currentCalendarData,
-            ),
-          );
-          setPerformerImportsFootlightList(
-            treeEntitiesOption(
-              response?.footlight,
-              user,
-              calendarContentLanguage,
-              externalSourceOptions.FOOTLIGHT,
-              currentCalendarData,
-            ),
-          );
-        } else if (type == 'supporters') {
-          setSupporterArtsdataList(
-            treeEntitiesOption(
-              response?.artsdata,
-              user,
-              calendarContentLanguage,
-              sourceOptions.ARTSDATA,
-              currentCalendarData,
-            ),
-          );
-          setSupporterImportsFootlightList(
-            treeEntitiesOption(
-              response?.footlight,
-              user,
-              calendarContentLanguage,
-              externalSourceOptions.FOOTLIGHT,
-              currentCalendarData,
-            ),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
           );
         }
       })
@@ -1608,7 +1642,12 @@ function AddEvent() {
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
+  const debounceSearchExternalSourcePlaces = useCallback(useDebounce(searchExternalSourcePlace, SEARCH_DELAY), []);
   const debounceSearchOrganizationPersonSearch = useCallback(useDebounce(organizationPersonSearch, SEARCH_DELAY), []);
+  const debounceSearchExternalSourceOrganizationPerson = useCallback(
+    useDebounce(externalOrganizationPersonSearch, SEARCH_DELAY),
+    [],
+  );
 
   const addFieldsHandler = (fieldNames) => {
     let array = addedFields?.concat(fieldNames);
@@ -3597,6 +3636,7 @@ function AddEvent() {
                     open={isPopoverOpen.locationPlace}
                     onOpenChange={(open) => {
                       debounceSearchPlace(quickCreateKeyword);
+                      if (quickCreateKeyword !== '') debounceSearchExternalSourcePlaces(quickCreateKeyword);
                       setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
                     }}
                     destroyTooltipOnHide={true}
@@ -3757,6 +3797,7 @@ function AddEvent() {
                       onChange={(e) => {
                         setQuickCreateKeyword(e.target.value);
                         debounceSearchPlace(e.target.value);
+                        if (e.target.value !== '') debounceSearchExternalSourcePlaces(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
                       }}
                       onClick={(e) => {
@@ -3964,6 +4005,9 @@ function AddEvent() {
                       open={isPopoverOpen.organizer}
                       onOpenChange={(open) => {
                         debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'organizers');
+                        if (quickCreateKeyword !== '') {
+                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'organizers');
+                        }
                         setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
                       }}
                       destroyTooltipOnHide={true}
@@ -4125,6 +4169,9 @@ function AddEvent() {
                         onChange={(e) => {
                           setQuickCreateKeyword(e.target.value);
                           debounceSearchOrganizationPersonSearch(e.target.value, 'organizers');
+                          if (e.target.value !== '') {
+                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'organizers');
+                          }
                           setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                         }}
                         onClick={(e) => {
@@ -4467,6 +4514,9 @@ function AddEvent() {
                       open={isPopoverOpen.performer}
                       onOpenChange={(open) => {
                         debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'performers');
+                        if (quickCreateKeyword !== '') {
+                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'performers');
+                        }
                         setIsPopoverOpen({ ...isPopoverOpen, performer: open });
                       }}
                       overlayClassName="event-popover"
@@ -4622,6 +4672,9 @@ function AddEvent() {
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
                         onChange={(e) => {
                           debounceSearchOrganizationPersonSearch(e.target.value, 'performers');
+                          if (e.target.value !== '') {
+                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'performers');
+                          }
                           setIsPopoverOpen({ ...isPopoverOpen, performer: true });
                           setQuickCreateKeyword(e.target.value);
                         }}
@@ -4705,6 +4758,9 @@ function AddEvent() {
                       open={isPopoverOpen.supporter}
                       onOpenChange={(open) => {
                         debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'supporters');
+                        if (quickCreateKeyword !== '') {
+                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'supporters');
+                        }
                         setIsPopoverOpen({ ...isPopoverOpen, supporter: open });
                       }}
                       overlayClassName="event-popover"
@@ -4861,6 +4917,9 @@ function AddEvent() {
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
                         onChange={(e) => {
                           debounceSearchOrganizationPersonSearch(e.target.value, 'supporters');
+                          if (e.target.value !== '') {
+                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'supporters');
+                          }
                           setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
                           setQuickCreateKeyword(e.target.value);
                         }}
