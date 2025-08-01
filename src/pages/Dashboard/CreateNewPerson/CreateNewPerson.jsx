@@ -14,7 +14,7 @@ import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams 
 import { LeftOutlined } from '@ant-design/icons';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
+import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
 import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';

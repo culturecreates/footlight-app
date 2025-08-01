@@ -9,7 +9,7 @@ import { ErrorMessages, ErrorStatus } from '../constants/errors';
 
 const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_API_URL,
+  baseUrl: import.meta.env.VITE_APP_API_URL,
   prepareHeaders: (headers, { getState }) => {
     let token = getState().user.accessToken;
     if (token) {
@@ -82,7 +82,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
         token = Cookies.get('refreshToken');
       }
       try {
-        const fetchResponse = await fetch(`${process.env.REACT_APP_API_URL}/refresh-token`, {
+        const fetchResponse = await fetch(`${import.meta.env.VITE_APP_API_URL}/refresh-token`, {
           method: 'POST',
           headers: {
             Accept: 'application/json',

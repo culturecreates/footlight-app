@@ -38,24 +38,24 @@ jobs:
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1.3
         with:
-          envkey_REACT_APP_API_URL: http://localhost:3001/
-          envkey_REACT_APP_ARTS_DATA_URI: https://api.artsdata.ca/
-          envkey_REACT_APP_ARTS_DATA_PAGE_URI: https://kg.artsdata.ca/resource/
-          envkey_REACT_APP_DEEPL_URL: https://www.deepl.com/translator#
-          envkey_REACT_APP_HELP_EN_URL: https://footlight.gitbook.io/footlight-cms-guide
-          envkey_REACT_APP_HELP_FR_URL: https://footlight.gitbook.io/guide-footlight-cms
-          envkey_REACT_APP_FEATURE_FLAG_QUICK_CREATE_ORGANIZATION: true
-          envkey_REACT_APP_FEATURE_FLAG_ORG_PERSON_PLACE_VIEW: true
-          envkey_REACT_APP_FEATURE_FLAG_QUICK_CREATE_PEOPLE_PLACE: true
-          envkey_REACT_APP_FEATURE_FLAG_EDIT_SCREEN_PEOPLE_PLACE_ORGANIZATION: true
-          envkey_REACT_APP_FEATURE_FLAG_USERS: true
-          envkey_REACT_APP_FEATURE_FLAG_TAXONOMY: true
-          envkey_REACT_APP_FEATURE_FLAG_IMAGE_CROP: true
-          envkey_REACT_APP_ENV: staging
-          envkey_REACT_APP_INVITE_URL: http://localhost:3001/join?invitationId=
-          envkey_REACT_APP_ACCEPT_URL: http://localhost:3001/accept?invitationId=
-          envkey_REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-          envkey_REACT_APP_GOOGLE_MAPS_ID: ${{ secrets.GOOGLE_MAPS_ID }}
+          envkey_VITE_APP_API_URL: http://localhost:3001/
+          envkey_VITE_APP_ARTS_DATA_URI: https://api.artsdata.ca/
+          envkey_VITE_APP_ARTS_DATA_PAGE_URI: https://kg.artsdata.ca/resource/
+          envkey_VITE_APP_DEEPL_URL: https://www.deepl.com/translator#
+          envkey_VITE_APP_HELP_EN_URL: https://footlight.gitbook.io/footlight-cms-guide
+          envkey_VITE_APP_HELP_FR_URL: https://footlight.gitbook.io/guide-footlight-cms
+          envkey_VITE_APP_FEATURE_FLAG_QUICK_CREATE_ORGANIZATION: true
+          envkey_VITE_APP_FEATURE_FLAG_ORG_PERSON_PLACE_VIEW: true
+          envkey_VITE_APP_FEATURE_FLAG_QUICK_CREATE_PEOPLE_PLACE: true
+          envkey_VITE_APP_FEATURE_FLAG_EDIT_SCREEN_PEOPLE_PLACE_ORGANIZATION: true
+          envkey_VITE_APP_FEATURE_FLAG_USERS: true
+          envkey_VITE_APP_FEATURE_FLAG_TAXONOMY: true
+          envkey_VITE_APP_FEATURE_FLAG_IMAGE_CROP: true
+          envkey_VITE_APP_ENV: staging
+          envkey_VITE_APP_INVITE_URL: http://localhost:3001/join?invitationId=
+          envkey_VITE_APP_ACCEPT_URL: http://localhost:3001/accept?invitationId=
+          envkey_VITE_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          envkey_VITE_APP_GOOGLE_MAPS_ID: ${{ secrets.GOOGLE_MAPS_ID }}
           file_name: .env
           fail_on_empty: false
 
