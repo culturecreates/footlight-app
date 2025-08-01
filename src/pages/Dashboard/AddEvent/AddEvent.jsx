@@ -1607,7 +1607,7 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         setAllPlacesList(
-          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
         );
       })
       .catch((error) => console.log(error));
@@ -1626,15 +1626,15 @@ function AddEvent() {
       .then((response) => {
         if (type == 'organizers') {
           setOrganizersList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         } else if (type == 'performers') {
           setPerformerList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         } else if (type == 'supporters') {
           setSupporterList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         }
       })
