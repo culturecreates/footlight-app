@@ -132,8 +132,8 @@ jobs:
       - name: Build and run Footlight Container
         run: |
           sed -i 's|^VITE_APP_API_URL=.*|VITE_APP_API_URL="http://test.footlight.api:8080"|' .env.staging
-          printf "\nREACT_APP_GOOGLE_MAPS_API_KEY=%s\n" "${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.staging
-          printf "REACT_APP_GOOGLE_MAPS_ID=%s\n" "${{ secrets.GOOGLE_MAPS_ID }}" >> .env.staging
+          printf "\nVITE_APP_GOOGLE_MAPS_API_KEY=%s\n" "${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.staging
+          printf "VITE_APP_GOOGLE_MAPS_ID=%s\n" "${{ secrets.GOOGLE_MAPS_ID }}" >> .env.staging
           docker build -t footlight .
           docker run -d --name test.footlight.app --network footlight-network.test -p 3000:3000 footlight
 
