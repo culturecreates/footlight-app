@@ -128,7 +128,7 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
-        "addMoreDetails": "Ajouter plus de détails à votre événement",
+        "addMoreDetails": "Ajoutez plus de détails",
         "allDone": "Tous les détails sont ajoutés.",
         "featuredEvent": "Événement vedette",
         "fallbackConfirm": {
@@ -587,7 +587,7 @@
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
           "editOrganization": "Modifier l’organisation",
-          "addMoreDetails": "Ajouter des détails à votre organisation",
+          "addMoreDetails": "Ajoutez plus de détails",
           "dataSource": "Data source",
           "question": {
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
@@ -766,7 +766,7 @@
             "additionalImages": "Images supplémentaires",
             "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
           },
-          "addMoreDetails": "Ajouter plus de détails.",
+          "addMoreDetails": "Ajoutez plus de détails",
           "dataSource": "Source de la donnée.",
           "notification": {
             "addSuccess": "Succès ! Votre fiche de lieu a été créée.",
@@ -1275,7 +1275,9 @@
           "placeHolder": "Indiquer un nom en {{language}}",
           "deleteConceptHeading": "Supprimer le concept",
           "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action supprimera aussi ses sous-concepts et partout où ils ont été utilisé, y compris dans les événements.",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "setDefault": "Définir par défaut",
+          "clearDefault": "Effacer par défaut"
         }
       }
     }
@@ -1312,7 +1314,7 @@
       }
     },
     "validations": {
-      "informationRequired": "Des informations sont requises"
+      "informationRequired": "Des informations sont requises."
     },
     "entityReport": {
       "event": {

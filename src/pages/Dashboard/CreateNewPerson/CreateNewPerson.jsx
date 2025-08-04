@@ -60,6 +60,7 @@ import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import ChangeType from '../../../components/ChangeType';
 import i18next from 'i18next';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -87,7 +88,7 @@ function CreateNewPerson() {
   const personId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.uri ?? null;
+  const artsDataId = location?.state?.data?.id ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
@@ -652,9 +653,10 @@ function CreateNewPerson() {
         }
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
+          sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
-        let personKeys = Object.keys(personData);
+        let personKeys = Object.keys(personData || {});
         if (personKeys?.length > 0) setAddedFields(personKeys);
       }
 
@@ -875,6 +877,7 @@ function CreateNewPerson() {
                               formField,
                               allTaxonomyData,
                               user,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                               calendarContentLanguage,
                               entityId: personId,
                               entityData: personData
@@ -916,12 +919,24 @@ function CreateNewPerson() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
+
+                            if (artsDataId || externalCalendarEntityId || !personId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault) {
+                                  initialValues = Array.isArray(initialValues)
+                                    ? [...initialValues, concept?.id]
+                                    : [concept?.id];
+                                }
+                              });
+                            }
+
                             const shouldShowField =
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||
                               (initialValues && initialValues?.length > 0);
 
                             const displayFlag = !shouldShowField;
+
                             return (
                               <Form.Item
                                 key={index}
@@ -1001,6 +1016,20 @@ function CreateNewPerson() {
                                     if (field?.id === dynamicField?.taxonomyId)
                                       initialValues = dynamicField?.conceptIds;
                                   });
+
+                                  if (artsDataId || externalCalendarEntityId || !personId) {
+                                    allTaxonomyData?.data?.forEach((taxonomy) => {
+                                      if (field?.id === taxonomy?.id) {
+                                        taxonomy?.concept?.forEach((concept) => {
+                                          if (concept?.isDefault) {
+                                            initialValues = Array.isArray(initialValues)
+                                              ? [...initialValues, concept?.id]
+                                              : [concept?.id];
+                                          }
+                                        });
+                                      }
+                                    });
+                                  }
 
                                   if (
                                     !addedFields?.includes(field?.mappedField) &&
