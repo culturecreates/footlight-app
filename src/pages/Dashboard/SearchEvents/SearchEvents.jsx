@@ -12,7 +12,6 @@ import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
-import { EnvironmentOutlined } from '@ant-design/icons';
 // import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
@@ -24,6 +23,7 @@ import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 import { loadArtsDataEventEntity } from '../../../services/artsData';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
+import { CalendarOutlined } from '@ant-design/icons';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -206,7 +206,7 @@ function SearchEvents() {
                               event.logo ? (
                                 event.logo?.thumbnail?.uri
                               ) : (
-                                <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                               )
                             }
                             linkText={t('dashboard.events.createNew.search.linkText')}
@@ -259,7 +259,7 @@ function SearchEvents() {
                                   event.logo ? (
                                     event.logo?.thumbnail?.uri
                                   ) : (
-                                    <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                    <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                   )
                                 }
                                 linkText={t('dashboard.events.createNew.search.linkText')}

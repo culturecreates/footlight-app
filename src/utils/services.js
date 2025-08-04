@@ -26,7 +26,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && (result.error.status === 400 || result.error.status === 409)) {
+  if (result.error && result.error.status === 400) {
     //HTTP 400 Bad Request
     //The server cannot or will not process the request due to something that is perceived to be a client error.
 
@@ -36,6 +36,21 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       placement: 'top',
       description: result?.error?.data?.message,
     });
+  }
+
+  if (result.error && result.error.status === 409) {
+    //HTTP 409 Conflict
+    //The request could not be completed due to a conflict with the current state of the resource.
+    //This code is used in situations where the user might be able to resolve the conflict and resubmit the request.
+
+    api.dispatch(
+      setErrorStates({
+        errorCode: '409',
+        isError: true,
+        message: result.error?.data?.error,
+        data: result.error?.data,
+      }),
+    );
   }
 
   if (result.error && result.error.status === 500) {

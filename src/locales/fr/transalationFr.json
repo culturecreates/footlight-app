@@ -72,7 +72,7 @@
       "readOnlyMode": {
         "readOnlyMode": "Mode lecture seule",
         "heading": "Calendrier en mode lecture seule",
-        "content": "Le calendrier est actuellement en mode lecture seule. Les utilisateurs ne peuvent pas modifier son contenu. Réessayez plus tard ou contactez votre administrateur pour plus de détails."
+        "content": "Le calendrier est actuellement en mode lecture seule. Les utilisateurs ne peuvent pas modifier son contenu. Réessayez plus tard ou contactez votre administrateur à {{adminEmail}} pour plus de détails."
       }
     },
     "topNavigation": {
@@ -123,12 +123,12 @@
       "readOnlyEvent": {
         "notification": {
           "underReview": "Cet événement est en cours de validation.",
-          "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier."
+          "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier à {{adminEmail}}."
         }
       },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
-        "addMoreDetails": "Ajouter plus de détails à votre événement",
+        "addMoreDetails": "Ajoutez plus de détails",
         "allDone": "Tous les détails sont ajoutés.",
         "featuredEvent": "Événement vedette",
         "fallbackConfirm": {
@@ -586,7 +586,7 @@
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
           "editOrganization": "Modifier l’organisation",
-          "addMoreDetails": "Ajouter des détails à votre organisation",
+          "addMoreDetails": "Ajoutez plus de détails",
           "dataSource": "Data source",
           "question": {
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
@@ -765,7 +765,7 @@
             "additionalImages": "Images supplémentaires",
             "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
           },
-          "addMoreDetails": "Ajouter plus de détails.",
+          "addMoreDetails": "Ajoutez plus de détails",
           "dataSource": "Source de la donnée.",
           "notification": {
             "addSuccess": "Succès ! Votre fiche de lieu a été créée.",

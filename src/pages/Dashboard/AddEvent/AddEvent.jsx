@@ -120,6 +120,8 @@ import { timeZones } from '../../../constants/calendarSettingsForm';
 import i18next from 'i18next';
 import { setInitialValueForStandardTaxonomyFieldsForEventForm } from '../../../utils/setFieldvalueForTaxonomies';
 import { eventTaxonomyMappedField } from '../../../constants/eventTaxonomyMappedField';
+import updateValidationStateOfSelectedEntities from '../../../utils/updateValidationStateOfSelectedEntities';
+import { clearErrors, getErrorDetails } from '../../../redux/reducer/ErrorSlice';
 
 const { TextArea } = Input;
 
@@ -131,19 +133,17 @@ function AddEvent() {
   const start_Time = Form.useWatch('startTime', form);
   const end_Time = Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
-
   const activePromiseRef = useRef(null);
-
   const { calendarId, eventId } = useParams();
   let [searchParams] = useSearchParams();
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
+  const errorDetails = useSelector(getErrorDetails);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
-  const artsDataId = location?.state?.data?.uri ?? null;
-
+  const artsDataId = location?.state?.data?.id ?? null;
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -482,6 +482,61 @@ function AddEvent() {
     return promise;
   };
 
+  function validateNestedEntities(data, form) {
+    if (!data) return { isValid: true, firstInvalidField: null };
+
+    const desiredOrder = ['locationPlace', 'organizers', 'performers', 'supporters'];
+    let isValid = true;
+    const errors = {};
+    let firstInvalidField = null;
+
+    const isInvalidEntity = (entity) => entity?.validationReport?.hasAllMandatoryFields === false;
+
+    const getOrderIndex = (key) => desiredOrder.indexOf(key);
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        const invalidItems = value.filter((item) => isInvalidEntity(item));
+
+        if (invalidItems.length > 0) {
+          const currentIndex = getOrderIndex(key);
+          const firstInvalidIndex = firstInvalidField ? getOrderIndex(firstInvalidField) : Infinity;
+
+          if (currentIndex !== -1 && currentIndex < firstInvalidIndex) {
+            firstInvalidField = key;
+          }
+
+          errors[key] = { errors: [t('common.validations.informationRequired')] };
+          isValid = false;
+          errors[key].value = value;
+        }
+      } else if (isInvalidEntity(value)) {
+        const currentIndex = getOrderIndex(key);
+        const firstInvalidIndex = firstInvalidField ? getOrderIndex(firstInvalidField) : Infinity;
+
+        if (currentIndex !== -1 && currentIndex < firstInvalidIndex) {
+          firstInvalidField = key;
+        }
+
+        errors[key] = { errors: [t('common.validations.informationRequired')] };
+        errors[key].value = value;
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      form.setFields(
+        Object.keys(errors).map((fieldName) => ({
+          name: fieldName,
+          errors: errors[fieldName].errors,
+          value: data,
+        })),
+      );
+    }
+
+    return { isValid, firstInvalidField };
+  }
+
   const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
     const previousShowDialog = showDialog;
@@ -505,6 +560,19 @@ function AddEvent() {
           .then(async () => {
             let fallbackStatus = activeFallbackFieldsInfo;
             var values = form.getFieldsValue(true);
+
+            if (type === eventPublishState.PUBLISHED || type === 'PUBLISH') {
+              const { isValid, firstInvalidField } = validateNestedEntities({ ...values, locationPlace }, form);
+
+              if (!isValid) {
+                if (firstInvalidField) {
+                  const element = document.getElementsByClassName(firstInvalidField);
+                  element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+
+                throw new Error('Please fix invalid fields before publishing');
+              }
+            }
 
             var startDateTime,
               endDateTime,
@@ -1541,7 +1609,7 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         setAllPlacesList(
-          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
         );
       })
       .catch((error) => console.log(error));
@@ -1560,15 +1628,15 @@ function AddEvent() {
       .then((response) => {
         if (type == 'organizers') {
           setOrganizersList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         } else if (type == 'performers') {
           setPerformerList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         } else if (type == 'supporters') {
           setSupporterList(
-            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
           );
         }
       })
@@ -1772,10 +1840,17 @@ function AddEvent() {
       ?.filter((mappedEntity) => mappedEntity);
   };
 
+  function extractLastSegment(url) {
+    if (typeof url !== 'string') return null;
+    const segments = url.trim().split('/');
+    return segments.pop() || null;
+  }
+
   const loadArtsDataDetails = async (entities = []) => {
     return await Promise.all(
       entities.map(async (entityUri) => {
-        let response = await loadArtsDataEntity({ entityId: entityUri });
+        const entityId = extractLastSegment(entityUri);
+        let response = await loadArtsDataEntity({ entityId });
         const entityData = response?.data?.[0];
         if (entityData) {
           return {
@@ -1975,7 +2050,8 @@ function AddEvent() {
 
           if (data.location) {
             try {
-              const response = await loadArtsDataPlaceEntity({ entityId: data.location });
+              const entityId = extractLastSegment(data.location);
+              const response = await loadArtsDataPlaceEntity({ entityId });
 
               const placeData = response?.data?.[0];
               const primaryAddress = placeData?.address?.[0];
@@ -2328,6 +2404,7 @@ function AddEvent() {
                         calendarContentLanguage,
                         sourceOptions.CMS,
                         currentCalendarData,
+                        true,
                       )[0],
                     );
                   }
@@ -2338,7 +2415,14 @@ function AddEvent() {
                   ['accessibility']: [],
                 };
                 setLocationPlace(
-                  placesOptions(initialPlace, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData)[0],
+                  placesOptions(
+                    initialPlace,
+                    user,
+                    calendarContentLanguage,
+                    sourceOptions.CMS,
+                    currentCalendarData,
+                    true,
+                  )[0],
                 );
               }
               res?.data?.map((taxonomy) => {
@@ -2353,6 +2437,7 @@ function AddEvent() {
                           calendarContentLanguage,
                           sourceOptions.CMS,
                           currentCalendarData,
+                          true,
                         )[0],
                       );
                     }
@@ -2380,6 +2465,7 @@ function AddEvent() {
               calendarContentLanguage,
               sourceOptions.CMS,
               currentCalendarData,
+              true,
             ),
           );
         }
@@ -2393,6 +2479,7 @@ function AddEvent() {
               calendarContentLanguage,
               sourceOptions.CMS,
               currentCalendarData,
+              true,
             ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
@@ -2407,6 +2494,7 @@ function AddEvent() {
               calendarContentLanguage,
               sourceOptions.CMS,
               currentCalendarData,
+              true,
             ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
@@ -2723,6 +2811,74 @@ function AddEvent() {
         setAddedFields(addedFields.concat(otherInformationFieldNames?.inLanguage));
     }
   }, [taxonomyLoading]);
+
+  useEffect(() => {
+    const { isError, errorCode, data } = errorDetails;
+
+    if (!isError || updateEventStateLoading || updateEventLoading) return;
+
+    if (errorCode == 409 && data?.inCompleteLinkedEntityIds) {
+      const { updatedOrganizers, updatedPerformers, updatedSupporters, updatedLocation } =
+        updateValidationStateOfSelectedEntities({
+          inCompleteLinkedEntityIds: data?.inCompleteLinkedEntityIds,
+          selectedOrganizers,
+          selectedPerformers,
+          selectedSupporters,
+          locationPlace,
+        });
+
+      setSelectedOrganizers(updatedOrganizers);
+      setSelectedPerformers(updatedPerformers);
+      setSelectedSupporters(updatedSupporters);
+      setLocationPlace(updatedLocation);
+
+      const { isValid, firstInvalidField } = validateNestedEntities(
+        {
+          ...form.getFieldsValue(true),
+          locationPlace: updatedLocation,
+          organizers: updatedOrganizers,
+          performers: updatedPerformers,
+          supporters: updatedSupporters,
+        },
+        form,
+      );
+
+      if (isValid || !firstInvalidField) return;
+
+      const scrollAttempt = (attempt = 0) => {
+        const field = document.getElementsByClassName(firstInvalidField);
+
+        if (field && field.length > 0) {
+          field[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (attempt < 3) {
+          setTimeout(() => scrollAttempt(attempt + 1), 100 * (attempt + 1));
+        }
+      };
+      scrollAttempt();
+
+      dispatch(clearErrors());
+
+      message.warning({
+        duration: 10,
+        maxCount: 1,
+        key: 'event-review-publish-warning',
+        content: (
+          <>
+            {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+            &nbsp;
+            <Button
+              type="text"
+              data-cy="button-close-review-publish-warning"
+              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+              onClick={() => message.destroy('event-review-publish-warning')}
+            />
+          </>
+        ),
+        icon: <ExclamationCircleOutlined />,
+      });
+      return;
+    }
+  }, [errorDetails, updateEventStateLoading, updateEventLoading]);
 
   return !isLoading &&
     !taxonomyLoading &&
@@ -3481,6 +3637,7 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
+                className="locationPlace"
                 initialValue={initialPlace ? initialPlace[0]?.id : artsDataId && locationPlace?.uri}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
@@ -3502,7 +3659,6 @@ function AddEvent() {
                     onOpenChange={(open) => {
                       debounceSearchPlace(quickCreateKeyword);
                       if (quickCreateKeyword !== '') debounceSearchExternalSourcePlaces(quickCreateKeyword);
-
                       setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
                     }}
                     destroyTooltipOnHide={true}
@@ -3663,9 +3819,7 @@ function AddEvent() {
                       onChange={(e) => {
                         setQuickCreateKeyword(e.target.value);
                         debounceSearchPlace(e.target.value);
-                        if (e.target.value != '') {
-                          debounceSearchExternalSourcePlaces(e.target.value);
-                        }
+                        if (e.target.value !== '') debounceSearchExternalSourcePlaces(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
                       }}
                       onClick={(e) => {
@@ -3688,6 +3842,7 @@ function AddEvent() {
                     openingHours={locationPlace?.openingHours}
                     calendarContentLanguage={calendarContentLanguage}
                     region={locationPlace?.region}
+                    {...(locationPlace?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                     bordered
                     closable
                     onClose={() => {
@@ -3842,6 +3997,7 @@ function AddEvent() {
                 </Row>
                 <Form.Item
                   name="organizers"
+                  className="organizers"
                   initialValue={selectedOrganizers}
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.ORGANIZERS)}
                   rules={[
@@ -4057,6 +4213,7 @@ function AddEvent() {
                         icon={organizer?.label?.props?.icon}
                         name={organizer?.name}
                         description={organizer?.description}
+                        {...(organizer?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                         bordered
                         closable
                         itemWidth="100%"
@@ -4559,6 +4716,7 @@ function AddEvent() {
                         icon={performer?.label?.props?.icon}
                         name={performer?.name}
                         description={performer?.description}
+                        {...(performer?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                         calendarContentLanguage={calendarContentLanguage}
                         bordered
                         closable
@@ -4804,6 +4962,7 @@ function AddEvent() {
                         icon={supporter?.label?.props?.icon}
                         name={supporter?.name}
                         description={supporter?.description}
+                        {...(supporter?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
                         bordered
                         itemWidth="100%"
                         closable
