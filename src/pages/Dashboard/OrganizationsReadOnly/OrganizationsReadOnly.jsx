@@ -15,6 +15,7 @@ import SelectionItem from '../../../components/List/SelectionItem/SelectionItem'
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import {
   treeDynamicTaxonomyOptions,
   treeTaxonomyOptions,
@@ -169,6 +170,7 @@ function OrganizationsReadOnly() {
     if (organizationSuccess) {
       if (organizationData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(organizationData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
       if (organizationData?.place?.entityId) {

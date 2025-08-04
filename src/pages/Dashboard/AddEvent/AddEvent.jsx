@@ -1850,7 +1850,7 @@ function AddEvent() {
     return await Promise.all(
       entities.map(async (entityUri) => {
         const entityId = extractLastSegment(entityUri);
-        let response = await loadArtsDataEntity({ entityId });
+        let response = await loadArtsDataEntity({ entityId: entityId });
         const entityData = response?.data?.[0];
         if (entityData) {
           return {
