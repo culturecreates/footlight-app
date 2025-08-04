@@ -79,7 +79,7 @@ function SearchEvents() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    loadArtsDataEventEntity({ entityId: entity?.uri })
+    loadArtsDataEventEntity({ entityId: entity?.id })
       .then(async (response) => {
         if (response?.data?.length > 0) {
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
