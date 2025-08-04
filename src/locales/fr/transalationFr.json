@@ -1313,7 +1313,7 @@
       }
     },
     "validations": {
-      "informationRequired": "Des informations sont requises"
+      "informationRequired": "Des informations sont requises."
     },
     "entityReport": {
       "event": {
