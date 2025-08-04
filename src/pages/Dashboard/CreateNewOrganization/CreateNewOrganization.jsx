@@ -55,7 +55,6 @@ import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
@@ -104,7 +103,7 @@ function CreateNewOrganization() {
   const organizationId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
@@ -702,23 +701,25 @@ function CreateNewOrganization() {
         setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
       })
       .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
-      .unwrap()
-      .then((response) => {
-        setAllPlacesArtsdataList(
-          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-        );
-        setAllPlacesImportsFootlight(
-          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-        );
+    if (inputValue && inputValue !== '') {
+      getExternalSource({
+        searchKey: inputValue,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
       })
-      .catch((error) => console.log(error));
+        .unwrap()
+        .then((response) => {
+          setAllPlacesArtsdataList(
+            placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          );
+          setAllPlacesImportsFootlight(
+            placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          );
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
@@ -909,7 +910,6 @@ function CreateNewOrganization() {
           }
           if (organizationData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(organizationData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           if (organizationData?.place?.entityId) {
@@ -1052,8 +1052,7 @@ function CreateNewOrganization() {
           }
         }
         if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
-          getArtsData(sourceId);
+          getArtsData(externalCalendarEntityData[0]?.derivedFrom?.uri);
         }
         if (externalCalendarEntityData[0]?.place?.entityId) {
           let organizationIdsQuery = new URLSearchParams();
@@ -1357,6 +1356,7 @@ function CreateNewOrganization() {
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                               setShowDialog,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                             });
                           }
                         });
@@ -1364,7 +1364,7 @@ function CreateNewOrganization() {
                       {section[0]?.category === formCategory.PRIMARY &&
                         allTaxonomyData?.data?.map((taxonomy, index) => {
                           if (taxonomy?.isDynamicField) {
-                            let initialValues;
+                            let initialValues = [];
                             organizationData?.dynamicFields?.forEach((dynamicField) => {
                               if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                             });
@@ -1372,6 +1372,17 @@ function CreateNewOrganization() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
+
+                            if (artsDataId || externalCalendarEntityId || !organizationId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault) {
+                                  initialValues = Array.isArray(initialValues)
+                                    ? [...initialValues, concept?.id]
+                                    : [concept?.id];
+                                }
+                              });
+                            }
+
                             const shouldShowField =
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||
@@ -1459,6 +1470,20 @@ function CreateNewOrganization() {
                                       if (field?.id === dynamicField?.taxonomyId)
                                         initialValues = dynamicField?.conceptIds;
                                     });
+
+                                    if (artsDataId || externalCalendarEntityId || !organizationId) {
+                                      allTaxonomyData?.data?.forEach((taxonomy) => {
+                                        if (field?.id === taxonomy?.id) {
+                                          taxonomy?.concept?.forEach((concept) => {
+                                            if (concept?.isDefault) {
+                                              initialValues = Array.isArray(initialValues)
+                                                ? [...initialValues, concept?.id]
+                                                : [concept?.id];
+                                            }
+                                          });
+                                        }
+                                      });
+                                    }
 
                                     if (
                                       !addedFields?.includes(field?.mappedField) &&

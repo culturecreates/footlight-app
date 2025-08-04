@@ -12,17 +12,18 @@ import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
-import { EnvironmentOutlined } from '@ant-design/icons';
 // import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 import { loadArtsDataEventEntity } from '../../../services/artsData';
+import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
+import { CalendarOutlined } from '@ant-design/icons';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -40,6 +41,10 @@ function SearchEvents() {
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const activePromiseRef = useRef(null);
+
+  useAbortControllersOnUnmount([activePromiseRef]);
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -64,25 +69,17 @@ function SearchEvents() {
 
   let sourceQuery = new URLSearchParams();
   sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sources: decodeURIComponent(sourceQuery.toString()),
-    sessionId: timestampRef,
-  });
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+    if (initialEntities && currentCalendarData) {
       setEventsList(initialEntities);
-      setEventListExternalSource(initialExternalSource ?? []);
     }
   }, [initialEventsLoading]);
 
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    loadArtsDataEventEntity({ entityId: entity?.id })
+    loadArtsDataEventEntity({ entityId: entity?.uri })
       .then(async (response) => {
         if (response?.data?.length > 0) {
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
@@ -108,23 +105,34 @@ function SearchEvents() {
       });
   };
 
-  const searchHandler = (value) => {
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
-      .unwrap()
-      .then((response) => {
-        setEventsList(response);
-      })
-      .catch((error) => console.log(error));
-    getExternalSource({
+  const searchExternalSourceHandler = async (value) => {
+    if (activePromiseRef.current) {
+      activePromiseRef.current.abort();
+    }
+
+    const promise = getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
       sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
-    })
+    });
+
+    activePromiseRef.current = promise;
+
+    try {
+      const data = await promise.unwrap();
+      setEventListExternalSource(data ?? []);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const entitiesSearchHandler = (value) => {
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setEventListExternalSource(response ?? []);
+        setEventsList(response);
       })
       .catch((error) => console.log(error));
   };
@@ -135,7 +143,10 @@ function SearchEvents() {
     }
   }, [isReadOnly]);
 
-  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
+  const debounceEntitiesSearch = useCallback(useDebounce(entitiesSearchHandler, SEARCH_DELAY), []);
+  const debounceExternalSourceSearch = useCallback(useDebounce(searchExternalSourceHandler, SEARCH_DELAY), [
+    getExternalSource,
+  ]);
 
   return (
     !initialEventsLoading && (
@@ -152,7 +163,7 @@ function SearchEvents() {
             placement="bottom"
             onOpenChange={(open) => {
               setIsPopoverOpen(open);
-              searchHandler(quickCreateKeyword);
+              debounceEntitiesSearch(quickCreateKeyword);
             }}
             autoAdjustOverflow={false}
             getPopupContainer={(trigger) => trigger.parentNode}
@@ -195,7 +206,7 @@ function SearchEvents() {
                               event.logo ? (
                                 event.logo?.thumbnail?.uri
                               ) : (
-                                <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                               )
                             }
                             linkText={t('dashboard.events.createNew.search.linkText')}
@@ -248,7 +259,7 @@ function SearchEvents() {
                                   event.logo ? (
                                     event.logo?.thumbnail?.uri
                                   ) : (
-                                    <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                    <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                   )
                                 }
                                 linkText={t('dashboard.events.createNew.search.linkText')}
@@ -288,7 +299,10 @@ function SearchEvents() {
               }}
               onChange={(e) => {
                 setQuickCreateKeyword(e.target.value);
-                debounceSearch(e.target.value);
+                debounceEntitiesSearch(e.target.value);
+                if (e.target.value != '') {
+                  debounceExternalSourceSearch(e.target.value);
+                }
                 setIsPopoverOpen(true);
               }}
             />

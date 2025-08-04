@@ -71,7 +71,6 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
@@ -97,6 +96,7 @@ import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallb
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import i18next from 'i18next';
+import { setInitialValueForStandardTaxonomyFieldsForPlaceForm } from '../../../utils/setFieldvalueForTaxonomies';
 
 const { TextArea } = Input;
 
@@ -150,7 +150,7 @@ function CreateNewPlace() {
   const placeId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -816,29 +816,31 @@ function CreateNewPlace() {
         }));
       })
       .catch((error) => console.log(error));
-    getExternalSource(
-      {
-        searchKey: inputValue,
-        classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
-        calendarId,
-        excludeExistingCMS: true,
-      },
-      true,
-    )
-      .unwrap()
-      .then((response) => {
-        setAllPlacesArtsdataList((prev) => ({
-          ...prev,
-          [field]: placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-        }));
+    if (inputValue && inputValue != '') {
+      getExternalSource(
+        {
+          searchKey: inputValue,
+          classes: decodeURIComponent(query.toString()),
+          sources: decodeURIComponent(sourceQuery.toString()),
+          calendarId,
+          excludeExistingCMS: true,
+        },
+        true,
+      )
+        .unwrap()
+        .then((response) => {
+          setAllPlacesArtsdataList((prev) => ({
+            ...prev,
+            [field]: placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          }));
 
-        setAllPlacesImportsFootlight((prev) => ({
-          ...prev,
-          [field]: placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-        }));
-      })
-      .catch((error) => console.log(error));
+          setAllPlacesImportsFootlight((prev) => ({
+            ...prev,
+            [field]: placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          }));
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
@@ -929,9 +931,9 @@ function CreateNewPlace() {
     }
   };
 
-  const getArtsDataPlace = (id) => {
+  const getArtsDataPlace = (uri) => {
     setArtsDataLoading(true);
-    loadArtsDataPlaceEntity({ entityId: id })
+    loadArtsDataPlaceEntity({ entityId: uri })
       .then((response) => {
         if (response?.data?.length > 0) {
           setArtsData(response?.data[0]);
@@ -1039,9 +1041,8 @@ function CreateNewPlace() {
         initialPlace;
       if (placeData) {
         if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
-          if (placeData?.sameAs?.length > 0) {
+          if (placeData?.sameAs?.length) {
             let sourceId = artsDataLinkChecker(placeData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
             getArtsDataPlace(sourceId);
           }
           if (placeData?.containedInPlace?.entityId) {
@@ -1188,7 +1189,6 @@ function CreateNewPlace() {
       if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          sourceId = getExternalSourceId(sourceId);
           getArtsDataPlace(sourceId);
         }
 
@@ -1421,7 +1421,23 @@ function CreateNewPlace() {
       <RouteLeavingGuard isBlocking={showDialog} />
 
       <div className="add-edit-wrapper create-new-place-wrapper">
-        <Form form={form} layout="vertical" name="place" onFieldsChange={onFieldsChange}>
+        <Form
+          form={form}
+          initialValues={
+            !artsDataId && !externalCalendarEntityId
+              ? setInitialValueForStandardTaxonomyFieldsForPlaceForm({
+                  data: placeData,
+                  artsData,
+                  allTaxonomyData,
+                  user,
+                  formFieldNames,
+                  artsDataId,
+                })
+              : {}
+          }
+          layout="vertical"
+          name="place"
+          onFieldsChange={onFieldsChange}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
@@ -1614,9 +1630,6 @@ function CreateNewPlace() {
                     'name',
                     false,
                   )}
-                  initialValue={placeData?.additionalType?.map((type) => {
-                    return type?.entityId;
-                  })}
                   rules={[
                     {
                       required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.PLACE_TYPE),
@@ -1846,10 +1859,22 @@ function CreateNewPlace() {
                     });
 
                     const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
+
+                    if (artsDataId || externalCalendarEntityId || !placeId) {
+                      taxonomy?.concept?.forEach((concept) => {
+                        if (concept?.isDefault) {
+                          initialValues = Array.isArray(initialValues)
+                            ? [...initialValues, concept?.id]
+                            : [concept?.id];
+                        }
+                      });
+                    }
+
                     const shouldShowField =
                       requiredFlag ||
                       addedFields?.includes(taxonomy?.id) ||
                       (initialValues && initialValues?.length > 0);
+
                     const displayFlag = !shouldShowField;
 
                     return (
@@ -1915,9 +1940,23 @@ function CreateNewPlace() {
                           [...dynamicFields].map((type) => {
                             let initialValues;
                             placeData?.dynamicFields?.forEach((dynamicField) => {
-                              if (type?.fieldNames === dynamicField?.taxonomyId)
+                              if (type?.fieldNames === dynamicField?.taxonomyId) {
                                 initialValues = dynamicField?.conceptIds;
+                              }
                             });
+                            if (artsDataId || externalCalendarEntityId || !placeId) {
+                              allTaxonomyData?.data?.forEach((taxonomy) => {
+                                if (type?.fieldNames === taxonomy?.id) {
+                                  taxonomy?.concept?.forEach((concept) => {
+                                    if (concept?.isDefault) {
+                                      initialValues = Array.isArray(initialValues)
+                                        ? [...initialValues, concept?.id]
+                                        : [concept?.id];
+                                    }
+                                  });
+                                }
+                              });
+                            }
                             if (
                               !addedFields?.includes(type.fieldNames) &&
                               !type?.required &&
@@ -2240,18 +2279,6 @@ function CreateNewPlace() {
                         ? false
                         : true
                       : false
-                  }
-                  initialValue={
-                    placeData?.regions
-                      ? placeData?.regions?.map((type) => {
-                          return type?.entityId;
-                        })
-                      : artsDataId
-                      ? artsData?.regions &&
-                        artsData?.regions?.map((region) => {
-                          return region?.entityId;
-                        })
-                      : []
                   }
                   style={{
                     display:
@@ -2792,9 +2819,6 @@ function CreateNewPlace() {
                       'name',
                       false,
                     )}
-                    initialValue={placeData?.accessibility?.map((type) => {
-                      return type?.entityId;
-                    })}
                     hidden={
                       standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
                         ? adminCheckHandler({ calendar, user })
