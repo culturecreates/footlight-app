@@ -1316,7 +1316,7 @@
       }
     },
     "validations": {
-      "informationRequired": "Information is required"
+      "informationRequired": "Information is required."
     },
     "entityReport": {
       "event": {
