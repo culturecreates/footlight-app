@@ -128,7 +128,7 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
-        "addMoreDetails": "Add more details to your event",
+        "addMoreDetails": "Add more details",
         "allDone": "All done",
         "featuredEvent": "Featured event",
         "fallbackConfirm": {
@@ -586,7 +586,7 @@
         "addOrganization": {
           "newOrganization": "New Organization",
           "editOrganization": "Edit Organization",
-          "addMoreDetails": "Add more details to your organization",
+          "addMoreDetails": "Add more details",
           "dataSource": "Data source",
           "question": {
             "firstPart": "Is this the right organization? If not, ",
@@ -1277,7 +1277,9 @@
           "placeHolder": "Enter {{language}} name",
           "deleteConceptMessage": "Are you sure that you want to permanently delete this concept? This action will also delete subconcepts and everywhere the concepts are used, including in events.",
           "deleteConceptHeading": "Delete concept",
-          "delete": "Delete"
+          "delete": "Delete",
+          "setDefault": "Set as default",
+          "clearDefault": "Clear default"
         }
       }
     }
@@ -1314,7 +1316,7 @@
       }
     },
     "validations": {
-      "informationRequired": "Information is required"
+      "informationRequired": "Information is required."
     },
     "entityReport": {
       "event": {
