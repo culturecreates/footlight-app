@@ -654,7 +654,7 @@ function CreateNewPerson() {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
           getArtsData(sourceId);
         }
-        let personKeys = Object.keys(personData);
+        let personKeys = Object.keys(personData || {});
         if (personKeys?.length > 0) setAddedFields(personKeys);
       }
 
@@ -875,6 +875,7 @@ function CreateNewPerson() {
                               formField,
                               allTaxonomyData,
                               user,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                               calendarContentLanguage,
                               entityId: personId,
                               entityData: personData
@@ -916,12 +917,24 @@ function CreateNewPerson() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
+
+                            if (artsDataId || externalCalendarEntityId || !personId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault) {
+                                  initialValues = Array.isArray(initialValues)
+                                    ? [...initialValues, concept?.id]
+                                    : [concept?.id];
+                                }
+                              });
+                            }
+
                             const shouldShowField =
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||
                               (initialValues && initialValues?.length > 0);
 
                             const displayFlag = !shouldShowField;
+
                             return (
                               <Form.Item
                                 key={index}
@@ -1001,6 +1014,20 @@ function CreateNewPerson() {
                                     if (field?.id === dynamicField?.taxonomyId)
                                       initialValues = dynamicField?.conceptIds;
                                   });
+
+                                  if (artsDataId || externalCalendarEntityId || !personId) {
+                                    allTaxonomyData?.data?.forEach((taxonomy) => {
+                                      if (field?.id === taxonomy?.id) {
+                                        taxonomy?.concept?.forEach((concept) => {
+                                          if (concept?.isDefault) {
+                                            initialValues = Array.isArray(initialValues)
+                                              ? [...initialValues, concept?.id]
+                                              : [concept?.id];
+                                          }
+                                        });
+                                      }
+                                    });
+                                  }
 
                                   if (
                                     !addedFields?.includes(field?.mappedField) &&

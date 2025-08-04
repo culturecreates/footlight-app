@@ -1356,6 +1356,7 @@ function CreateNewOrganization() {
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                               setShowDialog,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                             });
                           }
                         });
@@ -1363,7 +1364,7 @@ function CreateNewOrganization() {
                       {section[0]?.category === formCategory.PRIMARY &&
                         allTaxonomyData?.data?.map((taxonomy, index) => {
                           if (taxonomy?.isDynamicField) {
-                            let initialValues;
+                            let initialValues = [];
                             organizationData?.dynamicFields?.forEach((dynamicField) => {
                               if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                             });
@@ -1371,6 +1372,17 @@ function CreateNewOrganization() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
+
+                            if (artsDataId || externalCalendarEntityId || !organizationId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault) {
+                                  initialValues = Array.isArray(initialValues)
+                                    ? [...initialValues, concept?.id]
+                                    : [concept?.id];
+                                }
+                              });
+                            }
+
                             const shouldShowField =
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||
@@ -1458,6 +1470,20 @@ function CreateNewOrganization() {
                                       if (field?.id === dynamicField?.taxonomyId)
                                         initialValues = dynamicField?.conceptIds;
                                     });
+
+                                    if (artsDataId || externalCalendarEntityId || !organizationId) {
+                                      allTaxonomyData?.data?.forEach((taxonomy) => {
+                                        if (field?.id === taxonomy?.id) {
+                                          taxonomy?.concept?.forEach((concept) => {
+                                            if (concept?.isDefault) {
+                                              initialValues = Array.isArray(initialValues)
+                                                ? [...initialValues, concept?.id]
+                                                : [concept?.id];
+                                            }
+                                          });
+                                        }
+                                      });
+                                    }
 
                                     if (
                                       !addedFields?.includes(field?.mappedField) &&

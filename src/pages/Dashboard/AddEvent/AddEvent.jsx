@@ -118,6 +118,8 @@ import { loadArtsDataEntity, loadArtsDataEventEntity, loadArtsDataPlaceEntity } 
 import { identifyBestTimezone } from '../../../utils/handleTimeZones';
 import { timeZones } from '../../../constants/calendarSettingsForm';
 import i18next from 'i18next';
+import { setInitialValueForStandardTaxonomyFieldsForEventForm } from '../../../utils/setFieldvalueForTaxonomies';
+import { eventTaxonomyMappedField } from '../../../constants/eventTaxonomyMappedField';
 import updateValidationStateOfSelectedEntities from '../../../utils/updateValidationStateOfSelectedEntities';
 import { clearErrors, getErrorDetails } from '../../../redux/reducer/ErrorSlice';
 
@@ -2892,6 +2894,26 @@ function AddEvent() {
         layout="vertical"
         name="event"
         onValuesChange={onValuesChangeHandler}
+        initialValues={
+          !eventId && !duplicateId
+            ? setInitialValueForStandardTaxonomyFieldsForEventForm({
+                data: eventData,
+                artsData,
+                allTaxonomyData,
+                user,
+                eventId,
+                formFieldNames: {
+                  [eventTaxonomyMappedField.EVENT_TYPE]: 'eventType',
+                  [eventTaxonomyMappedField.AUDIENCE]: 'targetAudience',
+                  [eventTaxonomyMappedField.IN_LANGUAGE]: otherInformationFieldNames.inLanguage,
+                  [eventTaxonomyMappedField.EVENT_DISCIPLINE]: 'eventDiscipline',
+                  [eventTaxonomyMappedField.EVENT_ACCESSIBILITY]: 'eventAccessibility',
+                },
+                artsDataId,
+                calendarContentLanguage,
+              })
+            : {}
+        }
         onFieldsChange={() => {
           setFormValue(form.getFieldsValue(true));
         }}>
@@ -5152,6 +5174,15 @@ function AddEvent() {
                     : initialValues;
 
                   const requiredFlag = dynamicFields.find((field) => field?.fieldNames === taxonomy?.id)?.required;
+
+                  if (artsDataId || !eventId) {
+                    taxonomy?.concept?.forEach((concept) => {
+                      if (concept?.isDefault && (!initialValues || initialValues?.length === 0)) {
+                        initialValues = [concept?.id];
+                      }
+                    });
+                  }
+
                   const shouldShowField =
                     requiredFlag || addedFields?.includes(taxonomy?.id) || (initialValues && initialValues?.length > 0);
                   const displayFlag = !shouldShowField;
@@ -5223,6 +5254,20 @@ function AddEvent() {
                     eventData?.dynamicFields?.forEach((dynamicField) => {
                       if (type?.fieldNames === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                     });
+
+                    if (artsDataId || !eventId) {
+                      allTaxonomyData?.data?.forEach((taxonomy) => {
+                        if (type?.fieldNames === taxonomy?.id) {
+                          taxonomy?.concept?.forEach((concept) => {
+                            if (concept?.isDefault) {
+                              initialValues = Array.isArray(initialValues)
+                                ? [...initialValues, concept?.id]
+                                : [concept?.id];
+                            }
+                          });
+                        }
+                      });
+                    }
 
                     if (
                       !addedFields?.includes(type.fieldNames) &&
