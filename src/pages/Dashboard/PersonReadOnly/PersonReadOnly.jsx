@@ -27,7 +27,6 @@ import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import Icon, { EnvironmentOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import SelectionItem from '../../../components/List/SelectionItem';
@@ -43,6 +42,7 @@ import ImageUpload from '../../../components/ImageUpload';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function PersonReadOnly() {
   const { t } = useTranslation();

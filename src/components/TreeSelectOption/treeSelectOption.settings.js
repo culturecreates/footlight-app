@@ -83,6 +83,7 @@ export const treeEntitiesOption = (
   calendarContentLanguage,
   source = sourceOptions.CMS,
   currentCalendarData,
+  enableDynamicBorder,
 ) => {
   let isFieldsDirty = {};
   calendarContentLanguage.forEach((language) => {
@@ -97,11 +98,16 @@ export const treeEntitiesOption = (
 
     const isOrganization = entityTypes.includes(taxonomyClass.ORGANIZATION);
     const isPerson = entityTypes.includes(taxonomyClass.PERSON);
+    const isValidated = entity?.validationReport?.hasAllMandatoryFields;
 
     return {
       label: (
         <SelectionItem
           itemWidth="100%"
+          {...(enableDynamicBorder && {
+            borderColor: isValidated ? undefined : 'red',
+          })}
+          bordered={enableDynamicBorder ? !isValidated : false}
           icon={
             isOrganization ? (
               entity?.logo?.thumbnail?.uri || mainImageData?.original?.uri ? (
@@ -141,6 +147,7 @@ export const treeEntitiesOption = (
         />
       ),
       value: entity?.id,
+      validationReport: entity?.validationReport,
       type: entity?.type,
       name: isDataValid(entity?.name)
         ? contentLanguageBilingual({

@@ -55,7 +55,6 @@ import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
@@ -77,6 +76,7 @@ import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import i18next from 'i18next';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -702,23 +702,25 @@ function CreateNewOrganization() {
         setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
       })
       .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
-      .unwrap()
-      .then((response) => {
-        setAllPlacesArtsdataList(
-          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-        );
-        setAllPlacesImportsFootlight(
-          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-        );
+    if (inputValue && inputValue !== '') {
+      getExternalSource({
+        searchKey: inputValue,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
       })
-      .catch((error) => console.log(error));
+        .unwrap()
+        .then((response) => {
+          setAllPlacesArtsdataList(
+            placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          );
+          setAllPlacesImportsFootlight(
+            placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          );
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
@@ -1357,6 +1359,7 @@ function CreateNewOrganization() {
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                               setShowDialog,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                             });
                           }
                         });
@@ -1364,7 +1367,7 @@ function CreateNewOrganization() {
                       {section[0]?.category === formCategory.PRIMARY &&
                         allTaxonomyData?.data?.map((taxonomy, index) => {
                           if (taxonomy?.isDynamicField) {
-                            let initialValues;
+                            let initialValues = [];
                             organizationData?.dynamicFields?.forEach((dynamicField) => {
                               if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                             });
@@ -1372,6 +1375,17 @@ function CreateNewOrganization() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
+
+                            if (artsDataId || externalCalendarEntityId || !organizationId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault) {
+                                  initialValues = Array.isArray(initialValues)
+                                    ? [...initialValues, concept?.id]
+                                    : [concept?.id];
+                                }
+                              });
+                            }
+
                             const shouldShowField =
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||
@@ -1459,6 +1473,20 @@ function CreateNewOrganization() {
                                       if (field?.id === dynamicField?.taxonomyId)
                                         initialValues = dynamicField?.conceptIds;
                                     });
+
+                                    if (artsDataId || externalCalendarEntityId || !organizationId) {
+                                      allTaxonomyData?.data?.forEach((taxonomy) => {
+                                        if (field?.id === taxonomy?.id) {
+                                          taxonomy?.concept?.forEach((concept) => {
+                                            if (concept?.isDefault) {
+                                              initialValues = Array.isArray(initialValues)
+                                                ? [...initialValues, concept?.id]
+                                                : [concept?.id];
+                                            }
+                                          });
+                                        }
+                                      });
+                                    }
 
                                     if (
                                       !addedFields?.includes(field?.mappedField) &&

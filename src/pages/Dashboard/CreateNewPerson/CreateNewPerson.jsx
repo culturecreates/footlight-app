@@ -38,7 +38,6 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useGetEntitiesByIdQuery, useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import moment from 'moment';
@@ -61,6 +60,7 @@ import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import ChangeType from '../../../components/ChangeType';
 import i18next from 'i18next';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -558,7 +558,6 @@ function CreateNewPerson() {
           }
           if (personData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(personData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           const personKeys = Object.keys(personData).filter((key) => {
@@ -657,7 +656,7 @@ function CreateNewPerson() {
           sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
-        let personKeys = Object.keys(personData);
+        let personKeys = Object.keys(personData || {});
         if (personKeys?.length > 0) setAddedFields(personKeys);
       }
 
@@ -878,6 +877,7 @@ function CreateNewPerson() {
                               formField,
                               allTaxonomyData,
                               user,
+                              isImportedEntity: artsDataId || externalCalendarEntityId,
                               calendarContentLanguage,
                               entityId: personId,
                               entityData: personData
@@ -919,12 +919,24 @@ function CreateNewPerson() {
                             const requiredFlag = dynamicFields.find(
                               (field) => field?.fieldNames === taxonomy?.id,
                             )?.isPreset;
+
+                            if (artsDataId || externalCalendarEntityId || !personId) {
+                              taxonomy?.concept?.forEach((concept) => {
+                                if (concept?.isDefault) {
+                                  initialValues = Array.isArray(initialValues)
+                                    ? [...initialValues, concept?.id]
+                                    : [concept?.id];
+                                }
+                              });
+                            }
+
                             const shouldShowField =
                               requiredFlag ||
                               addedFields?.includes(taxonomy?.id) ||
                               (initialValues && initialValues?.length > 0);
 
                             const displayFlag = !shouldShowField;
+
                             return (
                               <Form.Item
                                 key={index}
@@ -1004,6 +1016,20 @@ function CreateNewPerson() {
                                     if (field?.id === dynamicField?.taxonomyId)
                                       initialValues = dynamicField?.conceptIds;
                                   });
+
+                                  if (artsDataId || externalCalendarEntityId || !personId) {
+                                    allTaxonomyData?.data?.forEach((taxonomy) => {
+                                      if (field?.id === taxonomy?.id) {
+                                        taxonomy?.concept?.forEach((concept) => {
+                                          if (concept?.isDefault) {
+                                            initialValues = Array.isArray(initialValues)
+                                              ? [...initialValues, concept?.id]
+                                              : [concept?.id];
+                                          }
+                                        });
+                                      }
+                                    });
+                                  }
 
                                   if (
                                     !addedFields?.includes(field?.mappedField) &&

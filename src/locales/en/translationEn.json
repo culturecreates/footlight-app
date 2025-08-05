@@ -72,7 +72,7 @@
       "readOnlyMode": {
         "readOnlyMode": "Read-only mode",
         "heading": "Calendar in read only mode",
-        "content": "The calendar is currently read only. Editing is unavailable for users. Try again later or contact your admin for details."
+        "content": "The calendar is currently read only. Editing is unavailable for users. Try again later or contact your admin at {{adminEmail}} for details."
       }
     },
     "topNavigation": {
@@ -123,12 +123,12 @@
       "readOnlyEvent": {
         "notification": {
           "underReview": "This event is under review.",
-          "underPublished": "This event has been published. If you would like to make a change, please contact the calendar admin."
+          "underPublished": "This event has been published. If you would like to make a change, please contact the calendar admin at {{adminEmail}}."
         }
       },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
-        "addMoreDetails": "Add more details to your event",
+        "addMoreDetails": "Add more details",
         "allDone": "All done",
         "featuredEvent": "Featured event",
         "fallbackConfirm": {
@@ -586,7 +586,7 @@
         "addOrganization": {
           "newOrganization": "New Organization",
           "editOrganization": "Edit Organization",
-          "addMoreDetails": "Add more details to your organization",
+          "addMoreDetails": "Add more details",
           "dataSource": "Data source",
           "question": {
             "firstPart": "Is this the right organization? If not, ",
@@ -1277,7 +1277,9 @@
           "placeHolder": "Enter {{language}} name",
           "deleteConceptMessage": "Are you sure that you want to permanently delete this concept? This action will also delete subconcepts and everywhere the concepts are used, including in events.",
           "deleteConceptHeading": "Delete concept",
-          "delete": "Delete"
+          "delete": "Delete",
+          "setDefault": "Set as default",
+          "clearDefault": "Clear default"
         }
       }
     }
@@ -1321,7 +1323,7 @@
       }
     },
     "validations": {
-      "informationRequired": "Information is required"
+      "informationRequired": "Information is required."
     },
     "entityReport": {
       "event": {
