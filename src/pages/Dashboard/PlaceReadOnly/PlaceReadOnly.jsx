@@ -44,6 +44,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import ImageUpload from '../../../components/ImageUpload';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -171,6 +172,7 @@ function PlaceReadOnly() {
     if (placeSuccess) {
       if (placeData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(placeData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsDataPlace(sourceId);
       }
       if (placeData?.containedInPlace?.entityId) {
