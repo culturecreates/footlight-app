@@ -42,6 +42,9 @@
 }
 
 .global-delete-modal-container .ant-modal-confirm-content > div :first-child {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   margin-top: 2px;
 }
 .global-delete-modal-container .ant-modal-confirm-content > div :last-child {
