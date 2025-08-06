@@ -1500,12 +1500,12 @@ function CreateNewOrganization() {
                                           disabled={false}
                                           label={contentLanguageBilingual({
                                             data: field?.label,
-                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            requiredLanguageKey: i18next.language,
                                             calendarContentLanguage: calendarContentLanguage,
                                           })}
                                           promptText={contentLanguageBilingual({
                                             data: field?.infoPopup,
-                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            requiredLanguageKey: i18next.language,
                                             calendarContentLanguage: calendarContentLanguage,
                                           })}
                                           secondaryIcon={<InfoCircleOutlined />}
