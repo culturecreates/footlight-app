@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
+import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { Button, Col, Form, Input, Popover, Row, message, notification, Dropdown } from 'antd';
 import Icon, {

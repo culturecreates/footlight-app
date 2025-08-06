@@ -9,8 +9,8 @@ import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { useOutletContext } from 'react-router-dom';
 import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguageFallback';
 import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
-import { ReactComponent as MoveLeftExtra } from '../../assets/icons/left.svg';
-import { ReactComponent as MoveRightExtra } from '../../assets/icons/Right.svg';
+import MoveLeftExtra from '../../assets/icons/left.svg?react';
+import MoveRightExtra from '../../assets/icons/Right.svg?react';
 
 /**
  * MultilingualInput Component

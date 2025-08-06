@@ -1,4 +1,4 @@
-@import '~antd/dist/antd.css';
+@import 'antd/dist/antd.css';
 
 .login-page-wrapper {
   display: flex;
@@ -28,26 +28,26 @@
   font-family: 'Roboto', sans-serif;
   font-style: normal;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 16px !important;
   line-height: 24px;
-  color: #222732;
+  color: #222732 !important;
   flex: none;
   order: 0;
   flex-grow: 0;
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
 }
 
 .reset-my-password {
   font-family: 'Roboto', sans-serif;
   font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 600 !important;
+  font-size: 16px !important;
   line-height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #1b3de6;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  color: #1b3de6 !important;
   flex: none;
   order: 0;
   flex-grow: 0;

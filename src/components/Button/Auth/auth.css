@@ -1,14 +1,14 @@
 .login-form-button {
-  display: flex;
+  display: flex !important;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px 16px !important;
   gap: 8px;
   width: 100%;
-  height: 40px;
-  background: #1b3de6;
-  border-radius: 4px;
+  height: 40px !important;
+  background: #1b3de6 !important;
+  border-radius: 4px !important;
   flex: none;
   order: 3;
   align-self: stretch;
@@ -16,14 +16,14 @@
   border: 0px;
   font-family: 'Roboto', sans-serif;
   font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 600 !important;
+  font-size: 16px !important;
   line-height: 24px;
-  color: #ffffff;
+  color: #ffffff !important;
   cursor: pointer;
 }
 
 .login-form-button:hover {
-  background-color: #0f0e98;
-  border-color: #0f0e98;
+  background-color: #0f0e98 !important;
+  border-color: #0f0e98 !important;
 }

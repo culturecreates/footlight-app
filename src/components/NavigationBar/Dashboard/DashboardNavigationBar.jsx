@@ -3,6 +3,7 @@ import './dashboardNavigationBar.css';
 import UserProfileDropdown from '../../Dropdown/UserProfile';
 import { MenuOutlined } from '@ant-design/icons';
 import ResponsiveSidebar from '../../Sidebar/Responsive';
+import footlightLogo from '../../../assets/images/footlight-logo-small.png';
 
 function NavigationBar(props) {
   const { currentCalendarData, allCalendarsData, pageNumber, setPageNumber } = props;
@@ -19,11 +20,7 @@ function NavigationBar(props) {
   return (
     <div className="navigation-bar-wrapper">
       <div className="logo-wrapper">
-        <img
-          src={require('../../../assets/images/footlight-logo-small.png')}
-          alt="Footlight logo"
-          className="footlight-logo"
-        />
+        <img src={footlightLogo} alt="Footlight logo" className="footlight-logo" />
         <h6 className="logo-name">Footlight</h6>
       </div>
       <UserProfileDropdown className="navigation-user-profile-dropdown" />

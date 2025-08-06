@@ -1,4 +1,4 @@
-.outlined-button {
+.outlined-button.ant-btn {
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -34,7 +34,7 @@
 }
 
 @media screen and (max-width: 480px) {
-  .outlined-button {
+  .outlined-button.ant-btn {
     padding: 8px 12px;
     height: 32px;
   }
