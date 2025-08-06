@@ -78,7 +78,8 @@
     "topNavigation": {
       "userProfile": "Profil",
       "logOut": "Déconnexion",
-      "help": "Aide"
+      "help": "Aide",
+      "systemUpdates": "Mises à jour du système"
     },
     "sidebar": {
       "events": "Événements",
@@ -1285,7 +1286,22 @@
     "today": "Aujourd'hui",
     "daysAgo": "{{count}} jours auparavant",
     "systemUpdates": {
-      "title": "Mises à jour dans Footlight"
+      "title": "Mises à jour dans Footlight",
+      "save": "Sauvegarder",
+      "labels": {
+        "title": "Titre",
+        "description": "Description"
+      },
+      "placeholders": {
+        "title": "Entrez le titre en {{language}}",
+        "description": "Entrez la description en {{language}}"
+      },
+      "validation": {
+        "description": "La description est requise."
+      },
+      "messages": {
+        "create": "Succès ! Votre mise à jour du système a été créée."
+      }
     }
   },
   "errorPage": {

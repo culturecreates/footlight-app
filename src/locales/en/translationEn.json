@@ -78,7 +78,8 @@
     "topNavigation": {
       "userProfile": "User Profile",
       "logOut": "Log out",
-      "help": "Help"
+      "help": "Help",
+      "systemUpdates": "System Updates"
     },
     "sidebar": {
       "events": "Events",
@@ -1288,7 +1289,22 @@
     "today": "Today",
     "daysAgo": "{{count}} days ago",
     "systemUpdates": {
-      "title": "Updates in Footlight"
+      "title": "Updates in Footlight",
+      "save": "Save",
+      "labels": {
+        "title": "Title",
+        "description": "Description"
+      },
+      "placeholders": {
+        "title": "Enter {{language}} title",
+        "description": "Enter {{language}} description"
+      },
+      "validation": {
+        "description": "Description is required."
+      },
+      "messages": {
+        "create": "Success! Your system update has been created."
+      }
     }
   },
   "errorPage": {
