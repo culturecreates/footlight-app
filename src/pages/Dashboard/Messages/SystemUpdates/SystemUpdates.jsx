@@ -76,7 +76,9 @@ const SystemUpdates = () => {
       {isLoading ? (
         <Spin size="large" />
       ) : notifications.length === 0 ? (
-        <Text type="secondary">{t('notification.systemUpdates.empty')}</Text>
+        <Card bordered={false} className="updates-card">
+          <Text type="secondary">{t('notification.systemUpdates.empty')}</Text>
+        </Card>
       ) : (
         <Row className="updates-list">
           <Col span={24} flex="748px">

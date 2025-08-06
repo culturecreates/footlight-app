@@ -1288,6 +1288,7 @@
     "systemUpdates": {
       "title": "Mises à jour dans Footlight",
       "save": "Sauvegarder",
+      "empty": "Aucune mise à jour disponible.",
       "labels": {
         "title": "Titre",
         "description": "Description"

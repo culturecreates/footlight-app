@@ -1291,6 +1291,7 @@
     "systemUpdates": {
       "title": "Updates in Footlight",
       "save": "Save",
+      "empty": "No updates available.",
       "labels": {
         "title": "Title",
         "description": "Description"
