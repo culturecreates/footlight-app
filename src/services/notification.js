@@ -39,7 +39,7 @@ export const notificationApi = createApi({
     }),
     markAsRead: builder.mutation({
       query: ({ calendarId, messageId }) => ({
-        url: `messages/${messageId}/mark-as-read`,
+        url: `messages/mark-as-read?ids=${messageId}`,
         method: 'PATCH',
         headers: {
           'calendar-id': calendarId,
