@@ -315,7 +315,7 @@ const ImageCredits = (props) => {
           <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
             form={form}
-            name={[`${item.name}`]}
+            name={`${item.name}`}
             data={imageOptions[item.name]}
             dataCy={`textarea-${item.name}`}
             placeholder={placeHolderCollectionCreator({
