@@ -2067,7 +2067,7 @@ function AddEvent() {
             }
           }
 
-          if (data.image?.url?.uri || data.image) {
+          if (data.image?.url?.uri || Object.keys(data.image ?? {}).length) {
             try {
               let artsDataImage = await addImage({
                 imageUrl: data.image?.url?.uri ?? data.image?.uri ?? data.image,
