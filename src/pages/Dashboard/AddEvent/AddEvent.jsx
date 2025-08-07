@@ -3074,7 +3074,7 @@ function AddEvent() {
                   entityId={eventId}
                   calendarContentLanguage={calendarContentLanguage}
                   form={form}
-                  name={['name']}
+                  name={'name'}
                   data={eventData?.name ?? artsData?.name}
                   validations={t('dashboard.events.addEditEvent.validations.title')}
                   dataCy={`text-area-event-name-`}
@@ -3880,7 +3880,7 @@ function AddEvent() {
                   entityId={eventId}
                   calendarContentLanguage={calendarContentLanguage}
                   form={form}
-                  name={['virtualLocation']}
+                  name={'virtualLocation'}
                   data={initialVirtualLocation && initialVirtualLocation[0]?.name}
                   dataCy="form-item-virtual-location-"
                   placeholder={placeHolderCollectionCreator({
@@ -4305,7 +4305,7 @@ function AddEvent() {
                     entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={['contactTitle']}
+                    name={'contactTitle'}
                     data={eventData?.contactPoint?.name}
                     required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}
                     validations={t('common.validations.informationRequired')}
@@ -5378,7 +5378,7 @@ function AddEvent() {
                     entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[eventAccessibilityFieldNames.noteWrap]}
+                    name={eventAccessibilityFieldNames.noteWrap}
                     data={eventData?.accessibilityNote}
                     dataCy="text-area-accessibility-note-"
                     placeholder={placeHolderCollectionCreator({
@@ -5687,7 +5687,7 @@ function AddEvent() {
                     entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={['ticketNote']}
+                    name={'ticketNote'}
                     data={eventData?.offerConfiguration?.name ?? artsData?.offerConfiguration?.name}
                     required={
                       (form.getFieldValue('prices') !== undefined && form.getFieldValue('prices')?.length > 0) ||

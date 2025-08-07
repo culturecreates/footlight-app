@@ -1591,7 +1591,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.NAME]}
+                    name={formFieldNames.NAME}
                     data={
                       placeData?.name
                         ? placeData?.name
@@ -1685,7 +1685,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.DISAMBIGUATING_DESCRIPTION]}
+                    name={formFieldNames.DISAMBIGUATING_DESCRIPTION}
                     data={
                       placeData?.disambiguatingDescription
                         ? placeData?.disambiguatingDescription
@@ -2051,7 +2051,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.STREET_ADDRESS]}
+                    name={formFieldNames.STREET_ADDRESS}
                     data={
                       placeData?.address?.streetAddress
                         ? placeData?.address?.streetAddress
@@ -2089,7 +2089,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.CITY]}
+                    name={formFieldNames.CITY}
                     data={
                       placeData?.address?.addressLocality
                         ? placeData?.address?.addressLocality
@@ -2157,7 +2157,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={[formFieldNames.PROVINCE]}
+                        name={formFieldNames.PROVINCE}
                         data={
                           placeData?.address?.addressRegion
                             ? placeData?.address?.addressRegion
@@ -2197,7 +2197,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={[formFieldNames.COUNTRY]}
+                        name={formFieldNames.COUNTRY}
                         data={
                           placeData?.address?.addressCountry
                             ? placeData?.address?.addressCountry
@@ -2881,7 +2881,7 @@ function CreateNewPlace() {
                       entityId={placeId}
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={[formFieldNames.ACCESSIBILITY_NOTE]}
+                      name={formFieldNames.ACCESSIBILITY_NOTE}
                       data={placeData?.accessibilityNote}
                       required={false}
                       validations={t('common.validations.informationRequired')}
