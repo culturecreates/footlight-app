@@ -1,4 +1,5 @@
 const baseUrl = process.env.REACT_APP_ARTS_DATA_URI;
+const publicUrl = process.env.REACT_APP_API_URL;
 
 export async function fetchData(url) {
   const response = await fetch(url);
@@ -15,20 +16,20 @@ export async function getArtsDataEntities({ searchKeyword, entityType }) {
 }
 
 export async function loadArtsDataEntity({ entityId }) {
-  const sparqlQuery = 'footlight_cms/org_person';
+  const sparqlQuery = `${publicUrl}/public/sparql/org_person.sparql`;
   const query = `query?uri=${entityId}&format=json&frame=ranked_org_person_footlight&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
 export async function loadArtsDataPlaceEntity({ entityId }) {
-  const sparqlQuery = 'footlight_cms/place';
+  const sparqlQuery = `${publicUrl}/public/sparql/place.sparql`;
   const query = `query?uri=${entityId}&format=json&frame=ranked_place_footlight&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
 
 export async function loadArtsDataEventEntity({ entityId }) {
-  const sparqlQuery = 'footlight_cms/event';
+  const sparqlQuery = `${publicUrl}/public/sparql/event.sparql`;
 
   const query = `query?uri=${entityId}&format=json&frame=ranked_event_footlight&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
