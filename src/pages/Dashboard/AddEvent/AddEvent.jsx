@@ -84,7 +84,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
 import Alert from '../../../components/Alert';
@@ -593,7 +593,13 @@ function AddEvent() {
               name = {},
               subEventConfiguration = undefined,
               inLanguage = [],
-              sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : artsDataId ? artsData?.sameAs : [],
+              sameAs = eventId
+                ? eventData?.sameAs
+                  ? eventData?.sameAs
+                  : []
+                : artsDataId && isArtsdataUri(artsData?.sameAs)
+                ? artsData?.sameAs
+                : [],
               eventDiscipline = [],
               timezone;
 
