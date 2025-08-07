@@ -12,7 +12,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
 import { Popover } from 'antd';
@@ -189,7 +189,11 @@ function SearchOrganizations() {
                                 <Logo />
                               )
                             }
-                            linkText={t('dashboard.organization.createNew.search.linkText')}
+                            linkText={
+                              isArtsdataUri(organizer?.uri)
+                                ? t('dashboard.events.createNew.search.linkText')
+                                : t('dashboard.events.createNew.search.datafeed')
+                            }
                             onClick={() => {
                               if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
                                 navigate(
@@ -249,7 +253,11 @@ function SearchOrganizations() {
                                     <Logo />
                                   )
                                 }
-                                linkText={t('dashboard.organization.createNew.search.linkText')}
+                                linkText={
+                                  isArtsdataUri(organizer?.uri)
+                                    ? t('dashboard.events.createNew.search.linkText')
+                                    : t('dashboard.events.createNew.search.datafeed')
+                                }
                                 onClick={() =>
                                   navigate(
                                     `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?entityId=${organizer?.id}`,
@@ -295,7 +303,11 @@ function SearchOrganizations() {
                                 description={organizer?.description}
                                 artsDataLink={organizer?.uri}
                                 Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
-                                linkText={t('dashboard.organization.createNew.search.linkText')}
+                                linkText={
+                                  isArtsdataUri(organizer?.uri)
+                                    ? t('dashboard.events.createNew.search.linkText')
+                                    : t('dashboard.events.createNew.search.datafeed')
+                                }
                                 onClick={() => artsDataClickHandler(organizer)}
                               />
                             </div>
