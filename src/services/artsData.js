@@ -17,21 +17,23 @@ export async function getArtsDataEntities({ searchKeyword, entityType }) {
 
 export async function loadArtsDataEntity({ entityId }) {
   const sparqlQuery = `${publicUrl}/public/sparql/org_person.sparql`;
-  const query = `query?uri=${entityId}&format=json&frame=ranked_org_person_footlight&sparql=${sparqlQuery}`;
+  const frameQuery = `${publicUrl}/public/frame/org_person.jsonld`;
+  const query = `query?uri=${entityId}&format=json&frame=${frameQuery}&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
 export async function loadArtsDataPlaceEntity({ entityId }) {
   const sparqlQuery = `${publicUrl}/public/sparql/place.sparql`;
-  const query = `query?uri=${entityId}&format=json&frame=ranked_place_footlight&sparql=${sparqlQuery}`;
+  const frameQuery = `${publicUrl}/public/frame/place.jsonld`;
+  const query = `query?uri=${entityId}&format=json&frame=${frameQuery}&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
 
 export async function loadArtsDataEventEntity({ entityId }) {
   const sparqlQuery = `${publicUrl}/public/sparql/event.sparql`;
-
-  const query = `query?uri=${entityId}&format=json&frame=ranked_event_footlight&sparql=${sparqlQuery}`;
+  const frameQuery = `${publicUrl}/public/frame/event.jsonld`;
+  const query = `query?uri=${entityId}&format=json&frame=${frameQuery}&sparql=${sparqlQuery}`;
   const url = `${baseUrl}/${query}`;
 
   return fetchData(url);
