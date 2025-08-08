@@ -894,7 +894,7 @@ function AddEvent() {
                 locationPlace?.source === externalSourceOptions.FOOTLIGHT
               )
                 place = {
-                  entityId: values?.locationPlace,
+                  entityId: locationPlace?.value,
                 };
               else if (locationPlace?.source === sourceOptions.ARTSDATA)
                 place = {
