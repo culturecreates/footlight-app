@@ -3,6 +3,7 @@ import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import MultilingualInput from '../../components/MultilingualInput';
+import { useWatch } from 'antd/lib/form/Form';
 
 /**
  * CreateMultiLingualFormItems Component
@@ -38,7 +39,7 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
     formItemProps = {},
     ...additionalProps
   } = rest;
-
+  useWatch([name], form);
   const { t } = useTranslation();
 
   // Determine if this is in a Form.List context by checking name structure
