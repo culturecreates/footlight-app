@@ -2079,24 +2079,26 @@ function AddEvent() {
                 imageUrl: data.image?.url?.uri ?? data.image?.uri ?? data.image,
                 calendarId,
               }).unwrap();
+
               const getLocalized = (field) => (field ? normalizeLanguageData(field) : undefined);
 
               data['image'] = {
                 original: {
                   ...artsDataImage.data?.original,
-                  uri: artsDataImage.data?.url?.uri,
+                  uri: artsDataImage.data?.original?.url?.uri,
                 },
                 large: {
-                  uri: artsDataImage.data?.url?.uri,
+                  uri: artsDataImage.data?.large?.url?.uri,
                 },
                 thumbnail: {
-                  uri: artsDataImage.data?.url?.uri,
+                  uri: artsDataImage.data?.thumbnail?.url?.uri,
                 },
                 isMain: true,
                 creditText: getLocalized(data?.image?.creditText),
                 description: getLocalized(data?.image?.description),
                 caption: getLocalized(data?.image?.caption),
               };
+
               form.setFieldsValue({
                 imageCrop: {
                   large: {
@@ -4441,7 +4443,7 @@ function AddEvent() {
                   </Col>
                 </Row>
                 <ImageUpload
-                  imageUrl={mainImageData?.large?.uri ?? artsData?.image?.large?.uri}
+                  imageUrl={mainImageData?.large?.uri ?? artsData?.image?.original?.uri}
                   originalImageUrl={mainImageData?.original?.uri ?? artsData?.image?.original?.uri}
                   imageReadOnly={false}
                   preview={true}
