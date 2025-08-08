@@ -12,7 +12,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
-import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
 import { Popover } from 'antd';
@@ -181,7 +181,7 @@ function SearchOrganizations() {
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
-                            artsDataLink={artsDataLinkChecker(organizer?.uri)}
+                            artsDataLink={createArtsDataLink(organizer?.uri)}
                             Logo={
                               organizer.logo ? (
                                 <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />

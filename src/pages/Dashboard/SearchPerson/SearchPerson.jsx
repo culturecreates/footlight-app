@@ -12,7 +12,7 @@ import { PathName } from '../../../constants/pathName';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
-import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
@@ -299,7 +299,7 @@ function SearchPerson() {
                                 calendarContentLanguage: calendarContentLanguage,
                               })}
                               description={person?.description}
-                              artsDataLink={person?.uri}
+                              artsDataLink={createArtsDataLink(person?.uri)}
                               Logo={
                                 person.logo ? (
                                   person.logo?.thumbnail?.uri

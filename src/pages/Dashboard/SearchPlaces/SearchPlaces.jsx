@@ -10,7 +10,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { PathName } from '../../../constants/pathName';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import './searchPlaces.css';
@@ -298,7 +298,7 @@ function SearchPlaces() {
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 description={place?.description}
-                                artsDataLink={place?.uri}
+                                artsDataLink={createArtsDataLink(place?.uri)}
                                 Logo={
                                   place.logo ? (
                                     place.logo?.thumbnail?.uri

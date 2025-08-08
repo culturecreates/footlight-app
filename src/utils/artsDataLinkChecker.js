@@ -23,3 +23,12 @@ export function isArtsdataUri(uri) {
     return false;
   }
 }
+
+export const createArtsDataLink = (uri) => {
+  if (!uri) return undefined;
+  if (isArtsdataUri(uri)) return uri;
+
+  const encodedUri = encodeURIComponent(uri);
+
+  return `https://kg.artsdata.ca/entity?uri=${encodedUri}`;
+};

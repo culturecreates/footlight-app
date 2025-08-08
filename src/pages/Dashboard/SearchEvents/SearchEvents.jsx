@@ -10,7 +10,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { PathName } from '../../../constants/pathName';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 // import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
@@ -137,16 +137,6 @@ function SearchEvents() {
       .catch((error) => console.log(error));
   };
 
-  const createArtsDataLink = (event) => {
-    const uri = event?.uri;
-    if (!uri) return undefined;
-    if (isArtsdataUri(event?.uri)) return event?.uri;
-
-    const encodedUri = encodeURIComponent(uri);
-
-    return `https://kg.artsdata.ca/entity?uri=${encodedUri}`;
-  };
-
   useEffect(() => {
     if (isReadOnly) {
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`, { replace: true });
@@ -264,7 +254,7 @@ function SearchEvents() {
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 description={event?.description}
-                                artsDataLink={createArtsDataLink(event)}
+                                artsDataLink={createArtsDataLink(event?.uri)}
                                 Logo={
                                   event.logo ? (
                                     event.logo?.thumbnail?.uri
