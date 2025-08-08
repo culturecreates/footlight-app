@@ -1,4 +1,4 @@
-import { SettingOutlined, LogoutOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { SettingOutlined, DeploymentUnitOutlined, LogoutOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Translation } from 'react-i18next';
 
 const iconStyle = {
@@ -21,4 +21,13 @@ export const userNameItems = [
     key: 'logOut',
     icon: <LogoutOutlined style={iconStyle} />,
   },
+];
+
+export const superAdminItems = [
+  {
+    label: <Translation>{(t) => t('dashboard.topNavigation.systemUpdates')}</Translation>,
+    key: 'systemUpdates',
+    icon: <DeploymentUnitOutlined style={iconStyle} />,
+  },
+  ...userNameItems,
 ];

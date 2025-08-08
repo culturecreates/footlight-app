@@ -3,6 +3,7 @@ import './dashboardNavigationBar.css';
 import UserProfileDropdown from '../../Dropdown/UserProfile';
 import { MenuOutlined } from '@ant-design/icons';
 import ResponsiveSidebar from '../../Sidebar/Responsive';
+import NotificationManager from '../../Notification/NotificationManager';
 
 function NavigationBar(props) {
   const { currentCalendarData, allCalendarsData, pageNumber, setPageNumber } = props;
@@ -26,16 +27,19 @@ function NavigationBar(props) {
         />
         <h6 className="logo-name">Footlight</h6>
       </div>
-      <UserProfileDropdown className="navigation-user-profile-dropdown" />
-      <MenuOutlined onClick={showDrawer} className="navigation-responsive-sidebar-menu" />
-      <ResponsiveSidebar
-        allCalendarsData={allCalendarsData}
-        currentCalendarData={currentCalendarData}
-        pageNumber={pageNumber}
-        setPageNumber={setPageNumber}
-        onClose={onClose}
-        open={open}
-      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <NotificationManager />
+        <UserProfileDropdown className="navigation-user-profile-dropdown" />
+        <MenuOutlined onClick={showDrawer} className="navigation-responsive-sidebar-menu" />
+        <ResponsiveSidebar
+          allCalendarsData={allCalendarsData}
+          currentCalendarData={currentCalendarData}
+          pageNumber={pageNumber}
+          setPageNumber={setPageNumber}
+          onClose={onClose}
+          open={open}
+        />
+      </div>
     </div>
   );
 }
