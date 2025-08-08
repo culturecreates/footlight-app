@@ -97,7 +97,6 @@ import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTre
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import i18next from 'i18next';
 import { setInitialValueForStandardTaxonomyFieldsForPlaceForm } from '../../../utils/setFieldvalueForTaxonomies';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 const { TextArea } = Input;
 
@@ -151,7 +150,7 @@ function CreateNewPlace() {
   const placeId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -1044,7 +1043,6 @@ function CreateNewPlace() {
         if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
           if (placeData?.sameAs?.length) {
             let sourceId = artsDataLinkChecker(placeData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
             getArtsDataPlace(sourceId);
           }
           if (placeData?.containedInPlace?.entityId) {
@@ -1191,7 +1189,6 @@ function CreateNewPlace() {
       if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          sourceId = getExternalSourceId(sourceId);
           getArtsDataPlace(sourceId);
         }
 

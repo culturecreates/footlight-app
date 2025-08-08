@@ -12,7 +12,7 @@ import { PathName } from '../../../constants/pathName';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
@@ -189,7 +189,11 @@ function SearchPerson() {
                               <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                             )
                           }
-                          linkText={t('dashboard.people.createNew.search.linkText')}
+                          linkText={
+                            isArtsdataUri(person?.uri)
+                              ? t('dashboard.events.createNew.search.linkText')
+                              : t('dashboard.events.createNew.search.datafeed')
+                          }
                           onClick={() => {
                             if (routinghandler(user, calendarId, person?.creator?.userId, null, true)) {
                               navigate(
@@ -246,7 +250,11 @@ function SearchPerson() {
                                   <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                 )
                               }
-                              linkText={t('dashboard.people.createNew.search.linkText')}
+                              linkText={
+                                isArtsdataUri(person?.uri)
+                                  ? t('dashboard.events.createNew.search.linkText')
+                                  : t('dashboard.events.createNew.search.datafeed')
+                              }
                               onClick={() =>
                                 navigate(
                                   `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?entityId=${person?.id}`,
@@ -291,7 +299,7 @@ function SearchPerson() {
                                 calendarContentLanguage: calendarContentLanguage,
                               })}
                               description={person?.description}
-                              artsDataLink={person?.uri}
+                              artsDataLink={createArtsDataLink(person?.uri)}
                               Logo={
                                 person.logo ? (
                                   person.logo?.thumbnail?.uri
@@ -299,7 +307,11 @@ function SearchPerson() {
                                   <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                 )
                               }
-                              linkText={t('dashboard.people.createNew.search.linkText')}
+                              linkText={
+                                isArtsdataUri(person?.uri)
+                                  ? t('dashboard.events.createNew.search.linkText')
+                                  : t('dashboard.events.createNew.search.datafeed')
+                              }
                               onClick={() => artsDataClickHandler(person)}
                             />
                           </div>

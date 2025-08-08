@@ -60,7 +60,6 @@ import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import ChangeType from '../../../components/ChangeType';
 import i18next from 'i18next';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -88,7 +87,7 @@ function CreateNewPerson() {
   const personId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
@@ -653,7 +652,6 @@ function CreateNewPerson() {
         }
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
         let personKeys = Object.keys(personData || {});

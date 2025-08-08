@@ -10,7 +10,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { PathName } from '../../../constants/pathName';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 // import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
@@ -79,7 +79,7 @@ function SearchEvents() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    loadArtsDataEventEntity({ entityId: entity?.id })
+    loadArtsDataEventEntity({ entityId: entity?.uri })
       .then(async (response) => {
         if (response?.data?.length > 0) {
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
@@ -254,7 +254,7 @@ function SearchEvents() {
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 description={event?.description}
-                                artsDataLink={event?.uri}
+                                artsDataLink={createArtsDataLink(event?.uri)}
                                 Logo={
                                   event.logo ? (
                                     event.logo?.thumbnail?.uri
@@ -262,7 +262,11 @@ function SearchEvents() {
                                     <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                   )
                                 }
-                                linkText={t('dashboard.events.createNew.search.linkText')}
+                                linkText={
+                                  isArtsdataUri(event?.uri)
+                                    ? t('dashboard.events.createNew.search.linkText')
+                                    : t('dashboard.events.createNew.search.datafeed')
+                                }
                                 onClick={() => artsDataClickHandler(event)}
                               />
                             </div>

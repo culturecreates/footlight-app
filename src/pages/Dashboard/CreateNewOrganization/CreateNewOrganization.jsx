@@ -76,7 +76,6 @@ import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import i18next from 'i18next';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -911,7 +910,6 @@ function CreateNewOrganization() {
           }
           if (organizationData?.sameAs?.length > 0) {
             let sourceId = artsDataLinkChecker(organizationData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           if (organizationData?.place?.entityId) {
@@ -1054,7 +1052,7 @@ function CreateNewOrganization() {
           }
         }
         if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
+          let sourceId = externalCalendarEntityData[0]?.derivedFrom?.uri;
           getArtsData(sourceId);
         }
         if (externalCalendarEntityData[0]?.place?.entityId) {
