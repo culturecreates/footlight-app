@@ -137,6 +137,16 @@ function SearchEvents() {
       .catch((error) => console.log(error));
   };
 
+  const createArtsDataLink = (event) => {
+    const uri = event?.uri;
+    if (!uri) return undefined;
+    if (isArtsdataUri(event?.uri)) return event?.uri;
+
+    const encodedUri = encodeURIComponent(uri);
+
+    return `https://kg.artsdata.ca/entity?uri=${encodedUri}`;
+  };
+
   useEffect(() => {
     if (isReadOnly) {
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`, { replace: true });
@@ -254,7 +264,7 @@ function SearchEvents() {
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 description={event?.description}
-                                artsDataLink={event?.uri}
+                                artsDataLink={createArtsDataLink(event)}
                                 Logo={
                                   event.logo ? (
                                     event.logo?.thumbnail?.uri
