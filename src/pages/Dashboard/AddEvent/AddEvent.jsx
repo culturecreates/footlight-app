@@ -888,7 +888,7 @@ function AddEvent() {
                 locationPlace?.source === externalSourceOptions.FOOTLIGHT
               )
                 place = {
-                  entityId: values?.locationPlace,
+                  entityId: locationPlace?.value,
                 };
               else if (locationPlace?.source === sourceOptions.ARTSDATA)
                 place = {
@@ -2944,7 +2944,7 @@ function AddEvent() {
                 <Row>
                   <Col flex={'780px'}>
                     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                      <Col span={24} style={{ margin: ' 0 16px' }}>
+                      <Col span={24}>
                         <Alert
                           message={t('dashboard.events.addEditEvent.notification.editFailedReviewForGuest')}
                           type="info"
