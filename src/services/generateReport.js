@@ -7,12 +7,11 @@ export async function fetchEntityReport({ calendarId, startDate, endDate, entity
   const accessToken = Cookies.get('accessToken');
 
   const params = new URLSearchParams();
-  params.append('entity', entity);
   params.append('start-date', startDate);
   params.append('end-date', endDate);
   taxonomyIds.forEach((id) => params.append('taxonomy-ids', id));
 
-  const url = `${baseUrl}/entities/generate-report?${params.toString()}`;
+  const url = `${baseUrl}/entities/${entity}/report?${params.toString()}`;
 
   try {
     const response = await fetch(url, {
@@ -46,11 +45,11 @@ export async function downloadDB({ calendarId }) {
   const baseUrl = process.env.REACT_APP_API_URL;
 
   const accessToken = Cookies.get('accessToken');
-  const url = `${baseUrl}/export/raw-dump`;
+  const url = `${baseUrl}calendars/id/artifacts`;
 
   try {
     const response = await fetch(url, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'calendar-id': calendarId,
         Authorization: `Bearer ${accessToken}`,

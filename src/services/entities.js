@@ -20,7 +20,7 @@ export const entitiesApi = createApi({
     }),
     getEntityDependencyDetails: builder.query({
       query: ({ id, calendarId }) => ({
-        url: `entities/derived-entities?entityIds=${id}`,
+        url: `entities/reverse-links?entity-ids=${id}`,
         method: 'GET',
 
         headers: {
@@ -31,7 +31,7 @@ export const entitiesApi = createApi({
     }),
     getEntityDependencyCount: builder.query({
       query: ({ ids, calendarId }) => ({
-        url: `entities/derived-entities/stats?entity-ids=${ids}`,
+        url: `entities/reverse-links/stats?entity-ids=${ids}`,
         method: 'GET',
 
         headers: {
