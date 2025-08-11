@@ -17,7 +17,8 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
       STAGING_SERVER_IP: ${{ secrets.STAGING_SERVER_IP }}
       AWS_PRIVATE_KEY_UBUNTU_USER: ${{ secrets.AWS_PRIVATE_KEY_UBUNTU_USER }}
-      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      AWS_SES_ACCESS_KEY: ${{ secrets.AWS_SES_ACCESS_KEY }}
+      AWS_SES_SECRET_ACCESS_KEY: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}             
       GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
       GOOGLE_MAPS_ID: ${{ secrets.GOOGLE_MAPS_ID }}
 
@@ -66,18 +67,16 @@ jobs:
     name: Send Email on Success
     needs: build-and-deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        to-emails:
-          - ${{ vars.SENDGRID_TO_EMAIL }}
-          - ${{ vars.SUPPORT_EMAIL}}
-
     steps:
-      - uses: licenseware/send-email-notification@v1
-
-        with:
-          api-key: ${{ secrets.SENDGRID_API_KEY }}
-          subject: Footlight CMS Deployment
-          from-email: ${{ vars.SENDGRID_FROM_EMAIL }}
-          to-email: ${{ matrix.to-emails }}
-          markdown-body: ${{vars.NEW_RELEASE_MARKDOWN_PAGE}}
+    - name: Send email via Amazon SES
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_SES_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}
+        aws-region: ca-central-1
+    - name: Send email
+      run: |
+        aws ses send-email \
+          --from ${{vars.FOOTLIGHT_INFO_EMAIL}} \
+          --destination "ToAddresses=${{ vars.SUPPORT_EMAIL }},${{ vars.REGRESSION_TEST_DEV_EMAIL }}" \
+          --message "Subject={Data='Footlight CMS Deployment'},Body={Text={Data='${{NEW_RELEASE_MESSAGE}}'}}"
