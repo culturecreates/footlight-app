@@ -79,4 +79,4 @@ jobs:
         aws ses send-email \
           --from ${{vars.FOOTLIGHT_INFO_EMAIL}} \
           --destination "ToAddresses=${{ vars.SUPPORT_EMAIL }},${{ vars.REGRESSION_TEST_DEV_EMAIL }}" \
-          --message "Subject={Data='Footlight CMS Deployment'},Body={Text={Data='${{NEW_RELEASE_MESSAGE}}'}}"
+          --message "Subject={Data='Footlight CMS Deployment'},Body={Text={Data='${{ vars.NEW_RELEASE_MESSAGE }}'}}"
