@@ -45,7 +45,7 @@ export async function downloadDB({ calendarId }) {
   const baseUrl = process.env.REACT_APP_API_URL;
 
   const accessToken = Cookies.get('accessToken');
-  const url = `${baseUrl}calendars/id/artifacts`;
+  const url = `${baseUrl}calendars/${calendarId}/artifacts`;
 
   try {
     const response = await fetch(url, {
