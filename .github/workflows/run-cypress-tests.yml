@@ -109,6 +109,11 @@ jobs:
           echo "DEFAULT_TIMEZONE=Canada/Eastern" >> .env  
           echo "AWS_S3_BUCKET=${{vars.AWS_S3_BUCKET}}" >> .env
           echo "AWS_S3_REGION=${{vars.AWS_S3_REGION}}" >> .env
+          if [ "${{ inputs.environment }}" == "production" ]; then
+            echo "SERVER_URL=https://api.cms.footlight.io/" >> .env
+          elif [ "${{ inputs.environment }}" == "staging" ]; then
+            echo "SERVER_URL=https://staging.api.cms.footlight.io/" >> .env
+          fi          
 
       - name: Pull and Run CMS Backend Docker Image
         run: |
