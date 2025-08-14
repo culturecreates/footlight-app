@@ -78,7 +78,8 @@
     "topNavigation": {
       "userProfile": "User Profile",
       "logOut": "Log out",
-      "help": "Help"
+      "help": "Help",
+      "systemUpdates": "System Updates"
     },
     "sidebar": {
       "events": "Events",
@@ -1282,6 +1283,29 @@
           "setDefault": "Set as default",
           "clearDefault": "Clear default"
         }
+      }
+    }
+  },
+  "notification": {
+    "today": "Today",
+    "daysAgo": "{{count}} days ago",
+    "systemUpdates": {
+      "title": "Updates in Footlight",
+      "save": "Save",
+      "empty": "No updates available.",
+      "labels": {
+        "title": "Title",
+        "description": "Description"
+      },
+      "placeholders": {
+        "title": "Enter {{language}} title",
+        "description": "Enter {{language}} description"
+      },
+      "validation": {
+        "description": "Description is required."
+      },
+      "messages": {
+        "create": "Success! Your system update has been created."
       }
     }
   },

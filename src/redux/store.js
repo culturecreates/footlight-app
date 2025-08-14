@@ -21,6 +21,7 @@ import ErrorSliceReducer from './reducer/ErrorSlice';
 import { externalSourceApi } from '../services/externalSource';
 import languageLiteralReducer from './reducer/languageLiteralSlice';
 import readOnlyTabReducer from './reducer/readOnlyTabSlice';
+import { notificationApi } from '../services/notification';
 
 const persistConfig = {
   key: 'root',
@@ -76,6 +77,7 @@ const appReducer = combineReducers({
   [peopleApi.reducerPath]: peopleApi.reducer,
   [postalAddressApi.reducerPath]: postalAddressApi.reducer,
   [externalSourceApi.reducerPath]: externalSourceApi.reducer,
+  [notificationApi.reducerPath]: notificationApi.reducer,
 });
 
 const rootReducer = (state, action) => appReducer(state, action);
