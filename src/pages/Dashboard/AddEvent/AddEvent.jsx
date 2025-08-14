@@ -3345,6 +3345,7 @@ function AddEvent() {
                                       startTime: value,
                                       endTime: value ? form.getFieldValue('endTime') : undefined,
                                     });
+                                    setShowDialog(true);
                                   }}
                                   onChange={(value) => {
                                     if (!value) {
@@ -3352,6 +3353,7 @@ function AddEvent() {
                                         endTime: null,
                                       });
                                     }
+                                    setShowDialog(true);
                                   }}
                                   data-cy="single-date-start-time"
                                 />
@@ -3383,6 +3385,7 @@ function AddEvent() {
                                     form.setFieldsValue({
                                       endTime: value,
                                     });
+                                    setShowDialog(true);
                                   }}
                                   suffixIcon={
                                     dateType === dateTypes.SINGLE &&
