@@ -42,7 +42,6 @@ import ImageUpload from '../../../components/ImageUpload';
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -165,7 +164,6 @@ function PersonReadOnly() {
     if (personData) {
       if (personData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(personData?.sameAs);
-        sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
     }
