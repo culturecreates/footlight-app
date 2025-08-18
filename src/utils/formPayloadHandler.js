@@ -39,10 +39,10 @@ export const formPayloadHandler = (
             initialDataValue: initialValue,
           });
 
-          Object.entries(fallbackFilteredValues).forEach(([language, val]) => {
-            returnValues[language] = val?.trim();
+          for (const [language, val] of Object.entries(fallbackFilteredValues ?? {})) {
+            returnValues[language] = typeof val === 'string' ? val.trim() : '';
             fallbackValue[language] = '';
-          });
+          }
         }
 
         if (currentMappedField?.length > 1) return write({}, currentMappedField, returnValues ?? fallbackValue);

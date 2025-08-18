@@ -8,7 +8,7 @@
  * @param {Object} params.additionalFilters - Object map that correspond to each language key in data and value corresponding if the value is to be included in the payload or not.
  * @param {Object} [params.initialDataValue={}] - An object containing initial data values.
  *
- * @returns {Object} - A modified object with filtered values based on the fallback logic.
+ * @returns {Object} - A modified object with filtered values based on the fallback logic. Or undefined if no values remain after filtering.
  */
 
 export const filterUneditedFallbackValues = ({
