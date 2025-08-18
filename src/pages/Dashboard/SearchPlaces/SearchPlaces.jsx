@@ -10,7 +10,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { PathName } from '../../../constants/pathName';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import './searchPlaces.css';
@@ -188,7 +188,11 @@ function SearchPlaces() {
                                 <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                               )
                             }
-                            linkText={t('dashboard.places.createNew.search.linkText')}
+                            linkText={
+                              isArtsdataUri(place?.uri)
+                                ? t('dashboard.events.createNew.search.linkText')
+                                : t('dashboard.events.createNew.search.datafeed')
+                            }
                             onClick={() => {
                               if (routinghandler(user, calendarId, place?.creator?.userId, null, true)) {
                                 navigate(
@@ -245,7 +249,11 @@ function SearchPlaces() {
                                     <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                   )
                                 }
-                                linkText={t('dashboard.places.createNew.search.linkText')}
+                                linkText={
+                                  isArtsdataUri(place?.uri)
+                                    ? t('dashboard.events.createNew.search.linkText')
+                                    : t('dashboard.events.createNew.search.datafeed')
+                                }
                                 onClick={() =>
                                   navigate(
                                     `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?entityId=${place?.id}`,
@@ -290,7 +298,7 @@ function SearchPlaces() {
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 description={place?.description}
-                                artsDataLink={place?.uri}
+                                artsDataLink={createArtsDataLink(place?.uri)}
                                 Logo={
                                   place.logo ? (
                                     place.logo?.thumbnail?.uri
@@ -298,7 +306,11 @@ function SearchPlaces() {
                                     <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                                   )
                                 }
-                                linkText={t('dashboard.places.createNew.search.linkText')}
+                                linkText={
+                                  isArtsdataUri(place?.uri)
+                                    ? t('dashboard.events.createNew.search.linkText')
+                                    : t('dashboard.events.createNew.search.datafeed')
+                                }
                                 onClick={() => artsDataClickHandler(place)}
                               />
                             </div>

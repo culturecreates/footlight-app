@@ -84,7 +84,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
 import Alert from '../../../components/Alert';
@@ -143,7 +143,7 @@ function AddEvent() {
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -593,7 +593,13 @@ function AddEvent() {
               name = {},
               subEventConfiguration = undefined,
               inLanguage = [],
-              sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : artsDataId ? artsData?.sameAs : [],
+              sameAs = eventId
+                ? eventData?.sameAs
+                  ? eventData?.sameAs
+                  : []
+                : artsDataId && isArtsdataUri(artsData?.sameAs)
+                ? artsData?.sameAs
+                : [],
               eventDiscipline = [],
               timezone;
 
@@ -1840,17 +1846,10 @@ function AddEvent() {
       ?.filter((mappedEntity) => mappedEntity);
   };
 
-  function extractLastSegment(url) {
-    if (typeof url !== 'string') return null;
-    const segments = url.trim().split('/');
-    return segments.pop() || null;
-  }
-
   const loadArtsDataDetails = async (entities = []) => {
     return await Promise.all(
       entities.map(async (entityUri) => {
-        const entityId = extractLastSegment(entityUri);
-        let response = await loadArtsDataEntity({ entityId: entityId });
+        let response = await loadArtsDataEntity({ entityId: entityUri });
         const entityData = response?.data?.[0];
         if (entityData) {
           return {
@@ -2050,8 +2049,7 @@ function AddEvent() {
 
           if (data.location) {
             try {
-              const entityId = extractLastSegment(data.location);
-              const response = await loadArtsDataPlaceEntity({ entityId });
+              const response = await loadArtsDataPlaceEntity({ entityId: data.location });
 
               const placeData = response?.data?.[0];
               const primaryAddress = placeData?.address?.[0];
@@ -2075,30 +2073,32 @@ function AddEvent() {
             }
           }
 
-          if (data.image?.url?.uri || data.image) {
+          if (data.image?.url?.uri || Object.keys(data.image ?? {}).length) {
             try {
               let artsDataImage = await addImage({
                 imageUrl: data.image?.url?.uri ?? data.image?.uri ?? data.image,
                 calendarId,
               }).unwrap();
+
               const getLocalized = (field) => (field ? normalizeLanguageData(field) : undefined);
 
               data['image'] = {
                 original: {
                   ...artsDataImage.data?.original,
-                  uri: artsDataImage.data?.url?.uri,
+                  uri: artsDataImage.data?.original?.url?.uri,
                 },
                 large: {
-                  uri: artsDataImage.data?.url?.uri,
+                  uri: artsDataImage.data?.large?.url?.uri,
                 },
                 thumbnail: {
-                  uri: artsDataImage.data?.url?.uri,
+                  uri: artsDataImage.data?.thumbnail?.url?.uri,
                 },
                 isMain: true,
                 creditText: getLocalized(data?.image?.creditText),
                 description: getLocalized(data?.image?.description),
                 caption: getLocalized(data?.image?.caption),
               };
+
               form.setFieldsValue({
                 imageCrop: {
                   large: {
@@ -3345,6 +3345,7 @@ function AddEvent() {
                                       startTime: value,
                                       endTime: value ? form.getFieldValue('endTime') : undefined,
                                     });
+                                    setShowDialog(true);
                                   }}
                                   onChange={(value) => {
                                     if (!value) {
@@ -3352,6 +3353,7 @@ function AddEvent() {
                                         endTime: null,
                                       });
                                     }
+                                    setShowDialog(true);
                                   }}
                                   data-cy="single-date-start-time"
                                 />
@@ -3383,6 +3385,7 @@ function AddEvent() {
                                     form.setFieldsValue({
                                       endTime: value,
                                     });
+                                    setShowDialog(true);
                                   }}
                                   suffixIcon={
                                     dateType === dateTypes.SINGLE &&
@@ -4443,7 +4446,7 @@ function AddEvent() {
                   </Col>
                 </Row>
                 <ImageUpload
-                  imageUrl={mainImageData?.large?.uri ?? artsData?.image?.large?.uri}
+                  imageUrl={mainImageData?.large?.uri ?? artsData?.image?.original?.uri}
                   originalImageUrl={mainImageData?.original?.uri ?? artsData?.image?.original?.uri}
                   imageReadOnly={false}
                   preview={true}

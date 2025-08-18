@@ -19,6 +19,7 @@ jobs:
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
         STAGING_SERVER_IP: ${{ secrets.STAGING_SERVER_IP }}
         AWS_PRIVATE_KEY_UBUNTU_USER: ${{ secrets.AWS_PRIVATE_KEY_UBUNTU_USER }}
-        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+        AWS_SES_ACCESS_KEY: ${{ secrets.AWS_SES_ACCESS_KEY }}
+        AWS_SES_SECRET_ACCESS_KEY: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}        
         GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         GOOGLE_MAPS_ID: ${{ secrets.GOOGLE_MAPS_ID }}

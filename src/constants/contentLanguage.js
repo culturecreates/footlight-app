@@ -39,3 +39,13 @@ export const calendarLanguages = [
     label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.zh')}</Translation>,
   },
 ];
+
+export const interfaceLanguage = {
+  ENGLISH: 'ENGLISH',
+  FRENCH: 'FRENCH',
+};
+
+export const interfaceLanguageKeyMap = {
+  [interfaceLanguage.ENGLISH]: 'en',
+  [interfaceLanguage.FRENCH]: 'fr',
+};

@@ -1,0 +1,16 @@
+.notification-dropdown {
+  z-index: 1;
+  opacity: 1;
+  background-color: #ffffff;
+  box-shadow: 0px 8px 32px 0px #00000033;
+  border-radius: 8px;
+}
+
+.notification-dropdown .ant-list-item-meta-avatar {
+  margin-right: 8px;
+}
+
+.notification-item * :hover {
+  background-color: #f9faff;
+  cursor: pointer;
+}
