@@ -24,6 +24,7 @@ import { externalSourceOptions } from '../../../constants/sourceOptions';
 import { loadArtsDataEventEntity } from '../../../services/artsData';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 import { CalendarOutlined } from '@ant-design/icons';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -79,30 +80,47 @@ function SearchEvents() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    loadArtsDataEventEntity({ entityId: entity?.uri })
-      .then(async (response) => {
-        if (response?.data?.length > 0) {
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
-            state: { data: entity },
-          });
-        } else {
-          notification.info({
-            key: 'unable-to-import',
-            placement: 'top',
-            description: (
-              <a href={`${entity?.uri}`} style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer">
-                {t('dashboard.events.createNew.search.notifications.emptyArtsdataLine1')}
-                {t('dashboard.events.createNew.search.notifications.emptyArtsdataLine2', {
-                  link: `${entity?.uri}`,
-                })}
-              </a>
-            ),
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
+    const handleImport = () => {
+      loadArtsDataEventEntity({ entityId: entity?.uri })
+        .then(async (response) => {
+          if (response?.data?.length > 0) {
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
+              state: { data: entity },
+            });
+          } else {
+            notification.info({
+              key: 'unable-to-import',
+              placement: 'top',
+              description: (
+                <a href={`${entity?.uri}`} style={{ textDecoration: 'none' }} target="_blank" rel="noreferrer">
+                  {t('dashboard.events.createNew.search.notifications.emptyArtsdataLine1')}
+                  {t('dashboard.events.createNew.search.notifications.emptyArtsdataLine2', {
+                    link: `${entity?.uri}`,
+                  })}
+                </a>
+              ),
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    if (entity?.footlightId) {
+      Confirm({
+        title: t('dashboard.events.createNew.search.confirm.title'),
+        content: t('dashboard.events.createNew.search.confirm.content'),
+        okText: t('dashboard.events.createNew.search.confirm.okText'),
+        cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
+        onAction: () => handleImport(),
+        onCancel: () => {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${entity?.footlightId}`);
+        },
       });
+    } else {
+      handleImport();
+    }
   };
 
   const searchExternalSourceHandler = async (value) => {
@@ -115,7 +133,7 @@ function SearchEvents() {
       classes: decodeURIComponent(query.toString()),
       sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
-      excludeExistingCMS: true,
+      excludeExistingCMS: false,
     });
 
     activePromiseRef.current = promise;

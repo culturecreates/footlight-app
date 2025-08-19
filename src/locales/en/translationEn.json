@@ -517,6 +517,12 @@
           "artsDataSectionHeading": "Imports from Artsdata",
           "importsFromFootlight": "Imports from Footlight",
           "searchPlaceholder": "Search Events",
+          "confirm": {
+            "title": "Event already exists!",
+            "content": "This event has already been created in Footlight. Press proceed to import it again. Press cancel to edit the existing event.",
+            "okText": "proceed",
+            "cancelText": "cancel"
+          },
           "notifications": {
             "emptyArtsdataLine1": "Cannot import event from Artsdata due to missing data.",
             "emptyArtsdataLine2": "Go to {{link}} "
