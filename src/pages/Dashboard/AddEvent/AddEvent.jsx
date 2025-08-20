@@ -144,6 +144,7 @@ function AddEvent() {
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
   const artsDataId = location?.state?.data?.uri ?? null;
+  const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -408,7 +409,7 @@ function AddEvent() {
   const addUpdateEventApiHandler = (eventObj, toggle, sameAs) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
-        if (artsDataId) {
+        if (artsDataId && !isImportingExistingEntity) {
           eventObj = {
             ...eventObj,
             sameAs,

@@ -151,6 +151,7 @@ function CreateNewPlace() {
   const externalCalendarEntityId = searchParams.get('entityId');
 
   const artsDataId = location?.state?.data?.uri ?? null;
+  const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -267,7 +268,7 @@ function CreateNewPlace() {
   const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
-        if (artsDataId && artsData) {
+        if (artsDataId && artsData && !isImportingExistingEntity) {
           let sameAsArray = Array.isArray(artsData.sameAs)
             ? artsData.sameAs
             : artsData.sameAs && typeof artsData.sameAs === 'object'
@@ -293,7 +294,7 @@ function CreateNewPlace() {
           };
         }
 
-        if (externalCalendarEntityId) {
+        if (externalCalendarEntityId && !isImportingExistingEntity) {
           let sameAs = [
             {
               uri: externalCalendarEntityId,
