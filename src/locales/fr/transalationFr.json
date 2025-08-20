@@ -519,8 +519,8 @@
           "importsFromFootlight": "Imports de Footlight",
           "searchPlaceholder": "Rechercher un événement",
           "confirm": {
-            "title": "L'événement existe déjà !",
-            "content": "Cet événement a déjà été créé dans Footlight. Appuyez sur continuer pour l'importer à nouveau. Appuyez sur annuler pour modifier l'événement existant.",
+            "title": "L'entité existe déjà!",
+            "content": "Cette entité a déjà été créée dans Footlight. Appuyez sur continuer pour l'importer à nouveau. Appuyez sur annuler pour modifier l'entité existante.",
             "okText": "continuer",
             "cancelText": "annuler"
           },
