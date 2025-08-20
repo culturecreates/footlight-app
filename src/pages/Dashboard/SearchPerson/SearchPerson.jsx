@@ -23,6 +23,7 @@ import { useLazyGetExternalSourceQuery } from '../../../services/externalSource'
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -80,8 +81,32 @@ function SearchPerson() {
 
   // handlers
 
+  const confirmPopupHandler = (fn, entity) => {
+    if (entity?.footlightId) {
+      Confirm({
+        title: t('dashboard.events.createNew.search.confirm.title'),
+        content: t('dashboard.events.createNew.search.confirm.content'),
+        okText: t('dashboard.events.createNew.search.confirm.okText'),
+        cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
+        onAction: () => fn(),
+        onCancel: () => {
+          navigate(
+            `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${entity?.footlightId}`,
+          );
+        },
+      });
+    } else {
+      fn();
+    }
+  };
+
   const artsDataClickHandler = async (entity) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}`, { state: { data: entity } });
+    const handleImport = () => {
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}`, {
+        state: { data: entity },
+      });
+    };
+    confirmPopupHandler(handleImport, entity);
   };
 
   const searchExternalSourceHandler = async (value) => {
@@ -94,7 +119,7 @@ function SearchPerson() {
       classes: decodeURIComponent(query.toString()),
       sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
-      excludeExistingCMS: true,
+      excludeExistingCMS: false,
     });
 
     activePromiseRef.current = promise;
@@ -255,11 +280,14 @@ function SearchPerson() {
                                   ? t('dashboard.events.createNew.search.linkText')
                                   : t('dashboard.events.createNew.search.datafeed')
                               }
-                              onClick={() =>
-                                navigate(
-                                  `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?entityId=${person?.id}`,
-                                )
-                              }
+                              onClick={() => {
+                                const fn = () => {
+                                  navigate(
+                                    `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?entityId=${person?.id}`,
+                                  );
+                                };
+                                confirmPopupHandler(fn, person);
+                              }}
                             />
                           </div>
                         ))
