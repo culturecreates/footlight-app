@@ -12,7 +12,6 @@ import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker, createArtsDataLink, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
-// import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
@@ -24,7 +23,7 @@ import { externalSourceOptions } from '../../../constants/sourceOptions';
 import { loadArtsDataEventEntity } from '../../../services/artsData';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 import { CalendarOutlined } from '@ant-design/icons';
-import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+import { CustomModal } from '../../../components/Modal/HookModal/Modal';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -108,13 +107,17 @@ function SearchEvents() {
     };
 
     if (entity?.footlightId) {
-      Confirm({
+      CustomModal({
         title: t('dashboard.events.createNew.search.confirm.title'),
         content: t('dashboard.events.createNew.search.confirm.content'),
-        okText: t('dashboard.events.createNew.search.confirm.okText'),
+        primaryButtonText: t('dashboard.events.createNew.search.confirm.editText'),
+        secondaryButtonText: t('dashboard.events.createNew.search.confirm.okText'),
         cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
-        onAction: () => handleImport(),
-        onCancel: () => {
+        className: 'existing-entity-found-info-modal',
+        secondaryAction: () => {
+          handleImport();
+        },
+        primaryAction: () => {
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${entity?.footlightId}`);
         },
       });
