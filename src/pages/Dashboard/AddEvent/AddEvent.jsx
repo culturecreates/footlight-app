@@ -604,6 +604,10 @@ function AddEvent() {
               eventDiscipline = [],
               timezone;
 
+            if (artsData?.uri && !isImportingExistingEntity && isArtsdataUri(artsData?.uri)) {
+              sameAs = [...sameAs, { uri: artsData?.uri }];
+            }
+
             if (dateType === dateTypes.MULTIPLE && form.getFieldsValue().frequency === 'CUSTOM') {
               timezone = currentCalendarData?.timezone;
             } else if (dateType === dateTypes.MULTIPLE) {
