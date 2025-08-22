@@ -23,7 +23,7 @@ import { useLazyGetExternalSourceQuery } from '../../../services/externalSource'
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
-import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+import { CustomModal } from '../../../components/Modal/HookModal/Modal';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -81,13 +81,15 @@ function SearchOrganizations() {
 
   const confirmPopupHandler = (fn, entity) => {
     if (entity?.footlightId) {
-      Confirm({
+      CustomModal({
         title: t('dashboard.events.createNew.search.confirm.title'),
         content: t('dashboard.events.createNew.search.confirm.content'),
-        okText: t('dashboard.events.createNew.search.confirm.okText'),
+        primaryButtonText: t('dashboard.events.createNew.search.confirm.editText'),
+        secondaryButtonText: t('dashboard.events.createNew.search.confirm.okText'),
         cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
-        onAction: () => fn(),
-        onCancel: () => {
+        className: 'existing-entity-found-info-modal',
+        secondaryAction: () => fn(),
+        primaryAction: () => {
           navigate(
             `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${entity?.footlightId}`,
           );
@@ -285,6 +287,7 @@ function SearchOrganizations() {
                                   const fn = () => {
                                     navigate(
                                       `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?entityId=${organizer?.id}`,
+                                      { state: { data: { footlightId: organizer?.footlightId } } },
                                     );
                                   };
                                   confirmPopupHandler(fn, organizer);
