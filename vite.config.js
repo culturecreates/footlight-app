@@ -31,7 +31,8 @@ export default defineConfig({
     manifest: true,
   },
   server: {
-    host: '0.0.0.0',
+    host: true,
     port: 3000,
+    allowedHosts: ['test.footlight.app'],
   },
 });

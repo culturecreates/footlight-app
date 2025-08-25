@@ -55,6 +55,7 @@ const middlewares = [
   peopleApi.middleware,
   postalAddressApi.middleware,
   externalSourceApi.middleware,
+  notificationApi.middleware,
 ];
 
 const appReducer = combineReducers({
