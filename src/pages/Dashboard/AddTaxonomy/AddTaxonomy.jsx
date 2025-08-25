@@ -519,7 +519,7 @@ const AddTaxonomy = () => {
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
                         entityId={taxonomyId}
-                        name={['name']}
+                        name={'name'}
                         data={Object.fromEntries(
                           Object.entries(taxonomyData?.name || {}).filter(([, value]) => value !== ''),
                         )}
@@ -560,7 +560,7 @@ const AddTaxonomy = () => {
                         calendarContentLanguage={calendarContentLanguage}
                         entityId={taxonomyId}
                         form={form}
-                        name={['disambiguatingDescription']}
+                        name={'disambiguatingDescription'}
                         data={Object.fromEntries(
                           Object.entries(taxonomyData?.disambiguatingDescription || {}).filter(
                             ([, value]) => value !== '',

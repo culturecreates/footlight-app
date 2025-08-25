@@ -97,7 +97,6 @@ import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTre
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import i18next from 'i18next';
 import { setInitialValueForStandardTaxonomyFieldsForPlaceForm } from '../../../utils/setFieldvalueForTaxonomies';
-import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 const { TextArea } = Input;
 
@@ -151,7 +150,7 @@ function CreateNewPlace() {
   const placeId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -1044,7 +1043,6 @@ function CreateNewPlace() {
         if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
           if (placeData?.sameAs?.length) {
             let sourceId = artsDataLinkChecker(placeData?.sameAs);
-            sourceId = getExternalSourceId(sourceId);
             getArtsDataPlace(sourceId);
           }
           if (placeData?.containedInPlace?.entityId) {
@@ -1191,7 +1189,6 @@ function CreateNewPlace() {
       if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
         if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
           let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
-          sourceId = getExternalSourceId(sourceId);
           getArtsDataPlace(sourceId);
         }
 
@@ -1591,7 +1588,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.NAME]}
+                    name={formFieldNames.NAME}
                     data={
                       placeData?.name
                         ? placeData?.name
@@ -1685,7 +1682,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.DISAMBIGUATING_DESCRIPTION]}
+                    name={formFieldNames.DISAMBIGUATING_DESCRIPTION}
                     data={
                       placeData?.disambiguatingDescription
                         ? placeData?.disambiguatingDescription
@@ -2051,7 +2048,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.STREET_ADDRESS]}
+                    name={formFieldNames.STREET_ADDRESS}
                     data={
                       placeData?.address?.streetAddress
                         ? placeData?.address?.streetAddress
@@ -2089,7 +2086,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.CITY]}
+                    name={formFieldNames.CITY}
                     data={
                       placeData?.address?.addressLocality
                         ? placeData?.address?.addressLocality
@@ -2157,7 +2154,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={[formFieldNames.PROVINCE]}
+                        name={formFieldNames.PROVINCE}
                         data={
                           placeData?.address?.addressRegion
                             ? placeData?.address?.addressRegion
@@ -2197,7 +2194,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={[formFieldNames.COUNTRY]}
+                        name={formFieldNames.COUNTRY}
                         data={
                           placeData?.address?.addressCountry
                             ? placeData?.address?.addressCountry
@@ -2881,7 +2878,7 @@ function CreateNewPlace() {
                       entityId={placeId}
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={[formFieldNames.ACCESSIBILITY_NOTE]}
+                      name={formFieldNames.ACCESSIBILITY_NOTE}
                       data={placeData?.accessibilityNote}
                       required={false}
                       validations={t('common.validations.informationRequired')}

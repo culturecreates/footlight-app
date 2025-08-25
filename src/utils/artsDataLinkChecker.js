@@ -13,3 +13,22 @@ export const artsDataLinkChecker = (link) => {
     return link?.includes(artsData) ? link : false;
   }
 };
+
+export function isArtsdataUri(uri) {
+  try {
+    const { href } = new URL(uri);
+    return href.startsWith('http://kg.artsdata.ca');
+  } catch {
+    console.warn('Invalid URI:', uri);
+    return false;
+  }
+}
+
+export const createArtsDataLink = (uri) => {
+  if (!uri) return undefined;
+  if (isArtsdataUri(uri)) return uri;
+
+  const encodedUri = encodeURIComponent(uri);
+
+  return `https://kg.artsdata.ca/entity?uri=${encodedUri}`;
+};

@@ -4,7 +4,7 @@ import React from 'react';
 import './UserProfileDropDown.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, getUserDetails } from '../../../redux/reducer/userSlice';
-import { userNameItems } from '../../../constants/userNameItems';
+import { superAdminItems, userNameItems } from '../../../constants/userNameItems';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import i18n from 'i18next';
@@ -17,7 +17,9 @@ const UserProfileDropDown = () => {
   const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
 
-  const items = userNameItems.map((item) => {
+  const dropdownItem = user?.isSuperAdmin ? superAdminItems : userNameItems;
+
+  const items = dropdownItem.map((item) => {
     return {
       key: item.key,
       label: item.label,
@@ -27,6 +29,9 @@ const UserProfileDropDown = () => {
 
   const onClick = ({ key }) => {
     switch (key) {
+      case 'systemUpdates':
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Messages}${PathName.SystemUpdate}`);
+        break;
       case 'userProfile':
         if (featureFlags.settingsScreenUsers === 'true')
           navigate(

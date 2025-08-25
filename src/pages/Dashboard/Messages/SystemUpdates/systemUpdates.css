@@ -1,0 +1,19 @@
+.system-updates-container .updates-card .hoverable:hover {
+  background-color: #f9faff;
+}
+
+.system-updates-container .update-item {
+  padding: 16px 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+  align-items: flex-start;
+  border-radius: 8px;
+  min-height: 100px;
+}
+
+.system-updates-container .update-item .update-date {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+}

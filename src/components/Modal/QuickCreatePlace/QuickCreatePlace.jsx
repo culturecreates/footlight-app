@@ -814,7 +814,7 @@ function QuickCreatePlace(props) {
                   <CreateMultiLingualFormItems
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.NAME]}
+                    name={formFieldNames.NAME}
                     data={createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage)}
                     validations={t('dashboard.events.addEditEvent.validations.title')}
                     dataCy={`text-area-quick-create-place-name-`}
@@ -906,7 +906,7 @@ function QuickCreatePlace(props) {
                     <CreateMultiLingualFormItems
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={[formFieldNames.DISAMBIGUATING_DESCRIPTION]}
+                      name={formFieldNames.DISAMBIGUATING_DESCRIPTION}
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)}
                       validations={t('common.validations.informationRequired')}
                       dataCy="input-place-disambiguating-description-"
@@ -1147,7 +1147,7 @@ function QuickCreatePlace(props) {
                     <CreateMultiLingualFormItems
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={[formFieldNames.STREET_ADDRESS]}
+                      name={formFieldNames.STREET_ADDRESS}
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.STREET_ADDRESS)}
                       validations={t('common.validations.informationRequired')}
                       dataCy="input-text-area-place-street-address-"
@@ -1183,7 +1183,7 @@ function QuickCreatePlace(props) {
                     <CreateMultiLingualFormItems
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={[formFieldNames.CITY]}
+                      name={formFieldNames.CITY}
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.CITY)}
                       validations={t('common.validations.informationRequired')}
                       dataCy="input-text-area-place-city-"
@@ -1248,7 +1248,7 @@ function QuickCreatePlace(props) {
                         <CreateMultiLingualFormItems
                           calendarContentLanguage={calendarContentLanguage}
                           form={form}
-                          name={[formFieldNames.PROVINCE]}
+                          name={formFieldNames.PROVINCE}
                           required={requiredFieldNames?.includes(placeFormRequiredFieldNames.PROVINCE)}
                           validations={t('common.validations.informationRequired')}
                           dataCy="input-text-area-province-"
@@ -1288,7 +1288,7 @@ function QuickCreatePlace(props) {
                         <CreateMultiLingualFormItems
                           calendarContentLanguage={calendarContentLanguage}
                           form={form}
-                          name={[formFieldNames.COUNTRY]}
+                          name={formFieldNames.COUNTRY}
                           required={requiredFieldNames?.includes(placeFormRequiredFieldNames.COUNTRY)}
                           validations={t('common.validations.informationRequired')}
                           dataCy="input-text-area-country-"
