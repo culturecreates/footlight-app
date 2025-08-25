@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY footlight-app-start.sh ./
 RUN  chmod +x ./footlight-app-start.sh
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
