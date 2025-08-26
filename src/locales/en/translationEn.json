@@ -517,6 +517,13 @@
           "artsDataSectionHeading": "Imports from Artsdata",
           "importsFromFootlight": "Imports from Footlight",
           "searchPlaceholder": "Search Events",
+          "confirm": {
+            "title": "Entity is a duplicate",
+            "content": "You already have a version of this entity in your CMS. Are you sure you want to create a duplicate from this new version, or would you like to edit the one you already have?",
+            "okText": "Create duplicate",
+            "editText": "Edit",
+            "cancelText": "Cancel"
+          },
           "notifications": {
             "emptyArtsdataLine1": "Cannot import event from Artsdata due to missing data.",
             "emptyArtsdataLine2": "Go to {{link}} "

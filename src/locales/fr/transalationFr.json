@@ -518,6 +518,13 @@
           "artsDataSectionHeading": "Imports de Artsdata",
           "importsFromFootlight": "Imports de Footlight",
           "searchPlaceholder": "Rechercher un événement",
+          "confirm": {
+            "title": "L'entité est en double",
+            "content": "Vous disposez déjà d'une version de cette entité dans votre CMS. Êtes-vous sûr de vouloir créer une copie à partir de cette nouvelle version, ou préférez-vous modifier celle que vous avez déjà ?",
+            "okText": "Creer copie",
+            "editText": "Modifier",
+            "cancelText": "Annuler"
+          },
           "notifications": {
             "emptyArtsdataLine1": "Impossible d'importer l'événement d'Artsdata en raison de données manquantes.",
             "emptyArtsdataLine2": "Aller à {{link}} "

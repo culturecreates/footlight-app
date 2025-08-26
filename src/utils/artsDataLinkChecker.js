@@ -17,7 +17,7 @@ export const artsDataLinkChecker = (link) => {
 export function isArtsdataUri(uri) {
   try {
     const { href } = new URL(uri);
-    return href.startsWith('http://kg.artsdata.ca');
+    return href.startsWith('http://kg.artsdata.ca/resource/K');
   } catch {
     console.warn('Invalid URI:', uri);
     return false;
