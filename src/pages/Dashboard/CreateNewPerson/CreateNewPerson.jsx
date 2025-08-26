@@ -88,6 +88,7 @@ function CreateNewPerson() {
   const externalCalendarEntityId = searchParams.get('entityId');
 
   const artsDataId = location?.state?.data?.uri ?? null;
+  const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
@@ -147,7 +148,7 @@ function CreateNewPerson() {
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!personId || personId === '') {
-        if (artsDataId && artsData) {
+        if (artsDataId && artsData && !isImportingExistingEntity) {
           let sameAsArray = Array.isArray(artsData.sameAs)
             ? artsData.sameAs
             : artsData.sameAs && typeof artsData.sameAs === 'object'
@@ -173,7 +174,7 @@ function CreateNewPerson() {
           };
         }
 
-        if (externalCalendarEntityId) {
+        if (externalCalendarEntityId && !isImportingExistingEntity) {
           let sameAs = [
             {
               uri: externalCalendarEntityId,

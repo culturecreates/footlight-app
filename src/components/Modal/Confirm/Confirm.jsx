@@ -2,7 +2,7 @@ import { Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import './confirm.css';
 
-export const Confirm = ({ title, content, onAction, okText, cancelText, className, closable }) => {
+export const Confirm = ({ title, content, onCancel, onAction, okText, cancelText, className, closable }) => {
   const { confirm } = Modal;
 
   let modalClassName = ['global-delete-modal-container'];
@@ -11,7 +11,7 @@ export const Confirm = ({ title, content, onAction, okText, cancelText, classNam
     modalClassName = modalClassName.join(' ');
   }
 
-  return confirm({
+  const config = {
     title: (
       <>
         <span>{title}</span>
@@ -25,8 +25,8 @@ export const Confirm = ({ title, content, onAction, okText, cancelText, classNam
     ),
     icon: null,
     okType: 'danger',
-    okText: okText,
-    cancelText: cancelText,
+    okText,
+    cancelText,
     centered: true,
     className: modalClassName,
     closable: closable ?? true,
@@ -34,5 +34,11 @@ export const Confirm = ({ title, content, onAction, okText, cancelText, classNam
     onOk() {
       onAction();
     },
-  });
+  };
+
+  if (onCancel) {
+    config.onCancel = onCancel;
+  }
+
+  return confirm(config);
 };
