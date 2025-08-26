@@ -103,7 +103,8 @@ function CreateNewOrganization() {
   const organizationId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
 
-  const artsDataId = location?.state?.data?.id ?? null;
+  const artsDataId = location?.state?.data?.uri ?? null;
+  const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
@@ -171,7 +172,7 @@ function CreateNewOrganization() {
   const addUpdateOrganizationApiHandler = (organizationObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if (!organizationId || organizationId === '') {
-        if (artsDataId && artsData) {
+        if (artsDataId && artsData && !isImportingExistingEntity) {
           let sameAsArray = Array.isArray(artsData.sameAs)
             ? artsData.sameAs
             : artsData.sameAs && typeof artsData.sameAs === 'object'
@@ -196,7 +197,7 @@ function CreateNewOrganization() {
             sameAs: sameAsArray,
           };
         }
-        if (externalCalendarEntityId) {
+        if (externalCalendarEntityId && !isImportingExistingEntity) {
           let sameAs = [
             {
               uri: externalCalendarEntityId,

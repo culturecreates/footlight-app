@@ -23,6 +23,7 @@ import { useLazyGetExternalSourceQuery } from '../../../services/externalSource'
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { externalSourceOptions } from '../../../constants/sourceOptions';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
+import { CustomModal } from '../../../components/Modal/HookModal/Modal';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -78,8 +79,34 @@ function SearchPlaces() {
 
   // handlers
 
+  const confirmPopupHandler = (fn, entity) => {
+    if (entity?.footlightId) {
+      CustomModal({
+        title: t('dashboard.events.createNew.search.confirm.title'),
+        content: t('dashboard.events.createNew.search.confirm.content'),
+        primaryButtonText: t('dashboard.events.createNew.search.confirm.editText'),
+        secondaryButtonText: t('dashboard.events.createNew.search.confirm.okText'),
+        cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
+        className: 'existing-entity-found-info-modal',
+        secondaryAction: () => fn(),
+        primaryAction: () => {
+          navigate(
+            `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${entity?.footlightId}`,
+          );
+        },
+      });
+    } else {
+      fn();
+    }
+  };
+
   const artsDataClickHandler = async (entity) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}`, { state: { data: entity } });
+    const handleImport = () => {
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}`, {
+        state: { data: entity },
+      });
+    };
+    confirmPopupHandler(handleImport, entity);
   };
 
   const entitiesSearchHandler = (value) => {
@@ -103,7 +130,7 @@ function SearchPlaces() {
       classes: decodeURIComponent(query.toString()),
       sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
-      excludeExistingCMS: true,
+      excludeExistingCMS: false,
     });
 
     activePromiseRef.current = promise;
@@ -254,11 +281,15 @@ function SearchPlaces() {
                                     ? t('dashboard.events.createNew.search.linkText')
                                     : t('dashboard.events.createNew.search.datafeed')
                                 }
-                                onClick={() =>
-                                  navigate(
-                                    `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?entityId=${place?.id}`,
-                                  )
-                                }
+                                onClick={() => {
+                                  const fn = () => {
+                                    navigate(
+                                      `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?entityId=${place?.id}`,
+                                      { state: { data: { footlightId: place?.footlightId } } },
+                                    );
+                                  };
+                                  confirmPopupHandler(fn, place);
+                                }}
                               />
                             </div>
                           ))
