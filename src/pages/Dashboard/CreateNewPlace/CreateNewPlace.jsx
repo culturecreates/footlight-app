@@ -467,36 +467,41 @@ function CreateNewPlace() {
             longitude,
             containsPlace = [];
 
-          let postalObj = calendarContentLanguage.reduce(
-            (acc, language) => {
-              const languageKey = contentLanguageKeyMap[language];
+          const getInitialDataValue = (field) =>
+            placeData?.address?.[field] || artsData?.address?.[field] || externalEntityData?.address?.[field] || {};
 
-              const addIfValidString = (field, fieldName) => {
-                const fallbackFilteredFieldvalue = filterUneditedFallbackValues({
-                  values: values?.[fieldName],
+          const processFieldValues = (fieldValues) =>
+            Object.fromEntries(
+              Object.entries(fieldValues)
+                .filter(([, value]) => typeof value === 'string' && value.trim() !== '')
+                .map(([key, value]) => [key, value.trim()]),
+            );
+
+          let postalObj = calendarContentLanguage.reduce(
+            (acc) => {
+              const processAddressField = (field) => {
+                const fieldValue = filterUneditedFallbackValues({
+                  values: values?.[field],
                   activeFallbackFieldsInfo: fallbackStatus,
-                  fieldName: fieldName,
+                  fieldName: field,
+                  initialDataValue: getInitialDataValue(field),
                 });
 
-                if (
-                  fallbackFilteredFieldvalue?.[languageKey] &&
-                  typeof fallbackFilteredFieldvalue?.[languageKey] === 'string'
-                ) {
+                if (fieldValue) {
                   acc[field] = {
                     ...(acc[field] || {}),
-                    [languageKey]: fallbackFilteredFieldvalue?.[languageKey]?.trim(),
+                    ...processFieldValues(fieldValue),
                   };
                 }
               };
 
-              addIfValidString('addressCountry', 'addressCountry');
-              addIfValidString('addressLocality', 'addressLocality');
-              addIfValidString('addressRegion', 'addressRegion');
-              addIfValidString('streetAddress', 'streetAddress');
+              ['addressCountry', 'addressLocality', 'addressRegion', 'streetAddress'].forEach(processAddressField);
 
               return acc;
             },
-            { postalCode: typeof values?.postalCode === 'string' ? values.postalCode.trim() : values?.postalCode },
+            {
+              postalCode: typeof values?.postalCode === 'string' ? values.postalCode.trim() : values?.postalCode,
+            },
           );
 
           if (values?.dynamicFields) {
@@ -577,19 +582,29 @@ function CreateNewPlace() {
             values: values?.name,
             activeFallbackFieldsInfo: fallbackStatus,
             fieldName: 'name',
+            initialDataValue: placeData?.name || artsData?.name || externalEntityData?.name,
           });
           description = filterUneditedFallbackValues({
             values: values?.description,
             activeFallbackFieldsInfo: fallbackStatus,
             fieldName: 'description',
+            initialDataValue: placeData?.description || artsData?.description || externalEntityData?.description,
           });
 
           accessibilityNote = filterUneditedFallbackValues({
             values: values?.accessibilityNote,
             activeFallbackFieldsInfo: fallbackStatus,
             fieldName: 'accessibilityNote',
+            initialDataValue:
+              placeData?.accessibilityNote || artsData?.accessibilityNote || externalEntityData?.accessibilityNote,
           });
-          disambiguatingDescription = filterUneditedFallbackValues({ values: values?.disambiguatingDescription });
+          disambiguatingDescription = filterUneditedFallbackValues({
+            values: values?.disambiguatingDescription,
+            initialDataValue:
+              placeData?.disambiguatingDescription ||
+              artsData?.disambiguatingDescription ||
+              externalEntityData?.disambiguatingDescription,
+          });
 
           placeObj = {
             ...(isDataValid(name) && { name }),
