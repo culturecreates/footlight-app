@@ -41,9 +41,9 @@ const UserProfileDropDown = () => {
         break;
       case 'help':
         if (i18n.language === 'en')
-          window.open(`${process.env.REACT_APP_HELP_EN_URL}`, '_blank', 'noopener,noreferrer');
+          window.open(`${import.meta.env.VITE_APP_HELP_EN_URL}`, '_blank', 'noopener,noreferrer');
         else if (i18n.language === 'fr')
-          window.open(`${process.env.REACT_APP_HELP_FR_URL}`, '_blank', 'noopener,noreferrer');
+          window.open(`${import.meta.env.VITE_APP_HELP_FR_URL}`, '_blank', 'noopener,noreferrer');
         break;
       case 'logOut':
         sessionStorage.clear();

@@ -1,5 +1,4 @@
-const baseUrl = process.env.REACT_APP_ARTS_DATA_URI;
-const publicUrl = process.env.REACT_APP_API_URL;
+const baseUrl = import.meta.env.VITE_APP_ARTS_DATA_URI;
 
 export async function fetchData(url) {
   const response = await fetch(url);
