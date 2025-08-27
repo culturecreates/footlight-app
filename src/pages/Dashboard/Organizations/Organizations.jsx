@@ -26,7 +26,7 @@ import { PathName } from '../../../constants/pathName';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
+import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
 import { sortByOptionsOrgsPlacesPerson, sortByOptionsUsers, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';

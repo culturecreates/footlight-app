@@ -30,20 +30,20 @@ jobs:
       WEBHOSTING_BUCKET_NAME: cms.footlight.io
     runs-on: ubuntu-latest
     container:
-      image: sleavely/node-awscli:14.x
+      image: sleavely/node-awscli:22.x
     steps:
       - name: checkout
         uses: actions/checkout@v2
         
       - name: setup node
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       # Append additional environment variables to .env.staging
       - name: Add extra env variables
         run: |
           echo "" >> .env.production
-          echo "REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.production
-          echo "REACT_APP_GOOGLE_MAPS_ID=${{ secrets.GOOGLE_MAPS_ID }}" >> .env.production  
+          echo "VITE_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.production
+          echo "VITE_APP_GOOGLE_MAPS_ID=${{ secrets.GOOGLE_MAPS_ID }}" >> .env.production  
         
       - name: build
         run: npm run build:production

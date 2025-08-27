@@ -40,7 +40,7 @@ class ErrorLayout extends React.Component {
 
     const token = this.getToken();
 
-    fetch(`${process.env.REACT_APP_API_URL}/log/cms-app`, {
+    fetch(`${import.meta.env.VITE_APP_API_URL}/log/cms-app`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
