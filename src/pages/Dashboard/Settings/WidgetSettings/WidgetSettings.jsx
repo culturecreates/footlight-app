@@ -35,7 +35,7 @@ import WidgetPreview from './WidgetPreview';
 import ImageUpload from '../../../../components/ImageUpload';
 
 const { useBreakpoint } = Grid;
-const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
+const widgetUrl = import.meta.env.VITE_APP_CALENDAR_WIDGET_BASE_URL;
 const fieldName = {
   organizer: 'organizer',
   performer: 'performer',

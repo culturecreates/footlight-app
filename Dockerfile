@@ -1,11 +1,11 @@
-FROM node:14.17.0
+FROM node:22.14.0
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 COPY footlight-app-start.sh ./
 RUN  chmod +x ./footlight-app-start.sh
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 

@@ -8,7 +8,7 @@ import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
+import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import {

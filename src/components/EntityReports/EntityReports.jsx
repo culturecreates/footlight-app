@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { MoreOutlined, DownloadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as ReportIcon } from '../../assets/icons/report.svg';
+import ReportIcon from '../../assets/icons/report.svg?react';
 import CustomModal from '../Modal/Common';
 import './entitiesReport.css';
 import { DATABASE_ACTION_KEY, IMPORT_ACTION_KEY, REPORT_ACTION_KEY } from '../../constants/entitiesClass';
