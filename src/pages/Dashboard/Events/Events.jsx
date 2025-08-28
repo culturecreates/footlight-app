@@ -409,6 +409,7 @@ function Events() {
     sessionStorage.removeItem('publication');
     sessionStorage.removeItem('startDateRange');
     sessionStorage.removeItem('endDateRange');
+    sessionStorage.removeItem('ids');
     sessionStorage.removeItem('taxonomyFilter');
     sessionStorage.removeItem('standardTaxonomyFilter');
   };
