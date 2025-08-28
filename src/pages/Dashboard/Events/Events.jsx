@@ -151,6 +151,14 @@ function Events() {
       : [],
   );
 
+  const [eventIds, setEventIds] = useState(
+    searchParams.get('ids')
+      ? decodeURIComponent(searchParams.get('ids'))?.split(',')
+      : sessionStorage.getItem('ids')
+      ? decodeURIComponent(sessionStorage.getItem('ids'))?.split(',')
+      : [],
+  );
+
   const [organizerFilter, setOrganizerFilter] = useState(
     searchParams.get('organizers')
       ? decodeURIComponent(searchParams.get('organizers'))?.split(',')
@@ -390,7 +398,7 @@ function Events() {
       organizerToClear[key] = false;
     });
     setSelectedOrganizers(Object.assign({}, organizerToClear));
-
+    setEventIds([]);
     setPageNumber(1);
     sessionStorage.removeItem('page');
     sessionStorage.removeItem('query');
@@ -401,6 +409,7 @@ function Events() {
     sessionStorage.removeItem('publication');
     sessionStorage.removeItem('startDateRange');
     sessionStorage.removeItem('endDateRange');
+    sessionStorage.removeItem('ids');
     sessionStorage.removeItem('taxonomyFilter');
     sessionStorage.removeItem('standardTaxonomyFilter');
   };
@@ -452,13 +461,17 @@ function Events() {
   useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
-    let usersQuery, publicationQuery, organizerQuery;
+    let usersQuery, publicationQuery, organizerQuery, eventIdsQuery;
 
     userFilter?.forEach((user) => query.append('created-by', user));
     organizerFilter?.forEach((organizer) => query.append('person-organization', organizer));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
     if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
     if (organizerFilter?.length > 0) organizerQuery = encodeURIComponent(organizerFilter);
+    if (Array.isArray(eventIds) && eventIds.length > 0) {
+      eventIdsQuery = encodeURIComponent(eventIds);
+      eventIds.forEach((event) => query.append('ids', event));
+    }
 
     if (filter?.publication?.length > 0) publicationQuery = encodeURIComponent(filter.publication);
 
@@ -528,6 +541,7 @@ function Events() {
       ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
       ...(usersQuery && { users: usersQuery }),
       ...(organizerQuery && { organizers: organizerQuery }),
+      ...(eventIdsQuery && { ids: eventIdsQuery }),
       ...(publicationQuery && { publication: publicationQuery }),
       ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
       ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
@@ -554,6 +568,9 @@ function Events() {
     else if (sessionStorage.getItem('publication')) {
       sessionStorage.removeItem('publication');
     }
+    if (eventIdsQuery) {
+      sessionStorage.setItem('ids', eventIdsQuery);
+    }
     if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
       sessionStorage.setItem('startDateRange', filter?.dates[0]);
     else sessionStorage.setItem('startDateRange', query?.get('start-date-range'));
@@ -572,6 +589,7 @@ function Events() {
     eventSearchQuery,
     filter,
     userFilter,
+    eventIds,
     organizerFilter,
     taxonomyFilter,
     standardTaxonomyFilter,
@@ -1057,6 +1075,7 @@ function Events() {
                   filter?.order === sortOrder?.DESC ||
                   filter?.sort != sortByOptions[3]?.key ||
                   organizerFilter?.length > 0 ||
+                  eventIds?.length > 0 ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
                   Object.keys(standardTaxonomyFilter)?.length > 0) && (
                   <Button
