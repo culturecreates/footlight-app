@@ -563,6 +563,11 @@ function Events() {
     else if (sessionStorage.getItem('publication')) {
       sessionStorage.removeItem('publication');
     }
+    if (eventIdsQuery) {
+      sessionStorage.setItem('ids', eventIdsQuery);
+    } else if (sessionStorage.getItem('ids')) {
+      sessionStorage.removeItem('ids');
+    }
     if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
       sessionStorage.setItem('startDateRange', filter?.dates[0]);
     else sessionStorage.setItem('startDateRange', query?.get('start-date-range'));
