@@ -565,8 +565,6 @@ function Events() {
     }
     if (eventIdsQuery) {
       sessionStorage.setItem('ids', eventIdsQuery);
-    } else if (sessionStorage.getItem('ids')) {
-      sessionStorage.removeItem('ids');
     }
     if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
       sessionStorage.setItem('startDateRange', filter?.dates[0]);
