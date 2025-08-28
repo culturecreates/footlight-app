@@ -1074,6 +1074,7 @@ function Events() {
                   filter?.order === sortOrder?.DESC ||
                   filter?.sort != sortByOptions[3]?.key ||
                   organizerFilter?.length > 0 ||
+                  eventIds?.length > 0 ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
                   Object.keys(standardTaxonomyFilter)?.length > 0) && (
                   <Button
