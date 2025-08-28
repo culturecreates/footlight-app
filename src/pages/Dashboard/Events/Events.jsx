@@ -152,7 +152,11 @@ function Events() {
   );
 
   const [eventIds, setEventIds] = useState(
-    searchParams.get('ids') ? decodeURIComponent(searchParams.get('ids'))?.split(',') : [],
+    searchParams.get('ids')
+      ? decodeURIComponent(searchParams.get('ids'))?.split(',')
+      : sessionStorage.getItem('ids')
+      ? decodeURIComponent(sessionStorage.getItem('ids'))?.split(',')
+      : [],
   );
 
   const [organizerFilter, setOrganizerFilter] = useState(
