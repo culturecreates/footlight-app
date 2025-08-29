@@ -296,12 +296,15 @@ function CreateNewOrganization() {
           var values = form.getFieldsValue(true);
           let organizationPayload = {};
           Object.keys(values)?.map((object) => {
+            const initialValue = organizationData?.[object] || externalEntityData?.[object] || artsData?.[object];
+
             let payload = formPayloadHandler(
               values[object],
               object,
               formFields,
               calendarContentLanguage,
               fallbackStatus,
+              initialValue,
             );
             if (payload) {
               let newKeys = Object.keys(payload);

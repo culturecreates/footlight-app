@@ -279,7 +279,15 @@ function CreateNewPerson() {
         var values = form.getFieldsValue(true);
         let personPayload = {};
         Object.keys(values)?.map((object) => {
-          let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage, fallbackStatus);
+          const initialValue = personData?.[object] || externalEntityData?.[object] || artsData?.[object];
+          let payload = formPayloadHandler(
+            values[object],
+            object,
+            formFields,
+            calendarContentLanguage,
+            fallbackStatus,
+            initialValue,
+          );
           if (payload) {
             let newKeys = Object.keys(payload);
             personPayload = {
