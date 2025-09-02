@@ -1,4 +1,5 @@
 const baseUrl = import.meta.env.VITE_APP_ARTS_DATA_URI;
+const publicUrl = import.meta.env.VITE_APP_API_URL;
 
 export async function fetchData(url) {
   const response = await fetch(url);
