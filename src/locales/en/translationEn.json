@@ -433,6 +433,9 @@
           "errorImage": "This image cannot be saved. Adjust the image or try a different one.",
           "organizer": {
             "required": "An organizer is required."
+          },
+          "daysOfWeek": {
+            "required": "At least one day of the week is required."
           }
         },
         "quickCreate": {

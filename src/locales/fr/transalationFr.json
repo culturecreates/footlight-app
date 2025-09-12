@@ -433,6 +433,9 @@
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre.",
           "organizer": {
             "required": "Ce champ ne peut être laissé vide."
+          },
+          "daysOfWeek": {
+            "required": "Au moins un jour par semaine est requis."
           }
         },
         "quickCreate": {
