@@ -479,6 +479,23 @@ const RecurringEvents = function ({
       <Form.Item
         name="daysOfWeek"
         label={t('dashboard.events.addEditEvent.dates.days')}
+        required={formFields?.frequency === dateFrequencyOptions[1].value ? true : false}
+        rules={
+          formFields?.frequency === dateFrequencyOptions[1].value
+            ? [
+                {
+                  validator: (_, value) => {
+                    if (!value || value.length < 1) {
+                      return Promise.reject(
+                        new Error(t('dashboard.events.addEditEvent.validations.daysOfWeek.required')),
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]
+            : []
+        }
         hidden={formFields?.frequency === dateFrequencyOptions[1].value ? false : true}
         data-cy="form-item-days-of-week">
         <div style={{ display: 'flex', gap: '8px' }}>
