@@ -553,6 +553,7 @@ function AddEvent() {
               'dateRangePicker',
               'datePickerWrapper',
               'startDateRecur',
+              form.getFieldsValue().frequency === 'WEEKLY' ? 'daysOfWeek' : '',
               ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
                 ? validateFields
                 : []),
