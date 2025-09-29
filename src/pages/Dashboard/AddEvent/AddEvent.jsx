@@ -963,7 +963,7 @@ function AddEvent() {
                   };
                   break;
                 case offerTypes.PAYING:
-                  if (prices?.length > 0 || values?.ticketLink) {
+                  if (prices?.length > 0 || values?.ticketLink || name) {
                     const ticketLink = getLinkObject(
                       values.ticketLink,
                       values.ticketLinkType === ticketLinkOptions[0].value,
@@ -980,7 +980,7 @@ function AddEvent() {
                   break;
 
                 case offerTypes.REGISTER:
-                  if (values?.registerLink) {
+                  if (values?.registerLink || name) {
                     const registerLink = getLinkObject(
                       values.registerLink,
                       values.ticketLinkType === ticketLinkOptions[0].value,

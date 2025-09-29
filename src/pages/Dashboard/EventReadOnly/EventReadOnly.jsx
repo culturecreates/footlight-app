@@ -157,10 +157,10 @@ function EventReadOnly() {
         flag = true;
         break;
       case offerTypes.PAYING:
-        if (offerUri || (offerConfig?.prices && offerConfig?.prices?.length > 0)) flag = true;
+        if (offerUri || (offerConfig?.prices && offerConfig?.prices?.length > 0) || offerConfig?.name) flag = true;
         break;
       case offerTypes.REGISTER:
-        if (offerUri) flag = true;
+        if (offerUri || offerConfig?.name) flag = true;
         break;
       default:
         break;
