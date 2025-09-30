@@ -8,6 +8,7 @@ import { bilingual } from '../../utils/bilingual';
 import i18next from 'i18next';
 import { formatNotificationTime } from '../../utils/notificationUtils';
 import { messageStatusMap } from '../../constants/notificationConstants';
+import { useTranslation } from 'react-i18next';
 
 const POLLING_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const LOOKBACK_DAYS = 14;
@@ -15,6 +16,7 @@ const LOOKBACK_DAYS = 14;
 const NotificationManager = () => {
   const { calendarId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
 
   const [markAsRead] = useMarkAsReadMutation();
 
@@ -58,6 +60,19 @@ const NotificationManager = () => {
           });
         }
       }
+      if (
+        !item?.messageUrl &&
+        (item?.messageType === 'AggregatorUpdatedEvents' || item?.messageType === 'AggregatorNewEvents')
+      ) {
+        notification.info({
+          message: t('dashboard.topNavigation.notification.noEventsForReview'),
+          placement: 'top',
+          closeIcon: <></>,
+          maxCount: 1,
+          duration: 3,
+        });
+        setIsOpen(false);
+      }
     } catch (error) {
       console.error('Notification click error:', error);
     }
@@ -75,6 +90,7 @@ const NotificationManager = () => {
               style={{
                 padding: '12px',
                 background: item.unread ? '#f6f9ff' : 'inherit',
+                cursor: 'pointer',
               }}>
               <List.Item.Meta
                 avatar={

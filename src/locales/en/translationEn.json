@@ -79,7 +79,10 @@
       "userProfile": "User Profile",
       "logOut": "Log out",
       "help": "Help",
-      "systemUpdates": "System Updates"
+      "systemUpdates": "System Updates",
+      "notification": {
+        "noEventsForReview": "There are no events to review."
+      }
     },
     "sidebar": {
       "events": "Events",
