@@ -21,8 +21,7 @@ const SystemUpdates = () => {
   const screens = useBreakpoint();
   const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
-
-  const isSuperAdmin = !user?.role?.length;
+  const isSuperAdmin = user?.isSuperAdmin;
   const paddingValue = screens.md ? '24px 8px' : '16px 0px';
 
   const { t } = useTranslation();
@@ -66,11 +65,13 @@ const SystemUpdates = () => {
         <Title level={2} className="system-updates-title" style={{ marginBottom: '32px' }}>
           {t('notification.systemUpdates.title')}
         </Title>
-        <AddEvent
-          label={t('dashboard.topNavigation.systemUpdates')}
-          onClick={addSystemUpdate}
-          data-cy="button-add-new-system-notification"
-        />
+        {isSuperAdmin && (
+          <AddEvent
+            label={t('dashboard.topNavigation.systemUpdates')}
+            onClick={addSystemUpdate}
+            data-cy="button-add-new-system-notification"
+          />
+        )}
       </div>
 
       {isLoading ? (
