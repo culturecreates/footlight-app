@@ -118,7 +118,7 @@ function TextEditor(props) {
     () => ({
       toolbar: {
         container: [
-          [{ header: '1' }],
+          [{ header: '1' }, { header: '2' }],
           ['bold', 'italic', 'underline'],
           [{ align: [] }],
           [{ list: 'ordered' }, { list: 'bullet' }],
