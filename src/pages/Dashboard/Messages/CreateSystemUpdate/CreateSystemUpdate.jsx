@@ -11,6 +11,9 @@ import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icon
 import { useCreateNotificationMutation } from '../../../../services/notification';
 import { messageTypeMap } from '../../../../constants/notificationConstants';
 import { interfaceLanguage } from '../../../../constants/contentLanguage';
+import { PathName } from '../../../../constants/pathName';
+import { getUserDetails } from '../../../../redux/reducer/userSlice';
+import { useSelector } from 'react-redux';
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
@@ -31,6 +34,7 @@ const CreateSystemUpdate = () => {
     _getCalendar,
     setContentBackgroundColor,
   ] = useOutletContext();
+  const { user } = useSelector(getUserDetails);
 
   setContentBackgroundColor('#F9FAFF');
 
@@ -92,6 +96,8 @@ const CreateSystemUpdate = () => {
         });
       });
   };
+
+  if (!user?.isSuperAdmin) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
 
   return (
     <div className="system-updates-container" style={{ padding: paddingValue }}>
