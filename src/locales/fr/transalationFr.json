@@ -79,7 +79,10 @@
       "userProfile": "Profil",
       "logOut": "Déconnexion",
       "help": "Aide",
-      "systemUpdates": "Mises à jour du système"
+      "systemUpdates": "Mises à jour du système",
+      "notification": {
+        "noEventsForReview": "Il n'y a aucun événement à examiner."
+      }
     },
     "sidebar": {
       "events": "Événements",
