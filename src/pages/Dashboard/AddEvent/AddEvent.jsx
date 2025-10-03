@@ -2060,20 +2060,22 @@ function AddEvent() {
               const placeData = response?.data?.[0];
               const primaryAddress = placeData?.address?.[0];
 
-              const updatedPlaceData =
-                placeData && primaryAddress ? { ...placeData, address: primaryAddress } : placeData;
+              if (primaryAddress?.postalCode) {
+                const updatedPlaceData =
+                  placeData && primaryAddress ? { ...placeData, address: primaryAddress } : placeData;
 
-              const entityData = updatedPlaceData ? [updatedPlaceData] : [];
+                const entityData = updatedPlaceData ? [updatedPlaceData] : [];
 
-              const [location] = placesOptions(
-                entityData,
-                user,
-                calendarContentLanguage,
-                sourceOptions.ARTSDATA,
-                currentCalendarData,
-              );
+                const [location] = placesOptions(
+                  entityData,
+                  user,
+                  calendarContentLanguage,
+                  sourceOptions.ARTSDATA,
+                  currentCalendarData,
+                );
 
-              setLocationPlace(location);
+                setLocationPlace(location);
+              }
             } catch (e) {
               console.error('Failed to load location place', e);
             }

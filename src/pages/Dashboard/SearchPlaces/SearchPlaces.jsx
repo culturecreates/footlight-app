@@ -131,6 +131,7 @@ function SearchPlaces() {
       sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: false,
+      isStrict: false,
     });
 
     activePromiseRef.current = promise;
