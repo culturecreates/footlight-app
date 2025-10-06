@@ -261,9 +261,9 @@ function AddEvent() {
     let dateSelected;
     let timeSelected;
     let values = form.getFieldsValue(true);
-    let timezone = artsDataId
-      ? values?.[dateType === dateTypes.MULTIPLE ? 'customEventTimezone' : 'eventTimezone']
-      : currentCalendarData?.timezone;
+    let timezone =
+      values[dateType === dateTypes.MULTIPLE ? 'customEventTimezone' : 'eventTimezone'] ??
+      currentCalendarData?.timezone;
 
     // Determine if the date is already in the 'DD-MM-YYYY' format.
     // This is to hadle for cases where the date comes from a recurring event configurations that are being converted to single event
