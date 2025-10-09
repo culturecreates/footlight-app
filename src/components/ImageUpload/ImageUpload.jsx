@@ -293,7 +293,7 @@ function ImageUpload(props) {
                                   actions.remove();
                                   break;
                                 case IMAGE_ACTIONS.DOWNLOAD:
-                                  downloadImage({ url: imageUrl, name: file?.name });
+                                  downloadImage({ url: originalImage, name: file?.name });
                                   break;
                                 default:
                                   break;
