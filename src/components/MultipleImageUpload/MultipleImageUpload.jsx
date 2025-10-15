@@ -14,6 +14,7 @@ import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOp
 import ImageCredits from '../Modal/ImageCredit';
 import Credit from '../Tags/Credit';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
+import { beforeUpload } from '../../utils/beforeImageUpload';
 
 const DragableUploadListItem = ({
   moveRow,
@@ -326,14 +327,6 @@ const MultipleImageUpload = (props) => {
       multipleImagesCrop: newFileList,
     });
     if (setShowDialog) setShowDialog(true);
-  };
-
-  const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error(t('dashboard.events.addEditEvent.otherInformation.image.subHeading'));
-    }
-    return isJpgOrPng;
   };
 
   const customRequest = ({ onSuccess }) => {

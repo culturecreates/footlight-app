@@ -11,6 +11,7 @@ import { IMAGE_ACTIONS, mainImageUploadOptions } from '../../constants/imageUplo
 import ImageCredits from '../Modal/ImageCredit';
 import Credit from '../Tags/Credit';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
+import { beforeUpload } from '../../utils/beforeImageUpload';
 
 function ImageUpload(props) {
   const {
@@ -123,13 +124,7 @@ function ImageUpload(props) {
       image.src = _loadedImageUrl;
     });
   };
-  const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error(t('dashboard.events.addEditEvent.otherInformation.image.subHeading'));
-    }
-    return isJpgOrPng;
-  };
+
   const handleChange = (info) => {
     if (info.file.status === 'uploading') {
       setLoading(true);
@@ -155,7 +150,10 @@ function ImageUpload(props) {
           return acc;
         }, {}),
       });
-      getBase64(info.file.originFileObj, (url) => {
+
+      const file = info.file.originFileObj;
+
+      getBase64(file, (url) => {
         setLoading(false);
         setImageUrl(url);
         setOriginalImage(url);
@@ -293,7 +291,7 @@ function ImageUpload(props) {
                                   actions.remove();
                                   break;
                                 case IMAGE_ACTIONS.DOWNLOAD:
-                                  downloadImage({ url: imageUrl, name: file?.name });
+                                  downloadImage({ url: originalImage, name: file?.name });
                                   break;
                                 default:
                                   break;
