@@ -8,7 +8,6 @@ export const beforeUpload = async (file) => {
   }
 
   try {
-    // Load image dimensions
     const dataUrl = await imageCompression.getDataUrlFromFile(file);
     const img = new Image();
     img.src = dataUrl;
@@ -19,9 +18,7 @@ export const beforeUpload = async (file) => {
     const originalPixels = originalWidth * originalHeight;
     const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
 
-    // Only resize if pixel count > 10^7
     if (originalPixels > 1e7) {
-      // Scale factor to bring total pixels near 10^7
       const scaleFactor = Math.sqrt(1e7 / originalPixels);
       const targetWidth = Math.round(originalWidth * scaleFactor);
       const targetHeight = Math.round(originalHeight * scaleFactor);
@@ -35,7 +32,6 @@ export const beforeUpload = async (file) => {
 
       const compressedFile = await imageCompression(file, options);
 
-      // Inspect resized file
       const compressedDataUrl = await imageCompression.getDataUrlFromFile(compressedFile);
       const compressedImg = new Image();
       compressedImg.src = compressedDataUrl;
@@ -43,19 +39,15 @@ export const beforeUpload = async (file) => {
 
       const compressedSizeMB = (compressedFile.size / (1024 * 1024)).toFixed(2);
 
-      // Attach resized dimensions for later use
       compressedFile.width = compressedImg.width;
       compressedFile.height = compressedImg.height;
 
-      // ✅ Return the new file — no mutation of originFileObj
       return compressedFile;
     }
 
-    // Attach original dimensions
     file.width = originalWidth;
     file.height = originalHeight;
 
-    // ✅ Return the original file untouched
     return file;
   } catch (err) {
     console.error('Image compression failed:', err);
