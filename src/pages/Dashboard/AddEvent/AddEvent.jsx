@@ -2058,7 +2058,14 @@ function AddEvent() {
               const response = await loadArtsDataPlaceEntity({ entityId: data.location });
 
               const placeData = response?.data?.[0];
-              const primaryAddress = placeData?.address?.[0];
+
+              const addressData = Array.isArray(placeData?.address)
+                ? placeData.address
+                : placeData?.address
+                ? [placeData.address]
+                : [];
+
+              const primaryAddress = addressData[0];
 
               if (primaryAddress?.postalCode) {
                 const updatedPlaceData =
