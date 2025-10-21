@@ -212,21 +212,22 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
     });
   return options;
 };
+const normalize = (str) =>
+  str
+    ?.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/s$/, '');
 
 export const findMatchingItems = (array2 = [], searchTerms = []) => {
   const loweredTerms = searchTerms.map((t) => t?.toLowerCase?.() ?? '');
 
   const titleMatches = (title) => {
     if (!title) return false;
+    const check = (val) => loweredTerms.some((t) => normalize(t) === normalize(val));
 
-    if (typeof title === 'string') {
-      return loweredTerms.includes(title.toLowerCase());
-    }
-
-    if (typeof title === 'object') {
-      return Object.values(title).some((val) => loweredTerms.includes((val ?? '').toLowerCase()));
-    }
-
+    if (typeof title === 'string') return check(title);
+    if (typeof title === 'object') return Object.values(title).some(check);
     return false;
   };
 
