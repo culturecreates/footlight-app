@@ -159,8 +159,8 @@ function SearchPerson() {
   return (
     <NewEntityLayout
       heading={t('dashboard.people.createNew.search.title')}
-      entityName={t('dashboard.people.createNew.search.searchbarHeader')}
-      text={t('dashboard.people.createNew.search.text')}>
+      text={t('dashboard.people.createNew.search.text')}
+      searchHeading={t('dashboard.people.createNew.search.searchHeading')}>
       <div className="search-bar-person">
         <Popover
           open={isPopoverOpen}
@@ -371,7 +371,7 @@ function SearchPerson() {
           <EventsSearch
             data-cy="input-person-search"
             style={{ borderRadius: '4px' }}
-            placeholder="Search people"
+            placeholder={t('dashboard.people.createNew.search.searchPlaceholder')}
             onClick={(e) => {
               setQuickCreateKeyword(e.target.value);
               setIsPopoverOpen(true);
