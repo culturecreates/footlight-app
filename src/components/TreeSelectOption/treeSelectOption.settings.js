@@ -1,7 +1,7 @@
 import { contentLanguageBilingual } from '../../utils/bilingual';
 import SelectionItem from '../List/SelectionItem';
 import Icon, { UserOutlined } from '@ant-design/icons';
-import Organizations from '../../assets/icons/organisations.svg?react';
+import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
 import { taxonomyClass } from '../../constants/taxonomyClass';
 import { sourceOptions } from '../../constants/sourceOptions';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
@@ -212,22 +212,21 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
     });
   return options;
 };
-const normalize = (str) =>
-  str
-    ?.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/s$/, '');
 
 export const findMatchingItems = (array2 = [], searchTerms = []) => {
   const loweredTerms = searchTerms.map((t) => t?.toLowerCase?.() ?? '');
 
   const titleMatches = (title) => {
     if (!title) return false;
-    const check = (val) => loweredTerms.some((t) => normalize(t) === normalize(val));
 
-    if (typeof title === 'string') return check(title);
-    if (typeof title === 'object') return Object.values(title).some(check);
+    if (typeof title === 'string') {
+      return loweredTerms.includes(title.toLowerCase());
+    }
+
+    if (typeof title === 'object') {
+      return Object.values(title).some((val) => loweredTerms.includes((val ?? '').toLowerCase()));
+    }
+
     return false;
   };
 
