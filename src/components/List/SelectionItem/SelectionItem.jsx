@@ -40,6 +40,7 @@ function SelectionItem(props) {
     fallbackConfig,
     onClickHandle = { navigationFlag: false },
     borderColor = '#607EFC',
+    isTransparent = false,
   } = props;
 
   const { t } = useTranslation();
@@ -135,7 +136,7 @@ function SelectionItem(props) {
               size={'large'}
               icon={icon}
               style={{
-                backgroundColor: '#E3E8FF',
+                backgroundColor: isTransparent ? '#b4b4b4' : '#E3E8FF',
                 borderRadius: '4px',
               }}
               data-cy="avatar-entity-logo"

@@ -25,6 +25,7 @@ function ListItem(props) {
     scheduleTimezone,
     listItemHandler,
     actions,
+    isTransparent,
   } = props;
   const { t } = useTranslation();
   const dateFormat = 'DD-MMM-YYYY';
@@ -46,7 +47,12 @@ function ListItem(props) {
               <img
                 src={logo}
                 className="event-list-image"
-                style={{ height: '40px', width: '40px', objectFit: 'cover' }}
+                style={{
+                  height: '40px',
+                  width: '40px',
+                  objectFit: 'cover',
+                  ...(isTransparent ? { backgroundColor: '#b4b4b4' } : {}),
+                }}
                 data-cy="image-entity-logo"
               />
             </div>

@@ -108,6 +108,7 @@ export const treeEntitiesOption = (
             borderColor: isValidated ? undefined : 'red',
           })}
           bordered={enableDynamicBorder ? !isValidated : false}
+          isTransparent={entity?.logo?.isTransparent ?? false}
           icon={
             isOrganization ? (
               entity?.logo?.thumbnail?.uri || mainImageData?.original?.uri ? (
@@ -175,6 +176,7 @@ export const treeEntitiesOption = (
             isFieldsDirty,
           })
         : null,
+      isTransparent: entity?.logo?.isTransparent ?? false,
     };
   });
   return options;

@@ -456,6 +456,7 @@ function CreateNewOrganization() {
                   .unwrap()
                   .then(async (response) => {
                     organizationPayload['logo'] = {
+                      isTransparent: !!response?.data?.isTransparent,
                       original: {
                         entityId: response?.data?.original?.entityId,
                         height: response?.data?.height,
@@ -546,6 +547,7 @@ function CreateNewOrganization() {
                           .unwrap()
                           .then((response) => {
                             organizationPayload['logo'] = {
+                              isTransparent: !!response?.data?.isTransparent,
                               original: {
                                 entityId: response?.data?.original?.entityId,
                                 height: response?.data?.height,
@@ -606,6 +608,7 @@ function CreateNewOrganization() {
                     .unwrap()
                     .then((response) => {
                       organizationPayload['logo'] = {
+                        isTransparent: !!response?.data?.isTransparent,
                         original: {
                           entityId: response?.data?.original?.entityId,
                           height: response?.data?.height,

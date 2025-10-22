@@ -518,6 +518,7 @@ function OrganizationsReadOnly() {
                                   imageReadOnly={true}
                                   preview={true}
                                   eventImageData={organizationData?.logo}
+                                  isTransparent={organizationData?.logo?.isTransparent ?? false}
                                 />
                               </div>
                             )}
