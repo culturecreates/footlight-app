@@ -27,7 +27,6 @@ const hasTransparency = (file) => {
             }
           }
 
-          // No transparent pixels
           resolve(false);
         } catch (error) {
           console.error('Error checking transparency:', error);
