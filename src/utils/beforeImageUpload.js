@@ -1,5 +1,55 @@
 import imageCompression from 'browser-image-compression';
 
+const hasTransparency = (file) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const img = new Image();
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0);
+
+        try {
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+
+          for (let i = 3; i < data.length; i += 4) {
+            if (data[i] < 255) {
+              resolve(true);
+              return;
+            }
+          }
+
+          // No transparent pixels
+          resolve(false);
+        } catch (error) {
+          console.error('Error checking transparency:', error);
+          resolve(false);
+        }
+      };
+
+      img.onerror = () => {
+        resolve(false);
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.onerror = () => {
+      resolve(false);
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
+
 export const beforeUpload = async (file) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
@@ -8,6 +58,7 @@ export const beforeUpload = async (file) => {
   }
 
   try {
+    const isTransparent = await hasTransparency(file);
     const dataUrl = await imageCompression.getDataUrlFromFile(file);
     const img = new Image();
     img.src = dataUrl;
@@ -41,12 +92,14 @@ export const beforeUpload = async (file) => {
 
       compressedFile.width = compressedImg.width;
       compressedFile.height = compressedImg.height;
+      compressedFile.isTransparent = isTransparent;
 
       return compressedFile;
     }
 
     file.width = originalWidth;
     file.height = originalHeight;
+    file.isTransparent = isTransparent;
 
     return file;
   } catch (err) {
