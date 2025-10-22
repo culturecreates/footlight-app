@@ -511,8 +511,8 @@
       "createNew": {
         "search": {
           "title": "New Event",
-          "searchHeading": "Search for another instance",
-          "text": "Search to link to an existing instance of the event. If you don't find the event, you can create it.",
+          "searchHeading": "Import event",
+          "text": "Search to import an event. If you don't find the event, you can create it.",
           "searchbarHeader": "Linked data",
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
@@ -522,7 +522,7 @@
           "footlightSectionHeading": "My Footlight",
           "artsDataSectionHeading": "Imports from Artsdata",
           "importsFromFootlight": "Imports from Footlight",
-          "searchPlaceholder": "Search Events",
+          "searchPlaceholder": "Search by name or URL",
           "confirm": {
             "title": "Entity is a duplicate",
             "content": "You already have a version of this entity in your CMS. Are you sure you want to create a duplicate from this new version, or would you like to edit the one you already have?",
@@ -588,15 +588,16 @@
         "search": {
           "title": "New Organization",
           "searchbarHeader": "Organization",
-          "searchHeading": "Search for another instance",
-          "text": "Search to link to an existing instance of the organization. If you don't find the organization, you can create it.",
+          "searchHeading": "Import organization",
+          "text": "Search to import an organization. If you don't find the organization, you can create it.",
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
           "createNew": "Create new organization",
           "create": "Create",
           "footlightSectionHeading": "My Footlight",
           "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "importsFromFootlight": "Imports from Footlight",
+          "searchPlaceholder": "Search by name or URL"
         },
         "addOrganization": {
           "newOrganization": "New Organization",
@@ -685,14 +686,15 @@
         "search": {
           "title": "New place",
           "searchbarHeader": "Linked data",
-          "searchHeading": "Search for another instance",
-          "text": "Search to link to an existing instance of the place in other data sources. If you don’t find the place, you can create it.",
+          "searchHeading": "Import place",
+          "text": "Search to import a place. If you don't find the place, you can create it.",
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
           "create": "Create",
           "footlightSectionHeading": "My Footlight",
           "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "importsFromFootlight": "Imports from Footlight",
+          "searchPlaceholder": "Search by name or URL"
         },
         "addPlace": {
           "newPlace": "New place",
@@ -835,14 +837,15 @@
         "search": {
           "title": "New Person",
           "searchbarHeader": "Linked data",
-          "searchHeading": "Search for another instance",
-          "text": "Search to link to an existing instance of the person in other data sources. If you don’t find the person, you can create them.",
+          "searchHeading": "Import person",
+          "text": "Search to import a person. If you don't find the person, you can create them.",
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
           "create": "Create",
           "footlightSectionHeading": "My Footlight",
           "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "importsFromFootlight": "Imports from Footlight",
+          "searchPlaceholder": "Search by name or URL"
         },
         "addPerson": {
           "newPerson": "New Person",

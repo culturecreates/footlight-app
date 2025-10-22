@@ -158,8 +158,8 @@ function SearchOrganizations() {
     !initialOrganizersLoading && (
       <NewEntityLayout
         heading={t('dashboard.organization.createNew.search.title')}
-        entityName={t('dashboard.organization.createNew.search.searchbarHeader')}
-        text={t('dashboard.organization.createNew.search.text')}>
+        text={t('dashboard.organization.createNew.search.text')}
+        searchHeading={t('dashboard.organization.createNew.search.searchHeading')}>
         <div className="search-bar-organization">
           <Popover
             data-cy="popover-organization-entity-search"
@@ -364,7 +364,7 @@ function SearchOrganizations() {
             <EventsSearch
               data-cy="input-search-organization"
               style={{ borderRadius: '4px' }}
-              placeholder="Search organizations"
+              placeholder={t('dashboard.organization.createNew.search.searchPlaceholder')}
               onClick={(e) => {
                 setQuickCreateKeyword(e.target.value);
                 setIsPopoverOpen(true);

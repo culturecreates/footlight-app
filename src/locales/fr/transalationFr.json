@@ -512,9 +512,9 @@
       "createNew": {
         "search": {
           "title": "Ajouter un événement",
-          "text": "Recherchez pour lier une instance existante de l'événement dans d'autres sources de données. Si non trouvée, vous pouvez la créer.",
+          "text": "Rechercher à importer un événement. Si non trouvée, vous pouvez le créer.",
           "searchbarHeader": "Données associées",
-          "searchHeading": "Rechercher une autre instance",
+          "searchHeading": "Importer un événement",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "datafeed": "Data feed",
@@ -523,7 +523,7 @@
           "footlightSectionHeading": "My Footlight",
           "artsDataSectionHeading": "Imports de Artsdata",
           "importsFromFootlight": "Imports de Footlight",
-          "searchPlaceholder": "Rechercher un événement",
+          "searchPlaceholder": "Rechercher par nom ou URL",
           "confirm": {
             "title": "L'entité est en double",
             "content": "Vous disposez déjà d'une version de cette entité dans votre CMS. Êtes-vous sûr de vouloir créer une copie à partir de cette nouvelle version, ou préférez-vous modifier celle que vous avez déjà ?",
@@ -588,15 +588,16 @@
         "search": {
           "searchbarHeader": "Données associées",
           "title": "Nouvelle organisation",
-          "text": "Recherchez pour lier une instance existante de l'organisation dans d'autres sources de données. Si non trouvée, vous pouvez la créer.",
-          "searchHeading": "Rechercher une autre instance",
+          "text": "Rechercher à importer une organisation. Si non trouvée, vous pouvez la créer.",
+          "searchHeading": "Importer une organisation",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "createNew": "Créer une nouvelle organisation",
           "create": "Créer",
           "footlightSectionHeading": "Mon Footlight",
           "artsDataSectionHeading": "Importées d'Artsdata",
-          "importsFromFootlight": "Importées de Footlight"
+          "importsFromFootlight": "Importées de Footlight",
+          "searchPlaceholder": "Rechercher par nom ou URL"
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
@@ -683,15 +684,16 @@
       },
       "createNew": {
         "search": {
-          "title": "Nouvelle fiche de lieu",
+          "title": "Nouveau lieu",
           "searchbarHeader": "Données associées",
-          "searchHeading": "Rechercher une autre instance",
-          "text": "Recherchez pour lier une instance existante du lieu dans d'autres sources de données. Si non trouvée, vous pouvez le créer.",
+          "searchHeading": "Importer un lieu",
+          "text": "Rechercher à importer un lieu. Si non trouvée, vous pouvez le créer.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "Mon Footlight",
           "artsDataSectionHeading": "Importées d'Artsdata",
-          "importsFromFootlight": "Importées de Footlight"
+          "importsFromFootlight": "Importées de Footlight",
+          "searchPlaceholder": "Rechercher par nom ou URL"
         },
         "addPlace": {
           "newPlace": "Nouvelle fiche de lieu",
@@ -833,13 +835,14 @@
         "search": {
           "title": "Nouvelle personne",
           "searchbarHeader": "Données associées",
-          "searchHeading": "Rechercher une autre instance",
-          "text": "Recherchez pour établir un lien avec une instance existante de la personne dans d'autres sources de données. Si vous ne trouvez pas la personne, vous pouvez créer sa fiche.",
+          "searchHeading": "Importer une personne",
+          "text": "Rechercher à importer une personne. Si non trouvée, vous pouvez la créer.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "Mon Footlight",
           "artsDataSectionHeading": "Importées d'Artsdata",
-          "importsFromFootlight": "Importées de Footlight"
+          "importsFromFootlight": "Importées de Footlight",
+          "searchPlaceholder": "Rechercher par nom ou URL"
         },
         "addPerson": {
           "newPerson": "Nouvelle personne",
