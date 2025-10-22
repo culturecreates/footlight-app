@@ -512,7 +512,7 @@
       "createNew": {
         "search": {
           "title": "Ajouter un événement",
-          "text": "Rechercher à Importer un événement. Si non trouvée, vous pouvez le créer.",
+          "text": "Rechercher à importer un événement. Si non trouvée, vous pouvez le créer.",
           "searchbarHeader": "Données associées",
           "searchHeading": "Importer un événement",
           "breadcrumb": "Retour à l'écran précédent",
@@ -588,7 +588,7 @@
         "search": {
           "searchbarHeader": "Données associées",
           "title": "Nouvelle organisation",
-          "text": "Rechercher à Importer une organisation. Si non trouvée, vous pouvez la créer.",
+          "text": "Rechercher à importer une organisation. Si non trouvée, vous pouvez la créer.",
           "searchHeading": "Importer une organisation",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
@@ -687,7 +687,7 @@
           "title": "Nouveau lieu",
           "searchbarHeader": "Données associées",
           "searchHeading": "Importer un lieu",
-          "text": "Rechercher à Importer un lieu. Si non trouvée, vous pouvez le créer.",
+          "text": "Rechercher à importer un lieu. Si non trouvée, vous pouvez le créer.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "Mon Footlight",
@@ -836,7 +836,7 @@
           "title": "Nouvelle personne",
           "searchbarHeader": "Données associées",
           "searchHeading": "Importer une personne",
-          "text": "Rechercher à Importer une personne. Si non trouvée, vous pouvez la créer.",
+          "text": "Rechercher à importer une personne. Si non trouvée, vous pouvez la créer.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "Mon Footlight",
