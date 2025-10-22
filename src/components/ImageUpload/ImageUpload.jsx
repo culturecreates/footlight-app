@@ -27,6 +27,7 @@ function ImageUpload(props) {
     formName,
     isCalendarLogo,
     thumbnailImage,
+    isTransparent,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -219,6 +220,7 @@ function ImageUpload(props) {
                       style={{
                         width: width ? `${width}px` : 'auto',
                         minWidth: width ? `${width}px` : 'none',
+                        ...(isTransparent ? { backgroundColor: '#b4b4b4' } : {}),
                       }}
                       src={imageUrl || (file?.url ?? file?.thumbUrl)}
                     />
@@ -343,6 +345,7 @@ function ImageUpload(props) {
               style={{
                 maxWidth: '423px',
                 width: '100%',
+                ...(isTransparent ? { backgroundColor: '#b4b4b4' } : {}),
               }}
             />
           ) : (

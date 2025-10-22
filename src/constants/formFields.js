@@ -419,6 +419,7 @@ export const formFieldValue = [
           largeAspectRatio={largeAspectRatio}
           thumbnailAspectRatio={thumbnailAspectRatio}
           formName={name}
+          isTransparent={eventImageData?.isTransparent ?? false}
         />
         {name?.includes(mappedFieldTypes.IMAGE) && (
           <Form.Item

@@ -652,11 +652,16 @@ function Organizations() {
                     }}
                     renderItem={(item, index) => {
                       const mainImageData = item?.image?.find((image) => image?.isMain) || null;
+                      const isTransparent =
+                        (item?.logo?.thumbnail?.uri && item?.logo?.isTransparent) ||
+                        (mainImageData?.original?.uri && mainImageData?.isTransparent) ||
+                        false;
                       return (
                         <ListItem
                           data-cy={`antd-organization-list-item-${index}`}
                           key={index}
                           id={index}
+                          isTransparent={isTransparent}
                           logo={item?.logo?.thumbnail?.uri ?? mainImageData?.original?.uri}
                           defaultLogo={
                             <Icon

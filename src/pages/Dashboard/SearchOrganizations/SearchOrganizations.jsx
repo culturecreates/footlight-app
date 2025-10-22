@@ -207,6 +207,7 @@ function SearchOrganizations() {
                               calendarContentLanguage: calendarContentLanguage,
                             })}
                             artsDataLink={createArtsDataLink(organizer?.uri)}
+                            isTransparent={organizer?.logo?.isTransparent ?? false}
                             Logo={
                               organizer.logo ? (
                                 <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />
@@ -270,6 +271,7 @@ function SearchOrganizations() {
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
+                                isTransparent={organizer?.logo?.isTransparent ?? false}
                                 artsDataLink={artsDataLinkChecker(organizer?.uri)}
                                 Logo={
                                   organizer.logo ? (
