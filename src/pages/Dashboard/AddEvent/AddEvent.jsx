@@ -2212,33 +2212,42 @@ function AddEvent() {
               };
             });
           }
-          data = {
-            ...data,
-            additionalType: [
-              ...(Array.isArray(data.additionalType) ? data.additionalType : []),
-              ...objectKeywords,
-            ].filter((type) => type),
+          const ensureArray = (value) => (Array.isArray(value) ? value : []);
 
-            audience: [
-              ...(Array.isArray(data.audience) ? data.audience : []),
-              ...objectKeywords,
-              ...data.additionalType,
-            ].filter((audience) => audience),
+          const addFields = (data) => {
+            const additionalType = [...ensureArray(data.additionalType), ...ensureArray(objectKeywords)].filter(
+              Boolean,
+            );
 
-            discipline: [
-              ...(Array.isArray(data.discipline) ? data.discipline : []),
-              ...objectKeywords,
-              ...data.additionalType,
-            ].filter((discipline) => discipline),
-            keywords: stringKeywords,
-            sameAs: [
-              ...data.sameAs,
+            const audience = [...ensureArray(data.audience), ...ensureArray(objectKeywords), ...additionalType].filter(
+              Boolean,
+            );
+
+            const discipline = [
+              ...ensureArray(data.discipline),
+              ...ensureArray(objectKeywords),
+              ...additionalType,
+            ].filter(Boolean);
+
+            const sameAs = [
+              ...ensureArray(data.sameAs),
               {
                 type: sameAsTypes.ARTSDATA_IDENTIFIER,
                 uri: data.uri,
               },
-            ],
+            ];
+
+            return {
+              ...data,
+              additionalType,
+              audience,
+              discipline,
+              keywords: stringKeywords,
+              sameAs,
+            };
           };
+
+          data = addFields(data);
 
           setArtsData(data);
           setAddedFields(initialAddedFields);
