@@ -2219,13 +2219,17 @@ function AddEvent() {
               ...objectKeywords,
             ].filter((type) => type),
 
-            audience: [...(Array.isArray(data.audience) ? data.audience : []), ...objectKeywords].filter(
-              (audience) => audience,
-            ),
+            audience: [
+              ...(Array.isArray(data.audience) ? data.audience : []),
+              ...objectKeywords,
+              ...data.additionalType,
+            ].filter((audience) => audience),
 
-            discipline: [...(Array.isArray(data.discipline) ? data.discipline : []), ...objectKeywords].filter(
-              (discipline) => discipline,
-            ),
+            discipline: [
+              ...(Array.isArray(data.discipline) ? data.discipline : []),
+              ...objectKeywords,
+              ...data.additionalType,
+            ].filter((discipline) => discipline),
             keywords: stringKeywords,
             sameAs: [
               ...data.sameAs,
