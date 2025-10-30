@@ -159,8 +159,8 @@ function SearchPlaces() {
     !initialPlacesLoading && (
       <NewEntityLayout
         heading={t('dashboard.places.createNew.search.title')}
-        entityName={t('dashboard.places.createNew.search.searchbarHeader')}
-        text={t('dashboard.places.createNew.search.text')}>
+        text={t('dashboard.places.createNew.search.text')}
+        searchHeading={t('dashboard.places.createNew.search.searchHeading')}>
         <div className="search-bar-places">
           <Popover
             data-cy="popover-places-search"
@@ -371,7 +371,7 @@ function SearchPlaces() {
             <EventsSearch
               data-cy="input-place-search"
               style={{ borderRadius: '4px' }}
-              placeholder="Search places"
+              placeholder={t('dashboard.places.createNew.search.searchPlaceholder')}
               autoFocus={true}
               onClick={(e) => {
                 setQuickCreateKeyword(e.target.value);

@@ -173,7 +173,7 @@ function SearchEvents() {
     !initialEventsLoading && (
       <NewEntityLayout
         heading={t('dashboard.events.createNew.search.title')}
-        entityName={t('dashboard.events.createNew.search.searchbarHeader')}
+        searchHeading={t('dashboard.events.createNew.search.searchHeading')}
         text={t('dashboard.events.createNew.search.text')}>
         <div className="search-bar-places">
           <Popover
