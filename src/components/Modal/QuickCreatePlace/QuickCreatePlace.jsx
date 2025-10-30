@@ -368,8 +368,32 @@ function QuickCreatePlace(props) {
           ...placeObj,
           type: entitiesClass.place,
         };
-        setLocationPlace(placesOptions([placeObj], user, calendarContentLanguage)[0], sourceOptions.CMS);
-        eventForm.setFieldValue('locationPlace', id);
+        if (placeObj.regions?.length > 0) {
+          allTaxonomyData?.data?.map((taxonomy) => {
+            if (taxonomy?.mappedToField == 'Region') {
+              taxonomy?.concept?.forEach((t) => {
+                if (placeObj?.regions[0]?.entityId == t?.id) {
+                  placeObj = { ...placeObj, regions: [t] };
+                  setLocationPlace(
+                    placesOptions(
+                      [placeObj],
+                      user,
+                      calendarContentLanguage,
+                      sourceOptions.CMS,
+                      currentCalendarData,
+                      true,
+                    )[0],
+                  );
+                  setLocationPlace(placesOptions([placeObj], user, calendarContentLanguage)[0], sourceOptions.CMS);
+                  eventForm.setFieldValue('locationPlace', id);
+                }
+              });
+            }
+          });
+        } else {
+          setLocationPlace(placesOptions([placeObj], user, calendarContentLanguage)[0], sourceOptions.CMS);
+          eventForm.setFieldValue('locationPlace', id);
+        }
       })
       .catch((error) => console.log(error));
   };
