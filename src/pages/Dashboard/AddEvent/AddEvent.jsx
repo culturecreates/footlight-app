@@ -3143,7 +3143,12 @@ function AddEvent() {
                       treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage),
                       artsData?.additionalType
                         ?.map((type) => type?.label)
-                        ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+                        ?.flatMap((obj) =>
+                          Object.values(obj).flatMap((val) =>
+                            Array.isArray(val) ? val.map((v) => v?.toLowerCase()) : val?.toLowerCase?.(),
+                          ),
+                        )
+                        ?.filter(Boolean),
                     )?.map((concept) => concept?.value)
                   }
                   hidden={
@@ -3191,7 +3196,12 @@ function AddEvent() {
                       treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage),
                       artsData?.audience
                         ?.map((type) => type?.label)
-                        ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+                        ?.flatMap((obj) =>
+                          Object.values(obj).flatMap((val) =>
+                            Array.isArray(val) ? val.map((v) => v?.toLowerCase()) : val?.toLowerCase?.(),
+                          ),
+                        )
+                        ?.filter(Boolean),
                     )?.map((concept) => concept?.value)
                   }
                   style={{
@@ -3237,7 +3247,12 @@ function AddEvent() {
                       treeTaxonomyOptions(allTaxonomyData, user, 'EventDiscipline', false, calendarContentLanguage),
                       artsData?.discipline
                         ?.map((type) => type?.label)
-                        ?.flatMap((obj) => Object.values(obj).map((val) => val.toLowerCase())),
+                        ?.flatMap((obj) =>
+                          Object.values(obj).flatMap((val) =>
+                            Array.isArray(val) ? val.map((v) => v?.toLowerCase()) : val?.toLowerCase?.(),
+                          ),
+                        )
+                        ?.filter(Boolean),
                     )?.map((concept) => concept?.value)
                   }
                   hidden={
