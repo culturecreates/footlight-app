@@ -4276,6 +4276,7 @@ function AddEvent() {
                         }
                         creatorId={organizer?.creatorId}
                         fallbackConfig={organizer?.fallBackStatus}
+                        isTransparent={organizer?.isTransparent}
                       />
                     );
                   })}
@@ -4779,6 +4780,7 @@ function AddEvent() {
                         }
                         creatorId={performer?.creatorId}
                         fallbackConfig={performer?.fallBackStatus}
+                        isTransparent={performer?.isTransparent}
                       />
                     );
                   })}
@@ -5025,6 +5027,7 @@ function AddEvent() {
                         calendarContentLanguage={calendarContentLanguage}
                         creatorId={supporter?.creatorId}
                         fallbackConfig={supporter?.fallBackStatus}
+                        isTransparent={supporter?.isTransparent}
                       />
                     );
                   })}

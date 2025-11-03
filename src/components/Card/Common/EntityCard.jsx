@@ -5,10 +5,13 @@ import { LinkOutlined } from '@ant-design/icons';
 import Link from 'antd/lib/typography/Link';
 
 const EntityCard = (props) => {
-  const { title, description, artsDataLink, Logo, linkText, onClick } = props;
+  const { title, description, artsDataLink, Logo, linkText, onClick, isTransparent } = props;
   return (
     <div className="search-option-entity-card" onClick={onClick} data-cy="div-entity-option">
-      <div className="image-container" data-cy="div-entit-logo">
+      <div
+        className="image-container"
+        data-cy="div-entit-logo"
+        style={{ ...(isTransparent ? { backgroundColor: '#b4b4b4' } : {}) }}>
         {Logo}
       </div>
       <div className="text-container">

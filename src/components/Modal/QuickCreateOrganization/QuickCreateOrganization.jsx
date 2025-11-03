@@ -337,6 +337,7 @@ function QuickCreateOrganization(props) {
               const logoImageResponse = await addImage({ data: formdata, calendarId }).unwrap();
 
               organizationPayload['logo'] = {
+                isTransparent: logoImageResponse?.data?.isTransparent ?? false,
                 original: {
                   entityId: logoImageResponse?.data?.original?.entityId,
                   height: logoImageResponse?.data?.height,
