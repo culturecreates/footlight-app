@@ -27,6 +27,7 @@ function ImageUpload(props) {
     formName,
     isCalendarLogo,
     thumbnailImage,
+    isTransparent,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,8 @@ function ImageUpload(props) {
         return acc;
       }, {}),
   });
+
+  const [isUploadTransparent, setIsUploadTransparent] = useState(false);
   const [currentCalendarData] = useOutletContext();
 
   const [cropValues, setCropValues] = useState({
@@ -153,6 +156,10 @@ function ImageUpload(props) {
 
       const file = info.file.originFileObj;
 
+      if (file.isTransparent !== undefined) {
+        setIsUploadTransparent(file.isTransparent);
+      }
+
       getBase64(file, (url) => {
         setLoading(false);
         setImageUrl(url);
@@ -219,6 +226,7 @@ function ImageUpload(props) {
                       style={{
                         width: width ? `${width}px` : 'auto',
                         minWidth: width ? `${width}px` : 'none',
+                        ...(isTransparent || isUploadTransparent ? { backgroundColor: '#b4b4b4' } : {}),
                       }}
                       src={imageUrl || (file?.url ?? file?.thumbUrl)}
                     />
@@ -343,6 +351,7 @@ function ImageUpload(props) {
               style={{
                 maxWidth: '423px',
                 width: '100%',
+                ...(isTransparent || isUploadTransparent ? { backgroundColor: '#b4b4b4' } : {}),
               }}
             />
           ) : (

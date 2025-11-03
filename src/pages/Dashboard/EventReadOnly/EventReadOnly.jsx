@@ -989,6 +989,7 @@ function EventReadOnly() {
                                           entityType: organizer?.type,
                                           entityId: organizer?.value,
                                         }}
+                                        isTransparent={organizer?.isTransparent ?? false}
                                       />
                                     );
                                   })}
@@ -1072,6 +1073,7 @@ function EventReadOnly() {
                                           entityId: performer?.value,
                                         }}
                                         itemWidth="100%"
+                                        isTransparent={performer?.isTransparent ?? false}
                                       />
                                     );
                                   })}
@@ -1102,6 +1104,7 @@ function EventReadOnly() {
                                           entityType: supporter?.type,
                                           entityId: supporter?.value,
                                         }}
+                                        isTransparent={supporter?.isTransparent ?? false}
                                       />
                                     );
                                   })}
