@@ -7,7 +7,7 @@ import { featureFlags } from '../../utils/featureFlags';
 import FeatureFlag from '../FeatureFlag/FeatureFlag';
 import { LeftOutlined } from '@ant-design/icons';
 
-const NewEntityLayout = ({ children, heading, text, entityName }) => {
+const NewEntityLayout = ({ children, heading, text, entityName, searchHeading }) => {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ const NewEntityLayout = ({ children, heading, text, entityName }) => {
           <Row className="content">
             <Col flex="423px">
               <h2 className="sub-heading" data-cy="heading-entity-subheading">
-                {t('dashboard.organization.createNew.search.searchHeading')}
+                {searchHeading}
               </h2>
               <p className="text" data-cy="para-entity-text">
                 {text}
