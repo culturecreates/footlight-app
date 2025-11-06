@@ -59,6 +59,10 @@ const standardTaxonomyMaps = [
     mappedToField: 'Audience',
     queryKey: 'audiences',
   },
+  {
+    mappedToField: 'inLanguage',
+    queryKey: 'in-language',
+  },
 ];
 
 function Events() {
