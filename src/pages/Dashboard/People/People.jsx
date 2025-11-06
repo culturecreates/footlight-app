@@ -48,7 +48,7 @@ const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
   {
     mappedToField: 'Occupation',
-    queryKey: 'occupationIds',
+    queryKey: 'occupation-ids',
   },
 ];
 
