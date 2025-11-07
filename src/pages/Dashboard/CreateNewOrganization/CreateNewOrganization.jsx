@@ -371,7 +371,7 @@ function CreateNewOrganization() {
             (values?.image || (values?.image && values?.image?.length > 0)) &&
             (!values?.logo || (Array.isArray(values?.logo) && values?.logo?.length === 0))
           ) {
-            organizationPayload['logo'] = [];
+            organizationPayload['logo'] = null;
             if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
               const formdata = new FormData();
               formdata.append('file', values?.image[0].originFileObj);
