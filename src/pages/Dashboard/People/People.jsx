@@ -48,7 +48,7 @@ const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
   {
     mappedToField: 'Occupation',
-    queryKey: 'occupationIds',
+    queryKey: 'occupation-ids',
   },
 ];
 
@@ -294,7 +294,7 @@ function People() {
     );
     Object.keys(taxonomyFilter)?.forEach((taxonomy) => {
       if (taxonomyFilter[taxonomy]?.length > 0) {
-        taxonomyFilter[taxonomy]?.forEach((concept) => query.append('concept', concept));
+        taxonomyFilter[taxonomy]?.forEach((concept) => query.append('concept-ids', concept));
       }
     });
 
