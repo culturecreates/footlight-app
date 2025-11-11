@@ -1,4 +1,6 @@
 import imageCompression from 'browser-image-compression';
+import { message, Upload } from 'antd';
+import i18n from 'i18next';
 
 const hasTransparency = (file) => {
   return new Promise((resolve) => {
@@ -52,7 +54,7 @@ const hasTransparency = (file) => {
 export const beforeUpload = async (file) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
-    message.error(t('dashboard.events.addEditEvent.otherInformation.image.subHeading'));
+    message.error(i18n.t('dashboard.events.addEditEvent.otherInformation.image.subHeading'));
     return Upload.LIST_IGNORE;
   }
 
@@ -66,7 +68,6 @@ export const beforeUpload = async (file) => {
     const originalWidth = img.width;
     const originalHeight = img.height;
     const originalPixels = originalWidth * originalHeight;
-    const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
 
     if (originalPixels > 1e7) {
       const scaleFactor = Math.sqrt(1e7 / originalPixels);
@@ -87,8 +88,6 @@ export const beforeUpload = async (file) => {
       compressedImg.src = compressedDataUrl;
       await new Promise((res) => (compressedImg.onload = res));
 
-      const compressedSizeMB = (compressedFile.size / (1024 * 1024)).toFixed(2);
-
       compressedFile.width = compressedImg.width;
       compressedFile.height = compressedImg.height;
       compressedFile.isTransparent = isTransparent;
@@ -103,7 +102,6 @@ export const beforeUpload = async (file) => {
     return file;
   } catch (err) {
     console.error('Image compression failed:', err);
-    message.error('Image compression failed');
     return Upload.LIST_IGNORE;
   }
 };

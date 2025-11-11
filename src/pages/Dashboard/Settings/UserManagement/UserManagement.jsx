@@ -370,7 +370,8 @@ const UserManagement = (props) => {
 
       case 'copyInvitationLink':
         if (item?.userStatus === 'ACTIVE') invitationLink = import.meta.env.VITE_APP_ACCEPT_URL + item?.invitationId;
-        else if (item?.userStatus === 'INVITED') invitationLink = import.meta.env.VITE_APP_INVITE_URL + item?.invitationId;
+        else if (item?.userStatus === 'INVITED')
+          invitationLink = import.meta.env.VITE_APP_INVITE_URL + item?.invitationId;
         copyText({
           textToCopy: invitationLink,
           message: t('dashboard.settings.userManagement.tooltip.modal.copyText'),
