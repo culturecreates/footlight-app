@@ -651,7 +651,7 @@ function OrganizationsReadOnly() {
                                     )
                                   )
                                     return (
-                                      <div>
+                                      <div key={index}>
                                         <p
                                           className="read-only-event-content-sub-title-primary"
                                           data-cy={`para-organization-dynamic-taxonomy-name-${index}`}>

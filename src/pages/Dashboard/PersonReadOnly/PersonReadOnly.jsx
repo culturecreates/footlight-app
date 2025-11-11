@@ -346,7 +346,7 @@ function PersonReadOnly() {
                                         )
                                       )
                                         return (
-                                          <div>
+                                          <div key={index}>
                                             <p className="read-only-event-content-sub-title-primary">
                                               {bilingual({
                                                 data: taxonomy?.name,

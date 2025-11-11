@@ -562,6 +562,7 @@ function EventReadOnly() {
                                 )
                                   return (
                                     <div
+                                      key={index}
                                       style={{
                                         display: dynamicAdminOnlyFields?.includes(taxonomy?.id)
                                           ? adminCheckHandler({ calendar, user })
