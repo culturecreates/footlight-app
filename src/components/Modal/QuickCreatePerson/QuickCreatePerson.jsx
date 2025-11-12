@@ -384,7 +384,7 @@ function QuickCreatePerson(props) {
                             return formFieldValue?.map((formField, index) => {
                               if (formField?.type === field.type) {
                                 return (
-                                  <div key={`field-${sectionIndex}-${fieldIndex}-${index}`}>
+                                  <React.Fragment key={`field-${sectionIndex}-${fieldIndex}-${index}`}>
                                     {returnFormDataWithFields({
                                       field,
                                       formField,
@@ -404,7 +404,7 @@ function QuickCreatePerson(props) {
                                       adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                                       setShowDialog,
                                     })}
-                                  </div>
+                                  </React.Fragment>
                                 );
                               }
                             });
