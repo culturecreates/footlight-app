@@ -225,7 +225,9 @@ function AddEvent() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [dynamicFields, setDynamicFields] = useState([]);
 
-  setContentBackgroundColor('#F9FAFF');
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);

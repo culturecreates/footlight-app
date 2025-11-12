@@ -36,7 +36,11 @@ function SearchEvents() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
+
   const navigate = useNavigate();
 
   const { calendarId } = useParams();

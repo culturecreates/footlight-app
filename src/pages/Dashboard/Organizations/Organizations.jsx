@@ -64,7 +64,6 @@ function Organizations() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#fff');
 
   let taxonomyClassQuery = new URLSearchParams();
 
@@ -261,6 +260,10 @@ function Organizations() {
   };
 
   const debounceUsersSearch = useCallback(useDebounce(userSearch, SEARCH_DELAY), []);
+
+  useEffect(() => {
+    setContentBackgroundColor('#fff');
+  }, [setContentBackgroundColor]);
 
   useEffect(() => {
     let uniqueArray = removeObjectArrayDuplicates(

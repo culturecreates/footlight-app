@@ -376,32 +376,36 @@ function QuickCreatePerson(props) {
                       </p>
                     </Col>
                   </Row>
-                  {fields?.map((section) => {
+                  {fields?.map((section, sectionIndex) => {
                     if (section?.length > 0)
                       return (
-                        <>
-                          {section?.map((field) => {
+                        <React.Fragment key={`section-${sectionIndex}`}>
+                          {section?.map((field, fieldIndex) => {
                             return formFieldValue?.map((formField, index) => {
                               if (formField?.type === field.type) {
-                                return returnFormDataWithFields({
-                                  field,
-                                  formField,
-                                  allTaxonomyData,
-                                  user,
-                                  calendarContentLanguage,
-                                  entityId: null,
-                                  entityData: personData,
-                                  index,
-                                  t,
-                                  adminCheck: adminCheckHandler({ calendar, user }),
-                                  currentCalendarData,
-                                  imageCropOpen,
-                                  setImageCropOpen,
-                                  form,
-                                  mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
-                                  adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
-                                  setShowDialog,
-                                });
+                                return (
+                                  <div key={`field-${sectionIndex}-${fieldIndex}-${index}`}>
+                                    {returnFormDataWithFields({
+                                      field,
+                                      formField,
+                                      allTaxonomyData,
+                                      user,
+                                      calendarContentLanguage,
+                                      entityId: null,
+                                      entityData: personData,
+                                      index,
+                                      t,
+                                      adminCheck: adminCheckHandler({ calendar, user }),
+                                      currentCalendarData,
+                                      imageCropOpen,
+                                      setImageCropOpen,
+                                      form,
+                                      mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
+                                      adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
+                                      setShowDialog,
+                                    })}
+                                  </div>
+                                );
                               }
                             });
                           })}
@@ -413,7 +417,7 @@ function QuickCreatePerson(props) {
                               ) {
                                 return (
                                   <Form.Item
-                                    key={index}
+                                    key={taxonomy?.id}
                                     name={['dynamicFields', taxonomy?.id]}
                                     data-cy={`form-item-person-dynamic-fields-${index}`}
                                     label={bilingual({
@@ -456,7 +460,7 @@ function QuickCreatePerson(props) {
                                 );
                               }
                             })}
-                        </>
+                        </React.Fragment>
                       );
                   })}
                 </Form>

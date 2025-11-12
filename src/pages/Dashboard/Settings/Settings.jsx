@@ -31,8 +31,9 @@ const Settings = () => {
     setContentBackgroundColor,
   ] = useOutletContext();
 
-  // Set content background color
-  setContentBackgroundColor('#fff');
+  useEffect(() => {
+    setContentBackgroundColor('#fff');
+  }, [setContentBackgroundColor]);
 
   useEffect(() => {
     const disabledTab = document.querySelector(

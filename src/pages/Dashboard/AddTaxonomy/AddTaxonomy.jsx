@@ -72,7 +72,6 @@ const AddTaxonomy = () => {
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const taxonomyId = searchParams.get('id');
-  setContentBackgroundColor('#F9FAFF');
 
   const [transformedConceptData, setTransformedConceptData] = useState([]);
   const [standardFields, setStandardFields] = useState([]);
@@ -106,6 +105,10 @@ const AddTaxonomy = () => {
       })
       .filter((item) => Object.keys(item.name).length > 0);
   }
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   useEffect(() => {
     if (taxonomyId && currentCalendarData) {

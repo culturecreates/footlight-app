@@ -482,42 +482,46 @@ function QuickCreateOrganization(props) {
                     </p>
                   </Col>
                 </Row>
-                {fields?.map((section) => {
+                {fields?.map((section, sectionIndex) => {
                   if (section?.length > 0)
                     return (
-                      <>
-                        {section?.map((field) => {
+                      <React.Fragment key={`section-${sectionIndex}`}>
+                        {section?.map((field, fieldIndex) => {
                           return formFieldValue?.map((formField, index) => {
                             if (formField?.type === field.type) {
-                              return returnFormDataWithFields({
-                                field,
-                                formField,
-                                allTaxonomyData,
-                                user,
-                                calendarContentLanguage,
-                                entityData: organizationData,
-                                index,
-                                t,
-                                adminCheck: adminCheckHandler({ calendar, user }),
-                                currentCalendarData,
-                                imageCropOpen,
-                                setImageCropOpen,
-                                placesSearch: debounceSearchPlace,
-                                allPlacesList,
-                                allPlacesArtsdataList,
-                                allPlacesImportsFootlight,
-                                locationPlace,
-                                setLocationPlace,
-                                setIsPopoverOpen,
-                                isPopoverOpen,
-                                form,
-                                // placeNavigationHandler,
-                                isEntitiesFetching,
-                                isExternalSourceFetching,
-                                mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
-                                adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
-                                setShowDialog,
-                              });
+                              return (
+                                <div key={`field-${sectionIndex}-${fieldIndex}-${index}`}>
+                                  {returnFormDataWithFields({
+                                    field,
+                                    formField,
+                                    allTaxonomyData,
+                                    user,
+                                    calendarContentLanguage,
+                                    entityData: organizationData,
+                                    index,
+                                    t,
+                                    adminCheck: adminCheckHandler({ calendar, user }),
+                                    currentCalendarData,
+                                    imageCropOpen,
+                                    setImageCropOpen,
+                                    placesSearch: debounceSearchPlace,
+                                    allPlacesList,
+                                    allPlacesArtsdataList,
+                                    allPlacesImportsFootlight,
+                                    locationPlace,
+                                    setLocationPlace,
+                                    setIsPopoverOpen,
+                                    isPopoverOpen,
+                                    form,
+                                    // placeNavigationHandler,
+                                    isEntitiesFetching,
+                                    isExternalSourceFetching,
+                                    mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
+                                    adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
+                                    setShowDialog,
+                                  })}
+                                </div>
+                              );
                             }
                           });
                         })}
@@ -529,7 +533,7 @@ function QuickCreateOrganization(props) {
                             ) {
                               return (
                                 <Form.Item
-                                  key={index}
+                                  key={taxonomy?.id}
                                   name={['dynamicFields', taxonomy?.id]}
                                   data-cy={`form-item-organizer-dynamic-fields-${index}`}
                                   label={bilingual({
@@ -572,7 +576,7 @@ function QuickCreateOrganization(props) {
                               );
                             }
                           })}
-                      </>
+                      </React.Fragment>
                     );
                 })}
               </Form>

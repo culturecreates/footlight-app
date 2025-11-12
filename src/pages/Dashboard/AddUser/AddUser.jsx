@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LeftOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, message, notification, Popover, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
@@ -19,7 +19,6 @@ import {
 } from '../../../services/users';
 import AuthenticationInput from '../../../components/Input/Common/AuthenticationInput';
 import { userLanguages } from '../../../constants/userLanguages';
-import { useState, useEffect } from 'react';
 import { userRoles } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, getUserDetails, setUser } from '../../../redux/reducer/userSlice';
@@ -61,7 +60,11 @@ const AddUser = () => {
     _refetch,
     allCalendarsData,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
+
   const userId = searchParams.get('id');
   const timestampRef = useRef(Date.now()).current;
 

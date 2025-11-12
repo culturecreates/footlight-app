@@ -32,156 +32,163 @@ import AddTaxonomy from '../pages/Dashboard/AddTaxonomy/AddTaxonomy';
 import SearchEvents from '../pages/Dashboard/SearchEvents';
 import { CreateSystemUpdate, SystemUpdates } from '../pages/Dashboard/Messages';
 
-export const router = createBrowserRouter([
-  {
-    path: PathName.Login,
-    element: <Login />,
-  },
-  { path: PathName.WellKnownPasswordReset, element: <ResetPassword /> },
-  {
-    path: PathName.ForgotPassword,
-    element: <ForgotPassword />,
-  },
+export const router = createBrowserRouter(
+  [
+    {
+      path: PathName.Login,
+      element: <Login />,
+    },
+    { path: PathName.WellKnownPasswordReset, element: <ResetPassword /> },
+    {
+      path: PathName.ForgotPassword,
+      element: <ForgotPassword />,
+    },
 
-  {
-    path: PathName.ResetPassword,
-    element: <ResetPassword />,
-  },
-  {
-    path: PathName.AcceptInvitation,
-    element: <CreateAccount />,
-  },
-  {
-    path: PathName.Join,
-    element: <CreateAccount />,
-  },
-  {
-    path: PathName.Dashboard,
-    element: <Dashboard />,
-    errorElement: <ErrorAlert errorType="general" />,
-    children: [
-      {
-        path: `:calendarId${PathName.Events}`,
-        element: <Events />,
-      },
-      {
-        path: `:calendarId${PathName.Events}/:eventId`,
-        element: <EventReadOnly />,
-        handle: {
-          crumb: () => <Translation>{(t) => t('dashboard.sidebar.events')}</Translation>,
+    {
+      path: PathName.ResetPassword,
+      element: <ResetPassword />,
+    },
+    {
+      path: PathName.AcceptInvitation,
+      element: <CreateAccount />,
+    },
+    {
+      path: PathName.Join,
+      element: <CreateAccount />,
+    },
+    {
+      path: PathName.Dashboard,
+      element: <Dashboard />,
+      errorElement: <ErrorAlert errorType="general" />,
+      children: [
+        {
+          path: `:calendarId${PathName.Events}`,
+          element: <Events />,
         },
-      },
-      {
-        path: `:calendarId${PathName.Events}${PathName.AddEvent}`,
-        element: <AddEvent />,
-        children: [
-          {
-            path: ':eventId',
-            element: <AddEvent />,
+        {
+          path: `:calendarId${PathName.Events}/:eventId`,
+          element: <EventReadOnly />,
+          handle: {
+            crumb: () => <Translation>{(t) => t('dashboard.sidebar.events')}</Translation>,
           },
-        ],
-      },
-      {
-        path: `:calendarId${PathName.Profile}/:userId`,
-        element: <Users />,
-      },
-      {
-        path: `:calendarId${PathName.Places}`,
-        element: <Places />,
-      },
-      {
-        path: `:calendarId${PathName.Places}${PathName.Search}`,
-        element: <SearchPlaces />,
-      },
-      {
-        path: `:calendarId${PathName.Events}${PathName.Search}`,
-        element: <SearchEvents />,
-      },
-      {
-        path: `:calendarId${PathName.Places}/:placeId`,
-        element: <PlaceReadOnly />,
-        handle: {
-          crumb: () => <Translation>{(t) => t('dashboard.places.place')}</Translation>,
         },
-      },
-      {
-        path: `:calendarId${PathName.Places}${PathName.AddPlace}`,
-        element: <CreateNewPlace />,
-      },
-      {
-        path: `:calendarId${PathName.Organizations}`,
-        element: <Organizations />,
-      },
-      {
-        path: `:calendarId${PathName.Organizations}${PathName.Search}`,
-        element: <SearchOrganizations />,
-      },
-      {
-        path: `:calendarId${PathName.Organizations}/:organizationId`,
-        element: <OrganizationsReadOnly />,
-        handle: {
-          crumb: () => <Translation>{(t) => t('dashboard.organization.organizations')}</Translation>,
+        {
+          path: `:calendarId${PathName.Events}${PathName.AddEvent}`,
+          element: <AddEvent />,
+          children: [
+            {
+              path: ':eventId',
+              element: <AddEvent />,
+            },
+          ],
         },
-      },
-      {
-        path: `:calendarId${PathName.Organizations}${PathName.AddOrganization}`,
-        element: <CreateNewOrganization />,
-      },
-      {
-        path: `:calendarId${PathName.People}`,
-        element: <People />,
-      },
-      {
-        path: `:calendarId${PathName.People}${PathName.Search}`,
-        element: <SearchPerson />,
-      },
-      {
-        path: `:calendarId${PathName.People}/:personId`,
-        element: <PersonReadOnly />,
-        handle: {
-          crumb: () => <Translation>{(t) => t('dashboard.people.people')}</Translation>,
+        {
+          path: `:calendarId${PathName.Profile}/:userId`,
+          element: <Users />,
         },
-      },
-      {
-        path: `:calendarId${PathName.People}${PathName.AddPerson}`,
-        element: <CreateNewPerson />,
-      },
-      {
-        path: `:calendarId${PathName.Taxonomies}`,
-        element: <Taxonomy />,
-      },
-      {
-        path: `:calendarId${PathName.Taxonomies}${PathName.AddTaxonomySelectType}`,
-        element: <SelectTaxonomyType />,
-      },
-      {
-        path: `:calendarId${PathName.Taxonomies}${PathName.AddTaxonomy}`,
-        element: <AddTaxonomy />,
-      },
-      {
-        path: `:calendarId${PathName.Settings}`,
-        element: <Settings />,
-      },
-      {
-        path: `:calendarId${PathName.Settings}${PathName.UserManagement}/:userId`,
-        element: <UserReadOnly />,
-      },
-      {
-        path: `:calendarId${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
-        element: <AddUser />,
-      },
-      {
-        path: `:calendarId${PathName.Messages}${PathName.SystemUpdate}`,
-        element: <SystemUpdates />,
-      },
-      {
-        path: `:calendarId${PathName.Messages}${PathName.AddSystemUpdate}`,
-        element: <CreateSystemUpdate />,
-      },
-    ],
-  },
+        {
+          path: `:calendarId${PathName.Places}`,
+          element: <Places />,
+        },
+        {
+          path: `:calendarId${PathName.Places}${PathName.Search}`,
+          element: <SearchPlaces />,
+        },
+        {
+          path: `:calendarId${PathName.Events}${PathName.Search}`,
+          element: <SearchEvents />,
+        },
+        {
+          path: `:calendarId${PathName.Places}/:placeId`,
+          element: <PlaceReadOnly />,
+          handle: {
+            crumb: () => <Translation>{(t) => t('dashboard.places.place')}</Translation>,
+          },
+        },
+        {
+          path: `:calendarId${PathName.Places}${PathName.AddPlace}`,
+          element: <CreateNewPlace />,
+        },
+        {
+          path: `:calendarId${PathName.Organizations}`,
+          element: <Organizations />,
+        },
+        {
+          path: `:calendarId${PathName.Organizations}${PathName.Search}`,
+          element: <SearchOrganizations />,
+        },
+        {
+          path: `:calendarId${PathName.Organizations}/:organizationId`,
+          element: <OrganizationsReadOnly />,
+          handle: {
+            crumb: () => <Translation>{(t) => t('dashboard.organization.organizations')}</Translation>,
+          },
+        },
+        {
+          path: `:calendarId${PathName.Organizations}${PathName.AddOrganization}`,
+          element: <CreateNewOrganization />,
+        },
+        {
+          path: `:calendarId${PathName.People}`,
+          element: <People />,
+        },
+        {
+          path: `:calendarId${PathName.People}${PathName.Search}`,
+          element: <SearchPerson />,
+        },
+        {
+          path: `:calendarId${PathName.People}/:personId`,
+          element: <PersonReadOnly />,
+          handle: {
+            crumb: () => <Translation>{(t) => t('dashboard.people.people')}</Translation>,
+          },
+        },
+        {
+          path: `:calendarId${PathName.People}${PathName.AddPerson}`,
+          element: <CreateNewPerson />,
+        },
+        {
+          path: `:calendarId${PathName.Taxonomies}`,
+          element: <Taxonomy />,
+        },
+        {
+          path: `:calendarId${PathName.Taxonomies}${PathName.AddTaxonomySelectType}`,
+          element: <SelectTaxonomyType />,
+        },
+        {
+          path: `:calendarId${PathName.Taxonomies}${PathName.AddTaxonomy}`,
+          element: <AddTaxonomy />,
+        },
+        {
+          path: `:calendarId${PathName.Settings}`,
+          element: <Settings />,
+        },
+        {
+          path: `:calendarId${PathName.Settings}${PathName.UserManagement}/:userId`,
+          element: <UserReadOnly />,
+        },
+        {
+          path: `:calendarId${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
+          element: <AddUser />,
+        },
+        {
+          path: `:calendarId${PathName.Messages}${PathName.SystemUpdate}`,
+          element: <SystemUpdates />,
+        },
+        {
+          path: `:calendarId${PathName.Messages}${PathName.AddSystemUpdate}`,
+          element: <CreateSystemUpdate />,
+        },
+      ],
+    },
+    {
+      path: PathName.NotFound,
+      element: <ErrorAlert errorType="pageNotFound" />,
+    },
+  ],
   {
-    path: PathName.NotFound,
-    element: <ErrorAlert errorType="pageNotFound" />,
+    future: {
+      v7_startTransition: true,
+    },
   },
-]);
+);

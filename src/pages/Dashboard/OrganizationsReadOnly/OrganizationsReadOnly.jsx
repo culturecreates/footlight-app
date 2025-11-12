@@ -57,7 +57,6 @@ function OrganizationsReadOnly() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
 
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);
@@ -141,6 +140,10 @@ function OrganizationsReadOnly() {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
