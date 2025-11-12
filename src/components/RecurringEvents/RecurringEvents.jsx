@@ -2,6 +2,7 @@ import { Form, Select, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
+import { generateUUID } from '../../utils/generateUUID';
 import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../constants/dateTypes';
 import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
@@ -76,7 +77,7 @@ const RecurringEvents = function ({
           eventDetails.recurringEvent?.customDates || groupEventsByDate(eventDetails.subEventConfiguration);
         const custom = recurringDates?.map((item) => {
           const obj = {
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             name: 'test name',
             location: 'test Location',
             startDate: new Date(moment(item.startDate).format('YYYY/M/D')),
@@ -90,7 +91,7 @@ const RecurringEvents = function ({
                   ?.sort((a, b) => a?.startTime?.localeCompare(b?.startTime))
                   ?.map((customTime) => {
                     const objTime = {
-                      id: crypto.randomUUID(),
+                      id: generateUUID(),
                       startTime: customTime.startTime && moment(customTime.startTime, 'hh:mm a').format('hh:mm a'),
                       endTime: customTime.endTime && moment(customTime.endTime, 'hh:mm a').format('hh:mm a'),
                       start: customTime.startTime,
@@ -106,7 +107,7 @@ const RecurringEvents = function ({
       } else {
         const custom = eventDetails?.subEvents?.map((item) => {
           const obj = {
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             name: 'test name',
             location: 'test Location',
             startDate: new Date(moment(item.startDate ?? item.startDateTime).format('YYYY-MM-DD')),
@@ -206,7 +207,7 @@ const RecurringEvents = function ({
     setNumberofDates([].concat.apply([], date).length);
     const custom = [].concat.apply([], date).map((item) => {
       const obj = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         name: 'test name',
         location: 'test Location',
         startDate: item,
@@ -233,7 +234,7 @@ const RecurringEvents = function ({
       const date = moment(item, 'DD/MM/YYYY');
 
       const obj = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         name: 'test name',
         location: 'test Location',
         startDate: date.toDate(),
