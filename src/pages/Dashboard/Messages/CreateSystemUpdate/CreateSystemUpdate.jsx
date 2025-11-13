@@ -1,5 +1,5 @@
 import { Button, Col, Form, Grid, Input, message, Row, Typography } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import CreateMultiLingualFormItems from '../../../../layout/CreateMultiLingualFormItems';
@@ -36,9 +36,11 @@ const CreateSystemUpdate = () => {
   ] = useOutletContext();
   const { user } = useSelector(getUserDetails);
 
-  setContentBackgroundColor('#F9FAFF');
-
   const paddingValue = screens.md ? '24px 8px' : '16px 0px';
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
   const calendarContentLanguage = Object.values(interfaceLanguage);
 
   const [createNotification] = useCreateNotificationMutation();

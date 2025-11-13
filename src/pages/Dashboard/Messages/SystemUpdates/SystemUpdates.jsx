@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGetNotificationsQuery } from '../../../../services/notification';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Typography, Spin, Row, Col, Card, Grid } from 'antd';
@@ -33,9 +33,11 @@ const SystemUpdates = () => {
     setContentBackgroundColor,
   ] = useOutletContext();
 
-  setContentBackgroundColor('#F9FAFF');
-
   const { timezone } = currentCalendarData;
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   const { currentData: data, isLoading } = useGetNotificationsQuery(
     { calendarId, messageType: messageTypeMap.SYSTEM },

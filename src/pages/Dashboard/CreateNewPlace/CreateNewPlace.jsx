@@ -115,7 +115,11 @@ function CreateNewPlace() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
+
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);

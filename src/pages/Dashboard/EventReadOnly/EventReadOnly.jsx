@@ -68,7 +68,10 @@ function EventReadOnly() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   const {
     data: eventData,
@@ -777,7 +780,9 @@ function EventReadOnly() {
                                 {eventData?.eventStatus && (
                                   <p className="read-only-event-content">
                                     {eventStatusOptions?.map((status) => {
-                                      if (status?.value === eventData?.eventStatus) return status?.label;
+                                      if (status?.value === eventData?.eventStatus)
+                                        return <span key={status?.value}>{status?.label}</span>;
+                                      return null;
                                     })}
                                   </p>
                                 )}

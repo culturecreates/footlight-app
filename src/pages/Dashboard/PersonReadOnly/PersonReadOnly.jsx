@@ -56,7 +56,6 @@ function PersonReadOnly() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
 
   const {
     data: personData,
@@ -136,6 +135,10 @@ function PersonReadOnly() {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());

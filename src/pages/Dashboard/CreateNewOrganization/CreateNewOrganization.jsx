@@ -92,7 +92,11 @@ function CreateNewOrganization() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
+
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { user } = useSelector(getUserDetails);
   const isBannerDismissed = useSelector(getIsBannerDismissed);
