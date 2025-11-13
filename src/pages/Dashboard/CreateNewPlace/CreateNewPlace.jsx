@@ -67,7 +67,7 @@ import { urlProtocolCheck } from '../../../components/Input/Common/input.setting
 import { useAddImageMutation } from '../../../services/image';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { geocodeByAddress, getLatLng, usePlacesAutocomplete } from '../../../hooks/usePlacesAutocomplete';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
@@ -238,7 +238,6 @@ function CreateNewPlace() {
   const [addedFields, setAddedFields] = useState([]);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [showDialog, setShowDialog] = useState(false);
-  const [address, setAddress] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState({
     containedInPlace: '',
@@ -251,6 +250,11 @@ function CreateNewPlace() {
   });
   const [geocoder, setGeocoder] = useState(null);
   const [dynamicFields, setDynamicFields] = useState([]);
+
+  const placesAutocomplete = usePlacesAutocomplete({
+    includedRegionCodes: ['CA', 'JP'],
+    debounce: 300,
+  });
 
   useEffect(() => {
     if (window.google) {
@@ -752,8 +756,10 @@ function CreateNewPlace() {
     return promise;
   };
 
-  const handleSelect = (address) => {
-    geocodeByAddress(address)
+  const handleSelect = (placeId) => {
+    placesAutocomplete.clearSuggestions();
+    setDropdownOpen(false);
+    geocodeByAddress(placeId)
       .then((results) => {
         let streetNumber =
           results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
@@ -805,10 +811,11 @@ function CreateNewPlace() {
     setDropdownOpen(false);
   };
 
-  const handleChange = (address) => {
-    if (address === '') setDropdownOpen(false);
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (value === '') setDropdownOpen(false);
     else setDropdownOpen(true);
-    setAddress(address);
+    placesAutocomplete.setValue(value);
   };
 
   const placesSearch = (inputValue = '', field) => {
@@ -2013,52 +2020,39 @@ function CreateNewPlace() {
                   </Col>
                 </Row>
                 <Form.Item name="addressSearch">
-                  <PlacesAutocomplete
-                    googleCallbackName="initTwo"
-                    searchOptions={{ componentRestrictions: { country: ['CA', 'JP'] } }}
-                    value={address ?? ''}
-                    onChange={handleChange}
-                    onSelect={handleSelect}
-                    data-cy="google-places-autocomplete">
-                    {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-                      <Dropdown
-                        data-cy="dropdown-place-google-place"
-                        open={dropdownOpen}
-                        overlayClassName="filter-sort-dropdown-wrapper"
-                        getPopupContainer={(trigger) => trigger.parentNode}
-                        menu={{
-                          items: suggestions?.map((suggestion, index) => {
-                            return {
-                              key: index,
-                              label: (
-                                <div
-                                  {...getSuggestionItemProps(suggestion)}
-                                  key={index}
-                                  data-cy={`div-place-google-place-${index}`}>
-                                  <span data-cy="div-place-suggestion">{suggestion.description}</span>
-                                </div>
-                              ),
-                            };
-                          }),
-                          selectable: true,
-                        }}
-                        trigger={['click']}>
-                        <StyledInput
-                          data-cy="input-place-google-place"
-                          autoComplete="off"
-                          {...getInputProps({
-                            placeholder: t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder'),
-                          })}
-                          prefix={
-                            <SearchOutlined
-                              className="events-search-icon"
-                              style={{ color: '#B6C1C9', fontSize: '18px' }}
-                            />
-                          }
-                        />
-                      </Dropdown>
-                    )}
-                  </PlacesAutocomplete>
+                  <Dropdown
+                    data-cy="dropdown-place-google-place"
+                    open={dropdownOpen && placesAutocomplete.suggestions.length > 0}
+                    overlayClassName="filter-sort-dropdown-wrapper"
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    menu={{
+                      items: placesAutocomplete.suggestions?.map((suggestion, index) => {
+                        return {
+                          key: index,
+                          label: (
+                            <div
+                              onClick={() => handleSelect(suggestion.placeId)}
+                              key={index}
+                              data-cy={`div-place-google-place-${index}`}>
+                              <span data-cy="div-place-suggestion">{suggestion.description}</span>
+                            </div>
+                          ),
+                        };
+                      }),
+                      selectable: true,
+                    }}
+                    trigger={['click']}>
+                    <StyledInput
+                      data-cy="input-place-google-place"
+                      autoComplete="off"
+                      value={placesAutocomplete.value ?? ''}
+                      onChange={handleChange}
+                      placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder')}
+                      prefix={
+                        <SearchOutlined className="events-search-icon" style={{ color: '#B6C1C9', fontSize: '18px' }} />
+                      }
+                    />
+                  </Dropdown>
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.streetAddress')}

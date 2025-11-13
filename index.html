@@ -32,16 +32,10 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script type="module" src="/src/index.jsx"></script>
-    <script>
-      window.myCallbackFunc = function () {
-        window.initOne && window.initOne();
-        window.initTwo && window.initTwo();
-      };
-    </script>
     <script
       async
       defer
-      src="https://maps.googleapis.com/maps/api/js?key=%VITE_APP_GOOGLE_MAPS_API_KEY%&loading=async&libraries=places&callback=myCallbackFunc"
+      src="https://maps.googleapis.com/maps/api/js?key=%VITE_APP_GOOGLE_MAPS_API_KEY%&loading=async&libraries=places"
     ></script>
   </body>
 </html>
