@@ -1240,8 +1240,22 @@ function AddEvent() {
     };
     var promise = new Promise(function (resolve, reject) {
       if (Object.keys(activeFallbackFieldsInfo).length > 0 && type !== eventPublishState.DRAFT) {
+        let title, okText;
+        if (type === 'PUBLISH' || type === eventPublishState.PUBLISHED) {
+          if (eventData?.publishState === eventPublishState.PENDING_REVIEW) {
+            title = t('dashboard.events.addEditEvent.saveOptions.revertToDraft');
+            okText = t('dashboard.events.addEditEvent.saveOptions.revert');
+          } else {
+            title = t('dashboard.events.addEditEvent.saveOptions.publish');
+            okText = t('dashboard.events.addEditEvent.saveOptions.publish');
+          }
+        }
+        if (type === 'REVIEW' || type === eventPublishState.PENDING_REVIEW) {
+          title = t('dashboard.events.addEditEvent.saveOptions.sendToReview');
+          okText = t('dashboard.events.addEditEvent.saveOptions.send');
+        }
         Confirm({
-          title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
+          title,
           content: (
             <Translation>
               {(t) => (
@@ -1254,7 +1268,7 @@ function AddEvent() {
               )}
             </Translation>
           ),
-          okText: t('dashboard.events.addEditEvent.fallbackConfirm.publish'),
+          okText,
           cancelText: t('dashboard.places.deletePlace.cancel'),
           className: 'fallback-modal-container',
           onAction: () => {

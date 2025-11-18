@@ -137,7 +137,7 @@
         "featuredEvent": "Événement vedette",
         "fallbackConfirm": {
           "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web.",
-          "contentPart2": "Voulez-vous publier tel quel ? ",
+          "contentPart2": "Souhaitez-vous continuer ?",
           "title": "Publier l'événement",
           "publish": "Publier"
         },
@@ -399,7 +399,9 @@
           "saveAsDraft": "Enregistrer comme brouillon",
           "save": "Sauvegarder",
           "sendToReview": "Envoyer pour révision",
-          "revertToDraft": "Revenir au brouillon"
+          "revertToDraft": "Revenir au brouillon",
+          "revert": "Revenir au brouillon",
+          "send": "Envoyer pour revision"
         },
         "notification": {
           "saveAsDraft": "Succès ! Votre événement a été enregistré comme brouillon.",
