@@ -150,25 +150,11 @@ function EventReadOnly() {
   };
 
   const checkOfferConfigValid = (offerConfig) => {
-    if (!offerConfig) return false;
     if (!offerConfig?.category) return false;
 
-    let flag = false;
-    const offerUri = offerConfig?.url?.uri || offerConfig?.email;
-    switch (offerConfig?.category) {
-      case offerTypes.FREE:
-        flag = true;
-        break;
-      case offerTypes.PAYING:
-        if (offerUri || (offerConfig?.prices && offerConfig?.prices?.length > 0) || offerConfig?.name) flag = true;
-        break;
-      case offerTypes.REGISTER:
-        if (offerUri || offerConfig?.name) flag = true;
-        break;
-      default:
-        break;
-    }
-    return flag;
+    const validCategories = new Set([offerTypes.FREE, offerTypes.PAYING, offerTypes.REGISTER]);
+
+    return validCategories.has(offerConfig.category);
   };
 
   useEffect(() => {
