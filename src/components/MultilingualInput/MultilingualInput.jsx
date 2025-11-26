@@ -107,9 +107,15 @@ function MultilingualInput({ children, ...rest }) {
     if (!flag) defaultTab = contentLanguageKeyMap[calendarContentLanguage[0]];
   }
 
-  const shouldDisplayLabel = (required, fieldData, entityId, langKey) => {
+  const shouldDisplayLabel = (required, fieldData, entityId, langKey, fieldName) => {
     const hasFieldData = fieldData != null ? isDataValid(fieldData) : false;
-    const isFieldEmpty = !fieldData?.[langKey] || fieldData[langKey] === '';
+
+    // Check current form value first, fall back to initial fieldData
+    const currentFormValue = form?.getFieldValue(fieldName);
+    const hasCurrentValue = currentFormValue !== undefined && currentFormValue !== null;
+    const isFieldEmpty = hasCurrentValue
+      ? !currentFormValue || currentFormValue === ''
+      : !fieldData?.[langKey] || fieldData[langKey] === '';
 
     if (skipChildModification) {
       return isLabelWarningVisible[langKey] ?? false;
@@ -125,12 +131,16 @@ function MultilingualInput({ children, ...rest }) {
   };
 
   // Label creation for each tab
-  calendarContentLanguage?.map((language) => {
+  calendarContentLanguage?.map((language, index) => {
     const langKey = contentLanguageKeyMap[language];
     const langLabel = t(`common.tab${capitalizeFirstLetter(language)}`);
     labelCollection[langKey] = langLabel;
 
-    if (shouldDisplayLabel(required, fieldData, entityId, langKey)) {
+    // Get field name from the corresponding child
+    const child = React.Children.toArray(modifiedChildren)[index];
+    const fieldName = child?.props?.name;
+
+    if (shouldDisplayLabel(required, fieldData, entityId, langKey, fieldName)) {
       labelCollection[langKey] = (
         <>
           {langLabel}&nbsp;
