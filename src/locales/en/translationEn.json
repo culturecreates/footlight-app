@@ -142,7 +142,14 @@
           "publish": "Publish"
         },
         "artsDataNotifications": {
-          "timezonoOffsetMissing": "This imported event had no timezone. Your default timezone has been applied. Adjust the time if necessary."
+          "timezonoOffsetMissing": "This imported event had no timezone. Your default timezone has been applied. Adjust the time if necessary.",
+          "locationImportFailed": "Event location did not import.",
+          "organizersImportFailed": "{{count}} event organizer (out of {{total}}) did not import.",
+          "organizersImportFailed_plural": "{{count}} event organizers (out of {{total}}) did not import.",
+          "performersImportFailed": "{{count}} event performer (out of {{total}}) did not import.",
+          "performersImportFailed_plural": "{{count}} event performers (out of {{total}}) did not import.",
+          "supportersImportFailed": "{{count}} event supporter (out of {{total}}) did not import.",
+          "supportersImportFailed_plural": "{{count}} event supporters (out of {{total}}) did not import."
         },
         "language": {
           "title": "Event title",
