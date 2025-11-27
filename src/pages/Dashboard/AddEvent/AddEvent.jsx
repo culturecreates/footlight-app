@@ -5537,6 +5537,7 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.tickets.paid')}
                           onClick={() => {
                             setTicketType(offerTypes.PAYING);
+                            setShowDialog(true);
                             setValidateFields((prev) => [
                               ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'ticketLink', 'ticketNote']),
                             ]);
@@ -5548,6 +5549,7 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.tickets.registration')}
                           onClick={() => {
                             setTicketType(offerTypes.REGISTER);
+                            setShowDialog(true);
                             setValidateFields((prev) => [
                               ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'registerLink', 'ticketNote']),
                             ]);
@@ -5806,6 +5808,7 @@ function AddEvent() {
                           secondaryIcon={type.secondaryIcon ?? <InfoCircleOutlined />}
                           onClick={() => {
                             setTicketType(type.type);
+                            setShowDialog(true);
                             form.resetFields(['prices', 'ticketLink']);
                             if (!requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)) {
                               if (type.type == null) {
