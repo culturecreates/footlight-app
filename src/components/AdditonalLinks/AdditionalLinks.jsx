@@ -81,8 +81,13 @@ const AdditionalLinks = ({
           return;
         }
       } else if (type === 'url') {
-        const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-        if (!urlRegex.test(value)) {
+        try {
+          const url = new URL(value.startsWith('http') ? value : `https://${value}`);
+          if (!url.hostname || url.hostname.indexOf('.') === -1) {
+            callback(t('common.components.additionalLinks.validations.url'));
+            return;
+          }
+        } catch (e) {
           callback(t('common.components.additionalLinks.validations.url'));
           return;
         }
