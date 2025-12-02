@@ -39,11 +39,19 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
     formItemProps = {},
     ...additionalProps
   } = rest;
-  useWatch([name], form);
   const { t } = useTranslation();
 
   // Determine if this is in a Form.List context by checking name structure
   const isListContext = Array.isArray(name) && name.length > 1;
+
+  // Watch all language-specific field paths to trigger re-renders when any language field changes
+  const fieldPathsToWatch =
+    calendarContentLanguage?.map((language) => {
+      const lanKey = contentLanguageKeyMap[language];
+      return isListContext ? [...name, lanKey] : [name, lanKey];
+    }) || [];
+
+  useWatch(fieldPathsToWatch, form);
 
   // Track dirty fields
   const isFieldDirty = {};
