@@ -2,8 +2,8 @@ import { Col, Divider, Row, Form, Checkbox, Empty, Grid } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'rc-year-calendar';
 import 'rc-year-calendar/locales/rc-year-calendar.fr';
-import uniqid from 'uniqid';
 import moment from 'moment';
+import { generateUUID } from '../../../utils/generateUUID';
 import {
   DeleteFilled,
   DeleteOutlined,
@@ -75,7 +75,7 @@ const RecurringModal = ({
       start: formattedStart,
       end: formattedEnd,
       color: '#607EFC',
-      id: uniqid(),
+      id: generateUUID(),
     };
 
     setDataSource(
@@ -114,7 +114,7 @@ const RecurringModal = ({
 
       if (defaultSelectedStartDate && (!customDates || customDates.length === 0)) {
         const obj = {
-          id: uniqid(),
+          id: generateUUID(),
           name: 'test name',
           location: 'test Location',
           startDate: defaultSelectedStartDate,
@@ -311,7 +311,7 @@ const RecurringModal = ({
                   const dateArray = dateLength.map((item) => {
                     const date = moment(item, 'YYYY-MM-DD');
                     const obj = {
-                      id: uniqid(),
+                      id: generateUUID(),
                       name: 'test name',
                       location: 'test Location',
                       startDate: date.toDate(),
@@ -325,7 +325,7 @@ const RecurringModal = ({
                   setDateArrayCal(dateArray);
                 } else {
                   const obj = {
-                    id: uniqid(),
+                    id: generateUUID(),
                     name: 'test name',
                     location: 'test Location',
                     startDate: e.startDate,

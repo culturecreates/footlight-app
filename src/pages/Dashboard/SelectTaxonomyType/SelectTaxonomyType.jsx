@@ -27,7 +27,6 @@ const SelectTaxonomyType = () => {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
   const dispatch = useDispatch();
 
@@ -41,6 +40,10 @@ const SelectTaxonomyType = () => {
   };
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   useEffect(() => {
     if (user && calendar.length > 0) {

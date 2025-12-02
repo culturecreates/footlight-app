@@ -137,7 +137,7 @@
         "featuredEvent": "Featured event",
         "fallbackConfirm": {
           "contentPart1": "You have not updated all text to match the language(s) on your website.",
-          "contentPart2": "Do you want to publish as is?",
+          "contentPart2": "Do you want to continue?",
           "title": "Publish event",
           "publish": "Publish"
         },
@@ -399,7 +399,9 @@
           "saveAsDraft": "Save as draft",
           "save": "Save",
           "sendToReview": "Send to review",
-          "revertToDraft": "Revert to draft"
+          "revertToDraft": "Revert to draft",
+          "revert": "Revert",
+          "send": "Send"
         },
         "notification": {
           "saveAsDraft": "Success! Your event has been saved as draft.",

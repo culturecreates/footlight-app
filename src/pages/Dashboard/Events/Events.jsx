@@ -81,7 +81,10 @@ function Events() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#fff');
+
+  useEffect(() => {
+    setContentBackgroundColor('#fff');
+  }, [setContentBackgroundColor]);
 
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);

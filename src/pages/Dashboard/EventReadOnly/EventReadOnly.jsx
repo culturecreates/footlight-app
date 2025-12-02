@@ -68,7 +68,10 @@ function EventReadOnly() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   const {
     data: eventData,
@@ -296,7 +299,10 @@ function EventReadOnly() {
                 />
               </Col>
               <Col flex="60px" style={{ marginLeft: 'auto' }}>
-                <ReadOnlyProtectedComponent creator={eventData.createdByUserId} isReadOnly={isReadOnly}>
+                <ReadOnlyProtectedComponent
+                  creator={eventData.createdByUserId}
+                  isReadOnly={isReadOnly}
+                  eventState={eventData?.publishState}>
                   <div className="button-container">
                     <OutlinedButton
                       data-cy="button-edit-place"
@@ -562,6 +568,7 @@ function EventReadOnly() {
                                 )
                                   return (
                                     <div
+                                      key={index}
                                       style={{
                                         display: dynamicAdminOnlyFields?.includes(taxonomy?.id)
                                           ? adminCheckHandler({ calendar, user })
@@ -776,7 +783,9 @@ function EventReadOnly() {
                                 {eventData?.eventStatus && (
                                   <p className="read-only-event-content">
                                     {eventStatusOptions?.map((status) => {
-                                      if (status?.value === eventData?.eventStatus) return status?.label;
+                                      if (status?.value === eventData?.eventStatus)
+                                        return <span key={status?.value}>{status?.label}</span>;
+                                      return null;
                                     })}
                                   </p>
                                 )}

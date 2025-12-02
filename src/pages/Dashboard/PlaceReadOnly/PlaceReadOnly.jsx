@@ -58,7 +58,10 @@ function PlaceReadOnly() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   const {
     data: placeData,
@@ -401,7 +404,7 @@ function PlaceReadOnly() {
                                     )
                                   )
                                     return (
-                                      <div>
+                                      <div key={index}>
                                         <p
                                           className="read-only-event-content-sub-title-primary"
                                           data-cy="para-place-dynamic-taxonomy-name">

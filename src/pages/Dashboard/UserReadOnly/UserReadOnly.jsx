@@ -31,8 +31,11 @@ const UserReadOnly = () => {
     _getCalendar,
     setContentBackgroundColor,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
 
   const [userSubscribedCalenders, setUserSubscribedCalenders] = useState();
 

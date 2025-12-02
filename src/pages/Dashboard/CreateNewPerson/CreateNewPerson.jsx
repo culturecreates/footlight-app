@@ -76,7 +76,11 @@ function CreateNewPerson() {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#F9FAFF');
+
+  useEffect(() => {
+    setContentBackgroundColor('#F9FAFF');
+  }, [setContentBackgroundColor]);
+
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const isBannerDismissed = useSelector(getIsBannerDismissed);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);

@@ -51,7 +51,6 @@ const Taxonomy = () => {
     setContentBackgroundColor,
     isReadOnly,
   ] = useOutletContext();
-  setContentBackgroundColor('#fff');
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -86,6 +85,10 @@ const Taxonomy = () => {
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('pageTaxonomy') ?? 1,
   );
+
+  useEffect(() => {
+    setContentBackgroundColor('#fff');
+  }, [setContentBackgroundColor]);
 
   const handleListCardStyles = () => {
     const listCardStyles = !adminCheckHandler({ calendar, user })
