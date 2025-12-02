@@ -299,7 +299,10 @@ function EventReadOnly() {
                 />
               </Col>
               <Col flex="60px" style={{ marginLeft: 'auto' }}>
-                <ReadOnlyProtectedComponent creator={eventData.createdByUserId} isReadOnly={isReadOnly}>
+                <ReadOnlyProtectedComponent
+                  creator={eventData.createdByUserId}
+                  isReadOnly={isReadOnly}
+                  eventState={eventData?.publishState}>
                   <div className="button-container">
                     <OutlinedButton
                       data-cy="button-edit-place"

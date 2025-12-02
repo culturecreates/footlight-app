@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { userRoles } from '../../constants/userRoles';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { eventPublishState } from '../../constants/eventPublishState';
 
-function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly }) {
+function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly, eventState }) {
   let { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
   let entityAccess = false;
@@ -33,14 +34,20 @@ function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly })
   if (isReadOnly) return;
   else
     switch (calendar[0]?.role) {
-      case userRoles.GUEST:
-        if (user?.id === creator || entityAccess) return children;
-        else return;
-      case userRoles.CONTRIBUTOR:
-        if (user?.id === creator || entityAccess) return children;
-        else return;
-      case userRoles.EDITOR:
+      case userRoles.GUEST: {
+        const canAccess = user?.id === creator || entityAccess;
+        if (!canAccess) return;
+        if (eventState) {
+          if (eventState === eventPublishState.PENDING_REVIEW) return;
+          return children;
+        }
         return children;
+      }
+
+      case userRoles.CONTRIBUTOR:
+        return user?.id === creator || entityAccess ? children : undefined;
+
+      case userRoles.EDITOR:
       case userRoles.ADMIN:
         return children;
 
