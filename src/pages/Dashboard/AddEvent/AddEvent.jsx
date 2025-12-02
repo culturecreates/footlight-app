@@ -1286,7 +1286,7 @@ function AddEvent() {
         if (isValuesChanged && type !== 'PUBLISH') {
           saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
-              updateEventState({ id, calendarId })
+              updateEventState({ id, calendarId, publishState })
                 .then(() => {
                   notification.success({
                     description:
