@@ -587,7 +587,7 @@ function AddEvent() {
               accessibilityNote,
               keywords = [],
               locationId,
-              offerConfiguration,
+              offerConfiguration = null,
               organizers = [],
               performers = [],
               collaborators = [],
@@ -1088,7 +1088,7 @@ function AddEvent() {
               ...(contactPoint && { contactPoint }),
               ...(locationId && { locationId }),
               ...(keywords && { keywords }),
-              ...(ticketType && { offerConfiguration }),
+              offerConfiguration,
               ...(values?.organizers && { organizers }),
               ...(values?.performers && { performers }),
               ...(values?.supporters && { collaborators }),
@@ -1300,7 +1300,7 @@ function AddEvent() {
         if (isValuesChanged && type !== 'PUBLISH') {
           saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
-              updateEventState({ id, calendarId })
+              updateEventState({ id, calendarId, publishState })
                 .then(() => {
                   notification.success({
                     description:
@@ -1410,7 +1410,7 @@ function AddEvent() {
               }
               onClick={(e) => {
                 if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
-                  reviewPublishHandler({ event: e, publishState: eventPublishState.DRAFT });
+                  reviewPublishHandler({ event: e, publishState: eventPublishState.DRAFT, type: 'DRAFT' });
                 else saveAsDraftHandler(e, false, eventPublishState.DRAFT);
               }}
               data-cy="button-save-event"
@@ -5551,6 +5551,7 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.tickets.paid')}
                           onClick={() => {
                             setTicketType(offerTypes.PAYING);
+                            setShowDialog(true);
                             setValidateFields((prev) => [
                               ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'ticketLink', 'ticketNote']),
                             ]);
@@ -5562,6 +5563,7 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.tickets.registration')}
                           onClick={() => {
                             setTicketType(offerTypes.REGISTER);
+                            setShowDialog(true);
                             setValidateFields((prev) => [
                               ...new Set([...prev, 'ticketPickerWrapper', 'prices', 'registerLink', 'ticketNote']),
                             ]);
@@ -5820,6 +5822,7 @@ function AddEvent() {
                           secondaryIcon={type.secondaryIcon ?? <InfoCircleOutlined />}
                           onClick={() => {
                             setTicketType(type.type);
+                            setShowDialog(true);
                             form.resetFields(['prices', 'ticketLink']);
                             if (!requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)) {
                               if (type.type == null) {
