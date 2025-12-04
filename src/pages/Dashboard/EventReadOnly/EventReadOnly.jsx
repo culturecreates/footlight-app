@@ -150,25 +150,11 @@ function EventReadOnly() {
   };
 
   const checkOfferConfigValid = (offerConfig) => {
-    if (!offerConfig) return false;
     if (!offerConfig?.category) return false;
 
-    let flag = false;
-    const offerUri = offerConfig?.url?.uri || offerConfig?.email;
-    switch (offerConfig?.category) {
-      case offerTypes.FREE:
-        flag = true;
-        break;
-      case offerTypes.PAYING:
-        if (offerUri || (offerConfig?.prices && offerConfig?.prices?.length > 0) || offerConfig?.name) flag = true;
-        break;
-      case offerTypes.REGISTER:
-        if (offerUri || offerConfig?.name) flag = true;
-        break;
-      default:
-        break;
-    }
-    return flag;
+    const validCategories = new Set([offerTypes.FREE, offerTypes.PAYING, offerTypes.REGISTER]);
+
+    return validCategories.has(offerConfig.category);
   };
 
   useEffect(() => {
@@ -1333,15 +1319,18 @@ function EventReadOnly() {
                                 <p className="read-only-event-content-title">
                                   {t('dashboard.events.addEditEvent.tickets.title')}
                                 </p>
-                                {eventData?.offerConfiguration?.category === offerTypes.FREE && (
+                                {eventData?.offerConfiguration?.category && (
                                   <>
                                     <p className="read-only-event-content-sub-title-primary">
                                       {t('dashboard.events.addEditEvent.tickets.description')}
                                     </p>
-                                    <p>
-                                      <p className="read-only-event-content">
-                                        {t('dashboard.events.addEditEvent.tickets.free')}
-                                      </p>
+                                    <p className="read-only-event-content">
+                                      {eventData.offerConfiguration.category === offerTypes.FREE &&
+                                        t('dashboard.events.addEditEvent.tickets.free')}
+                                      {eventData.offerConfiguration.category === offerTypes.PAYING &&
+                                        t('dashboard.events.addEditEvent.tickets.paid')}
+                                      {eventData.offerConfiguration.category === offerTypes.REGISTER &&
+                                        t('dashboard.events.addEditEvent.tickets.registration')}
                                     </p>
                                   </>
                                 )}

@@ -142,7 +142,14 @@
           "publish": "Publier"
         },
         "artsDataNotifications": {
-          "timezonoOffsetMissing": "Cet événement importé n'avait pas de fuseau horaire. Votre fuseau horaire par défaut a été appliqué. Ajustez l'heure si nécessaire."
+          "timezonoOffsetMissing": "Cet événement importé n'avait pas de fuseau horaire. Votre fuseau horaire par défaut a été appliqué. Ajustez l'heure si nécessaire.",
+          "locationImportFailed": "Le lieu de l'événement n'a pas été importé.",
+          "organizersImportFailed": "{{count}} organisateur (sur {{total}}) de l'événement n'a pas été importé.",
+          "organizersImportFailed_plural": "{{count}} organisateurs (sur {{total}}) de l'événement n'ont pas été importés.",
+          "performersImportFailed": "{{count}} artiste (sur {{total}}) de l'événement n'a pas été importé.",
+          "performersImportFailed_plural": "{{count}} artistes (sur {{total}}) de l'événement n'ont pas été importés.",
+          "supportersImportFailed": "{{count}} commanditaire (sur {{total}}) de l'événement n'a pas été importé.",
+          "supportersImportFailed_plural": "{{count}} commanditaires (sur {{total}}) de l'événement n'ont pas été importés."
         },
         "dataSource": "Data source",
         "question": {

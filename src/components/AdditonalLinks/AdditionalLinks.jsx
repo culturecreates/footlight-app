@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Form, Input, Select, Space, Row, Col } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import CreateMultiLingualFormItems from '../../layout/CreateMultiLingualFormItems';
@@ -25,6 +25,7 @@ const AdditionalLinks = ({
   userTips,
 }) => {
   const { t } = useTranslation();
+  const initializedRef = useRef(false);
 
   const linkOptions = [
     {
@@ -38,6 +39,9 @@ const AdditionalLinks = ({
   ];
 
   useEffect(() => {
+    // Only initialize once to avoid resetting form values during user interaction
+    if (initializedRef.current) return;
+
     const formattedData =
       initialData && initialData.length > 0
         ? initialData.map((item) => {
@@ -59,7 +63,8 @@ const AdditionalLinks = ({
         : [{ type: 'url', value: '', name: {} }];
 
     form.setFieldsValue({ [name]: formattedData });
-  }, [initialData, form, name]);
+    initializedRef.current = true;
+  }, []);
 
   const validateInput = (rule, value, callback) => {
     const fieldPath = rule.field.split('.');
@@ -81,8 +86,13 @@ const AdditionalLinks = ({
           return;
         }
       } else if (type === 'url') {
-        const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-        if (!urlRegex.test(value)) {
+        try {
+          const url = new URL(value.startsWith('http') ? value : `https://${value}`);
+          if (!url.hostname || url.hostname.indexOf('.') === -1) {
+            callback(t('common.components.additionalLinks.validations.url'));
+            return;
+          }
+        } catch (e) {
           callback(t('common.components.additionalLinks.validations.url'));
           return;
         }
@@ -101,8 +111,6 @@ const AdditionalLinks = ({
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name: fieldName, ...restField }, index) => {
-              const fieldValue = form.getFieldValue([name, fieldName]);
-              const currentType = fieldValue?.type || 'url';
               const isOnlyField = fields.length === 1;
 
               return (
@@ -116,11 +124,7 @@ const AdditionalLinks = ({
                     borderRadius: '4px',
                   }}>
                   <Space.Compact block size="large" align="baseline" style={{ width: '100%', marginBottom: 24 }}>
-                    <Form.Item
-                      {...restField}
-                      name={[fieldName, 'type']}
-                      initialValue={currentType}
-                      style={{ marginBottom: 0 }}>
+                    <Form.Item {...restField} name={[fieldName, 'type']} style={{ marginBottom: 0 }} shouldUpdate>
                       <Select
                         className="ticket-link-select"
                         options={linkOptions}
@@ -137,20 +141,36 @@ const AdditionalLinks = ({
                     </Form.Item>
 
                     <Form.Item
-                      {...restField}
-                      name={[fieldName, 'value']}
-                      rules={[
-                        {
-                          required: !isOnlyField || required,
-                          validator: validateInput,
-                        },
-                      ]}
-                      style={{ flex: 1, marginBottom: 0, width: '100%' }}>
-                      <StyledInput
-                        autoComplete="off"
-                        placeholder={currentType === 'email' ? placeholder?.email : placeholder?.url}
-                        data-cy="input-additional-link"
-                      />
+                      noStyle
+                      shouldUpdate={(prevValues, currentValues) => {
+                        const prevType = prevValues?.[name]?.[fieldName]?.type;
+                        const currentType = currentValues?.[name]?.[fieldName]?.type;
+                        return prevType !== currentType;
+                      }}>
+                      {({ getFieldValue }) => {
+                        const currentFieldValue = getFieldValue([name, fieldName]);
+                        const currentType = currentFieldValue?.type || 'url';
+
+                        return (
+                          <Form.Item
+                            {...restField}
+                            name={[fieldName, 'value']}
+                            rules={[
+                              {
+                                required: !isOnlyField || required,
+                                validator: validateInput,
+                              },
+                            ]}
+                            validateTrigger={['onBlur', 'onSubmit']}
+                            style={{ flex: 1, marginBottom: 0, width: '100%' }}>
+                            <StyledInput
+                              autoComplete="off"
+                              placeholder={currentType === 'email' ? placeholder?.email : placeholder?.url}
+                              data-cy="input-additional-link"
+                            />
+                          </Form.Item>
+                        );
+                      }}
                     </Form.Item>
 
                     <Col
