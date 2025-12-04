@@ -224,6 +224,12 @@ function AddEvent() {
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [dynamicFields, setDynamicFields] = useState([]);
+  const [failedImports, setFailedImports] = useState({
+    location: { failed: false, count: 0, total: 0 },
+    organizers: { failed: false, count: 0, total: 0 },
+    performers: { failed: false, count: 0, total: 0 },
+    supporters: { failed: false, count: 0, total: 0 },
+  });
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');
@@ -2000,6 +2006,12 @@ function AddEvent() {
 
   const getArtsDataEvent = () => {
     let initialAddedFields = [...addedFields];
+    let importFailures = {
+      location: { failed: false, count: 0, total: 0 },
+      organizers: { failed: false, count: 0, total: 0 },
+      performers: { failed: false, count: 0, total: 0 },
+      supporters: { failed: false, count: 0, total: 0 },
+    };
     loadArtsDataEventEntity({ entityId: artsDataId })
       .then(async (response) => {
         if (response?.data?.length > 0) {
@@ -2008,10 +2020,14 @@ function AddEvent() {
             data.scheduleTimezone = identifyBestTimezone(data.startDateTime)?.value;
           }
           if (data.organizers?.length > 0) {
+            const totalOrganizers = data.organizers.length;
             try {
               let initialOrganizers = await loadArtsDataDetails(data?.organizers);
               initialOrganizers = initialOrganizers?.filter((org) => org?.uri !== undefined);
-              if (initialOrganizers?.length > 0) {
+              const successfulOrganizers = initialOrganizers?.length || 0;
+              const failedCount = totalOrganizers - successfulOrganizers;
+
+              if (successfulOrganizers > 0) {
                 setSelectedOrganizers(
                   treeEntitiesOption(
                     initialOrganizers,
@@ -2022,16 +2038,33 @@ function AddEvent() {
                   ),
                 );
               }
+
+              if (failedCount > 0) {
+                importFailures.organizers = {
+                  failed: true,
+                  count: failedCount,
+                  total: totalOrganizers,
+                };
+              }
             } catch (e) {
               console.error('Failed to load organizers', e);
+              importFailures.organizers = {
+                failed: true,
+                count: totalOrganizers,
+                total: totalOrganizers,
+              };
             }
           }
 
           if (data.performers?.length > 0) {
+            const totalPerformers = data.performers.length;
             try {
               let initialPerformers = await loadArtsDataDetails(data?.performers);
               initialPerformers = initialPerformers?.filter((org) => org?.uri !== undefined);
-              if (initialPerformers?.length > 0) {
+              const successfulPerformers = initialPerformers?.length || 0;
+              const failedCount = totalPerformers - successfulPerformers;
+
+              if (successfulPerformers > 0) {
                 setSelectedPerformers(
                   treeEntitiesOption(
                     initialPerformers,
@@ -2043,16 +2076,33 @@ function AddEvent() {
                 );
                 initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
               }
+
+              if (failedCount > 0) {
+                importFailures.performers = {
+                  failed: true,
+                  count: failedCount,
+                  total: totalPerformers,
+                };
+              }
             } catch (e) {
               console.error('Failed to load performers', e);
+              importFailures.performers = {
+                failed: true,
+                count: totalPerformers,
+                total: totalPerformers,
+              };
             }
           }
 
           if (data.sponsors?.length > 0) {
+            const totalSupporters = data.sponsors.length;
             try {
               let initialSupporters = await loadArtsDataDetails(data?.sponsors);
               initialSupporters = initialSupporters?.filter((org) => org?.uri !== undefined);
-              if (initialSupporters?.length > 0) {
+              const successfulSupporters = initialSupporters?.length || 0;
+              const failedCount = totalSupporters - successfulSupporters;
+
+              if (successfulSupporters > 0) {
                 setSelectedSupporters(
                   treeEntitiesOption(
                     initialSupporters,
@@ -2064,8 +2114,21 @@ function AddEvent() {
                 );
                 initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
               }
+
+              if (failedCount > 0) {
+                importFailures.supporters = {
+                  failed: true,
+                  count: failedCount,
+                  total: totalSupporters,
+                };
+              }
             } catch (e) {
               console.error('Failed to load sponsors', e);
+              importFailures.supporters = {
+                failed: true,
+                count: totalSupporters,
+                total: totalSupporters,
+              };
             }
           }
 
@@ -2098,9 +2161,20 @@ function AddEvent() {
                 );
 
                 setLocationPlace(location);
+              } else {
+                importFailures.location = {
+                  failed: true,
+                  count: 1,
+                  total: 1,
+                };
               }
             } catch (e) {
               console.error('Failed to load location place', e);
+              importFailures.location = {
+                failed: true,
+                count: 1,
+                total: 1,
+              };
             }
           }
 
@@ -2247,10 +2321,14 @@ function AddEvent() {
 
             const sameAs = [
               ...ensureArray(data.sameAs),
-              {
-                type: sameAsTypes.ARTSDATA_IDENTIFIER,
-                uri: data.uri,
-              },
+              ...(isArtsdataUri(data.uri)
+                ? [
+                    {
+                      type: sameAsTypes.ARTSDATA_IDENTIFIER,
+                      uri: data.uri,
+                    },
+                  ]
+                : []),
             ];
 
             return {
@@ -2267,6 +2345,7 @@ function AddEvent() {
 
           setArtsData(data);
           setAddedFields(initialAddedFields);
+          setFailedImports(importFailures);
           setArtsDataLoading(false);
         }
       })
@@ -3056,6 +3135,83 @@ function AddEvent() {
               </Row>
             </Col>
           )}
+          {failedImports.location.failed && artsDataId && (
+            <Col span={24} className="language-literal-banner">
+              <Row>
+                <Col flex={'780px'}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={24}>
+                      <Alert
+                        message={t('dashboard.events.addEditEvent.artsDataNotifications.locationImportFailed')}
+                        type="warning"
+                        showIcon
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          )}
+          {failedImports.organizers.failed && artsDataId && (
+            <Col span={24} className="language-literal-banner">
+              <Row>
+                <Col flex={'780px'}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={24}>
+                      <Alert
+                        message={t('dashboard.events.addEditEvent.artsDataNotifications.organizersImportFailed', {
+                          count: failedImports.organizers.count,
+                          total: failedImports.organizers.total,
+                        })}
+                        type="warning"
+                        showIcon
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          )}
+          {failedImports.performers.failed && artsDataId && (
+            <Col span={24} className="language-literal-banner">
+              <Row>
+                <Col flex={'780px'}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={24}>
+                      <Alert
+                        message={t('dashboard.events.addEditEvent.artsDataNotifications.performersImportFailed', {
+                          count: failedImports.performers.count,
+                          total: failedImports.performers.total,
+                        })}
+                        type="warning"
+                        showIcon
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          )}
+          {failedImports.supporters.failed && artsDataId && (
+            <Col span={24} className="language-literal-banner">
+              <Row>
+                <Col flex={'780px'}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={24}>
+                      <Alert
+                        message={t('dashboard.events.addEditEvent.artsDataNotifications.supportersImportFailed', {
+                          count: failedImports.supporters.count,
+                          total: failedImports.supporters.total,
+                        })}
+                        type="warning"
+                        showIcon
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          )}
           <CardEvent marginTop="5%" marginResponsive="0px">
             <>
               {artsDataLink?.length > 0 && (
@@ -3103,6 +3259,35 @@ function AddEvent() {
                         {t('dashboard.events.addEditEvent.question.thirdPart')}
                       </span>
                     </div>
+                  </Col>
+                  <Col span={24}>
+                    <div>
+                      <br />
+                    </div>
+                  </Col>
+                </Row>
+              )}
+              {artsDataId && artsDataLinkChecker(artsData?.sameAs) && (
+                <Row>
+                  <Col span={24}>
+                    <p className="add-entity-label" data-cy="para-place-data-source">
+                      {t('dashboard.events.addEditEvent.dataSource')}
+                    </p>
+                  </Col>
+                  <Col span={24}>
+                    <ArtsDataInfo
+                      artsDataLink={artsDataLinkChecker(artsData.sameAs)}
+                      name={contentLanguageBilingual({
+                        data: artsData?.name,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      disambiguatingDescription={contentLanguageBilingual({
+                        data: artsData?.disambiguatingDescription,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                    />
                   </Col>
                   <Col span={24}>
                     <div>
