@@ -1,0 +1,57 @@
+.export-events-modal .export-modal-content {
+  padding: 0;
+}
+
+.export-events-modal .export-modal-description {
+  color: #646d7b;
+  font-size: 14px;
+  line-height: 22px;
+  margin-bottom: 24px;
+}
+
+/* Modal title */
+.export-events-modal .ant-modal-header .ant-modal-title,
+.export-events-modal .ant-modal-title h5 {
+  color: #1f2635 !important;
+}
+
+.export-events-modal .form-label {
+  color: #222732;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.export-events-modal .required-asterisk {
+  color: #f43131;
+  font-size: 14px;
+}
+
+/* Hide default Ant Design asterisk */
+.export-events-modal .ant-form-item-required::before {
+  display: none !important;
+}
+
+.export-events-modal .ant-form-item {
+  margin-bottom: 20px;
+}
+
+.export-events-modal .switch-wrapper-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.export-events-modal .switch-label {
+  color: #222732;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+/* Align footer buttons horizontally */
+.export-events-modal .ant-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
