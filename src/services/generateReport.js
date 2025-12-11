@@ -74,6 +74,63 @@ export async function downloadDB({ calendarId }) {
   }
 }
 
+export async function exportEntities({
+  calendarId,
+  entity,
+  fileFormat = 'jsonld',
+  upcomingEventsOnly = false,
+  includeNestedEntities = true,
+  dataModel = 'Artsdata',
+  exportType = 'MyComputer',
+}) {
+  const baseUrl = import.meta.env.VITE_APP_API_URL;
+  const accessToken = Cookies.get('accessToken');
+
+  const params = new URLSearchParams();
+  params.append('file-format', fileFormat);
+  params.append('upcoming-events-only', upcomingEventsOnly);
+  params.append('include-nested-entities', includeNestedEntities);
+  params.append('data-model', dataModel);
+  params.append('export-type', exportType);
+
+  const url = `${baseUrl}/entities/${entity}/export?${params.toString()}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'calendar-id': calendarId,
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/ld+json',
+      },
+    });
+
+    if (response.status === 401) {
+      const newAccessToken = await tryRefreshToken(baseUrl);
+      if (!newAccessToken) throw new Error('Unauthorized');
+      return await exportEntities({
+        calendarId,
+        entity,
+        fileFormat,
+        upcomingEventsOnly,
+        includeNestedEntities,
+        dataModel,
+        exportType,
+      });
+    }
+
+    if (!response.ok) {
+      throw new Error(`Failed to export: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    return blob;
+  } catch (error) {
+    console.error('Export failed:', error);
+    throw error;
+  }
+}
+
 async function tryRefreshToken(baseUrl) {
   const refreshToken = Cookies.get('refreshToken');
   if (!refreshToken) return null;
