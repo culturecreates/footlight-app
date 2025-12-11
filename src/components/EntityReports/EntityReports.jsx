@@ -68,12 +68,6 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
             icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
           },
           {
-            key: DATABASE_ACTION_KEY,
-            label: t(`common.entityReport.downloadDB`),
-            icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
-            disabled: true,
-          },
-          {
             key: EXPORT_ACTION_KEY,
             label: t(`common.entityReport.exportData`),
             icon: <UploadOutlined style={iconStyle('#1B3DE6')} />,
