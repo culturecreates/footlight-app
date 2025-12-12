@@ -41,6 +41,7 @@ import EntityReports from '../../../components/EntityReports/EntityReports';
 import {
   DATABASE_ACTION_KEY,
   entitiesClass,
+  EXPORT_ACTION_KEY,
   IMPORT_ACTION_KEY,
   REPORT_ACTION_KEY,
 } from '../../../constants/entitiesClass';
@@ -617,7 +618,7 @@ function Events() {
             <Row align={'middle'} gutter={[12, 0]}>
               <EntityReports
                 entity={entitiesClass.event}
-                includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY, DATABASE_ACTION_KEY]}
+                includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY, DATABASE_ACTION_KEY, EXPORT_ACTION_KEY]}
               />
               <Col style={{ display: 'flex', alignItems: 'center' }}>
                 <AddEvent

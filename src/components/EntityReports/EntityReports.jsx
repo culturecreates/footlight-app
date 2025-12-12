@@ -1,18 +1,24 @@
 import { Col, Dropdown, Form, message, notification, Spin, Typography } from 'antd';
 import React, { useState, useCallback } from 'react';
-import { MoreOutlined, DownloadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { MoreOutlined, DownloadOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ReportIcon from '../../assets/icons/report.svg?react';
 import CustomModal from '../Modal/Common';
 import './entitiesReport.css';
-import { DATABASE_ACTION_KEY, IMPORT_ACTION_KEY, REPORT_ACTION_KEY } from '../../constants/entitiesClass';
-import { downloadDB, fetchEntityReport } from '../../services/generateReport';
+import {
+  DATABASE_ACTION_KEY,
+  EXPORT_ACTION_KEY,
+  IMPORT_ACTION_KEY,
+  REPORT_ACTION_KEY,
+} from '../../constants/entitiesClass';
+import { downloadDB, exportEntities, fetchEntityReport } from '../../services/generateReport';
 import { adminCheckHandler } from '../../utils/adminCheckHandler';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../utils/getCurrentCalendarDetailsFromUserDetails';
 import ReportForm from './ReportForm';
+import ExportModal from './ExportModal';
 
 const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) => {
   const { t } = useTranslation();
@@ -25,8 +31,8 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
   const [modalActionKey, setModalActionKey] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [blobUrl, setBlobUrl] = useState(null);
+  const [isExportModalVisible, setIsExportModalVisible] = useState(false);
 
-  // Styles
   const iconStyle = (color) => ({
     color,
     fontWeight: 600,
@@ -62,10 +68,9 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
             icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
           },
           {
-            key: DATABASE_ACTION_KEY,
-            label: t(`common.entityReport.downloadDB`),
-            icon: <ReportIcon style={{ ...reportIconStyle, color: '#1B3DE6' }} />,
-            disabled: import.meta.env.VITE_APP_FEATURE_FLAG_DOWNLOAD_ALL_DATA === 'false',
+            key: EXPORT_ACTION_KEY,
+            label: t(`common.entityReport.exportData`),
+            icon: <UploadOutlined style={iconStyle('#1B3DE6')} />,
           },
         ]
       : []),
@@ -93,6 +98,9 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
         setModalActionKey(key);
         setBlobUrl(null);
         handleDbDownload();
+        break;
+      case EXPORT_ACTION_KEY:
+        setIsExportModalVisible(true);
         break;
       default:
         break;
@@ -208,6 +216,46 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
     return t('common.entityReport.generate');
   };
 
+  const handleExport = async (exportData) => {
+    setIsLoading(true);
+    try {
+      const blob = await exportEntities({
+        calendarId,
+        entity,
+        fileFormat: 'jsonld',
+        upcomingEventsOnly: !exportData.includePastEvents,
+        includeNestedEntities: true,
+        dataModel: exportData.dataModel,
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${entity}-export.jsonld`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      notification.success({
+        key: 'entity-export-success',
+        description: t('common.entityReport.exportEvents.success'),
+        duration: 5,
+      });
+
+      setIsExportModalVisible(false);
+    } catch (error) {
+      notification.error({
+        key: 'entity-export-error',
+        message: t('common.entityReport.error'),
+        description: error.message,
+        duration: 5,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Col className="entity-options-dropdown-wrapper" style={{ display: 'flex', alignItems: 'center' }}>
       <Dropdown
@@ -243,6 +291,14 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
           )}
         </div>
       </CustomModal>
+
+      <ExportModal
+        visible={isExportModalVisible}
+        onCancel={() => setIsExportModalVisible(false)}
+        onExport={handleExport}
+        entity={entity}
+        isLoading={isLoading}
+      />
     </Col>
   );
 };
