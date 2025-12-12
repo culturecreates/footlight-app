@@ -226,7 +226,6 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
         upcomingEventsOnly: !exportData.includePastEvents,
         includeNestedEntities: true,
         dataModel: exportData.dataModel,
-        exportType: 'MyComputer',
       });
 
       const url = window.URL.createObjectURL(blob);

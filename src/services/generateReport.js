@@ -81,7 +81,6 @@ export async function exportEntities({
   upcomingEventsOnly = false,
   includeNestedEntities = true,
   dataModel = 'Artsdata',
-  exportType = 'MyComputer',
 }) {
   const baseUrl = import.meta.env.VITE_APP_API_URL;
   const accessToken = Cookies.get('accessToken');
@@ -91,7 +90,6 @@ export async function exportEntities({
   params.append('upcoming-events-only', upcomingEventsOnly);
   params.append('include-nested-entities', includeNestedEntities);
   params.append('data-model', dataModel);
-  params.append('export-type', exportType);
 
   const url = `${baseUrl}/entities/${entity}/export?${params.toString()}`;
 
@@ -115,7 +113,6 @@ export async function exportEntities({
         upcomingEventsOnly,
         includeNestedEntities,
         dataModel,
-        exportType,
       });
     }
 
