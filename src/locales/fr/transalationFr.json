@@ -1392,6 +1392,7 @@
         "includePastEvents": "Inclure les événements passés",
         "send": "Envoyer",
         "export": "Exporter",
+        "exportInProgress": "Veuillez patienter. Exportation en cours.",
         "selectDataModel": "Sélectionner le modèle de données",
         "selectDestination": "Sélectionner une destination",
         "success": "Événements exportés avec succès!",

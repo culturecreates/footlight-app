@@ -1395,6 +1395,7 @@
         "includePastEvents": "Include past events",
         "send": "Send",
         "export": "Export",
+        "exportInProgress": "Please wait. Export in progress.",
         "selectDataModel": "Select data model",
         "selectDestination": "Select destination",
         "success": "Events exported successfully!",

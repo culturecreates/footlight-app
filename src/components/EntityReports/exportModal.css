@@ -55,3 +55,11 @@
   align-items: center;
   justify-content: flex-end;
 }
+
+.export-events-modal .export-loading-message {
+  color: #646d7b;
+  font-size: 14px;
+  line-height: 22px;
+  margin-top: 16px;
+  margin-bottom: 0;
+}

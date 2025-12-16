@@ -114,6 +114,10 @@ const ExportModal = ({ visible, onCancel, onExport, isLoading }) => {
             />
             <span className="switch-label">{t('common.entityReport.exportEvents.includePastEvents')}</span>
           </div>
+
+          {isLoading && (
+            <p className="export-loading-message">{t('common.entityReport.exportEvents.exportInProgress')}</p>
+          )}
         </Form>
       </div>
     </CustomModal>
