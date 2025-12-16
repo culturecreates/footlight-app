@@ -35,6 +35,10 @@ const ExportModal = ({ visible, onCancel, onExport, isLoading }) => {
   );
 
   const handleExport = async () => {
+    if (isLoading) {
+      return;
+    }
+
     try {
       const values = await form.validateFields();
       onExport({
@@ -76,7 +80,6 @@ const ExportModal = ({ visible, onCancel, onExport, isLoading }) => {
               )
             }
             onClick={handleExport}
-            disabled={isLoading}
           />
         </div>
       }>
