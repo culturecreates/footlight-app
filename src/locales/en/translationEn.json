@@ -1378,6 +1378,7 @@
       "moreDetails": "Add more details to the report.",
       "downloadReport": "Download report",
       "downloadDB": "Download all data",
+      "exportData": "Export data",
       "cancel": "Cancel",
       "generate": "Generate",
       "to": "to",
@@ -1385,7 +1386,32 @@
       "timeFrame": "Date range",
       "error": "Something went wrong. Please try again later.",
       "downloadDbReady": "Your database is ready to download.",
-      "success": "Success! Your file is being generated. You will receive an email notifying you when it is ready to download."
+      "success": "Success! Your file is being generated. You will receive an email notifying you when it is ready to download.",
+      "exportEvents": {
+        "title": "Export events",
+        "description": "Choose your data model and download events to your computer.",
+        "dataModel": "Data model",
+        "sendTo": "Send to",
+        "includePastEvents": "Include past events",
+        "send": "Send",
+        "export": "Export",
+        "exportInProgress": "Please wait. Export in progress.",
+        "selectDataModel": "Select data model",
+        "selectDestination": "Select destination",
+        "success": "Events exported successfully!",
+        "validation": {
+          "dataModel": "Please select a data model",
+          "sendTo": "Please select a destination"
+        },
+        "options": {
+          "artsdata": "Artsdata",
+          "datascene": "Datascene",
+          "rawData": "Raw data",
+          "artsdataSendTo": "Artsdata",
+          "donneesQuebec": "Données Québec",
+          "myComputer": "My computer"
+        }
+      }
     },
     "dismiss": "Dismiss",
     "forms": {
