@@ -145,7 +145,7 @@
           "timezonoOffsetMissing": "Cet événement importé n'avait pas de fuseau horaire. Votre fuseau horaire par défaut a été appliqué. Ajustez l'heure si nécessaire.",
           "locationImportFailed": "Le lieu de l'événement n'a pas été importé.",
           "organizersImportFailed": "{{count}} organisateur (sur {{total}}) de l'événement n'a pas été importé.",
-          "organizersImportFailed_plural": "{{count}} organisateurs (sur {{total}}) de l'événement n'ont pas été importés.",
+          "organizersImportFailed_plural": "{{count}} organisateurs (sur {{total}}) de vbzfgbvzdfzvdfl'événement n'ont pas été importés.",
           "performersImportFailed": "{{count}} artiste (sur {{total}}) de l'événement n'a pas été importé.",
           "performersImportFailed_plural": "{{count}} artistes (sur {{total}}) de l'événement n'ont pas été importés.",
           "supportersImportFailed": "{{count}} commanditaire (sur {{total}}) de l'événement n'a pas été importé.",
