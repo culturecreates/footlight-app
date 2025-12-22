@@ -1249,8 +1249,13 @@ function AddEvent() {
         let title, okText;
         if (type === 'PUBLISH' || type === eventPublishState.PUBLISHED) {
           if (eventData?.publishState === eventPublishState.PENDING_REVIEW) {
-            title = t('dashboard.events.addEditEvent.saveOptions.revertToDraft');
-            okText = t('dashboard.events.addEditEvent.saveOptions.revert');
+            if (type === 'PUBLISH') {
+              title = t('dashboard.events.addEditEvent.saveOptions.publish');
+              okText = t('dashboard.events.addEditEvent.saveOptions.publish');
+            } else {
+              title = t('dashboard.events.addEditEvent.saveOptions.revertToDraft');
+              okText = t('dashboard.events.addEditEvent.saveOptions.revert');
+            }
           } else {
             title = t('dashboard.events.addEditEvent.saveOptions.publish');
             okText = t('dashboard.events.addEditEvent.saveOptions.publish');
