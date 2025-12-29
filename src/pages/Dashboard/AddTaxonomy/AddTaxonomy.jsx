@@ -1015,12 +1015,14 @@ const AddTaxonomy = () => {
                                             setSelectedVocabulary(null);
                                             setSelectedVocabularyTaxonomy(null);
                                             setExpandedRowKeys([]);
+                                            setTabKey('1');
                                           },
                                         });
                                       } else {
                                         setSelectedVocabulary(null);
                                         setSelectedVocabularyTaxonomy(null);
                                         setExpandedRowKeys([]);
+                                        setTabKey('1');
                                       }
                                     }}
                                     style={{ color: '#1b3de6', fontSize: '14px', cursor: 'pointer' }}
