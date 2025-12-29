@@ -3,18 +3,23 @@ import LoadingIndicator from '../../../components/LoadingIndicator';
 import { getStandardFieldTranslation, standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
-import { Card, Checkbox, Col, Form, Input, Row, notification } from 'antd';
+import { Card, Checkbox, Col, Form, Input, Row, notification, Tabs, Popover, Table } from 'antd';
 import Alert from '../../../components/Alert';
 import BreadCrumbButton from '../../../components/Button/BreadCrumb/BreadCrumbButton';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../../components/Button/Primary';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import './addTaxonomy.css';
-import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
+import {
+  useAddTaxonomyMutation,
+  useLazyGetAllTaxonomyQuery,
+  useLazyGetTaxonomyQuery,
+  useUpdateTaxonomyMutation,
+} from '../../../services/taxonomy';
 import Select from '../../../components/Select';
 import CardEvent from '../../../components/Card/Common/Event';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, CloseCircleOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { userRolesWithTranslation } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -29,6 +34,10 @@ import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormIte
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import DraggableTable from '../../../components/DraggableTree/DraggableTable';
+import VocabularyCard from '../../../components/Card/Common/VocabularyCard';
+import TreeSelectOption from '../../../components/TreeSelectOption';
+import Tags from '../../../components/Tags/Common/Tags';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { sanitizeData, transformLanguageKeys } from '../../../utils/draggableTableUtilFunctions';
 import {
   clearActiveFallbackFieldsInfo,
@@ -39,6 +48,7 @@ import {
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -83,10 +93,17 @@ const AddTaxonomy = () => {
     formState: false,
     isSubmitting: false,
   });
+  const [tabKey, setTabKey] = useState('1');
+  const [selectedVocabulary, setSelectedVocabulary] = useState(null);
+  const [isVocabularyPopoverOpen, setIsVocabularyPopoverOpen] = useState(false);
+  const [vocabularyOptions, setVocabularyOptions] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [selectedVocabularyTaxonomy, setSelectedVocabularyTaxonomy] = useState(null);
 
-  const [getTaxonomy, { data: taxonomyData, isSuccess: isSuccess, isFetching: loading }] = useLazyGetTaxonomyQuery({
+  const [getTaxonomy, { data: taxonomyData, isSuccess: isSuccess, isLoading: initialLoad }] = useLazyGetTaxonomyQuery({
     sessionId: timestampRef,
   });
+  const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
   const [addTaxonomy] = useAddTaxonomyMutation();
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
 
@@ -126,9 +143,24 @@ const AddTaxonomy = () => {
             getStandardFieldTranslation({ value: res?.mappedToField, classType: res?.taxonomyClass }),
           ]);
           setDynamic(res?.isDynamicField ?? false);
+
+          if (res?.mappedTo && res.mappedTo.length > 0 && vocabularyOptions.length > 0) {
+            const mappedVocabularyId = res.mappedTo[0].entityId;
+            const mappedVocab = vocabularyOptions.find((v) => v.id === mappedVocabularyId);
+            if (mappedVocab) {
+              setSelectedVocabulary(mappedVocab);
+              getTaxonomy({ id: mappedVocab.id, includeConcepts: true, calendarId })
+                .unwrap()
+                .then((response) => {
+                  console.log(response);
+                  setSelectedVocabularyTaxonomy(response);
+                })
+                .catch((error) => console.log(error));
+            }
+          }
         });
     }
-  }, [taxonomyId, currentCalendarData]);
+  }, [taxonomyId, currentCalendarData, vocabularyOptions]);
 
   useEffect(() => {
     if (user && calendar.length > 0) {
@@ -255,6 +287,9 @@ const AddTaxonomy = () => {
           disambiguatingDescription: disambiguatingDescription,
           concepts: cleanConcepts({ concepts: [...filteredConceptData] }),
           addToFilter: values?.addToFilter,
+          ...(selectedVocabulary?.id && {
+            mappedTo: [{ entityId: selectedVocabulary.id }],
+          }),
         };
 
         // Filter out undefined values
@@ -334,6 +369,7 @@ const AddTaxonomy = () => {
           name: filteredName,
           isDefault: item?.isDefault || false,
           children: item.children ? modifyConceptData(item.children) : [],
+          ...(item.closeMatch && item.closeMatch.length > 0 && { closeMatch: item.closeMatch }),
         };
       }) || []
     );
@@ -362,9 +398,191 @@ const AddTaxonomy = () => {
     setConceptData(filteredConceptData);
   };
 
+  const onTabChange = (key) => {
+    setTabKey(key);
+  };
+
+  const getExternalConceptsTreeData = () => {
+    if (!selectedVocabularyTaxonomy?.concepts) return [];
+
+    const transformConcept = (concept) => ({
+      title: contentLanguageBilingual({
+        data: concept.name,
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      value: concept.id,
+      label: contentLanguageBilingual({
+        data: concept.name,
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      key: concept.id,
+      children: concept.children?.map(transformConcept),
+    });
+
+    return selectedVocabularyTaxonomy.concepts.map(transformConcept);
+  };
+
+  const updateConceptMapping = (conceptId, selectedExternalIds) => {
+    const updateConcept = (concepts) => {
+      return concepts.map((concept) => {
+        if (concept.id === conceptId) {
+          // Update this concept's closeMatch
+          return {
+            ...concept,
+            closeMatch: selectedExternalIds.map((id) => ({ entityId: id })),
+          };
+        } else if (concept.children) {
+          // Recursively update children
+          return {
+            ...concept,
+            children: updateConcept(concept.children),
+          };
+        }
+        return concept;
+      });
+    };
+
+    setConceptData(updateConcept(conceptData));
+    setTransformedConceptData(updateConcept(transformedConceptData));
+  };
+
+  const getMappingTableColumns = () => {
+    return [
+      {
+        title: t('dashboard.taxonomy.addNew.mapConcepts.myConceptColumn'),
+        dataIndex: 'conceptName',
+        key: 'conceptName',
+        width: '40%',
+        render: (text, record) => {
+          return contentLanguageBilingual({
+            data: record.name,
+            calendarContentLanguage: calendarContentLanguage,
+          });
+        },
+      },
+      {
+        title: t('dashboard.taxonomy.addNew.mapConcepts.mapToColumn'),
+        dataIndex: 'mapping',
+        key: 'mapping',
+        width: '60%',
+        render: (_, record) => {
+          const currentMappings = record.closeMatch?.map((cm) => cm.entityId) || [];
+
+          return (
+            <TreeSelectOption
+              value={currentMappings}
+              onChange={(selectedValues) => updateConceptMapping(record.id, selectedValues)}
+              placeholder="Select"
+              allowClear
+              treeDefaultExpandAll={false}
+              treeData={getExternalConceptsTreeData()}
+              clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+              tagRender={(props) => {
+                const { label, closable, onClose } = props;
+                return (
+                  <Tags
+                    closable={closable}
+                    onClose={onClose}
+                    closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                    {label}
+                  </Tags>
+                );
+              }}
+              style={{ width: '100%' }}
+            />
+          );
+        },
+      },
+    ];
+  };
+
+  // Check if concept or any of its children have mappings
+  const hasConceptMappings = (concept) => {
+    if (concept.closeMatch && concept.closeMatch.length > 0) return true;
+    if (concept.children) {
+      return concept.children.some((child) => hasConceptMappings(child));
+    }
+    return false;
+  };
+
+  const clearAllConceptMappings = () => {
+    const clearMappings = (concepts) => {
+      return concepts.map((concept) => ({
+        ...concept,
+        closeMatch: undefined,
+        children: concept.children ? clearMappings(concept.children) : undefined,
+      }));
+    };
+
+    setConceptData(clearMappings(conceptData));
+    setTransformedConceptData(clearMappings(transformedConceptData));
+  };
+
+  // Helper to find concept by ID recursively
+  const findConceptById = (id, concepts) => {
+    for (const concept of concepts) {
+      if (concept.id === id || concept.key === id) return concept;
+      if (concept.children) {
+        const found = findConceptById(id, concept.children);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const handleBeforeDelete = (conceptKey) => {
+    const concept = findConceptById(conceptKey, conceptData);
+
+    if (concept && concept.closeMatch && concept.closeMatch.length > 0) {
+      Confirm({
+        title: 'Delete Mapped Concept?',
+        content:
+          'This concept is currently mapped to external vocabulary concepts. Deleting it will remove these mappings. Are you sure you want to continue?',
+        okText: 'Delete',
+        cancelText: 'Cancel',
+        onAction: () => {
+          return true;
+        },
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
     dispatch(setBannerDismissed(false));
+    getAllTaxonomy({
+      calendarId,
+      page: 1,
+      limit: 200,
+      taxonomyClass,
+      includeConcepts: false,
+      addToFilter: false,
+      forTaxonomyMapping: true,
+    })
+      .unwrap()
+      .then((response) => {
+        const vocabularies = response?.data?.map((item) => ({
+          id: item.id,
+          label: contentLanguageBilingual({
+            data: item.name,
+            calendarContentLanguage: calendarContentLanguage,
+          }),
+          name: item.name,
+          description: item.disambiguatingDescription
+            ? contentLanguageBilingual({
+                data: item.disambiguatingDescription,
+                calendarContentLanguage: calendarContentLanguage,
+              })
+            : null,
+          authorityLabel: item.authorityLabel,
+          uri: item.uri,
+        }));
+        setVocabularyOptions(vocabularies || []);
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {
@@ -412,7 +630,7 @@ const AddTaxonomy = () => {
         }
       />
 
-      {!loading && calendarContentLanguage && (isSuccess || !taxonomyId) ? (
+      {!initialLoad && calendarContentLanguage && (isSuccess || !taxonomyId) ? (
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>
             <Col span={24}>
@@ -599,6 +817,104 @@ const AddTaxonomy = () => {
 
                 <Row>
                   <Col flex="423px">
+                    <Form.Item
+                      label={t('dashboard.taxonomy.addNew.externalVocabularies.label')}
+                      data-cy="form-item-external-vocabularies">
+                      <div>
+                        <Popover
+                          data-cy="popover-vocabularies-search"
+                          open={isVocabularyPopoverOpen}
+                          arrowPointAtCenter={false}
+                          showArrow={false}
+                          overlayClassName="entity-popover vocabulary-popover"
+                          placement="bottom"
+                          onOpenChange={(open) => setIsVocabularyPopoverOpen(open)}
+                          autoAdjustOverflow={false}
+                          getPopupContainer={(trigger) => trigger.parentNode}
+                          trigger={['click']}
+                          content={
+                            <div className="search-scrollable-content">
+                              {vocabularyOptions.map((vocabulary, index) => (
+                                <div
+                                  key={vocabulary.id}
+                                  className="search-popover-options"
+                                  onClick={() => {
+                                    // Check if there are any existing mappings
+                                    const hasExistingMappings = conceptData.some((concept) =>
+                                      hasConceptMappings(concept),
+                                    );
+
+                                    if (
+                                      hasExistingMappings &&
+                                      selectedVocabulary &&
+                                      selectedVocabulary.id !== vocabulary.id
+                                    ) {
+                                      // Close popover first to prevent z-index conflicts
+                                      setIsVocabularyPopoverOpen(false);
+
+                                      // Show confirmation modal after a brief delay to ensure popover is closed
+                                      setTimeout(() => {
+                                        Confirm({
+                                          title: t('dashboard.taxonomy.addNew.mapConcepts.switchVocabularyTitle'),
+                                          content: t('dashboard.taxonomy.addNew.mapConcepts.switchVocabularyMessage'),
+                                          okText: t('dashboard.taxonomy.addNew.mapConcepts.confirmButton'),
+                                          cancelText: t('dashboard.taxonomy.addNew.mapConcepts.cancelButton'),
+                                          onAction: () => {
+                                            // Clear all mappings and switch vocabulary
+                                            clearAllConceptMappings();
+                                            setSelectedVocabulary(vocabulary);
+                                            getTaxonomy({ id: vocabulary.id, includeConcepts: true, calendarId })
+                                              .unwrap()
+                                              .then((response) => {
+                                                setSelectedVocabularyTaxonomy(response);
+                                              })
+                                              .catch((error) => console.log(error));
+                                          },
+                                        });
+                                      }, 100);
+                                    } else {
+                                      setSelectedVocabulary(vocabulary);
+                                      setIsVocabularyPopoverOpen(false);
+                                      getTaxonomy({ id: vocabulary.id, includeConcepts: true, calendarId })
+                                        .unwrap()
+                                        .then((response) => {
+                                          setSelectedVocabularyTaxonomy(response);
+                                        })
+                                        .catch((error) => console.log(error));
+                                    }
+                                  }}
+                                  data-cy={`div-vocabulary-${index}`}>
+                                  <VocabularyCard
+                                    title={vocabulary.label}
+                                    description={vocabulary.description}
+                                    authorityLabel={vocabulary.authorityLabel}
+                                    artsDataLink={vocabulary.uri}
+                                    linkText={vocabulary.authorityLabel || 'Artsdata'}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          }>
+                          <Input
+                            placeholder={t('dashboard.taxonomy.addNew.externalVocabularies.placeholder')}
+                            value={selectedVocabulary?.label || ''}
+                            readOnly
+                            suffix={<DownOutlined />}
+                            style={{ cursor: 'pointer', height: '40px' }}
+                            data-cy="input-external-vocabularies"
+                            className="vocabulary-select-input"
+                          />
+                        </Popover>
+                        <span className="field-description" data-cy="span-external-vocabularies-helper-text">
+                          {t('dashboard.taxonomy.addNew.externalVocabularies.helperText')}
+                        </span>
+                      </div>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col flex="423px">
                     <div className="userAccess-label">{t('dashboard.taxonomy.addNew.userAccess')}</div>
                     <div name="userAccess" className="user-access" data-cy="form-item-user-access-title">
                       <SearchableCheckbox
@@ -656,43 +972,117 @@ const AddTaxonomy = () => {
               <Row>
                 <Col flex="780px" style={{ margin: '32px 0px' }} className="concept-card">
                   <Card bordered={false}>
-                    <Row justify="space-between" wrap={false}>
-                      <Col>
-                        <Row gutter={[16, 16]}>
-                          <Col>
-                            <Row gutter={[8, 8]} justify="space-between">
-                              <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
-                            </Row>
-                            <Row>
-                              <Col flex="423px" className="text-concepts">
-                                {t('dashboard.taxonomy.addNew.concepts.description')}
+                    <Tabs
+                      activeKey={tabKey}
+                      onChange={onTabChange}
+                      items={[
+                        {
+                          label: (
+                            <span data-cy="tab-concept-list">{t('dashboard.taxonomy.addNew.concepts.heading')}</span>
+                          ),
+                          key: '1',
+                          children: (
+                            <Row justify="space-between" wrap={false}>
+                              <Col>
+                                <Row gutter={[16, 16]}>
+                                  <Col>
+                                    <Row>
+                                      <Col className="text-concepts">
+                                        {t('dashboard.taxonomy.addNew.concepts.description')}
+                                      </Col>
+                                    </Row>
+                                  </Col>
+                                </Row>
+
+                                <Row>
+                                  <Col
+                                    span={24}
+                                    style={{
+                                      display: 'flex',
+                                      marginTop: '16px',
+                                      width: 'calc(100% - 100px)',
+                                    }}>
+                                    <Row style={{ flex: 1 }}>
+                                      <DraggableTable
+                                        data={conceptData}
+                                        setData={setConceptData}
+                                        fallbackStatus={fallbackStatus}
+                                        setFallbackStatus={setFallbackStatus}
+                                        transformedData={transformedConceptData}
+                                        setTransformedData={setTransformedConceptData}
+                                        onBeforeDelete={handleBeforeDelete}
+                                      />
+                                    </Row>
+                                  </Col>
+                                </Row>
                               </Col>
                             </Row>
-                          </Col>
-                        </Row>
+                          ),
+                        },
+                        {
+                          label: (
+                            <span data-cy="tab-map-concepts">{t('dashboard.taxonomy.addNew.mapConcepts.heading')}</span>
+                          ),
+                          key: '2',
+                          disabled: !selectedVocabulary,
+                          children: (
+                            <Row>
+                              <Col span={24}>
+                                {!selectedVocabulary ? (
+                                  <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                                    <div style={{ marginBottom: '16px', fontSize: '16px', fontWeight: 600 }}>
+                                      {t('dashboard.taxonomy.addNew.mapConcepts.heading')}
+                                    </div>
+                                    <div
+                                      style={{
+                                        color: '#646d7b',
+                                        fontSize: '14px',
+                                        maxWidth: '600px',
+                                        margin: '0 auto',
+                                      }}>
+                                      {t('dashboard.taxonomy.addNew.mapConcepts.description')}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <div style={{ marginBottom: '16px' }}>
+                                      <Col className="text-concepts">
+                                        {t('dashboard.taxonomy.addNew.mapConcepts.description')}
+                                      </Col>
+                                    </div>
 
-                        <Row>
-                          <Col
-                            span={24}
-                            style={{
-                              display: 'flex',
-                              marginTop: '16px',
-                              width: 'calc(100% - 100px)',
-                            }}>
-                            <Row style={{ flex: 1 }}>
-                              <DraggableTable
-                                data={conceptData}
-                                setData={setConceptData}
-                                fallbackStatus={fallbackStatus}
-                                setFallbackStatus={setFallbackStatus}
-                                transformedData={transformedConceptData}
-                                setTransformedData={setTransformedConceptData}
-                              />
+                                    <Table
+                                      columns={getMappingTableColumns()}
+                                      dataSource={conceptData}
+                                      pagination={false}
+                                      rowKey="id"
+                                      expandable={{
+                                        expandIcon: ({ expanded, onExpand, record }) => {
+                                          if (!record.children || record.children.length === 0) return null;
+
+                                          const iconStyle = { fontSize: 16, cursor: 'pointer' };
+                                          return (
+                                            <span
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                onExpand(record, e);
+                                              }}
+                                              style={iconStyle}>
+                                              {expanded ? <MinusOutlined /> : <PlusOutlined />}
+                                            </span>
+                                          );
+                                        },
+                                      }}
+                                      className="concept-mapping-table"
+                                    />
+                                  </div>
+                                )}
+                              </Col>
                             </Row>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
+                          ),
+                        },
+                      ]}
+                    />
                   </Card>
                 </Col>
               </Row>

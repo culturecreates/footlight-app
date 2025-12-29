@@ -145,6 +145,19 @@
 .add-taxonomy-wrapper .add-event-section-wrapper {
   padding: 24px;
 }
+.vocabulary-popover {
+  padding-top: 0 !important;
+}
+
+.vocabulary-popover .ant-popover-inner {
+  width: 423px !important;
+}
+
+.add-taxonomy-wrapper .vocabulary-select-input {
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-stroke, #b6c1c9);
+  padding: 8px;
+}
 
 @media screen and (max-width: 480px) {
   .add-taxonomy-wrapper .add-event-section-wrapper {
@@ -192,4 +205,72 @@
     margin-left: 0px;
     font-size: 20px !important;
   }
+}
+
+.concept-mapping-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.concept-mapping-table thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: transparent;
+}
+
+.concept-mapping-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.concept-mapping-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.concept-mapping-table tbody td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.concept-expand-icon {
+  cursor: pointer;
+  font-size: 14px;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+}
+
+.add-taxonomy-wrapper .concept-card .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  background: rgb(249, 250, 255);
+  color: var(--content-action-default, #1b3de6);
+  line-height: 24px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  text-shadow: none;
+}
+
+.add-taxonomy-wrapper .concept-card .ant-tabs-tab-btn {
+  background: rgb(249, 250, 255);
+  line-height: 24px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--content-neutral-secondary, #646d7b);
+  text-shadow: none;
+}
+
+.add-taxonomy-wrapper .concept-card .ant-tabs-ink-bar {
+  border-bottom: 2px solid var(--content-action-darker, #0f0e98);
+  background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
 }
