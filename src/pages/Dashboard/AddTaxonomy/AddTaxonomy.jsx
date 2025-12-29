@@ -105,6 +105,7 @@ const AddTaxonomy = () => {
   const [vocabularyOptions, setVocabularyOptions] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [selectedVocabularyTaxonomy, setSelectedVocabularyTaxonomy] = useState(null);
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
   const [getTaxonomy, { data: taxonomyData, isSuccess: isSuccess, isLoading: initialLoad }] = useLazyGetTaxonomyQuery({
     sessionId: timestampRef,
@@ -545,6 +546,25 @@ const AddTaxonomy = () => {
     return false;
   };
 
+  const getExpandedKeys = (concepts) => {
+    const keys = [];
+
+    concepts.forEach((concept) => {
+      if (concept.children && concept.children.length > 0) {
+        const childrenHaveMappings = concept.children.some((child) => hasConceptMappings(child));
+
+        if (childrenHaveMappings) {
+          keys.push(concept.id);
+        }
+
+        const childKeys = getExpandedKeys(concept.children);
+        keys.push(...childKeys);
+      }
+    });
+
+    return keys;
+  };
+
   const clearAllConceptMappings = () => {
     const clearMappings = (concepts) => {
       return concepts.map((concept) => ({
@@ -693,6 +713,13 @@ const AddTaxonomy = () => {
       dispatch(setLanguageLiteralBannerDisplayStatus(false));
     }
   }, [fallbackStatus, activeFallbackFieldsInfo]);
+
+  useEffect(() => {
+    if (conceptData && conceptData.length > 0 && selectedVocabulary) {
+      const keysToExpand = getExpandedKeys(conceptData);
+      setExpandedRowKeys(keysToExpand);
+    }
+  }, [conceptData, selectedVocabulary]);
 
   return (
     <>
@@ -1125,6 +1152,14 @@ const AddTaxonomy = () => {
                                       rowKey="id"
                                       expandable={{
                                         indentSize: 25,
+                                        expandedRowKeys: expandedRowKeys,
+                                        onExpand: (expanded, record) => {
+                                          if (expanded) {
+                                            setExpandedRowKeys([...expandedRowKeys, record.id]);
+                                          } else {
+                                            setExpandedRowKeys(expandedRowKeys.filter((key) => key !== record.id));
+                                          }
+                                        },
                                         expandIcon: ({ expanded, onExpand, record }) => {
                                           if (!record.children || record.children.length === 0) return null;
 
