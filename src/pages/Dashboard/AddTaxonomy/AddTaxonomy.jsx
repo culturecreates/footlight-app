@@ -1189,7 +1189,7 @@ const AddTaxonomy = () => {
                                       pagination={false}
                                       rowKey="id"
                                       expandable={{
-                                        indentSize: 25,
+                                        indentSize: 30,
                                         expandedRowKeys: expandedRowKeys,
                                         onExpand: (expanded, record) => {
                                           if (expanded) {
@@ -1201,7 +1201,7 @@ const AddTaxonomy = () => {
                                         expandIcon: ({ expanded, onExpand, record }) => {
                                           if (!record.children || record.children.length === 0) return null;
 
-                                          const iconStyle = { fontSize: 16, cursor: 'pointer' };
+                                          const iconStyle = { fontSize: 16, cursor: 'pointer', marginRight: '8px' };
                                           return (
                                             <span
                                               onClick={(e) => {
