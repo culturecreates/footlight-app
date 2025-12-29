@@ -369,7 +369,7 @@ const AddTaxonomy = () => {
           name: filteredName,
           isDefault: item?.isDefault || false,
           children: item.children ? modifyConceptData(item.children) : [],
-          ...(item.closeMatch && item.closeMatch.length > 0 && { closeMatch: item.closeMatch }),
+          ...(selectedVocabulary && { closeMatch: item.closeMatch || [] }),
         };
       }) || []
     );
