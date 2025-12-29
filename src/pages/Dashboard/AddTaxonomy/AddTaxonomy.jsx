@@ -442,6 +442,18 @@ const AddTaxonomy = () => {
     setTabKey(key);
   };
 
+  const getVocabularyLinkText = (authorityLabel) => {
+    if (!authorityLabel) return;
+
+    if (authorityLabel.includes('artsdata.ca')) {
+      return 'Artsdata';
+    } else if (authorityLabel.includes('scenepro.ca')) {
+      return 'ScènePro';
+    }
+
+    return authorityLabel;
+  };
+
   const getExternalConceptsTreeData = () => {
     if (!selectedVocabularyTaxonomy?.concepts) return [];
 
@@ -985,7 +997,7 @@ const AddTaxonomy = () => {
                                       description={vocabulary.description}
                                       authorityLabel={vocabulary.authorityLabel}
                                       artsDataLink={vocabulary.uri}
-                                      linkText={vocabulary.authorityLabel || 'Artsdata'}
+                                      linkText={getVocabularyLinkText(vocabulary.authorityLabel)}
                                     />
                                   </div>
                                 ))}
