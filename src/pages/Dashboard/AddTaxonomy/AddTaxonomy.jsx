@@ -106,6 +106,7 @@ const AddTaxonomy = () => {
   // eslint-disable-next-line no-unused-vars
   const [selectedVocabularyTaxonomy, setSelectedVocabularyTaxonomy] = useState(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
+  const [isVocabularyInputHovered, setIsVocabularyInputHovered] = useState(false);
 
   const [getTaxonomy, { data: taxonomyData, isSuccess: isSuccess, isLoading: initialLoad }] = useLazyGetTaxonomyQuery({
     sessionId: timestampRef,
@@ -328,9 +329,7 @@ const AddTaxonomy = () => {
           disambiguatingDescription: disambiguatingDescription,
           concepts: cleanConcepts({ concepts: [...filteredConceptData] }),
           addToFilter: values?.addToFilter,
-          ...(selectedVocabulary?.id && {
-            mappedTo: [{ entityId: selectedVocabulary.id }],
-          }),
+          mappedTo: selectedVocabulary?.id ? [{ entityId: selectedVocabulary.id }] : [],
         };
 
         // Filter out undefined values
@@ -921,36 +920,91 @@ const AddTaxonomy = () => {
                       label={t('dashboard.taxonomy.addNew.externalVocabularies.label')}
                       data-cy="form-item-external-vocabularies">
                       <div>
-                        <Popover
-                          data-cy="popover-vocabularies-search"
-                          open={isVocabularyPopoverOpen}
-                          arrowPointAtCenter={false}
-                          showArrow={false}
-                          overlayClassName="entity-popover vocabulary-popover"
-                          placement="bottom"
-                          onOpenChange={(open) => setIsVocabularyPopoverOpen(open)}
-                          autoAdjustOverflow={false}
-                          getPopupContainer={(trigger) => trigger.parentNode}
-                          trigger={['click']}
-                          content={
-                            <div className="search-scrollable-content">
-                              {vocabularyOptions.map((vocabulary, index) => (
-                                <div
-                                  key={vocabulary.id}
-                                  className="search-popover-options"
-                                  onClick={() => {
-                                    const hasExistingMappings = conceptData.some((concept) =>
-                                      hasConceptMappings(concept),
-                                    );
+                        <div
+                          onMouseEnter={() => setIsVocabularyInputHovered(true)}
+                          onMouseLeave={() => setIsVocabularyInputHovered(false)}>
+                          <Popover
+                            data-cy="popover-vocabularies-search"
+                            open={isVocabularyPopoverOpen}
+                            arrowPointAtCenter={false}
+                            showArrow={false}
+                            overlayClassName="entity-popover vocabulary-popover"
+                            placement="bottom"
+                            onOpenChange={(open) => setIsVocabularyPopoverOpen(open)}
+                            autoAdjustOverflow={false}
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            trigger={['click']}
+                            content={
+                              <div className="search-scrollable-content">
+                                {vocabularyOptions.map((vocabulary, index) => (
+                                  <div
+                                    key={vocabulary.id}
+                                    className="search-popover-options"
+                                    onClick={() => {
+                                      const hasExistingMappings = conceptData.some((concept) =>
+                                        hasConceptMappings(concept),
+                                      );
 
-                                    if (
-                                      hasExistingMappings &&
-                                      selectedVocabulary &&
-                                      selectedVocabulary.id !== vocabulary.id
-                                    ) {
-                                      setIsVocabularyPopoverOpen(false);
+                                      if (
+                                        hasExistingMappings &&
+                                        selectedVocabulary &&
+                                        selectedVocabulary.id !== vocabulary.id
+                                      ) {
+                                        setIsVocabularyPopoverOpen(false);
 
-                                      setTimeout(() => {
+                                        setTimeout(() => {
+                                          Confirm({
+                                            title: t('dashboard.taxonomy.addNew.mapConcepts.switchVocabularyTitle'),
+                                            content: t('dashboard.taxonomy.addNew.mapConcepts.switchVocabularyMessage'),
+                                            okText: t('dashboard.taxonomy.addNew.mapConcepts.confirmButton'),
+                                            cancelText: t('dashboard.taxonomy.addNew.mapConcepts.cancelButton'),
+                                            onAction: () => {
+                                              clearAllConceptMappings();
+                                              setSelectedVocabulary(vocabulary);
+                                              fetchVocabularyTaxonomy(vocabulary.id)
+                                                .then((response) => {
+                                                  setSelectedVocabularyTaxonomy(response);
+                                                })
+                                                .catch((error) => console.log(error));
+                                            },
+                                          });
+                                        }, 100);
+                                      } else {
+                                        setSelectedVocabulary(vocabulary);
+                                        setIsVocabularyPopoverOpen(false);
+                                        fetchVocabularyTaxonomy(vocabulary.id)
+                                          .then((response) => {
+                                            setSelectedVocabularyTaxonomy(response);
+                                          })
+                                          .catch((error) => console.log(error));
+                                      }
+                                    }}
+                                    data-cy={`div-vocabulary-${index}`}>
+                                    <VocabularyCard
+                                      title={vocabulary.label}
+                                      description={vocabulary.description}
+                                      authorityLabel={vocabulary.authorityLabel}
+                                      artsDataLink={vocabulary.uri}
+                                      linkText={vocabulary.authorityLabel || 'Artsdata'}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            }>
+                            <Input
+                              placeholder={t('dashboard.taxonomy.addNew.externalVocabularies.placeholder')}
+                              value={selectedVocabulary?.label || ''}
+                              readOnly
+                              suffix={
+                                selectedVocabulary && isVocabularyInputHovered ? (
+                                  <CloseCircleOutlined
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const hasExistingMappings = conceptData.some((concept) =>
+                                        hasConceptMappings(concept),
+                                      );
+
+                                      if (hasExistingMappings) {
                                         Confirm({
                                           title: t('dashboard.taxonomy.addNew.mapConcepts.switchVocabularyTitle'),
                                           content: t('dashboard.taxonomy.addNew.mapConcepts.switchVocabularyMessage'),
@@ -958,47 +1012,29 @@ const AddTaxonomy = () => {
                                           cancelText: t('dashboard.taxonomy.addNew.mapConcepts.cancelButton'),
                                           onAction: () => {
                                             clearAllConceptMappings();
-                                            setSelectedVocabulary(vocabulary);
-                                            fetchVocabularyTaxonomy(vocabulary.id)
-                                              .then((response) => {
-                                                setSelectedVocabularyTaxonomy(response);
-                                              })
-                                              .catch((error) => console.log(error));
+                                            setSelectedVocabulary(null);
+                                            setSelectedVocabularyTaxonomy(null);
+                                            setExpandedRowKeys([]);
                                           },
                                         });
-                                      }, 100);
-                                    } else {
-                                      setSelectedVocabulary(vocabulary);
-                                      setIsVocabularyPopoverOpen(false);
-                                      fetchVocabularyTaxonomy(vocabulary.id)
-                                        .then((response) => {
-                                          setSelectedVocabularyTaxonomy(response);
-                                        })
-                                        .catch((error) => console.log(error));
-                                    }
-                                  }}
-                                  data-cy={`div-vocabulary-${index}`}>
-                                  <VocabularyCard
-                                    title={vocabulary.label}
-                                    description={vocabulary.description}
-                                    authorityLabel={vocabulary.authorityLabel}
-                                    artsDataLink={vocabulary.uri}
-                                    linkText={vocabulary.authorityLabel || 'Artsdata'}
+                                      } else {
+                                        setSelectedVocabulary(null);
+                                        setSelectedVocabularyTaxonomy(null);
+                                        setExpandedRowKeys([]);
+                                      }
+                                    }}
+                                    style={{ color: '#1b3de6', fontSize: '14px', cursor: 'pointer' }}
                                   />
-                                </div>
-                              ))}
-                            </div>
-                          }>
-                          <Input
-                            placeholder={t('dashboard.taxonomy.addNew.externalVocabularies.placeholder')}
-                            value={selectedVocabulary?.label || ''}
-                            readOnly
-                            suffix={<DownOutlined />}
-                            style={{ cursor: 'pointer', height: '40px' }}
-                            data-cy="input-external-vocabularies"
-                            className="vocabulary-select-input"
-                          />
-                        </Popover>
+                                ) : (
+                                  <DownOutlined />
+                                )
+                              }
+                              style={{ cursor: 'pointer', height: '40px' }}
+                              data-cy="input-external-vocabularies"
+                              className="vocabulary-select-input"
+                            />
+                          </Popover>
+                        </div>
                         <span className="field-description" data-cy="span-external-vocabularies-helper-text">
                           {t('dashboard.taxonomy.addNew.externalVocabularies.helperText')}
                         </span>
