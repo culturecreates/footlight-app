@@ -55,6 +55,12 @@ const taxonomyClasses = taxonomyClassTranslations.map((item) => {
 });
 const { TextArea } = Input;
 
+let cachedVocabularyOptions = null;
+let vocabularyFetchPromise = null;
+
+const cachedVocabularyTaxonomies = new Map();
+const vocabularyTaxonomyFetchPromises = new Map();
+
 const AddTaxonomy = () => {
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -123,6 +129,40 @@ const AddTaxonomy = () => {
       .filter((item) => Object.keys(item.name).length > 0);
   }
 
+  /**
+   * Helper function to fetch vocabulary taxonomy with caching
+   * Caches vocabulary taxonomy data (including concepts) to avoid redundant API calls
+   * when users switch between vocabularies they've already selected
+   *
+   * @param {string} vocabularyId - The ID of the vocabulary to fetch
+   * @returns {Promise} Promise resolving to the vocabulary taxonomy data
+   */
+  const fetchVocabularyTaxonomy = (vocabularyId) => {
+    if (cachedVocabularyTaxonomies.has(vocabularyId)) {
+      return Promise.resolve(cachedVocabularyTaxonomies.get(vocabularyId));
+    }
+
+    if (vocabularyTaxonomyFetchPromises.has(vocabularyId)) {
+      return vocabularyTaxonomyFetchPromises.get(vocabularyId);
+    }
+
+    const fetchPromise = getTaxonomy({ id: vocabularyId, includeConcepts: true, calendarId })
+      .unwrap()
+      .then((response) => {
+        cachedVocabularyTaxonomies.set(vocabularyId, response);
+        vocabularyTaxonomyFetchPromises.delete(vocabularyId);
+        return response;
+      })
+      .catch((error) => {
+        console.log(error);
+        vocabularyTaxonomyFetchPromises.delete(vocabularyId);
+        throw error;
+      });
+
+    vocabularyTaxonomyFetchPromises.set(vocabularyId, fetchPromise);
+    return fetchPromise;
+  };
+
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');
   }, [setContentBackgroundColor]);
@@ -143,24 +183,24 @@ const AddTaxonomy = () => {
             getStandardFieldTranslation({ value: res?.mappedToField, classType: res?.taxonomyClass }),
           ]);
           setDynamic(res?.isDynamicField ?? false);
-
-          if (res?.mappedTo && res.mappedTo.length > 0 && vocabularyOptions.length > 0) {
-            const mappedVocabularyId = res.mappedTo[0].entityId;
-            const mappedVocab = vocabularyOptions.find((v) => v.id === mappedVocabularyId);
-            if (mappedVocab) {
-              setSelectedVocabulary(mappedVocab);
-              getTaxonomy({ id: mappedVocab.id, includeConcepts: true, calendarId })
-                .unwrap()
-                .then((response) => {
-                  console.log(response);
-                  setSelectedVocabularyTaxonomy(response);
-                })
-                .catch((error) => console.log(error));
-            }
-          }
         });
     }
-  }, [taxonomyId, currentCalendarData, vocabularyOptions]);
+  }, [taxonomyId, currentCalendarData]);
+
+  useEffect(() => {
+    if (taxonomyId && taxonomyData?.mappedTo && taxonomyData.mappedTo.length > 0 && vocabularyOptions.length > 0) {
+      const mappedVocabularyId = taxonomyData.mappedTo[0].entityId;
+      const mappedVocab = vocabularyOptions.find((v) => v.id === mappedVocabularyId);
+      if (mappedVocab && (!selectedVocabulary || selectedVocabulary.id !== mappedVocab.id)) {
+        setSelectedVocabulary(mappedVocab);
+        fetchVocabularyTaxonomy(mappedVocab.id)
+          .then((response) => {
+            setSelectedVocabularyTaxonomy(response);
+          })
+          .catch((error) => console.log(error));
+      }
+    }
+  }, [vocabularyOptions, taxonomyData]);
 
   useEffect(() => {
     if (user && calendar.length > 0) {
@@ -553,7 +593,25 @@ const AddTaxonomy = () => {
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
     dispatch(setBannerDismissed(false));
-    getAllTaxonomy({
+
+    // Check if we already have cached vocabulary options
+    if (cachedVocabularyOptions) {
+      setVocabularyOptions(cachedVocabularyOptions);
+      return;
+    }
+
+    // If a fetch is already in progress, wait for it
+    if (vocabularyFetchPromise) {
+      vocabularyFetchPromise
+        .then((vocabularies) => {
+          setVocabularyOptions(vocabularies || []);
+        })
+        .catch((error) => console.log(error));
+      return;
+    }
+
+    // Start a new fetch and cache the promise
+    vocabularyFetchPromise = getAllTaxonomy({
       calendarId,
       page: 1,
       limit: 200,
@@ -580,7 +638,22 @@ const AddTaxonomy = () => {
           authorityLabel: item.authorityLabel,
           uri: item.uri,
         }));
-        setVocabularyOptions(vocabularies || []);
+
+        // Cache the result
+        cachedVocabularyOptions = vocabularies || [];
+        vocabularyFetchPromise = null;
+
+        return cachedVocabularyOptions;
+      })
+      .catch((error) => {
+        console.log(error);
+        vocabularyFetchPromise = null;
+        throw error;
+      });
+
+    vocabularyFetchPromise
+      .then((vocabularies) => {
+        setVocabularyOptions(vocabularies);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -839,7 +912,6 @@ const AddTaxonomy = () => {
                                   key={vocabulary.id}
                                   className="search-popover-options"
                                   onClick={() => {
-                                    // Check if there are any existing mappings
                                     const hasExistingMappings = conceptData.some((concept) =>
                                       hasConceptMappings(concept),
                                     );
@@ -849,10 +921,8 @@ const AddTaxonomy = () => {
                                       selectedVocabulary &&
                                       selectedVocabulary.id !== vocabulary.id
                                     ) {
-                                      // Close popover first to prevent z-index conflicts
                                       setIsVocabularyPopoverOpen(false);
 
-                                      // Show confirmation modal after a brief delay to ensure popover is closed
                                       setTimeout(() => {
                                         Confirm({
                                           title: t('dashboard.taxonomy.addNew.mapConcepts.switchVocabularyTitle'),
@@ -860,11 +930,9 @@ const AddTaxonomy = () => {
                                           okText: t('dashboard.taxonomy.addNew.mapConcepts.confirmButton'),
                                           cancelText: t('dashboard.taxonomy.addNew.mapConcepts.cancelButton'),
                                           onAction: () => {
-                                            // Clear all mappings and switch vocabulary
                                             clearAllConceptMappings();
                                             setSelectedVocabulary(vocabulary);
-                                            getTaxonomy({ id: vocabulary.id, includeConcepts: true, calendarId })
-                                              .unwrap()
+                                            fetchVocabularyTaxonomy(vocabulary.id)
                                               .then((response) => {
                                                 setSelectedVocabularyTaxonomy(response);
                                               })
@@ -875,8 +943,7 @@ const AddTaxonomy = () => {
                                     } else {
                                       setSelectedVocabulary(vocabulary);
                                       setIsVocabularyPopoverOpen(false);
-                                      getTaxonomy({ id: vocabulary.id, includeConcepts: true, calendarId })
-                                        .unwrap()
+                                      fetchVocabularyTaxonomy(vocabulary.id)
                                         .then((response) => {
                                           setSelectedVocabularyTaxonomy(response);
                                         })
