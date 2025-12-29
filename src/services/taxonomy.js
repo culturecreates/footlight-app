@@ -16,10 +16,11 @@ export const taxonomyApi = createApi({
         taxonomyClass,
         includeConcepts,
         addToFilter,
+        forTaxonomyMapping = false,
       }) => ({
         url: `taxonomy?query=${query}${
           filters ? `&${filters}` : ''
-        }&page=${page}&limit=${limit}&${taxonomyClass}&include-concepts=${includeConcepts}`,
+        }&page=${page}&limit=${limit}&${taxonomyClass}&include-concepts=${includeConcepts}&for-taxonomy-mapping=${forTaxonomyMapping}`,
         headers: {
           'calendar-id': calendarId,
         },
