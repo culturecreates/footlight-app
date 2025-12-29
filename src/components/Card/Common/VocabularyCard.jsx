@@ -13,9 +13,8 @@ const VocabularyCard = (props) => {
           {title}
         </div>
         <div className="vocabulary-description" data-cy="div-vocabulary-description">
-          {description && <span>{description}</span>}
-          {description && authorityLabel && <span> • </span>}
-          {authorityLabel && <span>{authorityLabel}</span>}
+          {description && <div>{description}</div>}
+          {authorityLabel && <div>{authorityLabel}</div>}
         </div>
       </div>
       <div className="vocabulary-link-container">
