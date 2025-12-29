@@ -1124,6 +1124,7 @@ const AddTaxonomy = () => {
                                       pagination={false}
                                       rowKey="id"
                                       expandable={{
+                                        indentSize: 25,
                                         expandIcon: ({ expanded, onExpand, record }) => {
                                           if (!record.children || record.children.length === 0) return null;
 
