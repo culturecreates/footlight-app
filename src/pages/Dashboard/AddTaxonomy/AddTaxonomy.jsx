@@ -109,14 +109,14 @@ const AddTaxonomy = () => {
   const [isVocabularyInputHovered, setIsVocabularyInputHovered] = useState(false);
   const [loadedTaxonomyData, setLoadedTaxonomyData] = useState(null);
 
-  const [getTaxonomy, { data: taxonomyData, isSuccess: isSuccess, isLoading: initialLoad }] = useLazyGetTaxonomyQuery({
+  const [getTaxonomy, { isLoading: initialLoad }] = useLazyGetTaxonomyQuery({
     sessionId: timestampRef,
   });
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
   const [addTaxonomy] = useAddTaxonomyMutation();
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
 
-  const { taxonomyClass } = taxonomyData || {};
+  const { taxonomyClass } = loadedTaxonomyData || {};
   const selectedClass = location.state?.selectedClass;
 
   function cleanNames(data) {
@@ -235,13 +235,13 @@ const AddTaxonomy = () => {
     }
 
     // setting standardFields initial value
-    taxonomyData?.mappedToField &&
+    loadedTaxonomyData?.mappedToField &&
       initialTaxonomyValue &&
       form.setFieldValue(
         'mappedToField',
-        getStandardFieldTranslation({ value: taxonomyData?.mappedToField, classType: initialTaxonomyValue.key }),
+        getStandardFieldTranslation({ value: loadedTaxonomyData?.mappedToField, classType: initialTaxonomyValue.key }),
       );
-  }, [taxonomyData]);
+  }, [loadedTaxonomyData]);
 
   useEffect(() => {
     // setup for new taxonomy
@@ -315,14 +315,14 @@ const AddTaxonomy = () => {
         const name = filterUneditedFallbackValues({
           values: values?.name,
           activeFallbackFieldsInfo: fallbackStatus,
-          initialDataValue: taxonomyData?.name,
+          initialDataValue: loadedTaxonomyData?.name,
           fieldName: 'name',
         });
 
         const disambiguatingDescription = filterUneditedFallbackValues({
           values: values?.disambiguatingDescription,
           activeFallbackFieldsInfo: fallbackStatus,
-          initialDataValue: taxonomyData?.disambiguatingDescription,
+          initialDataValue: loadedTaxonomyData?.disambiguatingDescription,
           fieldName: 'disambiguatingDescription',
         });
 
@@ -746,11 +746,13 @@ const AddTaxonomy = () => {
       <RouteLeavingGuard
         isBlocking={
           isDirty.formState ||
-          (!isDirty.isSubmitting ? !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? []) : false)
+          (!isDirty.isSubmitting
+            ? !compareArraysOfObjects(conceptData ?? [], loadedTaxonomyData?.concepts ?? [])
+            : false)
         }
       />
 
-      {!initialLoad && calendarContentLanguage && (isSuccess || !taxonomyId) ? (
+      {!initialLoad && calendarContentLanguage && (loadedTaxonomyData || !taxonomyId) ? (
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>
             <Col span={24}>
@@ -830,7 +832,7 @@ const AddTaxonomy = () => {
                     </span>
                   </Col>
                 </Row>
-                {(dynamic == false || (taxonomyId && !taxonomyData?.isDynamicField)) && (
+                {(dynamic == false || (taxonomyId && !loadedTaxonomyData?.isDynamicField)) && (
                   <Row>
                     <Col flex={'423px'}>
                       <Form.Item
@@ -862,7 +864,7 @@ const AddTaxonomy = () => {
                         entityId={taxonomyId}
                         name={'name'}
                         data={Object.fromEntries(
-                          Object.entries(taxonomyData?.name || {}).filter(([, value]) => value !== ''),
+                          Object.entries(loadedTaxonomyData?.name || {}).filter(([, value]) => value !== ''),
                         )}
                         required={true}
                         validations={t('dashboard.taxonomy.addNew.validations.name')}
@@ -903,7 +905,7 @@ const AddTaxonomy = () => {
                         form={form}
                         name={'disambiguatingDescription'}
                         data={Object.fromEntries(
-                          Object.entries(taxonomyData?.disambiguatingDescription || {}).filter(
+                          Object.entries(loadedTaxonomyData?.disambiguatingDescription || {}).filter(
                             ([, value]) => value !== '',
                           ),
                         )}
@@ -1106,7 +1108,10 @@ const AddTaxonomy = () => {
 
                 <Row justify={'start'} align={'top'} gutter={[8, 0]}>
                   <Col>
-                    <Form.Item valuePropName="checked" name="addToFilter" initialValue={taxonomyData?.addToFilter}>
+                    <Form.Item
+                      valuePropName="checked"
+                      name="addToFilter"
+                      initialValue={loadedTaxonomyData?.addToFilter}>
                       <StyledSwitch />
                     </Form.Item>
                   </Col>
