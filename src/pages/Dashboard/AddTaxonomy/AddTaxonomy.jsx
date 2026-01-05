@@ -107,6 +107,7 @@ const AddTaxonomy = () => {
   const [selectedVocabularyTaxonomy, setSelectedVocabularyTaxonomy] = useState(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [isVocabularyInputHovered, setIsVocabularyInputHovered] = useState(false);
+  const [loadedTaxonomyData, setLoadedTaxonomyData] = useState(null);
 
   const [getTaxonomy, { data: taxonomyData, isSuccess: isSuccess, isLoading: initialLoad }] = useLazyGetTaxonomyQuery({
     sessionId: timestampRef,
@@ -185,24 +186,32 @@ const AddTaxonomy = () => {
             getStandardFieldTranslation({ value: res?.mappedToField, classType: res?.taxonomyClass }),
           ]);
           setDynamic(res?.isDynamicField ?? false);
+          // Store the loaded taxonomy data in state
+          setLoadedTaxonomyData(res);
         });
     }
   }, [taxonomyId, currentCalendarData]);
 
   useEffect(() => {
-    if (taxonomyId && taxonomyData?.mappedTo && taxonomyData.mappedTo.length > 0 && vocabularyOptions.length > 0) {
-      const mappedVocabularyId = taxonomyData.mappedTo[0].entityId;
-      const mappedVocab = vocabularyOptions.find((v) => v.id === mappedVocabularyId);
-      if (mappedVocab && (!selectedVocabulary || selectedVocabulary.id !== mappedVocab.id)) {
-        setSelectedVocabulary(mappedVocab);
-        fetchVocabularyTaxonomy(mappedVocab.id)
-          .then((response) => {
-            setSelectedVocabularyTaxonomy(response);
-          })
-          .catch((error) => console.log(error));
+    if (taxonomyId && vocabularyOptions.length > 0 && loadedTaxonomyData) {
+      if (loadedTaxonomyData?.mappedTo && loadedTaxonomyData.mappedTo.length > 0) {
+        const mappedVocabularyId = loadedTaxonomyData.mappedTo[0].entityId;
+        const mappedVocab = vocabularyOptions.find((v) => v.id === mappedVocabularyId);
+        if (mappedVocab && (!selectedVocabulary || selectedVocabulary.id !== mappedVocab.id)) {
+          setSelectedVocabulary(mappedVocab);
+          fetchVocabularyTaxonomy(mappedVocab.id)
+            .then((response) => {
+              setSelectedVocabularyTaxonomy(response);
+            })
+            .catch((error) => console.log(error));
+        }
+      } else if (loadedTaxonomyData?.mappedTo && loadedTaxonomyData.mappedTo.length === 0) {
+        // If mappedTo is empty array, clear the vocabulary selection
+        setSelectedVocabulary(null);
+        setSelectedVocabularyTaxonomy(null);
       }
     }
-  }, [vocabularyOptions, taxonomyData]);
+  }, [vocabularyOptions, loadedTaxonomyData]);
 
   useEffect(() => {
     if (user && calendar.length > 0) {
