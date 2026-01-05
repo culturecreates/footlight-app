@@ -177,7 +177,8 @@ export const formFieldValue = [
       else if (datatype === dataTypes.URI_STRING) {
         if (subdatatype === subDataType.VIDEO_URL) {
           const initialValue = data?.uri || '';
-          const embedUrl = getEmbedUrl(form.getFieldValue(mappedField));
+          const currentValue = form.getFieldValue(mappedField);
+          const embedUrl = getEmbedUrl(currentValue || initialValue);
 
           return (
             <Row style={{ margin: '0px' }} gutter={[12, 12]}>
