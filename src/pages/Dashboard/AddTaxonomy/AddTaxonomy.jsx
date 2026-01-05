@@ -48,7 +48,7 @@ import {
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
-import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -664,15 +664,15 @@ const AddTaxonomy = () => {
       .then((response) => {
         const vocabularies = response?.data?.map((item) => ({
           id: item.id,
-          label: bilingual({
-            data: item?.name,
-            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          label: contentLanguageBilingual({
+            data: item.name,
+            calendarContentLanguage: calendarContentLanguage,
           }),
           name: item.name,
           description: item.disambiguatingDescription
-            ? bilingual({
+            ? contentLanguageBilingual({
                 data: item.disambiguatingDescription,
-                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                calendarContentLanguage: calendarContentLanguage,
               })
             : null,
           authorityLabel: item.authorityLabel,
