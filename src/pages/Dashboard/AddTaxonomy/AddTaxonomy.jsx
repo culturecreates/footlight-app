@@ -409,7 +409,7 @@ const AddTaxonomy = () => {
           name: filteredName,
           isDefault: item?.isDefault || false,
           children: item.children ? modifyConceptData(item.children) : [],
-          ...(selectedVocabulary && { closeMatch: item.closeMatch || [] }),
+          ...((selectedVocabulary || item.closeMatch !== undefined) && { closeMatch: item.closeMatch || [] }),
         };
       }) || []
     );
@@ -580,7 +580,7 @@ const AddTaxonomy = () => {
     const clearMappings = (concepts) => {
       return concepts.map((concept) => ({
         ...concept,
-        closeMatch: undefined,
+        closeMatch: [],
         children: concept.children ? clearMappings(concept.children) : undefined,
       }));
     };
