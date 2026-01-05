@@ -1018,6 +1018,11 @@ const AddTaxonomy = () => {
                               placeholder={t('dashboard.taxonomy.addNew.externalVocabularies.placeholder')}
                               value={selectedVocabulary?.label || ''}
                               readOnly
+                              onClick={() => {
+                                if (!selectedVocabulary || !isVocabularyInputHovered) {
+                                  setIsVocabularyPopoverOpen(!isVocabularyPopoverOpen);
+                                }
+                              }}
                               suffix={
                                 selectedVocabulary && isVocabularyInputHovered ? (
                                   <CloseCircleOutlined
@@ -1051,7 +1056,13 @@ const AddTaxonomy = () => {
                                     style={{ color: '#1b3de6', fontSize: '14px', cursor: 'pointer' }}
                                   />
                                 ) : (
-                                  <DownOutlined />
+                                  <DownOutlined
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setIsVocabularyPopoverOpen(!isVocabularyPopoverOpen);
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                  />
                                 )
                               }
                               style={{ cursor: 'pointer', height: '40px' }}
