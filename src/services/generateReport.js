@@ -81,9 +81,10 @@ export async function exportEntities({
   upcomingEventsOnly = false,
   includeNestedEntities = true,
   dataModel = 'Artsdata',
+  accessToken = null,
 }) {
   const baseUrl = import.meta.env.VITE_APP_API_URL;
-  const accessToken = Cookies.get('accessToken');
+  const token = accessToken || Cookies.get('accessToken');
 
   const params = new URLSearchParams();
   params.append('file-format', fileFormat);
@@ -98,7 +99,7 @@ export async function exportEntities({
       method: 'GET',
       headers: {
         'calendar-id': calendarId,
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
         Accept: 'application/ld+json',
       },
     });
@@ -113,6 +114,7 @@ export async function exportEntities({
         upcomingEventsOnly,
         includeNestedEntities,
         dataModel,
+        accessToken: newAccessToken,
       });
     }
 
