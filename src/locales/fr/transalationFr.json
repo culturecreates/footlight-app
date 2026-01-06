@@ -1401,7 +1401,7 @@
       "success": "Succès ! La génération du fichier est en cours. Vous recevrez un courriel vous informant que le fichier est prêt à être téléchargé.",
       "exportEvents": {
         "title": "Exporter des événements",
-        "description": "Choisissez votre modèle de données et téléchargez les événements sur votre ordinateur.",
+        "description": "Choisissez votre modèle de données et téléchargez les événements sur votre ordinateur au format JSON-LD.",
         "dataModel": "Modèle de données",
         "sendTo": "Envoyer à",
         "includePastEvents": "Inclure les événements passés",

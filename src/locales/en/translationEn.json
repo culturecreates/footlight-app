@@ -1404,7 +1404,7 @@
       "success": "Success! Your file is being generated. You will receive an email notifying you when it is ready to download.",
       "exportEvents": {
         "title": "Export events",
-        "description": "Choose your data model and download events to your computer.",
+        "description": "Choose your data model and download events to your computer in JSON-LD file format.",
         "dataModel": "Data model",
         "sendTo": "Send to",
         "includePastEvents": "Include past events",
