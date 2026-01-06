@@ -18,6 +18,10 @@ export const filterUneditedFallbackValues = ({
   additionalFilters,
   initialDataValue = {},
 }) => {
+  if (!values || typeof values !== 'object') {
+    return undefined;
+  }
+
   let requiredFallbackKeyForCurrentField;
 
   if (!additionalFilters && values) {
