@@ -531,11 +531,12 @@ const AddTaxonomy = () => {
 
           return (
             <TreeSelectOption
+              key={selectedVocabulary?.id}
               value={currentMappings}
               onChange={(selectedValues) => updateConceptMapping(record.id, selectedValues)}
-              placeholder="Select"
+              placeholder={t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
               allowClear
-              treeDefaultExpandAll={false}
+              treeDefaultExpandAll
               treeData={getExternalConceptsTreeData()}
               clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
               tagRender={(props) => {
