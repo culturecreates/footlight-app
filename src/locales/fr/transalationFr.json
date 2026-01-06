@@ -1298,7 +1298,7 @@
           "myConceptColumn": "Mon concept",
           "mapToColumn": "Mapper vers",
           "switchVocabularyTitle": "Changer et supprimer le mappage de concepts",
-          "switchVocabularyMessage": "Le passage à un autre vocabulaire supprime les mappages de concepts existants. Cette action ne peut pas être annulée.",
+          "switchVocabularyMessage": "La suppression ou le remplacement du vocabulaire existant supprime tous les mappages de concepts. Cette opération ne peut pas être annulée.",
           "confirmButton": "Confirmer",
           "cancelButton": "Annuler"
         },

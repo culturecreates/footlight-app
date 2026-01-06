@@ -1302,7 +1302,7 @@
           "myConceptColumn": "My concept",
           "mapToColumn": "Map to",
           "switchVocabularyTitle": "Switch and delete concept mapping",
-          "switchVocabularyMessage": "Switching to a different vocabulary deletes existing concept mappings. This cannot be undone.",
+          "switchVocabularyMessage": "Removing or replacing the existing vocabulary deletes all concept mappings. This cannot be undone.",
           "confirmButton": "Confirm",
           "cancelButton": "Cancel"
         },
