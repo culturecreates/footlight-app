@@ -2,9 +2,16 @@
 
 import Cookies from 'js-cookie';
 
-export async function fetchEntityReport({ calendarId, startDate, endDate, entity, taxonomyIds = [] }) {
+export async function fetchEntityReport({
+  calendarId,
+  startDate,
+  endDate,
+  entity,
+  taxonomyIds = [],
+  accessToken = null,
+}) {
   const baseUrl = import.meta.env.VITE_APP_API_URL;
-  const accessToken = Cookies.get('accessToken');
+  const token = accessToken || Cookies.get('accessToken');
 
   const params = new URLSearchParams();
   params.append('start-date', startDate);
@@ -18,7 +25,7 @@ export async function fetchEntityReport({ calendarId, startDate, endDate, entity
       method: 'GET',
       headers: {
         'calendar-id': calendarId,
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
         Accept: 'text/csv;charset=utf-8',
       },
     });
@@ -26,7 +33,14 @@ export async function fetchEntityReport({ calendarId, startDate, endDate, entity
     if (response.status === 401) {
       const newAccessToken = await tryRefreshToken(baseUrl);
       if (!newAccessToken) throw new Error('Unauthorized');
-      return await fetchEntityReport({ calendarId, startDate, endDate, entity, taxonomyIds });
+      return await fetchEntityReport({
+        calendarId,
+        startDate,
+        endDate,
+        entity,
+        taxonomyIds,
+        accessToken: newAccessToken,
+      });
     }
 
     if (!response.ok) {
@@ -41,10 +55,9 @@ export async function fetchEntityReport({ calendarId, startDate, endDate, entity
   }
 }
 
-export async function downloadDB({ calendarId }) {
+export async function downloadDB({ calendarId, accessToken = null }) {
   const baseUrl = import.meta.env.VITE_APP_API_URL;
-
-  const accessToken = Cookies.get('accessToken');
+  const token = accessToken || Cookies.get('accessToken');
   const url = `${baseUrl}/calendars/${calendarId}/artifacts`;
 
   try {
@@ -52,15 +65,14 @@ export async function downloadDB({ calendarId }) {
       method: 'POST',
       headers: {
         'calendar-id': calendarId,
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
     if (response.status === 401) {
       const newAccessToken = await tryRefreshToken(baseUrl);
       if (!newAccessToken) throw new Error('Unauthorized');
-
-      return await downloadDB({ calendarId });
+      return await downloadDB({ calendarId, accessToken: newAccessToken });
     }
 
     if (!response.ok) {

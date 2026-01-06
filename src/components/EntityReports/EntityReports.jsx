@@ -120,7 +120,7 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
   const handleDbDownload = async () => {
     setIsLoading(true);
     try {
-      downloadDB({ calendarId }).then(() => {
+      downloadDB({ calendarId, accessToken: user?.accessToken }).then(() => {
         notification.success({
           key: 'entity-db-download-started',
           description: t('common.entityReport.success'),
@@ -151,6 +151,7 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
           endDate: values.endDate.format('YYYY-MM-DD'),
           entity,
           taxonomyIds: values?.taxonomies || [],
+          accessToken: user?.accessToken,
         });
 
         cleanupBlobUrl();
