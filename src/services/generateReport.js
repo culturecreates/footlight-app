@@ -7,11 +7,12 @@ export async function fetchEntityReport({ calendarId, startDate, endDate, entity
   const accessToken = Cookies.get('accessToken');
 
   const params = new URLSearchParams();
-  params.append('start-date', startDate);
-  params.append('end-date', endDate);
+  if (startDate) params.append('start-date', startDate);
+  if (endDate) params.append('end-date', endDate);
   taxonomyIds.forEach((id) => params.append('taxonomy-ids', id));
 
-  const url = `${baseUrl}/entities/${entity}/report?${params.toString()}`;
+  const queryString = params.toString();
+  const url = `${baseUrl}/entities/${entity}/report${queryString ? `?${queryString}` : ''}`;
 
   try {
     const response = await fetch(url, {

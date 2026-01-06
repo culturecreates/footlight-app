@@ -5,6 +5,7 @@ export const entitiesClass = {
   event: 'Event',
   people: 'People',
   user: 'User',
+  taxonomy: 'Taxonomy',
 };
 
 export const REPORT_ACTION_KEY = 'generate-report';
