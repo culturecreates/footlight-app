@@ -443,6 +443,7 @@
           "errorReview": "Cet événement a besoin de plus d'informations avant d'être envoyé pour validation.",
           "errorDraft": "Cet événement a besoin de plus d'informations avant d'être enregistré.",
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre.",
+          "imageUploadFail": "Incapable de télécharger l'image.",
           "organizer": {
             "required": "Ce champ ne peut être laissé vide."
           },
