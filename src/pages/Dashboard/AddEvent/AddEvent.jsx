@@ -1902,10 +1902,10 @@ function AddEvent() {
   function areOffsetsMissing(start, end) {
     const isOffsetPresent = (timestamp) => typeof timestamp === 'string' && /([+-]\d\d:\d\d|Z)$/.test(timestamp);
 
-    // If end is missing, only check start
+    if (!start && !end) return false;
+
     if (!end) return !isOffsetPresent(start);
 
-    // Check both if present
     return !isOffsetPresent(start) && !isOffsetPresent(end);
   }
 
