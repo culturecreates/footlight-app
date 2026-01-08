@@ -175,7 +175,8 @@ function AddEvent() {
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [updateEventState, { isLoading: updateEventStateLoading }] = useUpdateEventStateMutation();
   const [updateEvent, { isLoading: updateEventLoading, isSuccess: updateEventSuccess }] = useUpdateEventMutation();
-  const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
+  const [addImage, { error: isAddImageError, isLoading: addImageLoading, reset: resetAddImage }] =
+    useAddImageMutation();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const [dateType, setDateType] = useState();
@@ -2016,6 +2017,7 @@ function AddEvent() {
       organizers: { failed: false, count: 0, total: 0 },
       performers: { failed: false, count: 0, total: 0 },
       supporters: { failed: false, count: 0, total: 0 },
+      image: { failed: false, count: 0, total: 0 },
     };
     loadArtsDataEventEntity({ entityId: artsDataId })
       .then(async (response) => {
@@ -2232,6 +2234,11 @@ function AddEvent() {
                 },
               });
             } catch (e) {
+              importFailures.image = {
+                failed: true,
+                count: 1,
+                total: 1,
+              };
               console.error('Failed to add/process image', e);
             }
           }
@@ -4666,10 +4673,15 @@ function AddEvent() {
                     : false
                 }
                 initialValue={mainImageData?.original?.uri ?? artsData?.image?.original?.uri}
-                {...(isAddImageError && {
-                  help: t('dashboard.events.addEditEvent.validations.errorImage'),
-                  validateStatus: 'error',
-                })}
+                {...(failedImports.image?.failed
+                  ? {
+                      help: t('dashboard.events.addEditEvent.validations.imageUploadFail'),
+                      validateStatus: 'error',
+                    }
+                  : isAddImageError && {
+                      help: t('dashboard.events.addEditEvent.validations.errorImage'),
+                      validateStatus: 'error',
+                    })}
                 rules={[
                   ({ getFieldValue }) => ({
                     validator() {
@@ -4715,6 +4727,8 @@ function AddEvent() {
                       : null
                   }
                   isCrop={featureFlags.imageCropFeature}
+                  setFailedImports={setFailedImports}
+                  resetAddImage={resetAddImage}
                 />
               </Form.Item>
               <Form.Item

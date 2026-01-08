@@ -28,6 +28,8 @@ function ImageUpload(props) {
     isCalendarLogo,
     thumbnailImage,
     isTransparent,
+    setFailedImports,
+    resetAddImage,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -134,6 +136,12 @@ function ImageUpload(props) {
       return;
     }
     if (info.file.status === 'done') {
+      if (typeof resetAddImage === 'function') {
+        resetAddImage();
+      }
+      if (typeof setFailedImports === 'function') {
+        setFailedImports((prev) => ({ ...prev, image: { failed: false, count: 0, total: 0 } }));
+      }
       setCropValues({
         large: undefined,
         thumbnail: undefined,

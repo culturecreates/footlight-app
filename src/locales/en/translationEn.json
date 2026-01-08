@@ -443,6 +443,7 @@
           "errorReview": "This event needs more information before it can be sent for review.",
           "errorDraft": "This event needs more information before it can be saved.",
           "errorImage": "This image cannot be saved. Adjust the image or try a different one.",
+          "imageUploadFail": "Unable to upload image.",
           "organizer": {
             "required": "An organizer is required."
           },
