@@ -1238,10 +1238,14 @@ function EventReadOnly() {
                         </Col>
                       </Row>
                     </Col>
-                    {checkIfFieldIsToBeDisplayed(
+                    {(checkIfFieldIsToBeDisplayed(
                       eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY,
                       eventData?.accessibility,
-                    ) && (
+                    ) ||
+                      checkIfFieldIsToBeDisplayed(
+                        eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY,
+                        eventData?.accessibilityNote,
+                      )) && (
                       <Col flex={'723px'} className="read-only-event-section-col top-level-column">
                         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                           <Col flex={'423px'}>
@@ -1249,11 +1253,11 @@ function EventReadOnly() {
                               <p className="read-only-event-content-title">
                                 {t('dashboard.events.addEditEvent.eventAccessibility.title')}
                               </p>
-                              <>
-                                <p className="read-only-event-content-sub-title-primary">
-                                  {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
-                                </p>
-                                {eventData?.accessibility.length > 0 && (
+                              {eventData?.accessibility.length > 0 && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
+                                  </p>
                                   <TreeSelectOption
                                     style={{ marginBottom: '1rem' }}
                                     bordered={false}
@@ -1275,8 +1279,8 @@ function EventReadOnly() {
                                       return <Tags>{label}</Tags>;
                                     }}
                                   />
-                                )}
-                              </>
+                                </>
+                              )}
 
                               {eventData?.accessibilityNote && (
                                 <>
