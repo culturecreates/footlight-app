@@ -23,6 +23,21 @@
   overflow: visible;
 }
 
+.text-editor .ql-toolbar .ql-clean::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23444'%3E%3Cpath d='M7 4h11v2.5h-4l-2 13h-2.5l2-13H7V4z'/%3E%3Cpath d='M3 3l18 18-1.4 1.4L2 4.4z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.text-editor .ql-toolbar .ql-clean svg {
+  display: none;
+}
+
 @media (max-width: 480px) {
   .text-editor .ql-snow .ql-editor h1 {
     font: 1.2em 'Roboto';
