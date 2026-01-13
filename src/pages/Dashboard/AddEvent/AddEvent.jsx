@@ -1081,7 +1081,11 @@ function AddEvent() {
               ...(values?.eventAccessibility && {
                 accessibility,
               }),
-              ...(accessibilityNote && { accessibilityNote }),
+              ...(accessibilityNote
+                ? { accessibilityNote }
+                : eventData?.accessibilityNote
+                ? { accessibilityNote: null }
+                : {}),
               additionalType,
               audience,
               discipline: eventDiscipline,
