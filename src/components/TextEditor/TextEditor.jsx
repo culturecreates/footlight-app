@@ -124,6 +124,7 @@ function TextEditor(props) {
           [{ list: 'ordered' }, { list: 'bullet' }],
           [{ color: [] }, { background: [] }],
           ['link'],
+          ['clean'],
         ],
         handlers: {
           image: imageHandler,
