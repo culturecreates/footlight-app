@@ -1,0 +1,34 @@
+.vocabulary-card {
+  min-height: 56px;
+  padding: 8px 16px;
+  gap: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.vocabulary-card:hover {
+  background: #0000000a;
+}
+
+.vocabulary-card .vocabulary-text-container {
+  flex-grow: 1;
+  padding: 0 5px;
+}
+
+.vocabulary-card .vocabulary-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+
+.vocabulary-card .vocabulary-description {
+  font-weight: 400;
+  font-size: 12px;
+  color: #646d7b;
+}
+
+.vocabulary-card .vocabulary-link-container {
+  display: flex;
+  align-items: center;
+}

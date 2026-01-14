@@ -1288,6 +1288,21 @@
         },
         "adminOnly": "Administrateur uniquement",
         "addAsFilter": "Rendre ce type de taxonomie disponible en tant que filtre.",
+        "externalVocabularies": {
+          "label": "Vocabulaire contrôlé externe",
+          "placeholder": "Sélectionner le vocabulaire contrôlé",
+          "helperText": "Sélectionnez un vocabulaire externe à associer à vos concepts correspondants dans cette taxonomie."
+        },
+        "mapConcepts": {
+          "heading": "Mapper des concepts",
+          "description": "Mappez vos concepts aux concepts correspondants dans le vocabulaire contrôlé externe sélectionné. Le mappage des concepts permet de conserver le sens dans différents systèmes et s'applique lors de l'exportation.",
+          "myConceptColumn": "Mon concept",
+          "mapToColumn": "Mapper vers",
+          "switchVocabularyTitle": "Changer et supprimer le mappage de concepts",
+          "switchVocabularyMessage": "La suppression ou le remplacement du vocabulaire existant supprime tous les mappages de concepts. Cette opération ne peut pas être annulée.",
+          "confirmButton": "Confirmer",
+          "cancelButton": "Annuler"
+        },
         "concepts": {
           "heading": "Liste de concepts",
           "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
@@ -1301,7 +1316,7 @@
           "conceptName": "Nom",
           "placeHolder": "Indiquer un nom en {{language}}",
           "deleteConceptHeading": "Supprimer le concept",
-          "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action supprimera aussi ses sous-concepts et partout où ils ont été utilisé, y compris dans les événements.",
+          "deleteConceptMessage": "La suppression de ce concept supprime également ses sous-concepts, ses instances d'utilisation et ses mappages vers des vocabulaires externes. Cette action ne peut pas être annulée.",
           "delete": "Supprimer",
           "setDefault": "Définir par défaut",
           "clearDefault": "Effacer par défaut"
@@ -1387,7 +1402,7 @@
       "success": "Succès ! La génération du fichier est en cours. Vous recevrez un courriel vous informant que le fichier est prêt à être téléchargé.",
       "exportEvents": {
         "title": "Exporter des événements",
-        "description": "Choisissez votre modèle de données et téléchargez les événements sur votre ordinateur.",
+        "description": "Choisissez votre modèle de données et téléchargez les événements sur votre ordinateur au format JSON-LD.",
         "dataModel": "Modèle de données",
         "sendTo": "Envoyer à",
         "includePastEvents": "Inclure les événements passés",

@@ -24,7 +24,15 @@ import {
 import EditableCell from './EditableCell';
 import DraggableBodyRow from './DraggableRow';
 
-const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, transformedData, setTransformedData }) => {
+const DraggableTable = ({
+  data,
+  setData,
+  fallbackStatus,
+  setFallbackStatus,
+  transformedData,
+  setTransformedData,
+  onBeforeDelete,
+}) => {
   const [currentCalendarData] = useOutletContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const { t } = useTranslation();
@@ -69,6 +77,13 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
   };
 
   const handleDelete = (key) => {
+    if (onBeforeDelete) {
+      const shouldProceed = onBeforeDelete(key);
+      if (shouldProceed === false) {
+        return;
+      }
+    }
+
     Confirm({
       title: t('dashboard.taxonomy.addNew.concepts.deleteConceptHeading'),
       onAction: () => {

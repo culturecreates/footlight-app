@@ -8,9 +8,14 @@
   /* box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.2); */
 }
 
+.global-delete-modal-container .ant-modal-content {
+  border-radius: 8px !important;
+}
+
 .global-delete-modal-container .ant-modal-body {
   padding: 0 !important;
   box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
 }
 
 .global-delete-modal-container .ant-modal-confirm-title {
