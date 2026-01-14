@@ -23,7 +23,6 @@ const ExportModal = ({ visible, onCancel, onExport, isLoading }) => {
       {
         value: 'DataScene',
         label: t('common.entityReport.exportEvents.options.datascene'),
-        disabled: true,
       },
       {
         value: 'RawData',
