@@ -124,6 +124,7 @@ function TextEditor(props) {
           [{ list: 'ordered' }, { list: 'bullet' }],
           [{ color: [] }, { background: [] }],
           ['link'],
+          ['clean'],
         ],
         handlers: {
           image: imageHandler,
@@ -136,6 +137,39 @@ function TextEditor(props) {
     }),
     [],
   );
+
+  useEffect(() => {
+    if (!currentReactQuillRef.current) return;
+
+    const toolbar = currentReactQuillRef.current.getEditor().getModule('toolbar');
+    if (!toolbar || !toolbar.container) return;
+
+    const tooltips = {
+      '.ql-header[value="1"]': 'Heading 1',
+      '.ql-header[value="2"]': 'Heading 2',
+      '.ql-bold': 'Bold',
+      '.ql-italic': 'Italic',
+      '.ql-underline': 'Underline',
+      '.ql-align .ql-picker-label': 'Text Align',
+      '.ql-align .ql-picker-item[data-value=""]': 'Align Left',
+      '.ql-align .ql-picker-item[data-value="center"]': 'Align Center',
+      '.ql-align .ql-picker-item[data-value="right"]': 'Align Right',
+      '.ql-align .ql-picker-item[data-value="justify"]': 'Align Justify',
+      '.ql-list[value="ordered"]': 'Numbered List',
+      '.ql-list[value="bullet"]': 'Bullet List',
+      '.ql-color': 'Text Color',
+      '.ql-background': 'Background Color',
+      '.ql-link': 'Insert Link',
+      '.ql-clean': 'Clear Formatting',
+    };
+
+    Object.entries(tooltips).forEach(([selector, tooltip]) => {
+      const button = toolbar.container.querySelector(selector);
+      if (button) {
+        button.setAttribute('title', tooltip);
+      }
+    });
+  }, []);
 
   const onChange = () => {
     const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
