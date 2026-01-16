@@ -1,3 +1,5 @@
+import { removeEmptyParagraphs } from './removeEmptyParagraphsAtEnd';
+
 /**
  * Filters unedited fallback values based on the active fallback fields information.
  *
@@ -18,6 +20,8 @@ export const filterUneditedFallbackValues = ({
   additionalFilters,
   initialDataValue = {},
 }) => {
+  const htmlFields = ['editor', 'description', 'messageDescription'];
+  const shouldCleanHtml = htmlFields.includes(fieldName);
   let requiredFallbackKeyForCurrentField;
 
   if (!additionalFilters && values) {
@@ -27,8 +31,16 @@ export const filterUneditedFallbackValues = ({
     }, {});
   }
 
-  // If activeFallbackFieldsInfo is empty, return the original values
-  if (!(Object.keys(activeFallbackFieldsInfo).length > 0)) return emptyValueFilter(additionalFilters, values);
+  if (!(Object.keys(activeFallbackFieldsInfo).length > 0)) {
+    if (shouldCleanHtml) {
+      const cleanedValues = {};
+      Object.keys(values || {}).forEach((key) => {
+        cleanedValues[key] = removeEmptyParagraphs(values[key]);
+      });
+      return emptyValueFilter(additionalFilters, cleanedValues);
+    }
+    return emptyValueFilter(additionalFilters, values);
+  }
 
   // Determine the required fallback key for the current field
   Object.keys(activeFallbackFieldsInfo).forEach((key) => {
@@ -38,8 +50,16 @@ export const filterUneditedFallbackValues = ({
     if (fieldName === fieldNameFlag) requiredFallbackKeyForCurrentField = key;
   });
 
-  // If no matching fallback key is found, return the original values
-  if (!requiredFallbackKeyForCurrentField) return emptyValueFilter(additionalFilters, values);
+  if (!requiredFallbackKeyForCurrentField) {
+    if (shouldCleanHtml) {
+      const cleanedValues = {};
+      Object.keys(values || {}).forEach((key) => {
+        cleanedValues[key] = removeEmptyParagraphs(values[key]);
+      });
+      return emptyValueFilter(additionalFilters, cleanedValues);
+    }
+    return emptyValueFilter(additionalFilters, values);
+  }
 
   let modifiedValues = {};
 
@@ -47,14 +67,16 @@ export const filterUneditedFallbackValues = ({
   const requiredFallbackStatusForCurrentField = activeFallbackFieldsInfo[requiredFallbackKeyForCurrentField];
   Object.keys(values).forEach((key) => {
     if (!Object.hasOwn(requiredFallbackStatusForCurrentField, key)) {
-      modifiedValues[key] = values[key]?.trim();
+      const value = values[key]?.trim();
+      modifiedValues[key] = shouldCleanHtml ? removeEmptyParagraphs(value) : value;
     }
   });
 
   // Add fallback values for keys where tagDisplayStatus is false
   Object.keys(requiredFallbackStatusForCurrentField).forEach((key) => {
     if (!requiredFallbackStatusForCurrentField[key]?.tagDisplayStatus) {
-      modifiedValues[key] = requiredFallbackStatusForCurrentField[key]?.fallbackLiteralValue?.trim();
+      const value = requiredFallbackStatusForCurrentField[key]?.fallbackLiteralValue?.trim();
+      modifiedValues[key] = shouldCleanHtml ? removeEmptyParagraphs(value) : value;
     }
   });
 
