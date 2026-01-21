@@ -33,6 +33,8 @@ import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import EntityReports from '../../../components/EntityReports/EntityReports';
+import { entitiesClass, REPORT_ACTION_KEY } from '../../../constants/entitiesClass';
 
 const { useBreakpoint } = Grid;
 
@@ -270,7 +272,12 @@ const Taxonomy = () => {
             </Col>
 
             {adminCheckHandler({ calendar, user }) && (
-              <Col flex={'140px'} className="add-btn-container">
+              <Col style={{ display: 'flex', gap: '12px' }}>
+                <EntityReports
+                  entity={entitiesClass.taxonomy}
+                  includedDropdownKeys={[REPORT_ACTION_KEY]}
+                  immediateDownload={true}
+                />
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <AddEvent
                     disabled={isReadOnly ? true : false}

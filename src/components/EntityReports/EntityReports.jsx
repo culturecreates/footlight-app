@@ -20,7 +20,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../utils/getCurrent
 import ReportForm from './ReportForm';
 import ExportModal from './ExportModal';
 
-const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) => {
+const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY], immediateDownload = false }) => {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
   const [isLoading, setIsLoading] = useState(false);
   const [blobUrl, setBlobUrl] = useState(null);
   const [isExportModalVisible, setIsExportModalVisible] = useState(false);
+  const [isImmediateDownloading, setIsImmediateDownloading] = useState(false);
 
   const iconStyle = (color) => ({
     color,
@@ -90,9 +91,13 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
         break;
 
       case REPORT_ACTION_KEY:
-        setModalActionKey(key);
-        setIsModalVisible(true);
-        setBlobUrl(null);
+        if (immediateDownload) {
+          handleImmediateDownload();
+        } else {
+          setModalActionKey(key);
+          setIsModalVisible(true);
+          setBlobUrl(null);
+        }
         break;
       case DATABASE_ACTION_KEY:
         setModalActionKey(key);
@@ -176,6 +181,38 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
   const handleDatabaseDownload = () => {
     setIsModalVisible(false);
     message.success(t('common.entityReport.databaseDownloaded'));
+  };
+
+  const handleImmediateDownload = async () => {
+    setIsImmediateDownloading(true);
+
+    try {
+      const response = await fetchEntityReport({
+        calendarId,
+        startDate: null,
+        endDate: null,
+        entity,
+        taxonomyIds: [],
+      });
+
+      const url = window.URL.createObjectURL(response);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${entity}-report.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      notification.error({
+        key: 'entity-report-error',
+        message: t('common.entityReport.error'),
+        description: error.message,
+        duration: 5,
+      });
+    } finally {
+      setIsImmediateDownloading(false);
+    }
   };
 
   const cleanupBlobUrl = useCallback(() => {
@@ -266,8 +303,17 @@ const EntityReports = ({ entity, includedDropdownKeys = [REPORT_ACTION_KEY] }) =
         overlayStyle={{ minWidth: '160px', whiteSpace: 'nowrap' }}
         getPopupContainer={(trigger) => trigger.parentNode}
         menu={menuItems}
-        trigger={['click']}>
-        <MoreOutlined className="event-list-more-icon" style={moreIconStyle} data-cy="icon-event-list-more-options" />
+        trigger={['click']}
+        disabled={isImmediateDownloading}>
+        <MoreOutlined
+          className="event-list-more-icon"
+          style={{
+            ...moreIconStyle,
+            opacity: isImmediateDownloading ? 0.5 : 1,
+            cursor: isImmediateDownloading ? 'not-allowed' : 'pointer',
+          }}
+          data-cy="icon-event-list-more-options"
+        />
       </Dropdown>
 
       <CustomModal
