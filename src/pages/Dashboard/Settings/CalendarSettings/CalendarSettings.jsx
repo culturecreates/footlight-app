@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
 import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -15,6 +15,7 @@ import PrimaryButton from '../../../../components/Button/Primary';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
 import { useAddImageMutation } from '../../../../services/image';
 import { calendarModes } from '../../../../constants/calendarModes';
+import LoadingIndicator from '../../../../components/LoadingIndicator/LoadingIndicator';
 
 function CalendarSettings({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
@@ -38,8 +39,30 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     sessionId: timestampRef,
   });
 
-  const [updateCalendar] = useUpdateCalendarMutation();
-  const [addImage] = useAddImageMutation();
+  const [updateCalendar, { isLoading: updateCalendarLoading }] = useUpdateCalendarMutation();
+  const [addImage, { isLoading: addImageLoading }] = useAddImageMutation();
+  const [debouncedLoading, setDebouncedLoading] = useState(true);
+
+  const isAnyLoading = useMemo(
+    () =>
+      !currentCalendarData ||
+      isCurrentCalendarInfoLoading ||
+      taxonomyLoading ||
+      addImageLoading ||
+      updateCalendarLoading,
+    [currentCalendarData, isCurrentCalendarInfoLoading, taxonomyLoading, addImageLoading, updateCalendarLoading],
+  );
+
+  useEffect(() => {
+    if (isAnyLoading) {
+      setDebouncedLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setDebouncedLoading(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyLoading]);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -325,132 +348,132 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     }
   }, []);
 
-  return (
-    currentCalendarData &&
-    !isCurrentCalendarInfoLoading &&
-    !taxonomyLoading && (
-      <div style={{ paddingTop: '24px' }}>
-        <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
-          <Col span={24}>
-            <Row justify={'space-between'}>
-              <Col>
-                <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
-                  {t('dashboard.settings.calendarSettings.generalSettings')}
-                </h5>
-              </Col>
-              <Col>
-                <PrimaryButton
-                  label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                  data-cy="button-save-calendar-settings"
-                  onClick={onSaveHandler}
-                />
-              </Col>
-            </Row>
-          </Col>
-          <Col span={24}>
-            <p className="calendar-settings-description" data-cy="para-calendar-settings-description">
-              {t('dashboard.settings.calendarSettings.setUpCalendarDescription')}
+  return !debouncedLoading ? (
+    <div style={{ paddingTop: '24px' }}>
+      <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
+        <Col span={24}>
+          <Row justify={'space-between'}>
+            <Col>
+              <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
+                {t('dashboard.settings.calendarSettings.generalSettings')}
+              </h5>
+            </Col>
+            <Col>
+              <PrimaryButton
+                label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                data-cy="button-save-calendar-settings"
+                onClick={onSaveHandler}
+              />
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <p className="calendar-settings-description" data-cy="para-calendar-settings-description">
+            {t('dashboard.settings.calendarSettings.setUpCalendarDescription')}
+          </p>
+        </Col>
+        <Col flex={'448px'}>
+          <Form
+            form={form}
+            layout="vertical"
+            name="calendar-settings"
+            initialValues={initialValues}
+            onFieldsChange={() => {
+              setDirtyStatus(true);
+            }}>
+            {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
+              return (
+                <Form.Item
+                  label={item.label}
+                  key={index}
+                  rules={item.rules}
+                  className={item.className ?? ''}
+                  required={item.required}
+                  name={item.name}
+                  hidden={item.hidden}>
+                  {item.field({
+                    form,
+                    isCrop: false,
+                    initialValues,
+                    calendarContentLanguage,
+                    largeAspectRatio: imageConfig?.large?.aspectRatio,
+                    thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
+                    largeMaxWidth: imageConfig?.large?.maxWidth,
+                    thumbnailMaxWidth: imageConfig?.thumbnail?.maxWidth,
+                    logoUri: currentCalendarData?.logo?.original?.uri,
+                    aspectRatios: aspectRatioOptions,
+                    setAspectRatioOptions,
+                    thumbnailImage: currentCalendarData?.logo?.thumbnail?.uri,
+                    // customRatio,
+                    // setCustomRatio,
+                    t,
+                  })}
+                </Form.Item>
+              );
+            })}
+            <Divider />
+            <h5 className="calendar-settings-heading">
+              {t('dashboard.settings.calendarSettings.calendarWidgetSetup')}
+            </h5>
+            <p className="calendar-settings-description">
+              {t('dashboard.settings.calendarSettings.calendarWidgetDescription')}
             </p>
-          </Col>
-          <Col flex={'448px'}>
-            <Form
-              form={form}
-              layout="vertical"
-              name="calendar-settings"
-              initialValues={initialValues}
-              onFieldsChange={() => {
-                setDirtyStatus(true);
-              }}>
-              {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
-                return (
-                  <Form.Item
-                    label={item.label}
-                    key={index}
-                    rules={item.rules}
-                    className={item.className ?? ''}
-                    required={item.required}
-                    name={item.name}
-                    hidden={item.hidden}>
-                    {item.field({
-                      form,
-                      isCrop: false,
-                      initialValues,
-                      calendarContentLanguage,
-                      largeAspectRatio: imageConfig?.large?.aspectRatio,
-                      thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
-                      largeMaxWidth: imageConfig?.large?.maxWidth,
-                      thumbnailMaxWidth: imageConfig?.thumbnail?.maxWidth,
-                      logoUri: currentCalendarData?.logo?.original?.uri,
-                      aspectRatios: aspectRatioOptions,
-                      setAspectRatioOptions,
-                      thumbnailImage: currentCalendarData?.logo?.thumbnail?.uri,
-                      // customRatio,
-                      // setCustomRatio,
-                      t,
-                    })}
-                  </Form.Item>
-                );
-              })}
-              <Divider />
-              <h5 className="calendar-settings-heading">
-                {t('dashboard.settings.calendarSettings.calendarWidgetSetup')}
-              </h5>
-              <p className="calendar-settings-description">
-                {t('dashboard.settings.calendarSettings.calendarWidgetDescription')}
-              </p>
-              {calendarSettingsFormFields.WIDGET_SETTINGS.map((item, index) => {
-                return (
-                  <Form.Item
-                    label={item.label}
-                    key={index}
-                    rules={item.rules}
-                    required={item.required}
-                    name={item.name}
-                    extra={item.extra}>
-                    {item.field({ form, isCrop: false, t })}
-                  </Form.Item>
-                );
-              })}
-              <Divider />
-              <h5 className="calendar-settings-heading">
-                {t('dashboard.settings.calendarSettings.filterPersonalization')}
-              </h5>
-              <p className="calendar-settings-description">
-                {t('dashboard.settings.calendarSettings.filterDescription')}
-              </p>
-              {calendarSettingsFormFields.FILTER_PERSONALIZATION.map((item, index) => {
-                return (
-                  <Form.Item
-                    label={item.label}
-                    key={index}
-                    rules={item.rules}
-                    required={item.required}
-                    name={item.name}
-                    extra={item.extra}
-                    initialValue={
-                      initialSelectedFilters?.length > 0
-                        ? item.initialValue.concat(
-                            initialSelectedFilters?.filter((filter) => filter.name === item.name)[0]?.filters,
-                          )
-                        : item.initialValue
-                    }>
-                    {item.field({
-                      form,
-                      isCrop: false,
-                      eventFilters,
-                      organizationFilters,
-                      peopleFilters,
-                      placeFilters,
-                      t,
-                    })}
-                  </Form.Item>
-                );
-              })}
-            </Form>
-          </Col>
-        </Row>
-      </div>
-    )
+            {calendarSettingsFormFields.WIDGET_SETTINGS.map((item, index) => {
+              return (
+                <Form.Item
+                  label={item.label}
+                  key={index}
+                  rules={item.rules}
+                  required={item.required}
+                  name={item.name}
+                  extra={item.extra}>
+                  {item.field({ form, isCrop: false, t })}
+                </Form.Item>
+              );
+            })}
+            <Divider />
+            <h5 className="calendar-settings-heading">
+              {t('dashboard.settings.calendarSettings.filterPersonalization')}
+            </h5>
+            <p className="calendar-settings-description">
+              {t('dashboard.settings.calendarSettings.filterDescription')}
+            </p>
+            {calendarSettingsFormFields.FILTER_PERSONALIZATION.map((item, index) => {
+              return (
+                <Form.Item
+                  label={item.label}
+                  key={index}
+                  rules={item.rules}
+                  required={item.required}
+                  name={item.name}
+                  extra={item.extra}
+                  initialValue={
+                    initialSelectedFilters?.length > 0
+                      ? item.initialValue.concat(
+                          initialSelectedFilters?.filter((filter) => filter.name === item.name)[0]?.filters,
+                        )
+                      : item.initialValue
+                  }>
+                  {item.field({
+                    form,
+                    isCrop: false,
+                    eventFilters,
+                    organizationFilters,
+                    peopleFilters,
+                    placeFilters,
+                    t,
+                  })}
+                </Form.Item>
+              );
+            })}
+          </Form>
+        </Col>
+      </Row>
+    </div>
+  ) : (
+    <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <LoadingIndicator />
+    </div>
   );
 }
 
