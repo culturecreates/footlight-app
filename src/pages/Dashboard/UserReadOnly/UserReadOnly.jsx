@@ -18,6 +18,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
+import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -81,7 +82,11 @@ const UserReadOnly = () => {
 
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
-      {!userLoading && (
+      {userLoading ? (
+        <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <LoadingIndicator />
+        </div>
+      ) : (
         <Row className="user-read-only-wrapper" gutter={[0, 32]}>
           <Col span={24}>
             <Row gutter={[32, 24]} className="user-read-only-heading-wrapper">
