@@ -151,6 +151,18 @@ function CreateNewOrganization() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [allPlacesList, setAllPlacesList] = useState([]);
+  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
+  const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
+  const [locationPlace, setLocationPlace] = useState();
+  const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [addedFields, setAddedFields] = useState([]);
+  const [scrollToSelectedField, setScrollToSelectedField] = useState();
+  const [showDialog, setShowDialog] = useState(false);
+  const [dynamicFields, setDynamicFields] = useState([]);
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
 
   const isAnyLoading = useMemo(
     () =>
@@ -173,18 +185,7 @@ function CreateNewOrganization() {
       return () => clearTimeout(timer);
     }
   }, [isAnyLoading]);
-  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
-  const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
-  const [locationPlace, setLocationPlace] = useState();
-  const [imageCropOpen, setImageCropOpen] = useState(false);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [addedFields, setAddedFields] = useState([]);
-  const [scrollToSelectedField, setScrollToSelectedField] = useState();
-  const [showDialog, setShowDialog] = useState(false);
-  const [dynamicFields, setDynamicFields] = useState([]);
 
-  const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
   formFields = formFields?.length > 0 && formFields[0]?.formFields;

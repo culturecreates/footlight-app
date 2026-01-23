@@ -129,6 +129,13 @@ function CreateNewPerson() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dynamicFields, setDynamicFields] = useState([]);
+  const [addedFields, setAddedFields] = useState([]);
+  const [scrollToSelectedField, setScrollToSelectedField] = useState();
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
 
   const isAnyLoading = useMemo(
     () =>
@@ -146,13 +153,7 @@ function CreateNewPerson() {
       return () => clearTimeout(timer);
     }
   }, [isAnyLoading]);
-  const [showDialog, setShowDialog] = useState(false);
-  const [dynamicFields, setDynamicFields] = useState([]);
-  const [addedFields, setAddedFields] = useState([]);
-  const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
-  const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person);
   let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
