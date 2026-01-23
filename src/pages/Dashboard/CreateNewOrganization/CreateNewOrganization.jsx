@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, message, notification } from 'antd';
@@ -149,7 +149,30 @@ function CreateNewOrganization() {
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [allPlacesList, setAllPlacesList] = useState([]);
+
+  const isAnyLoading = useMemo(
+    () =>
+      !fields ||
+      organizationLoading ||
+      taxonomyLoading ||
+      artsDataLoading ||
+      isEntityDetailsLoading ||
+      imageUploadLoading,
+    [fields, organizationLoading, taxonomyLoading, artsDataLoading, isEntityDetailsLoading, imageUploadLoading],
+  );
+
+  useEffect(() => {
+    if (isAnyLoading) {
+      setDebouncedLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setDebouncedLoading(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyLoading]);
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
@@ -1167,7 +1190,7 @@ function CreateNewOrganization() {
     }
   }, [organizationId]);
 
-  return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading && !isEntityDetailsLoading ? (
+  return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <RouteLeavingGuard isBlocking={showDialog} />
 
