@@ -415,7 +415,9 @@
           "savingAsDraft": "Sauvegarde comme brouillon.",
           "sendToReview": " Succès ! Votre événement a été envoyé pour validation.",
           "publish": "Succès ! Votre événement a été publié.",
+          "unpublish": "Succès ! Votre événement a été dépublié.",
           "updateEvent": "Succès ! Votre événement a été mis à jour.",
+          "deleteEvent": "Succès ! Votre événement a été supprimé.",
           "editFailedReviewForGuest": "L'événement a besoin d'être révisé. Réviser et mettre à jour si nécessaire, puis envoyer pour validation."
         },
         "validations": {
