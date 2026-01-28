@@ -210,10 +210,10 @@ function CreateNewPlace() {
   const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
   const [addPlace, { isLoading: addPlaceLoading }] = useAddPlaceMutation();
   const [updatePlace, { isLoading: updatePlaceLoading }] = useUpdatePlaceMutation();
-  const [addPostalAddress] = useAddPostalAddressMutation();
+  const [addPostalAddress, { isLoading: addPostalAddressLoading }] = useAddPostalAddressMutation();
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
-  const [updatePostalAddress] = useUpdatePostalAddressMutation();
+  const [updatePostalAddress, { isLoading: updatePostalAddressLoading }] = useUpdatePostalAddressMutation();
   const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
 
   const [artsData, setArtsData] = useState(null);
@@ -225,8 +225,27 @@ function CreateNewPlace() {
   });
 
   const isAnyLoading = useMemo(
-    () => isPlaceLoading || artsDataLoading || taxonomyLoading || isEntityDetailsLoading || addImageLoading,
-    [isPlaceLoading, artsDataLoading, taxonomyLoading, isEntityDetailsLoading, addImageLoading],
+    () =>
+      isPlaceLoading ||
+      artsDataLoading ||
+      taxonomyLoading ||
+      isEntityDetailsLoading ||
+      addImageLoading ||
+      addPlaceLoading ||
+      updatePlaceLoading ||
+      addPostalAddressLoading ||
+      updatePostalAddressLoading,
+    [
+      isPlaceLoading,
+      artsDataLoading,
+      taxonomyLoading,
+      isEntityDetailsLoading,
+      addImageLoading,
+      addPlaceLoading,
+      updatePlaceLoading,
+      addPostalAddressLoading,
+      updatePostalAddressLoading,
+    ],
   );
 
   useEffect(() => {

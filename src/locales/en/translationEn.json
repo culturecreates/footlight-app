@@ -671,7 +671,8 @@
         "inReview": "{{number}} pending review",
         "draft": "{{number}} draft",
         "ok": "OK",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "success": "Success! The place has been deleted."
       },
       "readOnly": {
         "placeName": "Place Name",

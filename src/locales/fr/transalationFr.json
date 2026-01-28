@@ -671,7 +671,8 @@
         "draft": "brouillon - {{number}}",
         "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "success": "Succès ! Le lieu a été supprimé."
       },
       "readOnly": {
         "placeName": "Nom",
