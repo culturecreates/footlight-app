@@ -833,7 +833,8 @@
         "draft": "brouillon - {{number}}",
         "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "success": "Succès ! La personne a été supprimée."
       },
       "readOnly": {
         "details": "Détails",

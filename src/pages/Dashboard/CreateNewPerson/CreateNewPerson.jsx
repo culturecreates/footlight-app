@@ -139,8 +139,24 @@ function CreateNewPerson() {
 
   const isAnyLoading = useMemo(
     () =>
-      !fields || personLoading || taxonomyLoading || artsDataLoading || isEntityDetailsLoading || imageUploadLoading,
-    [fields, personLoading, taxonomyLoading, artsDataLoading, isEntityDetailsLoading, imageUploadLoading],
+      !fields ||
+      personLoading ||
+      taxonomyLoading ||
+      artsDataLoading ||
+      isEntityDetailsLoading ||
+      imageUploadLoading ||
+      addPersonLoading ||
+      updatePersonLoading,
+    [
+      fields,
+      personLoading,
+      taxonomyLoading,
+      artsDataLoading,
+      isEntityDetailsLoading,
+      imageUploadLoading,
+      addPersonLoading,
+      updatePersonLoading,
+    ],
   );
 
   useEffect(() => {
