@@ -570,7 +570,8 @@
         "inReview": "{{number}} pending review",
         "draft": "{{number}} draft",
         "ok": "OK",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "success": "Success! The organization has been deleted."
       },
       "readOnly": {
         "details": "Details",

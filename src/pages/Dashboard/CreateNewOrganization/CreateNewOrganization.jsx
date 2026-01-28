@@ -171,8 +171,19 @@ function CreateNewOrganization() {
       taxonomyLoading ||
       artsDataLoading ||
       isEntityDetailsLoading ||
+      imageUploadLoading ||
+      addOrganizationLoading ||
+      updateOrganizationLoading,
+    [
+      fields,
+      organizationLoading,
+      taxonomyLoading,
+      artsDataLoading,
+      isEntityDetailsLoading,
       imageUploadLoading,
-    [fields, organizationLoading, taxonomyLoading, artsDataLoading, isEntityDetailsLoading, imageUploadLoading],
+      addOrganizationLoading,
+      updateOrganizationLoading,
+    ],
   );
 
   useEffect(() => {
