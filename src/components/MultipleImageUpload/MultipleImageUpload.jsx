@@ -2,6 +2,7 @@ import { DownloadOutlined, DeleteOutlined, HolderOutlined, MoreOutlined } from '
 import { Dropdown, Upload, Space } from 'antd';
 import update from 'immutability-helper';
 import React, { useCallback, useRef, useState } from 'react';
+import LoadingIndicator from '../LoadingIndicator';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
@@ -228,6 +229,7 @@ const generateImageObject = (image) => {
 };
 
 const MultipleImageUpload = (props) => {
+  const [loading, setLoading] = useState(false);
   const { eventImageData, form, imageReadOnly, setShowDialog } = props;
   const { t } = useTranslation();
   const [currentCalendarData] = useOutletContext();
@@ -278,9 +280,12 @@ const MultipleImageUpload = (props) => {
     [fileList],
   );
   const onChange = ({ fileList: newFileList }) => {
+    setLoading(true);
     let fileList = newFileList;
+    let pending = 0;
     newFileList?.forEach((_, index) => {
       if (newFileList[index].originFileObj) {
+        pending++;
         getBase64(newFileList[index].originFileObj, (url) => {
           fileList[index].url = url;
           if (!fileList[index].cropValues)
@@ -319,6 +324,10 @@ const MultipleImageUpload = (props) => {
               }, {}),
             };
           fileList[index].status = 'done';
+          pending--;
+          if (pending === 0) {
+            setLoading(false);
+          }
         });
       }
     });
@@ -327,6 +336,9 @@ const MultipleImageUpload = (props) => {
       multipleImagesCrop: newFileList,
     });
     if (setShowDialog) setShowDialog(true);
+    if (pending === 0) {
+      setLoading(false);
+    }
   };
 
   const customRequest = ({ onSuccess }) => {
@@ -343,7 +355,7 @@ const MultipleImageUpload = (props) => {
           onChange={onChange}
           className="multiple-image-upload"
           customRequest={customRequest}
-          beforeUpload={beforeUpload}
+          beforeUpload={(file, fileList) => beforeUpload(file, fileList, setLoading)}
           showUploadList={{
             showRemoveIcon: imageReadOnly ? false : true,
             removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
@@ -413,24 +425,37 @@ const MultipleImageUpload = (props) => {
               </span>
             )
           }>
-          {!imageReadOnly && (
-            <div style={{ padding: 8 }} className="upload-box">
-              <span
+          {!imageReadOnly &&
+            !imageReadOnly &&
+            (loading ? (
+              <div
                 style={{
                   display: 'flex',
-                  flexDirection: 'row-reverse',
+                  justifyContent: 'center',
                   alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  gap: '8px',
+                  minHeight: 80,
+                  marginLeft: '50%',
                 }}>
-                <Outlined size="large" label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
+                <LoadingIndicator />
+              </div>
+            ) : (
+              <div style={{ padding: 8 }} className="upload-box">
+                <span
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row-reverse',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '8px',
+                  }}>
+                  <Outlined size="large" label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
 
-                <span className="upload-helper-text">
-                  {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
+                  <span className="upload-helper-text">
+                    {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
+                  </span>
                 </span>
-              </span>
-            </div>
-          )}
+              </div>
+            ))}
         </Upload>
       </DndProvider>
       <ImageCredits

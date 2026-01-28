@@ -31,7 +31,8 @@ function Lists(props) {
   const screens = useBreakpoint();
   const location = useLocation();
   const navigate = useNavigate();
-  const { data, pageNumber, setPageNumber, calendarContentLanguage } = props;
+  const { data, pageNumber, setPageNumber, calendarContentLanguage, updateEventState, deleteEvent, featureEvents } =
+    props;
   let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
@@ -144,7 +145,10 @@ function Lists(props) {
                   isFeatured={eventItem?.isFeatured}
                   eventData={eventItem}
                   creator={eventItem?.creator}
-                  eventId={eventItem?.id}>
+                  eventId={eventItem?.id}
+                  updateEventState={updateEventState}
+                  deleteEvent={deleteEvent}
+                  featureEvents={featureEvents}>
                   <span>
                     <MoreOutlined
                       className="event-list-more-icon"
@@ -163,7 +167,10 @@ function Lists(props) {
                   eventData={eventItem}
                   isFeatured={eventItem?.isFeatured}
                   creator={eventItem?.creator}
-                  eventId={eventItem?.id}>
+                  eventId={eventItem?.id}
+                  updateEventState={updateEventState}
+                  deleteEvent={deleteEvent}
+                  featureEvents={featureEvents}>
                   <span>
                     <MoreOutlined className="event-list-more-icon-responsive" key={index} />
                   </span>

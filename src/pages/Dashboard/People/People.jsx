@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import './people.css';
-import { List, Grid, Space, Row, Col, Badge, Button, Popover, Tree, Checkbox, Divider } from 'antd';
+import { List, Grid, Space, Row, Col, Badge, Button, Popover, Tree, Checkbox, Divider, notification } from 'antd';
 import { DeleteOutlined, UserOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -84,7 +84,7 @@ function People() {
   const [getAllUsers, { isFetching: allUsersLoading, isSuccess: allUsersSuccess }] = useLazyGetAllUsersQuery();
   const [getAllPeople, { currentData: allPeopleData, isFetching: allPeopleFetching, isSuccess: allPeopleSuccess }] =
     useLazyGetAllPeopleQuery();
-  const [deletePerson] = useDeletePersonMutation();
+  const [deletePerson, { isLoading: deletePersonLoading }] = useDeletePersonMutation();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
   const [selectedUsersData, setSelectedUsersData] = useState([]);
@@ -162,7 +162,20 @@ function People() {
           cancelText: t('dashboard.people.deletePerson.cancel'),
           className: 'delete-modal-container',
           onAction: () => {
-            deletePerson({ id: personId, calendarId: calendarId });
+            deletePerson({ id: personId, calendarId: calendarId })
+              .unwrap()
+              .then(() => {
+                notification.success({
+                  description: t('dashboard.people.deletePerson.success'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           },
         });
       });
@@ -638,7 +651,7 @@ function People() {
               </Col>
             </Space>
             <div className="responsvie-list-wrapper-class">
-              {!allPeopleFetching ? (
+              {!allPeopleFetching && !deletePersonLoading ? (
                 allPeopleData?.data?.length > 0 ? (
                   <List
                     data-cy="list-people"

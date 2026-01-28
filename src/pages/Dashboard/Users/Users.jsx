@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import i18n from 'i18next';
 import CardEvent from '../../../components/Card/Common/Event';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 function Users() {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ function Users() {
     sessionId: timestampRef,
     calendarId,
   });
-  const [updateCurrentUser] = useUpdateCurrentUserMutation();
+  const [updateCurrentUser, { isLoading: updateCurrentUserLoading }] = useUpdateCurrentUserMutation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -188,216 +189,233 @@ function Users() {
 
   return (
     currentUserSuccess && (
-      <div className="user-profile-wrapper">
-        <Row>
-          <Col span={24}>
-            <Row justify="space-between">
-              <Col>
-                <div className="user-profile-heading">
-                  <h4 data-cy="heading-user-profile-title">{t('dashboard.userProfile.userProfile')}</h4>
-                </div>
-              </Col>
-              <Col>
-                <div className="add-event-button-wrap">
-                  <PrimaryButton
-                    label={t('dashboard.userProfile.save')}
-                    onClick={handleSave}
-                    data-cy="button-user-save"
-                  />
-                </div>
-              </Col>
-            </Row>
-          </Col>
-          <CardEvent required={true} marginResponsive="0px">
-            <Form
-              name="userEdit"
-              className="user-edit-form"
-              initialValues={{
-                remember: true,
-              }}
-              layout="vertical"
-              autoComplete="off"
-              requiredMark={false}
-              scrollToFirstError={true}
-              validateTrigger={'onBlur'}
-              onValuesChange={onValuesChangHandler}
-              form={form}>
-              <div className="user-profile-sub-heading">
-                <p>{t('dashboard.userProfile.subHeading')}</p>
-              </div>
-              <Form.Item
-                data-cy="form-item-user-firstname-title"
-                name="firstName"
-                initialValue={currentUserData?.firstName}
-                label={t('dashboard.userProfile.firstName')}
-                rules={[
-                  {
-                    required: true,
-                    message: t('dashboard.userProfile.validations.emptyFirstName'),
-                  },
-                ]}>
-                <StyledInput
-                  data-cy="input-user-firstname"
-                  placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
-                />
-              </Form.Item>
-              <Form.Item
-                data-cy="form-item-user-lastname-title"
-                name="lastName"
-                initialValue={currentUserData?.lastName}
-                label={t('dashboard.userProfile.lastName')}
-                rules={[
-                  {
-                    required: true,
-                    message: t('dashboard.userProfile.validations.emptyLastName'),
-                  },
-                ]}>
-                <StyledInput
-                  data-cy="input-user-lastname"
-                  placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
-                />
-              </Form.Item>
-              <Form.Item
-                data-cy="form-item-user-email-title"
-                name="email"
-                label={t('dashboard.userProfile.email')}
-                labelAlign="left"
-                initialValue={currentUserData?.email}
-                rules={[
-                  {
-                    type: 'email',
-                    message: t('resetPassword.validations.invalidEmail'),
-                  },
-                  {
-                    required: true,
-                    message: t('resetPassword.validations.emptyEmail'),
-                  },
-                ]}>
-                <LoginInput
-                  data-cy="input-user-email"
-                  placeholder={t('resetPassword.emailPlaceHolder')}
-                  disabled={location?.state?.email ? true : false}
-                />
-              </Form.Item>
-              <div className="interfaceLanguage-selector">
-                <Form.Item
-                  data-cy="form-item-user-language-title"
-                  name="interfaceLanguage"
-                  label={t('dashboard.userProfile.languagePreference')}
-                  initialValue={currentUserData?.interfaceLanguage?.toUpperCase()}
-                  required>
-                  <Select options={locale} data-cy="select-user-language" />
-                </Form.Item>
-              </div>
-              <Form.Item name="button">
-                <OutlinedButton
-                  data-cy="button-user-change-password"
-                  label={t('dashboard.userProfile.changePassword')}
-                  size="large"
-                  onClick={() => setIsModalVisible(true)}
-                />
-              </Form.Item>
-              <CustomModal
-                maskClosable
-                className="change-password-modal"
-                title={
-                  <div className="custom-modal-title-wrapper">
-                    <span className="custom-modal-title-heading" data-cy="span-change-password">
-                      {t('dashboard.userProfile.changePasswordButton')}
-                    </span>
-                  </div>
-                }
-                open={isModalVisible}
-                onCancel={handleModalCancel}
-                style={{ maxWidth: '500px', padding: '16px' }}
-                centered
-                width="100%"
-                footer={[
-                  <TextButton
-                    data-cy="button-user-change-password-cancel"
-                    key="cancel"
-                    size="large"
-                    label={t('dashboard.userProfile.cancel')}
-                    onClick={handleModalCancel}
-                  />,
-                  <PrimaryButton
-                    data-cy="button-user-change-password-save"
-                    key="add-dates"
-                    label={t('dashboard.userProfile.changePasswordButton')}
-                    onClick={handlePasswordSave}
-                  />,
-                ]}
-                bodyStyle={{ padding: '32px' }}>
-                <Row>
-                  <Col span={24} className="change-password-modal-body">
-                    <Form.Item
-                      data-cy="form-item-old-password-title"
-                      name="oldPassword"
-                      label={t('dashboard.userProfile.password')}
-                      labelAlign="left"
-                      className="user-profile-form-item"
-                      rules={[
-                        {
-                          required: true,
-                          message: t('resetPassword.validations.emptyPassword'),
-                        },
-                      ]}>
-                      <PasswordInput
-                        data-cy="input-user-old-password"
-                        placeholder={t('dashboard.userProfile.passwordPlaceHolder')}
-                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+      <>
+        {updateCurrentUserLoading ? (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(255, 255, 255, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+            }}>
+            <LoadingIndicator />
+          </div>
+        ) : (
+          <div className="user-profile-wrapper">
+            <Row>
+              <Col span={24}>
+                <Row justify="space-between">
+                  <Col>
+                    <div className="user-profile-heading">
+                      <h4 data-cy="heading-user-profile-title">{t('dashboard.userProfile.userProfile')}</h4>
+                    </div>
+                  </Col>
+                  <Col>
+                    <div className="add-event-button-wrap">
+                      <PrimaryButton
+                        label={t('dashboard.userProfile.save')}
+                        onClick={handleSave}
+                        data-cy="button-user-save"
                       />
-                    </Form.Item>
-                    <Form.Item
-                      data-cy="form-item-new-password-title"
-                      name="newPassword"
-                      label={t('dashboard.userProfile.newPassword')}
-                      labelAlign="left"
-                      className="user-profile-form-item"
-                      rules={[
-                        {
-                          required: true,
-                          message: t('resetPassword.validations.emptyPassword'),
-                        },
-                      ]}>
-                      <PasswordInput
-                        data-cy="input-new-password"
-                        placeholder={t('dashboard.userProfile.newPasswordPlaceholder')}
-                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      data-cy="form-item-confirm-password-title"
-                      name="confirmNewPassword"
-                      label={t('dashboard.userProfile.confirmNewPassword')}
-                      labelAlign="left"
-                      className="user-profile-form-item"
-                      rules={[
-                        {
-                          required: true,
-                          message: t('resetPassword.validations.emptyPassword'),
-                        },
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (!value || getFieldValue('newPassword') === value) {
-                              return Promise.resolve();
-                            } else return Promise.reject(new Error(t('resetPassword.validations.passwordMatch')));
-                          },
-                        }),
-                      ]}>
-                      <PasswordInput
-                        data-cy="input-confirm-password"
-                        placeholder={t('dashboard.userProfile.confirmNewPasswordPlaceHolder')}
-                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                      />
-                    </Form.Item>
+                    </div>
                   </Col>
                 </Row>
-              </CustomModal>
-            </Form>
-          </CardEvent>
-        </Row>
-      </div>
+              </Col>
+              <CardEvent required={true} marginResponsive="0px">
+                <Form
+                  name="userEdit"
+                  className="user-edit-form"
+                  initialValues={{
+                    remember: true,
+                  }}
+                  layout="vertical"
+                  autoComplete="off"
+                  requiredMark={false}
+                  scrollToFirstError={true}
+                  validateTrigger={'onBlur'}
+                  onValuesChange={onValuesChangHandler}
+                  form={form}>
+                  <div className="user-profile-sub-heading">
+                    <p>{t('dashboard.userProfile.subHeading')}</p>
+                  </div>
+                  <Form.Item
+                    data-cy="form-item-user-firstname-title"
+                    name="firstName"
+                    initialValue={currentUserData?.firstName}
+                    label={t('dashboard.userProfile.firstName')}
+                    rules={[
+                      {
+                        required: true,
+                        message: t('dashboard.userProfile.validations.emptyFirstName'),
+                      },
+                    ]}>
+                    <StyledInput
+                      data-cy="input-user-firstname"
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    data-cy="form-item-user-lastname-title"
+                    name="lastName"
+                    initialValue={currentUserData?.lastName}
+                    label={t('dashboard.userProfile.lastName')}
+                    rules={[
+                      {
+                        required: true,
+                        message: t('dashboard.userProfile.validations.emptyLastName'),
+                      },
+                    ]}>
+                    <StyledInput
+                      data-cy="input-user-lastname"
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    data-cy="form-item-user-email-title"
+                    name="email"
+                    label={t('dashboard.userProfile.email')}
+                    labelAlign="left"
+                    initialValue={currentUserData?.email}
+                    rules={[
+                      {
+                        type: 'email',
+                        message: t('resetPassword.validations.invalidEmail'),
+                      },
+                      {
+                        required: true,
+                        message: t('resetPassword.validations.emptyEmail'),
+                      },
+                    ]}>
+                    <LoginInput
+                      data-cy="input-user-email"
+                      placeholder={t('resetPassword.emailPlaceHolder')}
+                      disabled={location?.state?.email ? true : false}
+                    />
+                  </Form.Item>
+                  <div className="interfaceLanguage-selector">
+                    <Form.Item
+                      data-cy="form-item-user-language-title"
+                      name="interfaceLanguage"
+                      label={t('dashboard.userProfile.languagePreference')}
+                      initialValue={currentUserData?.interfaceLanguage?.toUpperCase()}
+                      required>
+                      <Select options={locale} data-cy="select-user-language" />
+                    </Form.Item>
+                  </div>
+                  <Form.Item name="button">
+                    <OutlinedButton
+                      data-cy="button-user-change-password"
+                      label={t('dashboard.userProfile.changePassword')}
+                      size="large"
+                      onClick={() => setIsModalVisible(true)}
+                    />
+                  </Form.Item>
+                  <CustomModal
+                    maskClosable
+                    className="change-password-modal"
+                    title={
+                      <div className="custom-modal-title-wrapper">
+                        <span className="custom-modal-title-heading" data-cy="span-change-password">
+                          {t('dashboard.userProfile.changePasswordButton')}
+                        </span>
+                      </div>
+                    }
+                    open={isModalVisible}
+                    onCancel={handleModalCancel}
+                    style={{ maxWidth: '500px', padding: '16px' }}
+                    centered
+                    width="100%"
+                    footer={[
+                      <TextButton
+                        data-cy="button-user-change-password-cancel"
+                        key="cancel"
+                        size="large"
+                        label={t('dashboard.userProfile.cancel')}
+                        onClick={handleModalCancel}
+                      />,
+                      <PrimaryButton
+                        data-cy="button-user-change-password-save"
+                        key="add-dates"
+                        label={t('dashboard.userProfile.changePasswordButton')}
+                        onClick={handlePasswordSave}
+                      />,
+                    ]}
+                    bodyStyle={{ padding: '32px' }}>
+                    <Row>
+                      <Col span={24} className="change-password-modal-body">
+                        <Form.Item
+                          data-cy="form-item-old-password-title"
+                          name="oldPassword"
+                          label={t('dashboard.userProfile.password')}
+                          labelAlign="left"
+                          className="user-profile-form-item"
+                          rules={[
+                            {
+                              required: true,
+                              message: t('resetPassword.validations.emptyPassword'),
+                            },
+                          ]}>
+                          <PasswordInput
+                            data-cy="input-user-old-password"
+                            placeholder={t('dashboard.userProfile.passwordPlaceHolder')}
+                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          data-cy="form-item-new-password-title"
+                          name="newPassword"
+                          label={t('dashboard.userProfile.newPassword')}
+                          labelAlign="left"
+                          className="user-profile-form-item"
+                          rules={[
+                            {
+                              required: true,
+                              message: t('resetPassword.validations.emptyPassword'),
+                            },
+                          ]}>
+                          <PasswordInput
+                            data-cy="input-new-password"
+                            placeholder={t('dashboard.userProfile.newPasswordPlaceholder')}
+                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          data-cy="form-item-confirm-password-title"
+                          name="confirmNewPassword"
+                          label={t('dashboard.userProfile.confirmNewPassword')}
+                          labelAlign="left"
+                          className="user-profile-form-item"
+                          rules={[
+                            {
+                              required: true,
+                              message: t('resetPassword.validations.emptyPassword'),
+                            },
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (!value || getFieldValue('newPassword') === value) {
+                                  return Promise.resolve();
+                                } else return Promise.reject(new Error(t('resetPassword.validations.passwordMatch')));
+                              },
+                            }),
+                          ]}>
+                          <PasswordInput
+                            data-cy="input-confirm-password"
+                            placeholder={t('dashboard.userProfile.confirmNewPasswordPlaceHolder')}
+                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </CustomModal>
+                </Form>
+              </CardEvent>
+            </Row>
+          </div>
+        )}
+      </>
     )
   );
 }

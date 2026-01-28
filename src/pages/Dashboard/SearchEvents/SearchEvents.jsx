@@ -173,172 +173,180 @@ function SearchEvents() {
     getExternalSource,
   ]);
 
-  return (
-    !initialEventsLoading && (
-      <NewEntityLayout
-        heading={t('dashboard.events.createNew.search.title')}
-        searchHeading={t('dashboard.events.createNew.search.searchHeading')}
-        text={t('dashboard.events.createNew.search.text')}>
-        <div className="search-bar-places">
-          <Popover
-            data-cy="popover-events-search"
-            open={isPopoverOpen}
-            arrow={false}
-            overlayClassName="entity-popover"
-            placement="bottom"
-            onOpenChange={(open) => {
-              setIsPopoverOpen(open);
-              debounceEntitiesSearch(quickCreateKeyword);
-            }}
-            autoAdjustOverflow={false}
-            getPopupContainer={(trigger) => trigger.parentNode}
-            trigger={['click']}
-            content={
-              <div>
-                <div className="popover-section-header" data-cy="div-event-footlight-title">
-                  {t('dashboard.events.createNew.search.footlightSectionHeading')}
-                </div>
-                <div className="search-scrollable-content">
-                  {isEntitiesFetching && (
-                    <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <LoadingIndicator />
-                    </div>
-                  )}
-                  {!isEntitiesFetching &&
-                    (eventsList?.length > 0 ? (
-                      eventsList?.map((event, index) => (
-                        <div
-                          key={index}
-                          className="search-popover-options"
-                          onClick={() => {
-                            setSelectedEvents([...selectedEvents, event]);
-                            setIsPopoverOpen(false);
-                          }}
-                          data-cy={`div-event-  footlight-${index}`}>
-                          <EntityCard
-                            title={contentLanguageBilingual({
-                              data: event?.name,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                            description={contentLanguageBilingual({
-                              data: event?.disambiguatingDescription,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                            artsDataLink={artsDataLinkChecker(event?.uri)}
-                            Logo={
-                              event.logo ? (
-                                event.logo?.thumbnail?.uri
-                              ) : (
-                                <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                              )
-                            }
-                            linkText={t('dashboard.events.createNew.search.linkText')}
-                            onClick={() => {
-                              if (routinghandler(user, calendarId, event?.creator?.userId, null, true)) {
-                                navigate(
-                                  `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${event?.id}`,
-                                );
-                              } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${event?.id}`);
-                            }}
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      <NoContent />
-                    ))}
-                </div>
-
-                {quickCreateKeyword.length > 0 && (
-                  <>
-                    <div className="popover-section-header" data-cy="div-event-artsdata-title">
-                      {t('dashboard.events.createNew.search.artsDataSectionHeading')}
-                    </div>
-                    <div className="search-scrollable-content">
-                      {isExternalSourceFetching && (
-                        <div
-                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <LoadingIndicator />
-                        </div>
-                      )}
-                      {!isExternalSourceFetching &&
-                        (eventListExternalSource?.artsdata?.length > 0 ? (
-                          eventListExternalSource?.artsdata?.map((event, index) => (
-                            <div
-                              key={index}
-                              className="search-popover-options"
-                              onClick={() => {
-                                setIsPopoverOpen(false);
-                              }}
-                              data-cy={`div-event-artsdata-${index}`}>
-                              <EntityCard
-                                title={contentLanguageBilingual({
-                                  data: event?.name,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                description={event?.description}
-                                artsDataLink={createArtsDataLink(event?.uri)}
-                                Logo={
-                                  event.logo ? (
-                                    event.logo?.thumbnail?.uri
-                                  ) : (
-                                    <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                                  )
-                                }
-                                linkText={
-                                  isArtsdataUri(event?.uri)
-                                    ? t('dashboard.events.createNew.search.linkText')
-                                    : t('dashboard.events.createNew.search.datafeed')
-                                }
-                                onClick={() => artsDataClickHandler(event)}
-                              />
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        ))}
-                    </div>
-                  </>
-                )}
-
-                {quickCreateKeyword?.length > 0 && (
-                  <CreateEntityButton
-                    quickCreateKeyword={quickCreateKeyword}
-                    onClick={() => {
-                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
-                        state: {
-                          name: quickCreateKeyword,
-                        },
-                      });
-                    }}
-                  />
-                )}
+  return !initialEventsLoading ? (
+    <NewEntityLayout
+      heading={t('dashboard.events.createNew.search.title')}
+      searchHeading={t('dashboard.events.createNew.search.searchHeading')}
+      text={t('dashboard.events.createNew.search.text')}>
+      <div className="search-bar-places">
+        <Popover
+          data-cy="popover-events-search"
+          open={isPopoverOpen}
+          arrow={false}
+          overlayClassName="entity-popover"
+          placement="bottom"
+          onOpenChange={(open) => {
+            setIsPopoverOpen(open);
+            debounceEntitiesSearch(quickCreateKeyword);
+          }}
+          autoAdjustOverflow={false}
+          getPopupContainer={(trigger) => trigger.parentNode}
+          trigger={['click']}
+          content={
+            <div>
+              <div className="popover-section-header" data-cy="div-event-footlight-title">
+                {t('dashboard.events.createNew.search.footlightSectionHeading')}
               </div>
-            }>
-            <EventsSearch
-              data-cy="input-event-search"
-              style={{ borderRadius: '4px' }}
-              placeholder={t('dashboard.events.createNew.search.searchPlaceholder')}
-              autoFocus={true}
-              onClick={(e) => {
-                setQuickCreateKeyword(e.target.value);
-                setIsPopoverOpen(true);
-              }}
-              onChange={(e) => {
-                setQuickCreateKeyword(e.target.value);
-                debounceEntitiesSearch(e.target.value);
-                if (e.target.value != '') {
-                  debounceExternalSourceSearch(e.target.value);
-                }
-                setIsPopoverOpen(true);
-              }}
-            />
-          </Popover>
-        </div>
-      </NewEntityLayout>
-    )
+              <div className="search-scrollable-content">
+                {isEntitiesFetching && (
+                  <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <LoadingIndicator />
+                  </div>
+                )}
+                {!isEntitiesFetching &&
+                  (eventsList?.length > 0 ? (
+                    eventsList?.map((event, index) => (
+                      <div
+                        key={index}
+                        className="search-popover-options"
+                        onClick={() => {
+                          setSelectedEvents([...selectedEvents, event]);
+                          setIsPopoverOpen(false);
+                        }}
+                        data-cy={`div-event-  footlight-${index}`}>
+                        <EntityCard
+                          title={contentLanguageBilingual({
+                            data: event?.name,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          description={contentLanguageBilingual({
+                            data: event?.disambiguatingDescription,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          artsDataLink={artsDataLinkChecker(event?.uri)}
+                          Logo={
+                            event.logo ? (
+                              event.logo?.thumbnail?.uri
+                            ) : (
+                              <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                            )
+                          }
+                          linkText={t('dashboard.events.createNew.search.linkText')}
+                          onClick={() => {
+                            if (routinghandler(user, calendarId, event?.creator?.userId, null, true)) {
+                              navigate(
+                                `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${event?.id}`,
+                              );
+                            } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${event?.id}`);
+                          }}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <NoContent />
+                  ))}
+              </div>
+
+              {quickCreateKeyword.length > 0 && (
+                <>
+                  <div className="popover-section-header" data-cy="div-event-artsdata-title">
+                    {t('dashboard.events.createNew.search.artsDataSectionHeading')}
+                  </div>
+                  <div className="search-scrollable-content">
+                    {isExternalSourceFetching && (
+                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <LoadingIndicator />
+                      </div>
+                    )}
+                    {!isExternalSourceFetching &&
+                      (eventListExternalSource?.artsdata?.length > 0 ? (
+                        eventListExternalSource?.artsdata?.map((event, index) => (
+                          <div
+                            key={index}
+                            className="search-popover-options"
+                            onClick={() => {
+                              setIsPopoverOpen(false);
+                            }}
+                            data-cy={`div-event-artsdata-${index}`}>
+                            <EntityCard
+                              title={contentLanguageBilingual({
+                                data: event?.name,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              description={event?.description}
+                              artsDataLink={createArtsDataLink(event?.uri)}
+                              Logo={
+                                event.logo ? (
+                                  event.logo?.thumbnail?.uri
+                                ) : (
+                                  <CalendarOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                )
+                              }
+                              linkText={
+                                isArtsdataUri(event?.uri)
+                                  ? t('dashboard.events.createNew.search.linkText')
+                                  : t('dashboard.events.createNew.search.datafeed')
+                              }
+                              onClick={() => artsDataClickHandler(event)}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      ))}
+                  </div>
+                </>
+              )}
+
+              {quickCreateKeyword?.length > 0 && (
+                <CreateEntityButton
+                  quickCreateKeyword={quickCreateKeyword}
+                  onClick={() => {
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
+                      state: {
+                        name: quickCreateKeyword,
+                      },
+                    });
+                  }}
+                />
+              )}
+            </div>
+          }>
+          <EventsSearch
+            data-cy="input-event-search"
+            style={{ borderRadius: '4px' }}
+            placeholder={t('dashboard.events.createNew.search.searchPlaceholder')}
+            autoFocus={true}
+            onClick={(e) => {
+              setQuickCreateKeyword(e.target.value);
+              setIsPopoverOpen(true);
+            }}
+            onChange={(e) => {
+              setQuickCreateKeyword(e.target.value);
+              debounceEntitiesSearch(e.target.value);
+              if (e.target.value != '') {
+                debounceExternalSourceSearch(e.target.value);
+              }
+              setIsPopoverOpen(true);
+            }}
+          />
+        </Popover>
+      </div>
+    </NewEntityLayout>
+  ) : (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <LoadingIndicator />
+    </div>
   );
 }
 

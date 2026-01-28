@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useGetNotificationsQuery } from '../../../../services/notification';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { Typography, Spin, Row, Col, Card, Grid } from 'antd';
+import { Typography, Row, Col, Card, Grid } from 'antd';
+import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import { messageTypeMap } from '../../../../constants/notificationConstants';
 import { bilingual } from '../../../../utils/bilingual';
@@ -77,7 +78,9 @@ const SystemUpdates = () => {
       </div>
 
       {isLoading ? (
-        <Spin size="large" />
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+          <LoadingIndicator />
+        </div>
       ) : notifications.length === 0 ? (
         <Card bordered={false} className="updates-card">
           <Text type="secondary">{t('notification.systemUpdates.empty')}</Text>

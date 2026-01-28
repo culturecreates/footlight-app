@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, notification, message } from 'antd';
 import Icon, {
@@ -127,6 +127,7 @@ function CreateNewPerson() {
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [dynamicFields, setDynamicFields] = useState([]);
@@ -135,6 +136,40 @@ function CreateNewPerson() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
+
+  const isAnyLoading = useMemo(
+    () =>
+      !fields ||
+      personLoading ||
+      taxonomyLoading ||
+      artsDataLoading ||
+      isEntityDetailsLoading ||
+      imageUploadLoading ||
+      addPersonLoading ||
+      updatePersonLoading,
+    [
+      fields,
+      personLoading,
+      taxonomyLoading,
+      artsDataLoading,
+      isEntityDetailsLoading,
+      imageUploadLoading,
+      addPersonLoading,
+      updatePersonLoading,
+    ],
+  );
+
+  useEffect(() => {
+    if (isAnyLoading) {
+      setDebouncedLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setDebouncedLoading(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyLoading]);
+
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person);
   let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
@@ -731,7 +766,7 @@ function CreateNewPerson() {
     }
   }, []);
 
-  return fields && !personLoading && !taxonomyLoading && !artsDataLoading && !isEntityDetailsLoading ? (
+  return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <RouteLeavingGuard isBlocking={showDialog} />
 

@@ -113,8 +113,9 @@ const AddTaxonomy = () => {
     sessionId: timestampRef,
   });
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
-  const [addTaxonomy] = useAddTaxonomyMutation();
-  const [updateTaxonomy] = useUpdateTaxonomyMutation();
+  const [addTaxonomy, { isLoading: addTaxonomyLoading }] = useAddTaxonomyMutation();
+  const [updateTaxonomy, { isLoading: updateTaxonomyLoading }] = useUpdateTaxonomyMutation();
+  const isSaving = addTaxonomyLoading || updateTaxonomyLoading || initialLoad;
 
   const { taxonomyClass } = loadedTaxonomyData || {};
   const selectedClass = location.state?.selectedClass;
@@ -742,7 +743,18 @@ const AddTaxonomy = () => {
     }
   }, [conceptData, selectedVocabulary]);
 
-  return (
+  return isSaving ? (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <LoadingIndicator />
+    </div>
+  ) : (
     <>
       <RouteLeavingGuard
         isBlocking={

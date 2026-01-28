@@ -14,6 +14,7 @@ import { interfaceLanguage } from '../../../../constants/contentLanguage';
 import { PathName } from '../../../../constants/pathName';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
+import LoadingIndicator from '../../../../components/LoadingIndicator';
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
@@ -43,7 +44,7 @@ const CreateSystemUpdate = () => {
   }, [setContentBackgroundColor]);
   const calendarContentLanguage = Object.values(interfaceLanguage);
 
-  const [createNotification] = useCreateNotificationMutation();
+  const [createNotification, { isLoading: createNotificationLoading }] = useCreateNotificationMutation();
 
   const addSystemUpdate = () => {
     form
@@ -101,7 +102,18 @@ const CreateSystemUpdate = () => {
 
   if (!user?.isSuperAdmin) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
 
-  return (
+  return createNotificationLoading ? (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <LoadingIndicator />
+    </div>
+  ) : (
     <div className="system-updates-container" style={{ padding: paddingValue }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Title level={2} className="system-updates-title" style={{ marginBottom: '32px' }}>

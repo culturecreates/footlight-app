@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './imageUpload.css';
 import { message, Upload, Form, Dropdown, Space } from 'antd';
-import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
+import { DownloadOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { ImageCrop } from '../ImageCrop';
@@ -12,6 +12,7 @@ import ImageCredits from '../Modal/ImageCredit';
 import Credit from '../Tags/Credit';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { beforeUpload } from '../../utils/beforeImageUpload';
+import LoadingIndicator from '../LoadingIndicator';
 
 function ImageUpload(props) {
   const {
@@ -195,7 +196,7 @@ function ImageUpload(props) {
 
   const uploadButton = (
     <div style={{ padding: 8 }}>
-      {loading ? <LoadingOutlined /> : <></>}
+      {loading ? <LoadingIndicator /> : <></>}
       <span
         style={{
           display: 'flex',
@@ -225,7 +226,7 @@ function ImageUpload(props) {
           maxCount={1}
           onRemove={onRemove}
           itemRender={(reactNode, file, fileList, actions) => {
-            if (imageUrl || (file?.url ?? file?.thumbUrl))
+            if (imageUrl || ((file?.url ?? file?.thumbUrl) && loading === false))
               return (
                 <span className="image-footer">
                   <span className="image-contents">
@@ -341,7 +342,7 @@ function ImageUpload(props) {
             ]
           }
           listType="picture"
-          beforeUpload={beforeUpload}
+          beforeUpload={(file, fileList) => beforeUpload(file, fileList, setLoading)}
           onPreview={() => setImageCropOpen(true)}
           showUploadList={{
             showPreviewIcon: !props?.imageReadOnly ? true : false,
@@ -352,7 +353,9 @@ function ImageUpload(props) {
             removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
           }}
           onChange={handleChange}>
-          {imageUrl && preview ? (
+          {loading ? (
+            <LoadingIndicator />
+          ) : imageUrl && preview ? (
             <img
               src={imageUrl}
               alt="avatar"

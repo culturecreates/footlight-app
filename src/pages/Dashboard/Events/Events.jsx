@@ -6,7 +6,12 @@ import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
-import { useLazyGetEventsQuery } from '../../../services/events';
+import {
+  useLazyGetEventsQuery,
+  useDeleteEventMutation,
+  useFeatureEventsMutation,
+  useUpdateEventStateMutation,
+} from '../../../services/events';
 import { useParams, useSearchParams, createSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import AddEvent from '../../../components/Button/AddEvent';
 import { PathName } from '../../../constants/pathName';
@@ -101,6 +106,12 @@ function Events() {
   const [getAllUsers, { isFetching: allUsersLoading, isSuccess: allUsersSuccess }] = useLazyGetAllUsersQuery();
   const [getAllOrganization, { isFetching: organizerLoading, isSuccess: allOrgSuccess }] =
     useLazyGetAllOrganizationQuery();
+
+  // Event action mutations - passed down to EventStatusOptions
+  const [updateEventState, { isLoading: updateStateLoading }] = useUpdateEventStateMutation();
+  const [deleteEvent, { isLoading: deleteEventLoading }] = useDeleteEventMutation();
+  const [featureEvents, { isLoading: featureEventsLoading }] = useFeatureEventsMutation();
+  const isActionLoading = updateStateLoading || deleteEventLoading || featureEventsLoading;
 
   const [searchKey, setSearchKey] = useState();
   const [organizationSearchKey, setOrganizationSearchKey] = useState();
@@ -1102,12 +1113,13 @@ function Events() {
         </Row>
         <Row className="events-content">
           <Col flex="832px">
-            {isFetching && (
+            {(isFetching || isActionLoading) && (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <LoadingIndicator />
               </div>
             )}
             {!isFetching &&
+              !isActionLoading &&
               currentCalendarData &&
               (eventsData?.data?.length > 0 ? (
                 <EventList
@@ -1115,6 +1127,9 @@ function Events() {
                   pageNumber={pageNumber}
                   setPageNumber={setPageNumber}
                   calendarContentLanguage={calendarContentLanguage}
+                  updateEventState={updateEventState}
+                  deleteEvent={deleteEvent}
+                  featureEvents={featureEvents}
                 />
               ) : (
                 <NoContent style={{ height: '200px' }} />

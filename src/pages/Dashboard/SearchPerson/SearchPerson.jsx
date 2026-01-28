@@ -160,7 +160,7 @@ function SearchPerson() {
     getExternalSource,
   ]);
 
-  return (
+  return !initialPersonLoading ? (
     <NewEntityLayout
       heading={t('dashboard.people.createNew.search.title')}
       text={t('dashboard.people.createNew.search.text')}
@@ -393,6 +393,17 @@ function SearchPerson() {
         </Popover>
       </div>
     </NewEntityLayout>
+  ) : (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <LoadingIndicator />
+    </div>
   );
 }
 

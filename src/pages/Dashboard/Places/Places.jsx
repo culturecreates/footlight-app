@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import './places.css';
-import { List, Grid, Popover, Col, Button, Row, Tree, Badge, Space, Checkbox, Divider } from 'antd';
+import { List, Grid, Popover, Col, Button, Row, Tree, Badge, Space, Checkbox, Divider, notification } from 'antd';
 import { DeleteOutlined, EnvironmentOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -95,7 +95,7 @@ function Places() {
   const [getAllUsers, { isFetching: allUsersLoading, isSuccess: allUsersSuccess }] = useLazyGetAllUsersQuery();
   const [getAllPlaces, { currentData: allPlacesData, isFetching: allPlacesFetching, isSuccess: allPlacesSuccess }] =
     useLazyGetAllPlacesQuery();
-  const [deletePlaces] = useDeletePlacesMutation();
+  const [deletePlaces, { isLoading: deletePlacesLoading }] = useDeletePlacesMutation();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
   const [pageNumber, setPageNumber] = useState(
@@ -177,7 +177,20 @@ function Places() {
           cancelText: t('dashboard.places.deletePlace.cancel'),
           className: 'delete-modal-container',
           onAction: () => {
-            deletePlaces({ id: placeId, calendarId: calendarId });
+            deletePlaces({ id: placeId, calendarId: calendarId })
+              .unwrap()
+              .then(() => {
+                notification.success({
+                  description: t('dashboard.places.deletePlace.success'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           },
         });
       });
@@ -651,7 +664,7 @@ function Places() {
             </Space>
 
             <div className="responsvie-list-wrapper-class">
-              {!allPlacesFetching ? (
+              {!allPlacesFetching && !deletePlacesLoading ? (
                 allPlacesData?.data?.length > 0 ? (
                   <List
                     data-cy="list-places"

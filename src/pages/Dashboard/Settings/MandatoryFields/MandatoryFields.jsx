@@ -225,7 +225,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
     refetch();
   }, [tabKey]);
 
-  if (loading)
+  if (loading || !allTaxonomyData || !currentCalendarData)
     return (
       <div
         style={{
@@ -241,51 +241,48 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
     );
 
   return (
-    allTaxonomyData &&
-    currentCalendarData && (
-      <div style={{ paddingTop: '24px' }}>
-        <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
-          <Col span={24}>
-            <Row justify={'space-between'}>
-              <Col>
-                <h5 className="mandatory-fields-heading" data-cy="heading5-mandatory-fields">
-                  {t('dashboard.settings.mandatoryFields.title')}
-                </h5>
-              </Col>
-              <Col>
-                <PrimaryButton
-                  label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                  data-cy="button-save-mandatory-field"
-                  onClick={onSaveHandler}
+    <div style={{ paddingTop: '24px' }}>
+      <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
+        <Col span={24}>
+          <Row justify={'space-between'}>
+            <Col>
+              <h5 className="mandatory-fields-heading" data-cy="heading5-mandatory-fields">
+                {t('dashboard.settings.mandatoryFields.title')}
+              </h5>
+            </Col>
+            <Col>
+              <PrimaryButton
+                label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                data-cy="button-save-mandatory-field"
+                onClick={onSaveHandler}
+              />
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <p className="mandatory-fields-description" data-cy="para-mandatory-fields-description">
+            {t('dashboard.settings.mandatoryFields.description')}
+          </p>
+        </Col>
+        <Col flex={'576px'}>
+          <Row gutter={[8, 18]}>
+            {updatedFormFields?.map((field, index) => (
+              <Col span={24} key={index}>
+                <MandatoryFieldCard
+                  field={field?.formFields}
+                  formName={field?.formName}
+                  formLabel={field?.formLabel}
+                  updatedFormFields={updatedFormFields}
+                  setUpdatedFormFields={setUpdatedFormFields}
+                  setDirtyStatus={setDirtyStatus}
+                  tabKey={tabKey}
                 />
               </Col>
-            </Row>
-          </Col>
-          <Col span={24}>
-            <p className="mandatory-fields-description" data-cy="para-mandatory-fields-description">
-              {t('dashboard.settings.mandatoryFields.description')}
-            </p>
-          </Col>
-          <Col flex={'576px'}>
-            <Row gutter={[8, 18]}>
-              {updatedFormFields?.map((field, index) => (
-                <Col span={24} key={index}>
-                  <MandatoryFieldCard
-                    field={field?.formFields}
-                    formName={field?.formName}
-                    formLabel={field?.formLabel}
-                    updatedFormFields={updatedFormFields}
-                    setUpdatedFormFields={setUpdatedFormFields}
-                    setDirtyStatus={setDirtyStatus}
-                    tabKey={tabKey}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </Col>
-        </Row>
-      </div>
-    )
+            ))}
+          </Row>
+        </Col>
+      </Row>
+    </div>
   );
 }
 
