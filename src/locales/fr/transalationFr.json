@@ -1035,7 +1035,11 @@
         "notification": {
           "invitation": "Succès ! L'invitation a été envoyée.",
           "updateUser": "Succès ! Le profil de l'utilisateur a été mis à jour.",
-          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement le compte de cet utilisateur?"
+          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement le compte de cet utilisateur?",
+          "deleteUserSuccess": "Succès ! L'utilisateur a été supprimé.",
+          "withdrawInvitation": "Succès ! L'invitation a été annulée.",
+          "activateUser": "Succès ! L'utilisateur a été activé.",
+          "deactivateUser": "Succès ! L'utilisateur a été désactivé."
         },
         "delete": "Supprimer",
         "cancel": "Annuler",

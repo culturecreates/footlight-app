@@ -1040,7 +1040,11 @@
         "notification": {
           "invitation": "Success! Invitation sent.",
           "updateUser": "Success! User profile has been updated.",
-          "deleteUser": "Are you sure you want to permanently delete this user?"
+          "deleteUser": "Are you sure you want to permanently delete this user?",
+          "deleteUserSuccess": "Success! The user has been deleted.",
+          "withdrawInvitation": "Success! The invitation has been cancelled.",
+          "activateUser": "Success! The user has been activated.",
+          "deactivateUser": "Success! The user has been deactivated."
         },
         "delete": "Delete",
         "cancel": "Cancel",
