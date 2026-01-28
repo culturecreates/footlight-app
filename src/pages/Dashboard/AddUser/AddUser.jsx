@@ -100,12 +100,14 @@ const AddUser = () => {
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
 
   const [currentUserLeaveCalendar] = useCurrentUserLeaveCalendarMutation();
-  const [inviteUser] = useInviteUserMutation();
-  const [updateUserById] = useUpdateUserByIdMutation();
+  const [inviteUser, { isLoading: inviteUserLoading }] = useInviteUserMutation();
+  const [updateUserById, { isLoading: updateUserByIdLoading }] = useUpdateUserByIdMutation();
   const [getCurrentUserDetails, { isFetching: isCurrentUserFetching }] = useLazyGetCurrentUserQuery({
     sessionId: timestampRef,
   });
-  const [updateCurrentUser] = useUpdateCurrentUserMutation();
+  const [updateCurrentUser, { isLoading: updateCurrentUserLoading }] = useUpdateCurrentUserMutation();
+  const isSaving =
+    inviteUserLoading || updateUserByIdLoading || updateCurrentUserLoading || isUserFetching || isCurrentUserFetching;
 
   useEffect(() => {
     if (userId !== user?.id) {
@@ -581,7 +583,18 @@ const AddUser = () => {
     if (!isFormDirty) setIsFormDirty(true);
   };
 
-  return (
+  return isSaving ? (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <LoadingIndicator />
+    </div>
+  ) : (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       <RouteLeavingGuard isBlocking={isFormDirty} />
       <Form
