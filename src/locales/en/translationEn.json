@@ -1243,7 +1243,8 @@
             "impact": "Impacted events: ",
             "published": "{{number}} published",
             "inReview": "{{number}} pending review",
-            "draft": "{{number}} draft"
+            "draft": "{{number}} draft",
+            "success": "Success! The taxonomy has been deleted."
           }
         }
       },

@@ -1239,7 +1239,8 @@
             "impact": "Événements concernés : ",
             "published": "publié - {{number}}",
             "draft": "brouillon - {{number}}",
-            "inReview": "attente d'approbation - {{number}}"
+            "inReview": "attente d'approbation - {{number}}",
+            "success": "Succès ! La taxonomie a été supprimée."
           }
         }
       },
