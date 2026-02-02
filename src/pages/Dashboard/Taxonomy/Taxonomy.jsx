@@ -1,4 +1,4 @@
-import { Badge, Button, Checkbox, Col, Dropdown, Grid, List, Row, Space } from 'antd';
+import { Badge, Button, Checkbox, Col, Dropdown, Grid, List, Row, Space, notification } from 'antd';
 import i18next from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -59,7 +59,7 @@ const Taxonomy = () => {
   const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] = useLazyGetAllTaxonomyQuery({
     sessionId: timestampRef,
   });
-  const [deleteTaxonomy] = useDeleteTaxonomyMutation();
+  const [deleteTaxonomy, { isLoading: deleteTaxonomyLoading }] = useDeleteTaxonomyMutation();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
   const sortByParam = searchParams.get('sortBy');
@@ -206,7 +206,7 @@ const Taxonomy = () => {
       !isReadOnly &&
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
-  const deleteOrganizationHandler = (id) => {
+  const deleteTaxonomyHandler = (id) => {
     getDependencyDetails({ ids: id, calendarId })
       .unwrap()
       .then((res) => {
@@ -218,7 +218,17 @@ const Taxonomy = () => {
               .then((res) => {
                 if (res.statusCode == 202) {
                   getCalendar({ id: calendarId, sessionId: timestampRef });
+                  notification.success({
+                    description: t('dashboard.taxonomy.listing.modal.contentDelete.success'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
                 }
+              })
+              .catch((error) => {
+                console.log(error);
               });
           },
           okText: t('dashboard.settings.addUser.delete'),
@@ -414,7 +424,7 @@ const Taxonomy = () => {
             </Col>
           </Row>
         </Col>
-        {!isTaxonomyFetching ? (
+        {!isTaxonomyFetching && !deleteTaxonomyLoading ? (
           <Col flex={'832px'}>
             <Row>
               <Col span={24}>
@@ -473,7 +483,7 @@ const Taxonomy = () => {
                               style={{ color: '#222732', fontSize: '24px' }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                deleteOrganizationHandler(item?.id);
+                                deleteTaxonomyHandler(item?.id);
                               }}
                             />
                           ),

@@ -3,6 +3,7 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import React, { useEffect } from 'react';
 import './login.css';
 import LoginButton from '../../components/Button/Auth';
+import LoadingIndicator from '../../components/LoadingIndicator';
 import { useLoginMutation } from '../../services/login';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, getUserDetails } from '../../redux/reducer/userSlice';
@@ -19,7 +20,7 @@ import Cookies from 'js-cookie';
 const Login = () => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [login, { error }] = useLoginMutation();
+  const [login, { error, isLoading: loginLoading }] = useLoginMutation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -56,7 +57,20 @@ const Login = () => {
     }
   }, [accessToken]);
 
-  return (
+  return loginLoading ? (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(255, 255, 255, 0.8)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}>
+      <LoadingIndicator />
+    </div>
+  ) : (
     <Auth>
       <div className="login-page-wrapper">
         <h3 className="login-heading" data-cy="heading-login-heading">

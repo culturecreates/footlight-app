@@ -51,10 +51,12 @@ const hasTransparency = (file) => {
   });
 };
 
-export const beforeUpload = async (file) => {
+export const beforeUpload = async (file, fileList, setLoading) => {
+  if (setLoading) setLoading(true);
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
     message.error(i18n.t('dashboard.events.addEditEvent.otherInformation.image.subHeading'));
+    if (setLoading) setLoading(false);
     return Upload.LIST_IGNORE;
   }
 
@@ -102,6 +104,7 @@ export const beforeUpload = async (file) => {
     return file;
   } catch (err) {
     console.error('Image compression failed:', err);
+    if (setLoading) setLoading(false);
     return Upload.LIST_IGNORE;
   }
 };

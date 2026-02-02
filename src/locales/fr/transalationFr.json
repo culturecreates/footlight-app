@@ -415,7 +415,9 @@
           "savingAsDraft": "Sauvegarde comme brouillon.",
           "sendToReview": " Succès ! Votre événement a été envoyé pour validation.",
           "publish": "Succès ! Votre événement a été publié.",
+          "unpublish": "Succès ! Votre événement a été dépublié.",
           "updateEvent": "Succès ! Votre événement a été mis à jour.",
+          "deleteEvent": "Succès ! Votre événement a été supprimé.",
           "editFailedReviewForGuest": "L'événement a besoin d'être révisé. Réviser et mettre à jour si nécessaire, puis envoyer pour validation."
         },
         "validations": {
@@ -569,7 +571,8 @@
         "draft": "brouillon - {{number}}",
         "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "success": "Succès ! L'organisation a été supprimée."
       },
       "readOnly": {
         "details": "Détails",
@@ -669,7 +672,8 @@
         "draft": "brouillon - {{number}}",
         "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "success": "Succès ! Le lieu a été supprimé."
       },
       "readOnly": {
         "placeName": "Nom",
@@ -829,7 +833,8 @@
         "draft": "brouillon - {{number}}",
         "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "success": "Succès ! La personne a été supprimée."
       },
       "readOnly": {
         "details": "Détails",
@@ -1030,7 +1035,11 @@
         "notification": {
           "invitation": "Succès ! L'invitation a été envoyée.",
           "updateUser": "Succès ! Le profil de l'utilisateur a été mis à jour.",
-          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement le compte de cet utilisateur?"
+          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement le compte de cet utilisateur?",
+          "deleteUserSuccess": "Succès ! L'utilisateur a été supprimé.",
+          "withdrawInvitation": "Succès ! L'invitation a été annulée.",
+          "activateUser": "Succès ! L'utilisateur a été activé.",
+          "deactivateUser": "Succès ! L'utilisateur a été désactivé."
         },
         "delete": "Supprimer",
         "cancel": "Annuler",
@@ -1234,7 +1243,8 @@
             "impact": "Événements concernés : ",
             "published": "publié - {{number}}",
             "draft": "brouillon - {{number}}",
-            "inReview": "attente d'approbation - {{number}}"
+            "inReview": "attente d'approbation - {{number}}",
+            "success": "Succès ! La taxonomie a été supprimée."
           }
         }
       },

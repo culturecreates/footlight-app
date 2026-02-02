@@ -15,7 +15,7 @@ import { MoreOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import './userManagement.css';
 import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
-import { Button, Col, Dropdown, Grid, List, Row, Space } from 'antd';
+import { Button, Col, Dropdown, Grid, List, Row, Space, notification } from 'antd';
 import ListCard from '../../../../components/List/User/ListCard';
 import bulletIcon from '../../../../assets/icons/dot-bullet.svg';
 import { userActivityStatus } from '../../../../constants/userActivityStatus';
@@ -87,11 +87,14 @@ const UserManagement = (props) => {
   );
 
   const [getAllUsers, { currentData: userData, isFetching: isUsersLoading }] = useLazyGetAllUsersQuery();
-  const [inviteUserMutation] = useInviteUserMutation();
-  const [deleteUser] = useDeleteUserMutation();
-  const [activateUser] = useActivateUserMutation();
-  const [deActivateUser] = useDeactivateUserMutation();
-  const [withdrawInvitation] = useWithDrawInvitationMutation();
+  const [inviteUserMutation, { isLoading: inviteUserLoading }] = useInviteUserMutation();
+  const [deleteUser, { isLoading: deleteUserLoading }] = useDeleteUserMutation();
+  const [activateUser, { isLoading: activateUserLoading }] = useActivateUserMutation();
+  const [deActivateUser, { isLoading: deactivateUserLoading }] = useDeactivateUserMutation();
+  const [withdrawInvitation, { isLoading: withdrawInvitationLoading }] = useWithDrawInvitationMutation();
+
+  const isActionLoading =
+    inviteUserLoading || deleteUserLoading || activateUserLoading || deactivateUserLoading || withdrawInvitationLoading;
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
@@ -288,6 +291,13 @@ const UserManagement = (props) => {
       .unwrap()
       .then((res) => {
         if (res?.statusCode == 202) {
+          notification.success({
+            description: t('dashboard.settings.addUser.notification.withdrawInvitation'),
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
           const filtersDecoded = setFiletrsForApiCall();
           getAllUsers({
             page: pageNumber,
@@ -299,6 +309,9 @@ const UserManagement = (props) => {
             includeCalenderFilter: true,
           });
         }
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -354,6 +367,13 @@ const UserManagement = (props) => {
           .unwrap()
           .then((res) => {
             if (res.statusCode == 202) {
+              notification.success({
+                description: t('dashboard.settings.addUser.notification.invitation'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
               const filtersDecoded = setFiletrsForApiCall();
               getAllUsers({
                 page: pageNumber,
@@ -365,6 +385,9 @@ const UserManagement = (props) => {
                 includeCalenderFilter: true,
               });
             }
+          })
+          .catch((error) => {
+            console.log(error);
           });
         break;
 
@@ -380,16 +403,56 @@ const UserManagement = (props) => {
 
       case 'activateOrDeactivate':
         if (userStatus[0]?.status === userActivityStatus[0].key) {
-          deActivateUser({ id: item._id, calendarId: calendarId });
+          deActivateUser({ id: item._id, calendarId: calendarId })
+            .unwrap()
+            .then(() => {
+              notification.success({
+                description: t('dashboard.settings.addUser.notification.deactivateUser'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         } else if (isUserInactiveInThisCalendar) {
-          activateUser({ id: item._id, calendarId: calendarId });
+          activateUser({ id: item._id, calendarId: calendarId })
+            .unwrap()
+            .then(() => {
+              notification.success({
+                description: t('dashboard.settings.addUser.notification.activateUser'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
         break;
 
       case 'deleteUser':
         Confirm({
           title: t('dashboard.settings.userManagement.tooltip.deleteUser'),
-          onAction: () => deleteUser({ id: item._id, calendarId: calendarId }),
+          onAction: () =>
+            deleteUser({ id: item._id, calendarId: calendarId })
+              .unwrap()
+              .then(() => {
+                notification.success({
+                  description: t('dashboard.settings.addUser.notification.deleteUserSuccess'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+              }),
           okText: t('dashboard.settings.addUser.delete'),
           cancelText: t('dashboard.settings.addUser.cancel'),
           content: t('dashboard.settings.addUser.notification.deleteUser'),
@@ -574,7 +637,7 @@ const UserManagement = (props) => {
           </Col>
         </Row>
       </Col>
-      {!isUsersLoading ? (
+      {!isUsersLoading && !isActionLoading ? (
         <Col flex={'832px'}>
           <Row>
             <Col span={24}>

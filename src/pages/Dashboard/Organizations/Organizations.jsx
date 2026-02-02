@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './organizations.css';
-import { List, Grid, Row, Col, Space, Button, Popover, Tree, Badge, Checkbox, Divider } from 'antd';
+import { List, Grid, Row, Col, Space, Button, Popover, Tree, Badge, Checkbox, Divider, notification } from 'antd';
 import Icon, { DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -83,7 +83,7 @@ function Organizations() {
 
   const [getAllUsers, { isFetching: allUsersLoading, isSuccess: allUsersSuccess }] = useLazyGetAllUsersQuery();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
-  const [deleteOrganization] = useDeleteOrganizationMutation();
+  const [deleteOrganization, { isLoading: deleteOrganizationLoading }] = useDeleteOrganizationMutation();
 
   const [selectedUsersData, setSelectedUsersData] = useState([]);
   const [searchKey, setSearchKey] = useState();
@@ -151,11 +151,11 @@ function Organizations() {
           title: t('dashboard.organization.deleteOrganization.title'),
           content: `${t('dashboard.organization.deleteOrganization.description')} ${t(
             'dashboard.organization.deleteOrganization.impact',
-          )}  
+          )}
           ${t('dashboard.organization.deleteOrganization.published', {
             number: `${res?.events?.publishedEventCount}`,
-          })}, 
-          ${t('dashboard.organization.deleteOrganization.draft', { number: `${res?.events?.draftEventCount}` })}, 
+          })},
+          ${t('dashboard.organization.deleteOrganization.draft', { number: `${res?.events?.draftEventCount}` })},
           ${t('dashboard.organization.deleteOrganization.inReview', {
             number: `${res?.events?.pendingEventCount}`,
           })}.`,
@@ -163,7 +163,20 @@ function Organizations() {
           cancelText: t('dashboard.organization.deleteOrganization.cancel'),
           className: 'delete-modal-container',
           onAction: () => {
-            deleteOrganization({ id: organizationId, calendarId: calendarId });
+            deleteOrganization({ id: organizationId, calendarId: calendarId })
+              .unwrap()
+              .then(() => {
+                notification.success({
+                  description: t('dashboard.organization.deleteOrganization.success'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           },
         });
       });
@@ -635,7 +648,7 @@ function Organizations() {
             </Space>
 
             <div className="responsvie-list-wrapper-class">
-              {!allOrganizationFetching ? (
+              {!allOrganizationFetching && !deleteOrganizationLoading ? (
                 allOrganizationData?.data?.length > 0 ? (
                   <List
                     data-cy="antd-organizations-list"
