@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
 import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
@@ -210,18 +210,54 @@ function CreateNewPlace() {
   const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
   const [addPlace, { isLoading: addPlaceLoading }] = useAddPlaceMutation();
   const [updatePlace, { isLoading: updatePlaceLoading }] = useUpdatePlaceMutation();
-  const [addPostalAddress] = useAddPostalAddressMutation();
+  const [addPostalAddress, { isLoading: addPostalAddressLoading }] = useAddPostalAddressMutation();
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
-  const [updatePostalAddress] = useUpdatePostalAddressMutation();
+  const [updatePostalAddress, { isLoading: updatePostalAddressLoading }] = useUpdatePostalAddressMutation();
   const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
 
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [isPopoverOpen, setIsPopoverOpen] = useState({
     containedInPlace: false,
     containsPlace: false,
   });
+
+  const isAnyLoading = useMemo(
+    () =>
+      isPlaceLoading ||
+      artsDataLoading ||
+      taxonomyLoading ||
+      isEntityDetailsLoading ||
+      addImageLoading ||
+      addPlaceLoading ||
+      updatePlaceLoading ||
+      addPostalAddressLoading ||
+      updatePostalAddressLoading,
+    [
+      isPlaceLoading,
+      artsDataLoading,
+      taxonomyLoading,
+      isEntityDetailsLoading,
+      addImageLoading,
+      addPlaceLoading,
+      updatePlaceLoading,
+      addPostalAddressLoading,
+      updatePostalAddressLoading,
+    ],
+  );
+
+  useEffect(() => {
+    if (isAnyLoading) {
+      setDebouncedLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setDebouncedLoading(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyLoading]);
 
   const [derivedEntitiesData, setDerivedEntitiesData] = useState();
   const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
@@ -1443,7 +1479,7 @@ function CreateNewPlace() {
     placesSearch('', 'containsPlace');
   }, []);
 
-  return !isPlaceLoading && !artsDataLoading && !taxonomyLoading && !isEntityDetailsLoading ? (
+  return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <RouteLeavingGuard isBlocking={showDialog} />
 

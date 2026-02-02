@@ -13,6 +13,17 @@
   border-bottom: 1px solid #b6c1c9;
 }
 
+.add-user-wrapper .user-popover .ant-popover-inner-content {
+  width: 100%;
+  padding: 0px;
+}
+
+.add-user-wrapper .user-popover {
+  width: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .add-user-wrapper .ant-popover-inner-content .search-scrollable-content {
   padding: 0px;
 }

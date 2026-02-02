@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, message, Button, notification } from 'antd';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
@@ -224,7 +224,42 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [dynamicFields, setDynamicFields] = useState([]);
+
+  const isAnyLoading = useMemo(
+    () =>
+      isLoading ||
+      taxonomyLoading ||
+      !currentCalendarData ||
+      updateEventLoading ||
+      addEventLoading ||
+      addImageLoading ||
+      updateEventStateLoading ||
+      artsDataLoading,
+    [
+      isLoading,
+      taxonomyLoading,
+      currentCalendarData,
+      updateEventLoading,
+      addEventLoading,
+      addImageLoading,
+      updateEventStateLoading,
+      artsDataLoading,
+    ],
+  );
+
+  useEffect(() => {
+    if (isAnyLoading) {
+      setDebouncedLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setDebouncedLoading(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyLoading]);
+
   const [failedImports, setFailedImports] = useState({
     location: { failed: false, count: 0, total: 0 },
     organizers: { failed: false, count: 0, total: 0 },
@@ -3019,13 +3054,7 @@ function AddEvent() {
     }
   }, [errorDetails, updateEventStateLoading, updateEventLoading]);
 
-  return !isLoading &&
-    !taxonomyLoading &&
-    currentCalendarData &&
-    !updateEventLoading &&
-    !addEventLoading &&
-    !updateEventStateLoading &&
-    !artsDataLoading ? (
+  return !debouncedLoading ? (
     <div>
       <RouteLeavingGuard isBlocking={showDialog} />
       <Form

@@ -6,22 +6,25 @@ import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
 import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
-import {
-  useDeleteEventMutation,
-  useFeatureEventsMutation,
-  useUpdateEventStateMutation,
-} from '../../../services/events';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
-function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData, ...rest }) {
+function EventStatusOptions({
+  children,
+  publishState,
+  creator,
+  eventId,
+  isFeatured,
+  eventData,
+  updateEventState,
+  deleteEvent,
+  featureEvents,
+  ...rest
+}) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const [, , , , , isReadOnly] = useOutletContext();
-  const [updateEventState] = useUpdateEventStateMutation();
-  const [deleteEvent] = useDeleteEventMutation();
-  const [featureEvents] = useFeatureEventsMutation();
 
   const items = eventPublishOptions.map((item) => {
     if (publishState == eventPublishState.PUBLISHED) {
@@ -80,13 +83,28 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
       cancelText: t('dashboard.events.deleteEvent.cancel'),
       className: 'delete-modal-container',
       onOk() {
-        deleteEvent({ id: eventId, calendarId: calendarId });
+        deleteEvent({ id: eventId, calendarId: calendarId })
+          .unwrap()
+          .then(() => {
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.deleteEvent'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       },
     });
   };
   const onClick = ({ key }) => {
     if (key == '2') showDeleteConfirm();
     else if (key === '0' || key === '1' || key === '6') {
+      const isPublishing = key === '0';
+      const isUnpublishing = key === '1' || key === '6';
       updateEventState({
         id: eventId,
         calendarId: calendarId,
@@ -94,7 +112,21 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
           key === '6' || key === '1' ? eventPublishState.DRAFT : key === '0' ? eventPublishState.PUBLISHED : undefined,
       })
         .unwrap()
-        .then(() => {})
+        .then(() => {
+          notification.success({
+            description: t(
+              isPublishing
+                ? 'dashboard.events.addEditEvent.notification.publish'
+                : isUnpublishing
+                ? 'dashboard.events.addEditEvent.notification.saveAsDraft'
+                : 'dashboard.events.addEditEvent.notification.updateEvent',
+            ),
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
+        })
         .catch((e) => {
           console.log(e);
         });
