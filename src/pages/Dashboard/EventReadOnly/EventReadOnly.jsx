@@ -560,7 +560,8 @@ function EventReadOnly() {
                                   initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
                                   'dynamic',
                                   taxonomy?.isAdminOnly,
-                                )
+                                ) &&
+                                initialValues?.length > 0
                               )
                                 return (
                                   <div
