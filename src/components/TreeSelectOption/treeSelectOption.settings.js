@@ -210,6 +210,8 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
+        key: concept?.id,
+        originalName: concept?.name,
       };
     });
   return options;
