@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Skeleton } from 'antd';
 import { CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
@@ -41,6 +41,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import { loadArtsDataEventEntity } from '../../../services/artsData';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
@@ -103,6 +104,8 @@ function EventReadOnly() {
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const [selectedSupporters, setSelectedSupporters] = useState([]);
   const [debouncedLoading, setDebouncedLoading] = useState(true);
+  const [artsData, setArtsData] = useState(null);
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -170,6 +173,19 @@ function EventReadOnly() {
     const validCategories = new Set([offerTypes.FREE, offerTypes.PAYING, offerTypes.REGISTER]);
 
     return validCategories.has(offerConfig.category);
+  };
+
+  const getArtsDataEvent = (id) => {
+    setArtsDataLoading(true);
+    loadArtsDataEventEntity({ entityId: id })
+      .then((response) => {
+        setArtsData(response?.data[0]);
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -276,6 +292,12 @@ function EventReadOnly() {
           setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
         }
       }
+      if (artsDataLink?.length > 0) {
+        let sourceId = artsDataLinkChecker(artsDataLink[0]?.uri);
+        if (sourceId) {
+          getArtsDataEvent(sourceId);
+        }
+      }
     }
   }, [isLoading]);
 
@@ -342,19 +364,25 @@ function EventReadOnly() {
           <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
             <Row>
               <Col flex={'723px'}>
-                <ArtsDataInfo
-                  artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
-                  name={contentLanguageBilingual({
-                    data: eventData?.name,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                  disambiguatingDescription={contentLanguageBilingual({
-                    data: eventData?.disambiguatingDescription,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                />
+                {artsDataLoading ? (
+                  <div style={{ padding: '12px 0' }}>
+                    <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
+                  </div>
+                ) : artsData ? (
+                  <ArtsDataInfo
+                    artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
+                    name={contentLanguageBilingual({
+                      data: artsData?.name,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                    disambiguatingDescription={contentLanguageBilingual({
+                      data: artsData?.disambiguatingDescription,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  />
+                ) : null}
               </Col>
             </Row>
           </Col>

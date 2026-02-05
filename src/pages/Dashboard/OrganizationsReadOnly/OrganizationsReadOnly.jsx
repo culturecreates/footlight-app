@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import './organizationsReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Col, Row } from 'antd';
+import { Col, Row, Skeleton } from 'antd';
 import OutlinedButton from '../../../components/Button/Outlined';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useGetOrganizationQuery } from '../../../services/organization';
@@ -97,8 +97,8 @@ function OrganizationsReadOnly() {
   const [debouncedLoading, setDebouncedLoading] = useState(true);
 
   const isAnyLoading = useMemo(
-    () => organizationLoading || isEntityDetailsLoading || taxonomyLoading || artsDataLoading || !organizationSuccess,
-    [organizationLoading, isEntityDetailsLoading, taxonomyLoading, artsDataLoading, organizationSuccess],
+    () => organizationLoading || isEntityDetailsLoading || taxonomyLoading || !organizationSuccess,
+    [organizationLoading, isEntityDetailsLoading, taxonomyLoading, organizationSuccess],
   );
 
   useEffect(() => {
@@ -301,19 +301,25 @@ function OrganizationsReadOnly() {
           <Col span={24} className="artsdata-link-wrapper top-level-column">
             <Row>
               <Col flex={'750px'}>
-                <ArtsDataInfo
-                  artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
-                  name={contentLanguageBilingual({
-                    data: artsData?.name,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                  disambiguatingDescription={contentLanguageBilingual({
-                    data: artsData?.disambiguatingDescription,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                />
+                {artsDataLoading ? (
+                  <div style={{ padding: '12px 0' }}>
+                    <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
+                  </div>
+                ) : artsData ? (
+                  <ArtsDataInfo
+                    artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
+                    name={contentLanguageBilingual({
+                      data: artsData?.name,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                    disambiguatingDescription={contentLanguageBilingual({
+                      data: artsData?.disambiguatingDescription,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  />
+                ) : null}
               </Col>
             </Row>
           </Col>

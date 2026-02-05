@@ -3,7 +3,7 @@ import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
 import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { Button, Col, Form, Input, Popover, Row, message, notification, Dropdown } from 'antd';
+import { Button, Col, Form, Input, Popover, Row, message, notification, Dropdown, Skeleton } from 'antd';
 import Icon, {
   LeftOutlined,
   CloseCircleOutlined,
@@ -227,7 +227,6 @@ function CreateNewPlace() {
   const isAnyLoading = useMemo(
     () =>
       isPlaceLoading ||
-      artsDataLoading ||
       taxonomyLoading ||
       isEntityDetailsLoading ||
       addImageLoading ||
@@ -237,7 +236,6 @@ function CreateNewPlace() {
       updatePostalAddressLoading,
     [
       isPlaceLoading,
-      artsDataLoading,
       taxonomyLoading,
       isEntityDetailsLoading,
       addImageLoading,
@@ -1597,23 +1595,34 @@ function CreateNewPlace() {
                       </p>
                     </Col>
                     <Col span={24}>
-                      <ArtsDataInfo
-                        artsDataLink={
-                          artsDataLinkChecker(placeData?.sameAs)
-                            ? artsDataLinkChecker(placeData?.sameAs)
-                            : artsDataLinkChecker(artsData?.sameAs)
-                        }
-                        name={contentLanguageBilingual({
-                          data: artsData?.name,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        disambiguatingDescription={contentLanguageBilingual({
-                          data: artsData?.disambiguatingDescription,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                      />
+                      {artsDataLoading ? (
+                        <div style={{ padding: '12px 0' }}>
+                          <Skeleton
+                            active
+                            paragraph={{ rows: 1, width: '100%' }}
+                            title={false}
+                            style={{ width: '100%' }}
+                          />
+                        </div>
+                      ) : (
+                        <ArtsDataInfo
+                          artsDataLink={
+                            artsDataLinkChecker(placeData?.sameAs)
+                              ? artsDataLinkChecker(placeData?.sameAs)
+                              : artsDataLinkChecker(artsData?.sameAs)
+                          }
+                          name={contentLanguageBilingual({
+                            data: artsData?.name,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          disambiguatingDescription={contentLanguageBilingual({
+                            data: artsData?.disambiguatingDescription,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                        />
+                      )}
                     </Col>
                     <Col span={24}>
                       <div style={{ display: 'inline' }}>
