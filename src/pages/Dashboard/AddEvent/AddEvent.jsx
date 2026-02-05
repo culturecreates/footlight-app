@@ -1739,6 +1739,8 @@ function AddEvent() {
 
   const handleDateTypeChange = (activeDateType) => {
     let currentActiveDateValue;
+    let singleStartTime = form.getFieldValue('startTime');
+    let singleEndTime = form.getFieldValue('endTime');
 
     switch (dateType) {
       case dateTypes.SINGLE:
@@ -1763,6 +1765,15 @@ function AddEvent() {
         break;
     }
 
+    if ((dateType === dateTypes.SINGLE || dateType === dateTypes.MULTIPLE) && activeDateType === dateTypes.RANGE) {
+      form.setFieldsValue({
+        startTime: null,
+        endTime: null,
+        startTimeRecur: null,
+        endTimeRecur: null,
+      });
+    }
+
     setDateType(activeDateType);
 
     if (currentActiveDateValue) {
@@ -1773,24 +1784,30 @@ function AddEvent() {
             Array.isArray(currentActiveDateValue) ? currentActiveDateValue[0] : undefined,
           );
           form.setFieldsValue({
-            dateRangePicker: undefined,
-            startDateRecur: undefined,
+            dateRangePicker: null,
+            startDateRecur: null,
+            startTime: dateType === dateTypes.RANGE ? null : singleStartTime || null,
+            endTime: dateType === dateTypes.RANGE ? null : singleEndTime || null,
           });
           break;
 
         case dateTypes.RANGE:
           form.setFieldValue('dateRangePicker', currentActiveDateValue);
           form.setFieldsValue({
-            datePicker: undefined,
-            startDateRecur: undefined,
+            datePicker: null,
+            startDateRecur: null,
+            startTime: null,
+            endTime: null,
           });
           break;
 
         case dateTypes.MULTIPLE:
           form.setFieldValue('startDateRecur', currentActiveDateValue);
           form.setFieldsValue({
-            datePicker: undefined,
-            dateRangePicker: undefined,
+            datePicker: null,
+            dateRangePicker: null,
+            startTimeRecur: dateType === dateTypes.RANGE ? null : singleStartTime || null,
+            endTimeRecur: dateType === dateTypes.RANGE ? null : singleEndTime || null,
           });
           break;
 
