@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button, notification, message } from 'antd';
+import { Form, Row, Col, Button, notification, message, Skeleton } from 'antd';
 import Icon, {
   CloseCircleOutlined,
   ExclamationCircleOutlined,
@@ -142,7 +142,6 @@ function CreateNewPerson() {
       !fields ||
       personLoading ||
       taxonomyLoading ||
-      artsDataLoading ||
       isEntityDetailsLoading ||
       imageUploadLoading ||
       addPersonLoading ||
@@ -151,7 +150,6 @@ function CreateNewPerson() {
       fields,
       personLoading,
       taxonomyLoading,
-      artsDataLoading,
       isEntityDetailsLoading,
       imageUploadLoading,
       addPersonLoading,
@@ -866,23 +864,34 @@ function CreateNewPerson() {
                               </p>
                             </Col>
                             <Col span={24}>
-                              <ArtsDataInfo
-                                artsDataLink={
-                                  artsDataLinkChecker(personData?.sameAs)
-                                    ? artsDataLinkChecker(personData?.sameAs)
-                                    : artsDataLinkChecker(artsData?.sameAs)
-                                }
-                                name={contentLanguageBilingual({
-                                  data: artsData?.name,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                disambiguatingDescription={contentLanguageBilingual({
-                                  data: artsData?.disambiguatingDescription,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                              />
+                              {artsDataLoading ? (
+                                <div style={{ padding: '12px 0' }}>
+                                  <Skeleton
+                                    active
+                                    paragraph={{ rows: 1, width: '100%' }}
+                                    title={false}
+                                    style={{ width: '100%' }}
+                                  />
+                                </div>
+                              ) : (
+                                <ArtsDataInfo
+                                  artsDataLink={
+                                    artsDataLinkChecker(personData?.sameAs)
+                                      ? artsDataLinkChecker(personData?.sameAs)
+                                      : artsDataLinkChecker(artsData?.sameAs)
+                                  }
+                                  name={contentLanguageBilingual({
+                                    data: artsData?.name,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  disambiguatingDescription={contentLanguageBilingual({
+                                    data: artsData?.disambiguatingDescription,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                />
+                              )}
                             </Col>
                             <Col span={24}>
                               <div style={{ display: 'inline' }}>

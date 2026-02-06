@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button, message, notification } from 'antd';
+import { Form, Row, Col, Button, message, notification, Skeleton } from 'antd';
 import {
   CloseCircleOutlined,
   CalendarOutlined,
@@ -169,7 +169,6 @@ function CreateNewOrganization() {
       !fields ||
       organizationLoading ||
       taxonomyLoading ||
-      artsDataLoading ||
       isEntityDetailsLoading ||
       imageUploadLoading ||
       addOrganizationLoading ||
@@ -178,7 +177,6 @@ function CreateNewOrganization() {
       fields,
       organizationLoading,
       taxonomyLoading,
-      artsDataLoading,
       isEntityDetailsLoading,
       imageUploadLoading,
       addOrganizationLoading,
@@ -1304,23 +1302,34 @@ function CreateNewOrganization() {
                               </p>
                             </Col>
                             <Col span={24}>
-                              <ArtsDataInfo
-                                artsDataLink={
-                                  artsDataLinkChecker(organizationData?.sameAs)
-                                    ? artsDataLinkChecker(organizationData?.sameAs)
-                                    : artsDataLinkChecker(artsData?.sameAs)
-                                }
-                                name={contentLanguageBilingual({
-                                  data: artsData?.name,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                disambiguatingDescription={contentLanguageBilingual({
-                                  data: artsData?.disambiguatingDescription,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                              />
+                              {artsDataLoading ? (
+                                <div style={{ padding: '12px 0' }}>
+                                  <Skeleton
+                                    active
+                                    paragraph={{ rows: 1, width: '100%' }}
+                                    title={false}
+                                    style={{ width: '100%' }}
+                                  />
+                                </div>
+                              ) : (
+                                <ArtsDataInfo
+                                  artsDataLink={
+                                    artsDataLinkChecker(organizationData?.sameAs)
+                                      ? artsDataLinkChecker(organizationData?.sameAs)
+                                      : artsDataLinkChecker(artsData?.sameAs)
+                                  }
+                                  name={contentLanguageBilingual({
+                                    data: artsData?.name,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  disambiguatingDescription={contentLanguageBilingual({
+                                    data: artsData?.disambiguatingDescription,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                />
+                              )}
                             </Col>
                             <Col span={24}>
                               <div style={{ display: 'inline' }}>
