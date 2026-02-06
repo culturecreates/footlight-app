@@ -39,7 +39,10 @@ import RcCalendar from '../../../components/RC_Calendar/RcCalendar';
 import { dateFilterOptions, dateFilterTypes } from '../../../constants/dateFilterOptions';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import EntityReports from '../../../components/EntityReports/EntityReports';
@@ -1053,11 +1056,9 @@ function Events() {
                                       })
                                     }
                                     checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
-                                    treeData={treeTaxonomyOptions(
-                                      allTaxonomyData,
+                                    treeData={treeDynamicTaxonomyOptions(
+                                      taxonomy?.concept,
                                       user,
-                                      taxonomy?.mappedToField,
-                                      true,
                                       calendarContentLanguage,
                                     )}
                                   />

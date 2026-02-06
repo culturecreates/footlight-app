@@ -31,7 +31,10 @@ import { PathName } from '../../../constants/pathName';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
@@ -507,11 +510,9 @@ function People() {
                                       })
                                     }
                                     checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
-                                    treeData={treeTaxonomyOptions(
-                                      allTaxonomyData,
+                                    treeData={treeDynamicTaxonomyOptions(
+                                      taxonomy?.concept,
                                       user,
-                                      taxonomy?.mappedToField,
-                                      true,
                                       calendarContentLanguage,
                                     )}
                                   />
