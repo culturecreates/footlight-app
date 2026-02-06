@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import './personReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Col, Row } from 'antd';
+import { Col, Row, Skeleton } from 'antd';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -92,8 +92,8 @@ function PersonReadOnly() {
   const [debouncedLoading, setDebouncedLoading] = useState(true);
 
   const isAnyLoading = useMemo(
-    () => personLoading || isEntityDetailsLoading || taxonomyLoading || artsDataLoading || !personSuccess,
-    [personLoading, isEntityDetailsLoading, taxonomyLoading, artsDataLoading, personSuccess],
+    () => personLoading || isEntityDetailsLoading || taxonomyLoading || !personSuccess,
+    [personLoading, isEntityDetailsLoading, taxonomyLoading, personSuccess],
   );
 
   useEffect(() => {
@@ -257,19 +257,25 @@ function PersonReadOnly() {
           <Col span={24} className="artsdata-link-wrapper top-level-column">
             <Row>
               <Col flex={'750px'}>
-                <ArtsDataInfo
-                  artsDataLink={artsDataLinkChecker(personData?.sameAs)}
-                  name={contentLanguageBilingual({
-                    data: artsData?.name,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                  disambiguatingDescription={contentLanguageBilingual({
-                    data: artsData?.disambiguatingDescription,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                />
+                {artsDataLoading ? (
+                  <div style={{ padding: '12px 0' }}>
+                    <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
+                  </div>
+                ) : artsData ? (
+                  <ArtsDataInfo
+                    artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                    name={contentLanguageBilingual({
+                      data: artsData?.name,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                    disambiguatingDescription={contentLanguageBilingual({
+                      data: artsData?.disambiguatingDescription,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  />
+                ) : null}
               </Col>
             </Row>
           </Col>

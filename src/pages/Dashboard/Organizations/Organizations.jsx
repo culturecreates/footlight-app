@@ -32,7 +32,10 @@ import i18n from 'i18next';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
@@ -503,11 +506,9 @@ function Organizations() {
                                       })
                                     }
                                     checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
-                                    treeData={treeTaxonomyOptions(
-                                      { data: [taxonomy] },
+                                    treeData={treeDynamicTaxonomyOptions(
+                                      taxonomy?.concept,
                                       user,
-                                      taxonomy?.mappedToField,
-                                      true,
                                       calendarContentLanguage,
                                     )}
                                   />

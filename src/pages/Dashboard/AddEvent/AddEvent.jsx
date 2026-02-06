@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, message, Button, notification } from 'antd';
+import { Form, Row, Col, Input, message, Button, notification, Skeleton } from 'antd';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import {
   SyncOutlined,
@@ -235,8 +235,7 @@ function AddEvent() {
       updateEventLoading ||
       addEventLoading ||
       addImageLoading ||
-      updateEventStateLoading ||
-      artsDataLoading,
+      updateEventStateLoading,
     [
       isLoading,
       taxonomyLoading,
@@ -245,7 +244,6 @@ function AddEvent() {
       addEventLoading,
       addImageLoading,
       updateEventStateLoading,
-      artsDataLoading,
     ],
   );
 
@@ -3284,19 +3282,30 @@ function AddEvent() {
                     </p>
                   </Col>
                   <Col span={24}>
-                    <ArtsDataInfo
-                      artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
-                      name={contentLanguageBilingual({
-                        data: eventData?.name,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                      disambiguatingDescription={contentLanguageBilingual({
-                        data: eventData?.disambiguatingDescription,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                    />
+                    {artsDataLoading ? (
+                      <div style={{ padding: '12px 0' }}>
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 1, width: '100%' }}
+                          title={false}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                    ) : (
+                      <ArtsDataInfo
+                        artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
+                        name={contentLanguageBilingual({
+                          data: eventData?.name,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        disambiguatingDescription={contentLanguageBilingual({
+                          data: eventData?.disambiguatingDescription,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                      />
+                    )}
                   </Col>
                   <Col span={24}>
                     <div style={{ display: 'inline' }}>
@@ -3337,19 +3346,30 @@ function AddEvent() {
                     </p>
                   </Col>
                   <Col span={24}>
-                    <ArtsDataInfo
-                      artsDataLink={artsDataLinkChecker(artsData.sameAs)}
-                      name={contentLanguageBilingual({
-                        data: artsData?.name,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                      disambiguatingDescription={contentLanguageBilingual({
-                        data: artsData?.disambiguatingDescription,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                    />
+                    {artsDataLoading ? (
+                      <div style={{ padding: '12px 0' }}>
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 1, width: '100%' }}
+                          title={false}
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                    ) : (
+                      <ArtsDataInfo
+                        artsDataLink={artsDataLinkChecker(artsData.sameAs)}
+                        name={contentLanguageBilingual({
+                          data: artsData?.name,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        disambiguatingDescription={contentLanguageBilingual({
+                          data: artsData?.disambiguatingDescription,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                      />
+                    )}
                   </Col>
                   <Col span={24}>
                     <div>
