@@ -476,7 +476,7 @@ function CreateNewOrganization() {
                 // Main image is removed and no new image is added
                 // No gallery images are added
                 organizationPayload['image'] = [];
-              } else organizationPayload['image'] = organizationData?.image;
+              } else organizationPayload['image'] = imageCrop;
               addUpdateOrganizationApiHandler(organizationPayload, toggle)
                 .then((id) => resolve(id))
                 .catch((error) => {
@@ -515,8 +515,8 @@ function CreateNewOrganization() {
             } else {
               if (values.multipleImagesCrop?.length > 0) {
                 await uploadImageListHelper(values, addImage, calendarId, imageCrop);
-                organizationPayload['image'] = imageCrop;
               }
+              organizationPayload['image'] = imageCrop;
               if (values?.logo) {
                 if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
                 else organizationPayload['logo'] = organizationData?.logo;
