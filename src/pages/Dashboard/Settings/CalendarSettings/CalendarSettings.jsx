@@ -82,42 +82,20 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         }) ?? []
     );
   };
-  const eventFilters = filterOptions(allTaxonomyData?.data, entitiesClass.event);
-
   const organizationFilters = filterOptions(allTaxonomyData?.data, entitiesClass.organization);
 
   const peopleFilters = filterOptions(allTaxonomyData?.data, entitiesClass.person);
 
   const placeFilters = filterOptions(allTaxonomyData?.data, entitiesClass.place);
+  const eventTaxonomies = filterOptions(allTaxonomyData?.data, entitiesClass.event);
+  const eventFilters = [...eventTaxonomies, ...placeFilters];
 
-  let initialSelectedFilters = [];
-  if (currentCalendarData?.filterPersonalization?.fields?.length > 0)
-    initialSelectedFilters = currentCalendarData?.filterPersonalization?.fields;
-  if (currentCalendarData?.filterPersonalization?.customFields?.length > 0)
-    initialSelectedFilters = initialSelectedFilters.concat(currentCalendarData?.filterPersonalization?.customFields);
-
-  const handleInitialFilters = (data, selectedFilters) => {
-    return data?.filter((filter) => selectedFilters?.includes(filter.value))?.map((filter) => filter.value) ?? [];
+  const initialSelectedFilters = {
+    [entitiesClass.event]: currentCalendarData?.filterPersonalization?.events ?? [],
+    [entitiesClass.organization]: currentCalendarData?.filterPersonalization?.organization ?? [],
+    [entitiesClass.person]: currentCalendarData?.filterPersonalization?.people ?? [],
+    [entitiesClass.place]: currentCalendarData?.filterPersonalization?.places ?? [],
   };
-
-  initialSelectedFilters = [
-    {
-      name: entitiesClass.event,
-      filters: handleInitialFilters(eventFilters, initialSelectedFilters),
-    },
-    {
-      name: entitiesClass.organization,
-      filters: handleInitialFilters(organizationFilters, initialSelectedFilters),
-    },
-    {
-      name: entitiesClass.person,
-      filters: handleInitialFilters(peopleFilters, initialSelectedFilters),
-    },
-    {
-      name: entitiesClass.place,
-      filters: handleInitialFilters(placeFilters, initialSelectedFilters),
-    },
-  ];
 
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0] : null;
   let aspectRatioSet = new Set([
@@ -202,20 +180,6 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
       .then(() => {
         let values = form.getFieldsValue(true);
         let calendarData = {};
-
-        calendarData[entitiesClass.event] = values[entitiesClass.event]?.filter(
-          (item) => !STATIC_FILTERS.FILTER_LIST.EVENT.includes(item),
-        );
-        calendarData[entitiesClass.organization] = values[entitiesClass.organization]?.filter(
-          (item) => !STATIC_FILTERS.FILTER_LIST.ORGANIZATION.includes(item),
-        );
-        calendarData[entitiesClass.person] = values[entitiesClass.person]?.filter(
-          (item) => !STATIC_FILTERS.FILTER_LIST.PEOPLE.includes(item),
-        );
-        calendarData[entitiesClass.place] = values[entitiesClass.place]?.filter(
-          (item) => !STATIC_FILTERS.FILTER_LIST.PLACE.includes(item),
-        );
-
         if (values)
           calendarData = {
             name: values?.calendarName,
@@ -250,13 +214,16 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               eventDetailsUrlTemplate: values.eventTemplate,
             },
             filterPersonalization: {
-              fields: currentCalendarData?.filterPersonalization?.fields ?? [],
-              customFields: [
-                ...(calendarData.Person ?? []),
-                ...(calendarData.Organization ?? []),
-                ...(calendarData.Event ?? []),
-                ...(calendarData.Place ?? []),
-              ],
+              events:
+                values[entitiesClass.event]?.filter((item) => !STATIC_FILTERS.FILTER_LIST.EVENT.includes(item)) ?? [],
+              organization:
+                values[entitiesClass.organization]?.filter(
+                  (item) => !STATIC_FILTERS.FILTER_LIST.ORGANIZATION.includes(item),
+                ) ?? [],
+              people:
+                values[entitiesClass.person]?.filter((item) => !STATIC_FILTERS.FILTER_LIST.PEOPLE.includes(item)) ?? [],
+              places:
+                values[entitiesClass.place]?.filter((item) => !STATIC_FILTERS.FILTER_LIST.PLACE.includes(item)) ?? [],
             },
           };
         if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
@@ -448,10 +415,8 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                   name={item.name}
                   extra={item.extra}
                   initialValue={
-                    initialSelectedFilters?.length > 0
-                      ? item.initialValue.concat(
-                          initialSelectedFilters?.filter((filter) => filter.name === item.name)[0]?.filters,
-                        )
+                    initialSelectedFilters
+                      ? item.initialValue.concat(initialSelectedFilters[item.name])
                       : item.initialValue
                   }>
                   {item.field({
