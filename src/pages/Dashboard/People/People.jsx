@@ -147,7 +147,7 @@ function People() {
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
-  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
+  let customFilters = currentCalendarData?.filterPersonalization?.people ?? [];
 
   const deletePersonHandler = (personId) => {
     getDependencyDetails({ ids: personId, calendarId })

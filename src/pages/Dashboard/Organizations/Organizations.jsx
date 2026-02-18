@@ -144,7 +144,7 @@ function Organizations() {
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
-  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
+  let customFilters = currentCalendarData?.filterPersonalization?.organization ?? [];
 
   const deleteOrganizationHandler = (organizationId) => {
     getDependencyDetails({ ids: organizationId, calendarId })
