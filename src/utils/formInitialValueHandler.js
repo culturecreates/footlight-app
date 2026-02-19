@@ -18,20 +18,8 @@ export const formInitialValueHandler = (
   }
   switch (type) {
     case formTypes.INPUT:
-      if (datatype === dataTypes.URI_STRING) {
-        // Special handling for 'url' field which now uses AdditionalLinks component
-        if (mappedField === 'url' && initialData?.uri) {
-          // Convert simple URI format to AdditionalLinks format
-          return [
-            {
-              type: 'url',
-              value: initialData.uri,
-              name: {},
-            },
-          ];
-        }
-        return initialData?.uri;
-      } else return initialData;
+      if (datatype === dataTypes.URI_STRING) return initialData?.uri;
+      else return initialData;
 
     case formTypes.MULTISELECT:
       if (isImportedEntity && allTaxonomyData && taxonomyAlias) {

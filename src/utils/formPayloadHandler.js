@@ -66,14 +66,6 @@ export const formPayloadHandler = (
         else return { [mappedField]: value };
 
       case dataTypes.URI_STRING:
-        // Special handling for 'url' field which now uses AdditionalLinks component
-        if (mappedField === 'url' && Array.isArray(value)) {
-          // Convert AdditionalLinks format to simple URI format
-          // Take the first URL entry and use it as the main website URL
-          const urlEntry = value?.find((link) => link?.type === 'url' && link?.value && link?.value.trim() !== '');
-          const urlValue = urlEntry?.value ?? '';
-          return write({}, currentMappedField?.concat(['uri']), urlValue);
-        }
         return write({}, currentMappedField?.concat(['uri']), value ?? '');
 
       case dataTypes.IDENTITY_STRING:
