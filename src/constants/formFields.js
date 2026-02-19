@@ -206,6 +206,26 @@ export const formFieldValue = [
               )}
             </Row>
           );
+        } else if (mappedField === mappedFieldTypes.URL) {
+          // Render website field using AdditionalLinks component
+          // Convert single URI object to array format expected by AdditionalLinks
+          const initialData = data?.uri ? [{ uri: data.uri, name: {} }] : [];
+          return (
+            <AdditionalLinks
+              form={form}
+              name={name}
+              validations={validations}
+              mappedField={mappedField}
+              calendarContentLanguage={calendarContentLanguage}
+              entityId={entityId}
+              initialData={initialData}
+              placeholder={placeholder}
+              position={position}
+              datatype={datatype}
+              userTips={userTips}
+              required={required}
+            />
+          );
         } else {
           return (
             <StyledInput
