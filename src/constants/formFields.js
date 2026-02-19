@@ -209,6 +209,8 @@ export const formFieldValue = [
         } else {
           return (
             <StyledInput
+              addonBefore="URL"
+              autoComplete="off"
               placeholder={contentLanguageBilingual({
                 data: placeholder,
                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
