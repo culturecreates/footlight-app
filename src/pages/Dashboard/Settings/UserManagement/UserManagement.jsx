@@ -34,7 +34,7 @@ import i18n from 'i18next';
 import { adminCheckHandler } from '../../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import EntityReports from '../../../../components/EntityReports/EntityReports';
-import { entitiesClass } from '../../../../constants/entitiesClass';
+import { entitiesClass, REPORT_ACTION_KEY } from '../../../../constants/entitiesClass';
 
 const { useBreakpoint } = Grid;
 
@@ -556,7 +556,11 @@ const UserManagement = (props) => {
             {adminCheckHandler({ calendar, user }) && (
               <ReadOnlyProtectedComponent>
                 <Col style={{ display: 'flex' }}>
-                  <EntityReports entity={entitiesClass.user} />
+                  <EntityReports
+                    entity={entitiesClass.user}
+                    includedDropdownKeys={[REPORT_ACTION_KEY]}
+                    immediateDownload={true}
+                  />
 
                   <AddEvent
                     label={t('dashboard.settings.userManagement.addUser')}
