@@ -304,8 +304,13 @@ function AddEvent() {
     let timeSelected;
     let values = form.getFieldsValue(true);
     let timezone =
-      values[dateType === dateTypes.MULTIPLE ? 'customEventTimezone' : 'eventTimezone'] ??
-      currentCalendarData?.timezone;
+      values[
+        dateType === dateTypes.MULTIPLE
+          ? 'customEventTimezone'
+          : dateType === dateTypes.RANGE
+          ? 'dateRangeEventTimezone'
+          : 'eventTimezone'
+      ] ?? currentCalendarData?.timezone;
 
     // Determine if the date is already in the 'DD-MM-YYYY' format.
     // This is to hadle for cases where the date comes from a recurring event configurations that are being converted to single event
@@ -651,12 +656,12 @@ function AddEvent() {
               sameAs = [...sameAs, { uri: artsData?.uri }];
             }
 
-            if (dateType === dateTypes.MULTIPLE && form.getFieldsValue().frequency === 'CUSTOM') {
-              timezone = currentCalendarData?.timezone;
-            } else if (dateType === dateTypes.MULTIPLE) {
+            if (dateType === dateTypes.MULTIPLE) {
               timezone = values?.customEventTimezone;
             } else if (dateType === dateTypes.SINGLE) {
               timezone = values?.eventTimezone;
+            } else if (dateType === dateTypes.RANGE) {
+              timezone = values?.dateRangeEventTimezone;
             } else {
               timezone = currentCalendarData?.timezone;
             }
@@ -3748,78 +3753,95 @@ function AddEvent() {
                         </>
                       )}
                       {dateType === dateTypes.RANGE && (
-                        <Form.Item
-                          name="dateRangePicker"
-                          label={t('dashboard.events.addEditEvent.dates.dateRange')}
-                          initialValue={
-                            dateTimeTypeHandler(
-                              eventData?.startDate ?? artsData?.startDate,
-                              eventData?.startDateTime ?? artsData?.startDateTime,
-                              eventData?.endDate ?? artsData?.endDate,
-                              eventData?.endDateTime ?? artsData?.endDateTime,
-                            ) === dateTypes.RANGE
-                              ? [
-                                  moment.tz(
-                                    eventData?.startDate ??
-                                      eventData?.startDateTime ??
-                                      artsData?.startDate ??
-                                      artsData?.startDateTime,
-                                    eventData?.scheduleTimezone ??
-                                      artsData?.scheduleTimezone ??
-                                      currentCalendarData?.timezone ??
-                                      'Canada/Eastern',
-                                  ),
-                                  moment.tz(
-                                    eventData?.endDate ??
-                                      eventData?.endDateTime ??
-                                      artsData?.endDate ??
-                                      artsData?.endDateTime,
-                                    eventData?.scheduleTimezone ??
-                                      artsData?.scheduleTimezone ??
-                                      currentCalendarData?.timezone ??
-                                      'Canada/Eastern',
-                                  ),
-                                ]
-                              : undefined
-                          }
-                          hidden={
-                            standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
-                              ? adminCheckHandler({ calendar, user })
-                                ? false
-                                : true
-                              : false
-                          }
-                          rules={[
-                            {
-                              required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
-                              message: t('dashboard.events.addEditEvent.validations.date'),
-                            },
-                            {
-                              validator: (_, value) => {
-                                if (!value || value.length !== 2 || !value[0] || !value[1]) {
-                                  return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
-                                }
-                                return Promise.resolve();
-                              },
-                            },
-                          ]}
-                          data-cy="form-item-date-range-label">
-                          <DateRangePicker
-                            style={{ width: '100%' }}
-                            onCalendarChange={(dates) => {
-                              setStartDate(dates?.[0]);
-                              setEndDate(dates?.[1]);
-                            }}
-                            onOpenChange={(open) => {
-                              if (!open && startDate && !endDate) setStartDate(null);
-                            }}
-                            disabledDate={(current) =>
-                              (startDate && current.isSame(startDate, 'day')) ||
-                              (endDate && current.isSame(endDate, 'day'))
+                        <>
+                          {' '}
+                          <Form.Item
+                            name="dateRangePicker"
+                            label={t('dashboard.events.addEditEvent.dates.dateRange')}
+                            initialValue={
+                              dateTimeTypeHandler(
+                                eventData?.startDate ?? artsData?.startDate,
+                                eventData?.startDateTime ?? artsData?.startDateTime,
+                                eventData?.endDate ?? artsData?.endDate,
+                                eventData?.endDateTime ?? artsData?.endDateTime,
+                              ) === dateTypes.RANGE
+                                ? [
+                                    moment.tz(
+                                      eventData?.startDate ??
+                                        eventData?.startDateTime ??
+                                        artsData?.startDate ??
+                                        artsData?.startDateTime,
+                                      eventData?.scheduleTimezone ??
+                                        artsData?.scheduleTimezone ??
+                                        currentCalendarData?.timezone ??
+                                        'Canada/Eastern',
+                                    ),
+                                    moment.tz(
+                                      eventData?.endDate ??
+                                        eventData?.endDateTime ??
+                                        artsData?.endDate ??
+                                        artsData?.endDateTime,
+                                      eventData?.scheduleTimezone ??
+                                        artsData?.scheduleTimezone ??
+                                        currentCalendarData?.timezone ??
+                                        'Canada/Eastern',
+                                    ),
+                                  ]
+                                : undefined
                             }
-                            data-cy="date-range"
-                          />
-                        </Form.Item>
+                            hidden={
+                              standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
+                                ? adminCheckHandler({ calendar, user })
+                                  ? false
+                                  : true
+                                : false
+                            }
+                            rules={[
+                              {
+                                required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
+                                message: t('dashboard.events.addEditEvent.validations.date'),
+                              },
+                              {
+                                validator: (_, value) => {
+                                  if (!value || value.length !== 2 || !value[0] || !value[1]) {
+                                    return Promise.reject(
+                                      new Error(t('dashboard.events.addEditEvent.validations.date')),
+                                    );
+                                  }
+                                  return Promise.resolve();
+                                },
+                              },
+                            ]}
+                            data-cy="form-item-date-range-label">
+                            <DateRangePicker
+                              style={{ width: '100%' }}
+                              onCalendarChange={(dates) => {
+                                setStartDate(dates?.[0]);
+                                setEndDate(dates?.[1]);
+                              }}
+                              onOpenChange={(open) => {
+                                if (!open && startDate && !endDate) setStartDate(null);
+                              }}
+                              disabledDate={(current) =>
+                                (startDate && current.isSame(startDate, 'day')) ||
+                                (endDate && current.isSame(endDate, 'day'))
+                              }
+                              data-cy="date-range"
+                            />
+                          </Form.Item>{' '}
+                          <Form.Item
+                            label={t('dashboard.settings.calendarSettings.timezone')}
+                            name={'dateRangeEventTimezone'}
+                            initialValue={
+                              artsData?.scheduleTimezone ?? eventData?.scheduleTimezone ?? currentCalendarData?.timezone
+                            }>
+                            <Select
+                              options={timeZones}
+                              data-cy="select-calendar-time-zone-date-range"
+                              placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
+                            />
+                          </Form.Item>
+                        </>
                       )}
                       {dateType === dateTypes.MULTIPLE && (
                         <>

@@ -455,20 +455,6 @@ const RecurringEvents = function ({
                     />
                   </Form.Item>
                 </Col>
-                <Col flex={'423px'}>
-                  <Form.Item
-                    label={t('dashboard.settings.calendarSettings.timezone')}
-                    name={'customEventTimezone'}
-                    initialValue={
-                      artsData?.scheduleTimezone ?? eventData?.scheduleTimezone ?? currentCalendarData?.timezone
-                    }>
-                    <SelectOption
-                      options={timeZones}
-                      data-cy="select-calendar-time-zone"
-                      placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
-                    />
-                  </Form.Item>
-                </Col>
               </Row>
             </div>
           )}
@@ -476,6 +462,18 @@ const RecurringEvents = function ({
           {formFields && formFields?.frequency === dateFrequencyOptions[1].value && <></>}
         </>
       )}
+      <Col flex={'423px'}>
+        <Form.Item
+          label={t('dashboard.settings.calendarSettings.timezone')}
+          name={'customEventTimezone'}
+          initialValue={artsData?.scheduleTimezone ?? eventData?.scheduleTimezone ?? currentCalendarData?.timezone}>
+          <SelectOption
+            options={timeZones}
+            data-cy="select-calendar-time-zone"
+            placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
+          />
+        </Form.Item>
+      </Col>
       <Form.Item
         name="daysOfWeek"
         label={t('dashboard.events.addEditEvent.dates.days')}
