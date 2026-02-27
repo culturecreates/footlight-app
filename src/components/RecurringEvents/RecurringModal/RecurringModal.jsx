@@ -119,7 +119,7 @@ const RecurringModal = ({
           location: 'test Location',
           startDate: defaultSelectedStartDate,
           endDate: defaultSelectedStartDate,
-          initDate: moment(defaultSelectedStartDate),
+          initDate: moment(defaultSelectedStartDate).format('YYYY-MM-DD'),
           isDeleted: false,
           color: '#607EFC',
         };
