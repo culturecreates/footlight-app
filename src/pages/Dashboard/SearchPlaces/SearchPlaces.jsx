@@ -58,12 +58,19 @@ function SearchPlaces() {
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
+  const [entitiesError, setEntitiesError] = useState(false);
+  const [externalSourceError, setExternalSourceError] = useState(false);
+
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.place);
-  const { currentData: initialEntities, isFetching: initialPlacesLoading } = useGetEntitiesQuery({
+  const {
+    currentData: initialEntities,
+    isFetching: initialPlacesLoading,
+    isError: isInitialPlacesError,
+  } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
@@ -114,6 +121,7 @@ function SearchPlaces() {
   };
 
   const entitiesSearchHandler = (value) => {
+    setEntitiesError(false);
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
@@ -121,10 +129,14 @@ function SearchPlaces() {
       .then((response) => {
         setPlacesList(response);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setEntitiesError(true);
+        console.log(error);
+      });
   };
 
   const searchExternalSourceHandler = async (value) => {
+    setExternalSourceError(false);
     if (activePromiseRef.current) {
       activePromiseRef.current.abort();
     }
@@ -144,6 +156,9 @@ function SearchPlaces() {
       const data = await promise.unwrap();
       setPlaceListExternalSource(data ?? []);
     } catch (e) {
+      if (e.name !== 'AbortError') {
+        setExternalSourceError(true);
+      }
       console.log(e);
     }
   };
@@ -159,7 +174,7 @@ function SearchPlaces() {
     getExternalSource,
   ]);
 
-  return !initialPlacesLoading ? (
+  return !initialPlacesLoading || isInitialPlacesError ? (
     <NewEntityLayout
       heading={t('dashboard.places.createNew.search.title')}
       text={t('dashboard.places.createNew.search.text')}
@@ -190,7 +205,13 @@ function SearchPlaces() {
                   </div>
                 )}
                 {!isEntitiesFetching &&
-                  (placesList?.length > 0 ? (
+                  (entitiesError ? (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
+                      {t('dashboard.events.createNew.search.footlightTemporarilyUnavailable', {
+                        defaultValue: 'Footlight search is temporarily unavailable',
+                      })}
+                    </div>
+                  ) : placesList?.length > 0 ? (
                     placesList?.map((place, index) => (
                       <div
                         key={index}
@@ -251,7 +272,18 @@ function SearchPlaces() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
-                      (placeListExternalSource?.footlight?.length > 0 ? (
+                      (externalSourceError ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <div style={{ color: '#ff4d4f' }}>
+                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
+                          </div>
+                          {placesList?.length > 0 && (
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+                            </div>
+                          )}
+                        </div>
+                      ) : placeListExternalSource?.footlight?.length > 0 ? (
                         placeListExternalSource?.footlight?.map((place, index) => (
                           <div
                             key={index}
@@ -315,7 +347,18 @@ function SearchPlaces() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
-                      (placeListExternalSource?.artsdata?.length > 0 ? (
+                      (externalSourceError ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <div style={{ color: '#ff4d4f' }}>
+                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
+                          </div>
+                          {placesList?.length > 0 && (
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+                            </div>
+                          )}
+                        </div>
+                      ) : placeListExternalSource?.artsdata?.length > 0 ? (
                         placeListExternalSource?.artsdata?.map((place, index) => (
                           <div
                             key={index}

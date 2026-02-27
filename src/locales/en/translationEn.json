@@ -535,6 +535,8 @@
           "artsDataSectionHeading": "Imports from Artsdata",
           "importsFromFootlight": "Imports from Footlight",
           "searchPlaceholder": "Search by name or URL",
+          "artsdataTemporarilyUnavailable": "Results not available",
+          "footlightResultsStillAvailable": "Results not available",
           "confirm": {
             "title": "Entity is a duplicate",
             "content": "You already have a version of this entity in your CMS. Are you sure you want to create a duplicate from this new version, or would you like to edit the one you already have?",

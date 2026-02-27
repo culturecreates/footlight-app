@@ -58,12 +58,19 @@ function SearchEvents() {
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
+  const [entitiesError, setEntitiesError] = useState(false);
+  const [externalSourceError, setExternalSourceError] = useState(false);
+
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.event);
-  const { currentData: initialEntities, isFetching: initialEventsLoading } = useGetEntitiesQuery({
+  const {
+    currentData: initialEntities,
+    isFetching: initialEventsLoading,
+    isError: isInitialEntitiesError,
+  } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
@@ -131,6 +138,7 @@ function SearchEvents() {
   };
 
   const searchExternalSourceHandler = async (value) => {
+    setExternalSourceError(false);
     if (activePromiseRef.current) {
       activePromiseRef.current.abort();
     }
@@ -149,17 +157,24 @@ function SearchEvents() {
       const data = await promise.unwrap();
       setEventListExternalSource(data ?? []);
     } catch (e) {
+      if (e.name !== 'AbortError') {
+        setExternalSourceError(true);
+      }
       console.log(e);
     }
   };
 
   const entitiesSearchHandler = (value) => {
+    setEntitiesError(false);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
         setEventsList(response);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setEntitiesError(true);
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -173,7 +188,7 @@ function SearchEvents() {
     getExternalSource,
   ]);
 
-  return !initialEventsLoading ? (
+  return !initialEventsLoading || isInitialEntitiesError ? (
     <NewEntityLayout
       heading={t('dashboard.events.createNew.search.title')}
       searchHeading={t('dashboard.events.createNew.search.searchHeading')}
@@ -204,7 +219,13 @@ function SearchEvents() {
                   </div>
                 )}
                 {!isEntitiesFetching &&
-                  (eventsList?.length > 0 ? (
+                  (entitiesError ? (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
+                      {t('dashboard.events.createNew.search.footlightTemporarilyUnavailable', {
+                        defaultValue: 'Footlight search is temporarily unavailable',
+                      })}
+                    </div>
+                  ) : eventsList?.length > 0 ? (
                     eventsList?.map((event, index) => (
                       <div
                         key={index}
@@ -261,7 +282,18 @@ function SearchEvents() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
-                      (eventListExternalSource?.artsdata?.length > 0 ? (
+                      (externalSourceError ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <div style={{ color: '#ff4d4f' }}>
+                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
+                          </div>
+                          {eventsList?.length > 0 && (
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+                            </div>
+                          )}
+                        </div>
+                      ) : eventListExternalSource?.artsdata?.length > 0 ? (
                         eventListExternalSource?.artsdata?.map((event, index) => (
                           <div
                             key={index}

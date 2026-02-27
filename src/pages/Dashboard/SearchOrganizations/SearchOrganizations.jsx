@@ -56,12 +56,19 @@ function SearchOrganizations() {
   const [organizationListExternalSource, setOrganizationListExternalSource] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
+  const [entitiesError, setEntitiesError] = useState(false);
+  const [externalSourceError, setExternalSourceError] = useState(false);
+
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
-  const { currentData: initialEntities, isLoading: initialOrganizersLoading } = useGetEntitiesQuery({
+  const {
+    currentData: initialEntities,
+    isLoading: initialOrganizersLoading,
+    isError: isInitialOrganizersError,
+  } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
@@ -114,6 +121,7 @@ function SearchOrganizations() {
   };
 
   const searchExternalSourceHandler = async (value) => {
+    setExternalSourceError(false);
     if (activePromiseRef.current) {
       activePromiseRef.current.abort();
     }
@@ -132,11 +140,15 @@ function SearchOrganizations() {
       const data = await promise.unwrap();
       setOrganizationListExternalSource(data ?? []);
     } catch (e) {
+      if (e.name !== 'AbortError') {
+        setExternalSourceError(true);
+      }
       console.log(e);
     }
   };
 
   const entitiesSearchHandler = (value) => {
+    setEntitiesError(false);
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
@@ -144,7 +156,10 @@ function SearchOrganizations() {
       .then((response) => {
         setOrganizationList(response);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setEntitiesError(true);
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -158,7 +173,7 @@ function SearchOrganizations() {
     getExternalSource,
   ]);
 
-  return !initialOrganizersLoading ? (
+  return !initialOrganizersLoading || isInitialOrganizersError ? (
     <NewEntityLayout
       heading={t('dashboard.organization.createNew.search.title')}
       text={t('dashboard.organization.createNew.search.text')}
@@ -189,7 +204,13 @@ function SearchOrganizations() {
                   </div>
                 )}
                 {!isEntitiesFetching &&
-                  (organizationList?.length > 0 ? (
+                  (entitiesError ? (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
+                      {t('dashboard.events.createNew.search.footlightTemporarilyUnavailable', {
+                        defaultValue: 'Footlight search is temporarily unavailable',
+                      })}
+                    </div>
+                  ) : organizationList?.length > 0 ? (
                     organizationList?.map((organizer, index) => (
                       <div
                         key={index}
@@ -251,7 +272,18 @@ function SearchOrganizations() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
-                      (organizationListExternalSource?.footlight?.length > 0 ? (
+                      (externalSourceError ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <div style={{ color: '#ff4d4f' }}>
+                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
+                          </div>
+                          {organizationList?.length > 0 && (
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+                            </div>
+                          )}
+                        </div>
+                      ) : organizationListExternalSource?.footlight?.length > 0 ? (
                         organizationListExternalSource?.footlight?.map((organizer, index) => (
                           <div
                             key={index}
@@ -315,7 +347,18 @@ function SearchOrganizations() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
-                      (organizationListExternalSource?.artsdata?.length > 0 ? (
+                      (externalSourceError ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <div style={{ color: '#ff4d4f' }}>
+                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
+                          </div>
+                          {organizationList?.length > 0 && (
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+                            </div>
+                          )}
+                        </div>
+                      ) : organizationListExternalSource?.artsdata?.length > 0 ? (
                         organizationListExternalSource?.artsdata?.map((organizer, index) => (
                           <div
                             key={index}

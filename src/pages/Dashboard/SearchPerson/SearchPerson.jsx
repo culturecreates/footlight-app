@@ -57,9 +57,11 @@ function SearchPerson() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedPeople, setSelectedPeople] = useState([]);
 
+  const [entitiesError, setEntitiesError] = useState(false);
+  const [externalSourceError, setExternalSourceError] = useState(false);
+
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
-  const [getExternalSource, { isFetching: isExternalSourceFetching, isSuccess: isExternalSourceSuccess }] =
-    useLazyGetExternalSourceQuery();
+  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.person);
@@ -68,7 +70,11 @@ function SearchPerson() {
   sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
   sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
 
-  const { currentData: initialEntities, isFetching: initialPersonLoading } = useGetEntitiesQuery({
+  const {
+    currentData: initialEntities,
+    isFetching: initialPersonLoading,
+    isError: isInitialPersonError,
+  } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
@@ -116,6 +122,7 @@ function SearchPerson() {
   };
 
   const searchExternalSourceHandler = async (value) => {
+    setExternalSourceError(false);
     if (activePromiseRef.current) {
       activePromiseRef.current.abort();
     }
@@ -134,11 +141,15 @@ function SearchPerson() {
       const data = await promise.unwrap();
       setPeopleListExternalSource(data ?? []);
     } catch (e) {
+      if (e.name !== 'AbortError') {
+        setExternalSourceError(true);
+      }
       console.log(e);
     }
   };
 
   const entitiesSearchHandler = (value) => {
+    setEntitiesError(false);
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.person);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
@@ -146,7 +157,10 @@ function SearchPerson() {
       .then((response) => {
         setPeopleList(response);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setEntitiesError(true);
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -160,7 +174,7 @@ function SearchPerson() {
     getExternalSource,
   ]);
 
-  return !initialPersonLoading ? (
+  return !initialPersonLoading || isInitialPersonError ? (
     <NewEntityLayout
       heading={t('dashboard.people.createNew.search.title')}
       text={t('dashboard.people.createNew.search.text')}
@@ -191,7 +205,13 @@ function SearchPerson() {
                   </div>
                 )}
                 {!isEntitiesFetching &&
-                  (peopleList?.length > 0 ? (
+                  (entitiesError ? (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
+                      {t('dashboard.events.createNew.search.footlightTemporarilyUnavailable', {
+                        defaultValue: 'Footlight search is temporarily unavailable',
+                      })}
+                    </div>
+                  ) : peopleList?.length > 0 ? (
                     peopleList?.map((person, index) => (
                       <div
                         key={index}
@@ -251,8 +271,18 @@ function SearchPerson() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
-                      isExternalSourceSuccess &&
-                      (peopleListExternalSource?.footlight?.length > 0 ? (
+                      (externalSourceError ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <div style={{ color: '#ff4d4f' }}>
+                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
+                          </div>
+                          {peopleList?.length > 0 && (
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+                            </div>
+                          )}
+                        </div>
+                      ) : peopleListExternalSource?.footlight?.length > 0 ? (
                         peopleListExternalSource?.footlight?.map((person, index) => (
                           <div
                             key={index}
@@ -316,8 +346,18 @@ function SearchPerson() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
-                      isExternalSourceSuccess &&
-                      (peopleListExternalSource?.artsdata?.length > 0 ? (
+                      (externalSourceError ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <div style={{ color: '#ff4d4f' }}>
+                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
+                          </div>
+                          {peopleList?.length > 0 && (
+                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+                            </div>
+                          )}
+                        </div>
+                      ) : peopleListExternalSource?.artsdata?.length > 0 ? (
                         peopleListExternalSource?.artsdata?.map((person, index) => (
                           <div
                             key={index}
