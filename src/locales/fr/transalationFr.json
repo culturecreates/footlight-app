@@ -536,6 +536,8 @@
           "artsDataSectionHeading": "Imports de Artsdata",
           "importsFromFootlight": "Imports de Footlight",
           "searchPlaceholder": "Rechercher par nom ou URL",
+          "artsdataTemporarilyUnavailable": "Résultats non disponibles",
+          "footlightResultsStillAvailable": "Résultats non disponibles",
           "confirm": {
             "title": "L'entité est en double",
             "content": "Vous disposez déjà d'une version de cette entité dans votre CMS. Êtes-vous sûr de vouloir créer une copie à partir de cette nouvelle version, ou préférez-vous modifier celle que vous avez déjà ?",

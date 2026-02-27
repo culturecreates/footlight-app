@@ -16,6 +16,7 @@ export const entitiesApi = createApi({
         },
       }),
       keepUnusedDataFor: 10,
+      extraOptions: { skipGlobalErrorHandling: true },
       transformResponse: (response) => response,
     }),
     getEntityDependencyDetails: builder.query({
