@@ -23,6 +23,7 @@ export const externalSourceApi = createApi({
           'calendar-id': calendarId,
         },
       }),
+      extraOptions: { skipGlobalErrorHandling: true },
       transformResponse: (response) => response,
     }),
   }),
