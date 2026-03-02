@@ -167,7 +167,10 @@ function MultilingualInput({ children, ...rest }) {
       key: langKey,
       forceRender: true,
       children: (
-        <div className="bilingual-child-wrapper">
+        <div
+          className={`bilingual-child-wrapper${
+            fallbackStatus?.[langKey]?.tagDisplayStatus ? ' bilingual-child-with-badge' : ''
+          }`}>
           {enhancedChildrenWithRefs[index]}
           {fallbackStatus?.[langKey]?.tagDisplayStatus && (
             <LiteralBadge
