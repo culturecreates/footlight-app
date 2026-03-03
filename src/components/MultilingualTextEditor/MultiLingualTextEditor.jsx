@@ -218,7 +218,7 @@ function MultiLingualTextEditor(props) {
             initialValue = `<p>${initialValue}</p>`;
 
           return (
-            <div key={language}>
+            <div key={language} className={tagDisplayStatus ? 'bilingual-child-with-badge' : undefined}>
               <TextEditor
                 formName={[`${name}`, languageKey]}
                 initialValue={removeEmptyParagraphsAtEnd(initialValue)}

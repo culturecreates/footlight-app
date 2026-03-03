@@ -72,7 +72,11 @@
 }
 
 .bilingual-child-with-badge .ant-input-lg {
-  padding-right: 35px;
+  padding-right: 75px;
+}
+
+.bilingual-child-with-badge .ql-editor {
+  padding-right: 70px;
 }
 
 @media screen and (max-width: 480px) {
