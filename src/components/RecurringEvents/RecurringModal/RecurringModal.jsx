@@ -110,7 +110,7 @@ const RecurringModal = ({
 
   useEffect(() => {
     if (isModalVisible) {
-      setDataSource(customDates);
+      setDataSource(customDates?.map((date) => ({ ...date })));
 
       if (defaultSelectedStartDate && (!customDates || customDates.length === 0)) {
         const obj = {
@@ -119,7 +119,7 @@ const RecurringModal = ({
           location: 'test Location',
           startDate: defaultSelectedStartDate,
           endDate: defaultSelectedStartDate,
-          initDate: moment(defaultSelectedStartDate),
+          initDate: moment(defaultSelectedStartDate).format('YYYY-MM-DD'),
           isDeleted: false,
           color: '#607EFC',
         };
@@ -139,7 +139,12 @@ const RecurringModal = ({
   };
 
   const handleCancel = () => {
-    setDataSource([]);
+    setSubEventCount(subEventsCountHandler(customDates));
+    let numTimes = 0;
+    customDates?.forEach((date) => {
+      if (!date?.isDeleted) numTimes += date?.time?.length ?? 0;
+    });
+    setNumberOfTimes(numTimes);
     setIsModalVisible(false);
   };
   useEffect(() => {

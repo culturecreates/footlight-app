@@ -2767,33 +2767,28 @@ function AddEvent() {
           setFormValue(obj);
         }
         if (eventData?.subEventConfiguration && eventData?.subEventConfiguration?.length > 0) {
+          const groupedDates = groupEventsByDate(eventData?.subEventConfiguration);
+          const sortedGroupedDates = [...groupedDates].sort((a, b) => a.startDate.localeCompare(b.startDate));
+          const firstDate = sortedGroupedDates[0]?.startDate ?? eventData?.startDate ?? eventData?.startDateTime;
+          const lastDate =
+            sortedGroupedDates[sortedGroupedDates.length - 1]?.startDate ??
+            eventData?.endDate ??
+            eventData?.endDateTime;
           form.setFieldsValue({
             frequency: 'CUSTOM',
             startDateRecur: [
-              moment(
-                moment(eventData?.startDate ?? eventData?.startDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
-                'DD-MM-YYYY',
-              ),
-              moment(
-                moment(eventData?.endDate ?? eventData?.endDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
-                'DD-MM-YYYY',
-              ),
+              moment(moment(firstDate, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
+              moment(moment(lastDate, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
             ],
             startTimeRecur: null,
             endTimeRecur: null,
-            customDates: groupEventsByDate(eventData?.subEventConfiguration),
+            customDates: groupedDates,
           });
           const obj = {
             frequency: 'CUSTOM',
             startDateRecur: [
-              moment(
-                moment(eventData?.startDate ?? eventData?.startDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
-                'DD-MM-YYYY',
-              ),
-              moment(
-                moment(eventData?.endDate ?? eventData?.endDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
-                'DD-MM-YYYY',
-              ),
+              moment(moment(firstDate, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
+              moment(moment(lastDate, 'YYYY-MM-DD').format('DD-MM-YYYY'), 'DD-MM-YYYY'),
             ],
             startTimeRecur: null,
           };
