@@ -145,7 +145,8 @@ function CreateNewPerson() {
       isEntityDetailsLoading ||
       imageUploadLoading ||
       addPersonLoading ||
-      updatePersonLoading,
+      updatePersonLoading ||
+      (!!artsDataId && artsDataLoading),
     [
       fields,
       personLoading,
@@ -154,6 +155,8 @@ function CreateNewPerson() {
       imageUploadLoading,
       addPersonLoading,
       updatePersonLoading,
+      artsDataId,
+      artsDataLoading,
     ],
   );
 
