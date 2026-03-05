@@ -172,7 +172,8 @@ function CreateNewOrganization() {
       isEntityDetailsLoading ||
       imageUploadLoading ||
       addOrganizationLoading ||
-      updateOrganizationLoading,
+      updateOrganizationLoading ||
+      (!!artsDataId && artsDataLoading),
     [
       fields,
       organizationLoading,
@@ -181,6 +182,8 @@ function CreateNewOrganization() {
       imageUploadLoading,
       addOrganizationLoading,
       updateOrganizationLoading,
+      artsDataId,
+      artsDataLoading,
     ],
   );
 
