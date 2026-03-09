@@ -3100,25 +3100,25 @@ function AddEvent() {
         onFieldsChange={() => {
           setFormValue(form.getFieldsValue(true));
         }}>
+        <div className="sticky-header add-edit-wrapper">
+          <Row justify="space-between" gutter={16} align="middle">
+            <Col>
+              <div className="add-edit-event-heading">
+                <h4 data-cy="heading-new-edit-event">
+                  {eventId
+                    ? t('dashboard.events.addEditEvent.heading.editEvent')
+                    : t('dashboard.events.addEditEvent.heading.newEvent')}
+                </h4>
+              </div>
+            </Col>
+            <Col style={{ marginLeft: 'auto' }}>
+              <div className="add-event-button-wrap">
+                <ButtonDisplayHandler />
+              </div>
+            </Col>
+          </Row>
+        </div>
         <Row gutter={[32, 24]} className="add-edit-wrapper event-form-wrapper">
-          <Col span={24}>
-            <Row justify="space-between" gutter={16}>
-              <Col>
-                <div className="add-edit-event-heading">
-                  <h4 data-cy="heading-new-edit-event">
-                    {eventId
-                      ? t('dashboard.events.addEditEvent.heading.editEvent')
-                      : t('dashboard.events.addEditEvent.heading.newEvent')}
-                  </h4>
-                </div>
-              </Col>
-              <Col style={{ marginLeft: 'auto' }}>
-                <div className="add-event-button-wrap">
-                  <ButtonDisplayHandler />
-                </div>
-              </Col>
-            </Row>
-          </Col>
           {eventData?.publishState === eventPublishState.DRAFT &&
             eventData?.reviewFailed &&
             calendar[0]?.role === userRoles.GUEST &&
