@@ -157,6 +157,7 @@ function AddEvent() {
     currentData: eventData,
     isError,
     isLoading,
+    refetch: refetchEvent,
   } = useGetEventQuery(
     { eventId: eventId ?? duplicateId, calendarId, sessionId: timestampRef },
     { skip: eventId || duplicateId ? false : true },
@@ -3066,6 +3067,16 @@ function AddEvent() {
         icon: <ExclamationCircleOutlined />,
       });
       return;
+    } else if (errorCode == 409 && data?.message) {
+      dispatch(clearErrors());
+      refetchEvent();
+      notification.warning({
+        message: t('dashboard.events.addEditEvent.validations.errorPublishing'),
+        description: data?.message,
+        placement: 'top',
+        duration: 10,
+        maxCount: 1,
+      });
     }
   }, [errorDetails, updateEventStateLoading, updateEventLoading]);
 
