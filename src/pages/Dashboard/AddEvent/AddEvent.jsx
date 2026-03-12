@@ -1378,28 +1378,49 @@ function AddEvent() {
           (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
           (type === 'PUBLISH' || type === 'REVIEW')
         ) {
-          saveAsDraftHandler(event, true, type)
-            .then((id) => {
-              updateEventState({ id: eventId ?? id, calendarId, publishState })
-                .unwrap()
-                .then(() => {
-                  notification.success({
-                    description:
-                      calendar[0]?.role === userRoles.GUEST
-                        ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                        : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
-                        ? t('dashboard.events.addEditEvent.notification.publish')
-                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                    placement: 'top',
-                    closeIcon: <></>,
-                    maxCount: 1,
-                    duration: 3,
-                  });
-                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-                })
-                .catch((error) => console.log(error));
-            })
-            .catch((error) => console.log(error));
+          if (isValuesChanged || duplicateId) {
+            saveAsDraftHandler(event, true, type)
+              .then((id) => {
+                updateEventState({ id: eventId ?? id, calendarId, publishState })
+                  .unwrap()
+                  .then(() => {
+                    notification.success({
+                      description:
+                        calendar[0]?.role === userRoles.GUEST
+                          ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                          : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
+                          ? t('dashboard.events.addEditEvent.notification.publish')
+                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                  })
+                  .catch((error) => console.log(error));
+              })
+              .catch((error) => console.log(error));
+          } else if (eventId) {
+            updateEventState({ id: eventId, calendarId, publishState })
+              .unwrap()
+              .then(() => {
+                notification.success({
+                  description:
+                    calendar[0]?.role === userRoles.GUEST
+                      ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                      : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
+                      ? t('dashboard.events.addEditEvent.notification.publish')
+                      : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+              })
+              .catch((error) => console.log(error));
+          }
         } else {
           if (eventId) {
             updateEventState({ id: eventId, calendarId, publishState })
