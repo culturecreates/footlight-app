@@ -252,10 +252,7 @@ function Events() {
   );
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
-  let customFilters = [
-    ...(currentCalendarData?.filterPersonalization?.events ?? []),
-    ...(currentCalendarData?.filterPersonalization?.places ?? []),
-  ];
+  let customFilters = [...(currentCalendarData?.filterPersonalization?.events ?? [])];
   const dateTypeSelector = (dates) => {
     if (dates?.length == 2) {
       if (dates?.every((date) => date === 'any')) return dateFilterTypes.ALL_EVENTS;
