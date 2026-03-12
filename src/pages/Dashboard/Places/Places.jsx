@@ -161,7 +161,7 @@ function Places() {
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
-  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
+  let customFilters = currentCalendarData?.filterPersonalization?.places ?? [];
 
   const deletePlaceHandler = (placeId) => {
     getDependencyDetails({ ids: placeId, calendarId })
