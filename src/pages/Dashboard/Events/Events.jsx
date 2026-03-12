@@ -72,6 +72,10 @@ const standardTaxonomyMaps = [
     mappedToField: 'inLanguage',
     queryKey: 'in-language',
   },
+  {
+    mappedToField: 'EventDiscipline',
+    queryKey: 'discipline',
+  },
 ];
 
 function Events() {
