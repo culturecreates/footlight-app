@@ -24,6 +24,13 @@ export const uploadImageListHelper = async (values, addImage, calendarId, imageC
 
       imageCrop.push({
         ...cropData,
+        ...(cropData?.original && {
+          original: {
+            ...cropData.original,
+            height: cropData.original?.height != null ? Number(cropData.original.height) : undefined,
+            width: cropData.original?.width != null ? Number(cropData.original.width) : undefined,
+          },
+        }),
         ...filteredImageOptions,
       });
       continue;

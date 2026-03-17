@@ -396,8 +396,8 @@ function CreateNewOrganization() {
                 },
                 original: {
                   entityId: imageCrop[0]?.original?.entityId,
-                  height: imageCrop[0]?.original?.height,
-                  width: imageCrop[0]?.original?.width,
+                  height: imageCrop[0]?.original?.height != null ? Number(imageCrop[0]?.original?.height) : undefined,
+                  width: imageCrop[0]?.original?.width != null ? Number(imageCrop[0]?.original?.width) : undefined,
                 },
                 isMain: true,
                 description: mainImageOptions?.altText,
