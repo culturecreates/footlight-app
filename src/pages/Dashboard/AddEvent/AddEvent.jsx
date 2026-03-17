@@ -1379,6 +1379,7 @@ function AddEvent() {
             saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
               .then((id) => {
                 updateEventState({ id, calendarId, publishState })
+                  .unwrap()
                   .then(() => {
                     notification.success({
                       description:
@@ -3118,7 +3119,9 @@ function AddEvent() {
       return;
     } else if (errorCode == 409 && data?.message) {
       dispatch(clearErrors());
-      refetchEvent();
+      if (eventId || duplicateId) {
+        refetchEvent();
+      }
       notification.warning({
         message: t('dashboard.events.addEditEvent.validations.errorPublishing'),
         description: data?.message,
