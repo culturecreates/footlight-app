@@ -1074,7 +1074,7 @@ function Events() {
                             <Button
                               size="large"
                               className="filter-buttons"
-                              style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
+                              style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 && '#607EFC' }}
                               data-cy="button-filter-dates">
                               {bilingual({
                                 data: taxonomy?.name,
