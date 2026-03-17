@@ -75,6 +75,7 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import { toFiniteNumber } from '../../../utils/toFiniteNumber';
 import i18next from 'i18next';
 
 function CreateNewOrganization() {
@@ -396,8 +397,8 @@ function CreateNewOrganization() {
                 },
                 original: {
                   entityId: imageCrop[0]?.original?.entityId,
-                  height: imageCrop[0]?.original?.height != null ? Number(imageCrop[0]?.original?.height) : undefined,
-                  width: imageCrop[0]?.original?.width != null ? Number(imageCrop[0]?.original?.width) : undefined,
+                  height: toFiniteNumber(imageCrop[0]?.original?.height),
+                  width: toFiniteNumber(imageCrop[0]?.original?.width),
                 },
                 isMain: true,
                 description: mainImageOptions?.altText,

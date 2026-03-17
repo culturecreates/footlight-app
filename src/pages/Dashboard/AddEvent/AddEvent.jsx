@@ -41,6 +41,7 @@ import Tags from '../../../components/Tags/Common/Tags';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+import { toFiniteNumber } from '../../../utils/toFiniteNumber';
 import ImageUpload from '../../../components/ImageUpload';
 import { useAddImageMutation } from '../../../services/image';
 import {
@@ -1170,8 +1171,8 @@ function AddEvent() {
                   },
                   original: {
                     entityId: imageCrop[0]?.original?.entityId,
-                    height: imageCrop[0]?.original?.height != null ? Number(imageCrop[0]?.original?.height) : undefined,
-                    width: imageCrop[0]?.original?.width != null ? Number(imageCrop[0]?.original?.width) : undefined,
+                    height: toFiniteNumber(imageCrop[0]?.original?.height),
+                    width: toFiniteNumber(imageCrop[0]?.original?.width),
                   },
                   isMain: true,
                   description: mainImageOptions?.altText,

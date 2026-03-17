@@ -1,4 +1,5 @@
 import { filterNonEmptyValues } from './filterNonEmptyValues';
+import { toFiniteNumber } from './toFiniteNumber';
 
 export const uploadImageListHelper = async (values, addImage, calendarId, imageCrop) => {
   for (const imageItem of values.multipleImagesCrop) {
@@ -27,8 +28,8 @@ export const uploadImageListHelper = async (values, addImage, calendarId, imageC
         ...(cropData?.original && {
           original: {
             ...cropData.original,
-            height: cropData.original?.height != null ? Number(cropData.original.height) : undefined,
-            width: cropData.original?.width != null ? Number(cropData.original.width) : undefined,
+            height: toFiniteNumber(cropData.original?.height),
+            width: toFiniteNumber(cropData.original?.width),
           },
         }),
         ...filteredImageOptions,
