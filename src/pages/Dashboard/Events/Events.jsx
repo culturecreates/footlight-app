@@ -152,7 +152,7 @@ function Events() {
       duration: 10,
       maxCount: 1,
     });
-  }, [errorDetails]);
+  }, [errorDetails, dispatch, clearErrors]);
 
   const [searchKey, setSearchKey] = useState();
   const [organizationSearchKey, setOrganizationSearchKey] = useState();

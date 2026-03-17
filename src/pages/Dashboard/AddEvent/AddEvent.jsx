@@ -3130,7 +3130,7 @@ function AddEvent() {
         maxCount: 1,
       });
     }
-  }, [errorDetails, updateEventStateLoading, updateEventLoading]);
+  }, [errorDetails, updateEventStateLoading, updateEventLoading, refetchEvent, eventId, duplicateId, dispatch, t]);
 
   return !debouncedLoading ? (
     <div>
