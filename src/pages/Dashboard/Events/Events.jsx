@@ -1,6 +1,20 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider, Radio, Grid, Tree } from 'antd';
+import {
+  Checkbox,
+  Col,
+  Row,
+  Badge,
+  Button,
+  Dropdown,
+  Space,
+  Popover,
+  Divider,
+  Radio,
+  Grid,
+  Tree,
+  notification,
+} from 'antd';
 import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
@@ -20,7 +34,8 @@ import { eventPublishStateOptions } from '../../../constants/eventPublishState';
 import { useLazyGetAllUsersQuery } from '../../../services/users';
 import { filterTypes } from '../../../constants/filterTypes';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { useSelector } from 'react-redux';
+import { getErrorDetails, clearErrors } from '../../../redux/reducer/ErrorSlice';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   sortByOptions,
   sortByOptionsOrgsPlacesPerson,
@@ -86,6 +101,8 @@ function Events() {
   const timestampRef = useRef(Date.now()).current;
   const screens = useBreakpoint();
   const { user } = useSelector(getUserDetails);
+  const errorDetails = useSelector(getErrorDetails);
+  const dispatch = useDispatch();
   const [
     currentCalendarData,
     pageNumber,
@@ -119,6 +136,23 @@ function Events() {
   const [deleteEvent, { isLoading: deleteEventLoading }] = useDeleteEventMutation();
   const [featureEvents, { isLoading: featureEventsLoading }] = useFeatureEventsMutation();
   const isActionLoading = updateStateLoading || deleteEventLoading || featureEventsLoading;
+  const hadMutationRun = useRef(false);
+
+  useEffect(() => {
+    if (updateStateLoading) hadMutationRun.current = true;
+  }, [updateStateLoading]);
+
+  useEffect(() => {
+    const { isError, errorCode, data } = errorDetails;
+    if (!isError || errorCode != 409 || !data?.message || !hadMutationRun.current) return;
+    dispatch(clearErrors());
+    notification.warning({
+      description: data?.message,
+      placement: 'top',
+      duration: 10,
+      maxCount: 1,
+    });
+  }, [errorDetails]);
 
   const [searchKey, setSearchKey] = useState();
   const [organizationSearchKey, setOrganizationSearchKey] = useState();
