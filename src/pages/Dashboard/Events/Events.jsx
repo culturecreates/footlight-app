@@ -1018,7 +1018,7 @@ function Events() {
                               className="filter-buttons"
                               style={{
                                 borderColor:
-                                  standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 > 0 && '#607EFC',
+                                  ((standardTaxonomyFilter[taxonomy?.mappedToField]?.length ?? 0) > 0) && '#607EFC',
                               }}
                               data-cy="button-filter-dates">
                               {bilingual({
