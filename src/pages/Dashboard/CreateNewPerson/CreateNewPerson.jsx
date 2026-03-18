@@ -290,6 +290,36 @@ function CreateNewPerson() {
     setScrollToSelectedField(array?.at(-1));
   };
 
+  const scrollToFirstError = (error) => {
+    if (!error?.errorFields?.length) return;
+
+    let topmostEl = null;
+    let topmostTop = Infinity;
+
+    for (const { name: fieldNamePath } of error.errorFields) {
+      const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
+      const className = isDynamic
+        ? String(fieldNamePath[1])
+        : String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
+
+      const el = document.getElementsByClassName(className)?.[0];
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY;
+        if (top < topmostTop) {
+          topmostTop = top;
+          topmostEl = el;
+        }
+      }
+    }
+
+    if (topmostEl) {
+      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else {
+      const firstField = error.errorFields[0]?.name;
+      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const onSaveHandler = (event) => {
     event?.preventDefault();
     let validateFieldList = [];
@@ -434,6 +464,7 @@ function CreateNewPerson() {
       })
       .catch((error) => {
         console.log(error);
+        scrollToFirstError(error);
         message.warning({
           duration: 10,
           maxCount: 1,
