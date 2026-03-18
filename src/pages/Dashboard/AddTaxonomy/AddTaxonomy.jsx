@@ -300,6 +300,29 @@ const AddTaxonomy = () => {
     };
   }
 
+  const scrollToFirstError = (error) => {
+    if (!error?.errorFields?.length) return;
+    let topmostEl = null;
+    let topmostTop = Infinity;
+    for (const { name: fieldNamePath } of error.errorFields) {
+      const fieldName = String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
+      const el = document.getElementsByClassName(fieldName)?.[0];
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY;
+        if (top < topmostTop) {
+          topmostTop = top;
+          topmostEl = el;
+        }
+      }
+    }
+    if (topmostEl) {
+      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else {
+      const firstField = error.errorFields[0]?.name;
+      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const saveTaxonomyHandler = (e) => {
     e.preventDefault();
     const filteredConceptData = modifyConceptData(conceptData);
@@ -308,7 +331,9 @@ const AddTaxonomy = () => {
       isSubmitting: true,
     });
     form
-      .validateFields(['name', 'disambiguatingDescription'])
+      .validateFields([
+        ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         const fallbackStatus = activeFallbackFieldsInfo;
@@ -382,6 +407,7 @@ const AddTaxonomy = () => {
       })
       .catch((error) => {
         console.error(error);
+        scrollToFirstError(error);
         setIsDirty({
           formState: form.isFieldsTouched([
             'userAccess',
@@ -870,7 +896,11 @@ const AddTaxonomy = () => {
                 )}
                 <Row>
                   <Col flex="423px">
-                    <Form.Item label={t('dashboard.taxonomy.addNew.name')} required data-cy="form-item-taxonomy-name">
+                    <Form.Item
+                      label={t('dashboard.taxonomy.addNew.name')}
+                      required
+                      data-cy="form-item-taxonomy-name"
+                      className="name">
                       <CreateMultiLingualFormItems
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
