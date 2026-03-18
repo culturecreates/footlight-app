@@ -55,6 +55,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ImageUpload from '../../../components/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import ChangeType from '../../../components/ChangeType';
@@ -492,32 +493,6 @@ function CreateNewPlace() {
     return promise;
   };
 
-  const scrollToFirstError = (error) => {
-    if (!error?.errorFields?.length) return;
-
-    let topmostEl = null;
-    let topmostTop = Infinity;
-
-    for (const { name: fieldNamePath } of error.errorFields) {
-      const fieldName = String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
-      const el = document.getElementsByClassName(fieldName)?.[0] ?? document.getElementById(fieldName);
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY;
-        if (top < topmostTop) {
-          topmostTop = top;
-          topmostEl = el;
-        }
-      }
-    }
-
-    if (topmostEl) {
-      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    } else {
-      const firstField = error.errorFields[0]?.name;
-      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
-    }
-  };
-
   const onSaveHandler = (event) => {
     event?.preventDefault();
     var promise = new Promise(function (resolve, reject) {
@@ -793,7 +768,10 @@ function CreateNewPlace() {
         })
         .catch((error) => {
           console.log(error);
-          scrollToFirstError(error);
+          scrollToFirstError(error, form, {
+            getElement: (fieldNamePath, fieldName) =>
+              document.getElementsByClassName(fieldName)?.[0] ?? document.getElementById(fieldName),
+          });
           message.warning({
             duration: 10,
             maxCount: 1,

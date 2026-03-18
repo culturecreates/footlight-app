@@ -68,6 +68,7 @@ import { otherInformationFieldNames, otherInformationOptions } from '../../../co
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
@@ -530,35 +531,6 @@ function AddEvent() {
       }
     });
     return promise;
-  };
-
-  const scrollToFirstError = (error) => {
-    if (!error?.errorFields?.length) return;
-
-    let topmostEl = null;
-    let topmostTop = Infinity;
-
-    for (const { name: fieldNamePath } of error.errorFields) {
-      const fieldName = String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
-      const el =
-        document.getElementsByClassName(fieldName)?.[0] ??
-        (fieldName === 'prices' ? document.getElementById('ticket-section') : null) ??
-        document.getElementById(fieldName);
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY;
-        if (top < topmostTop) {
-          topmostTop = top;
-          topmostEl = el;
-        }
-      }
-    }
-
-    if (topmostEl) {
-      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    } else {
-      const firstField = error.errorFields[0]?.name;
-      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
-    }
   };
 
   function validateNestedEntities(data, form) {
@@ -1290,7 +1262,12 @@ function AddEvent() {
           .catch((error) => {
             console.log(error);
             reject(error);
-            scrollToFirstError(error);
+            scrollToFirstError(error, form, {
+              getElement: (fieldNamePath, fieldName) =>
+                document.getElementsByClassName(fieldName)?.[0] ??
+                (fieldName === 'prices' ? document.getElementById('ticket-section') : null) ??
+                document.getElementById(fieldName),
+            });
             setShowDialog(previousShowDialog);
             message.warning({
               duration: 10,
@@ -1494,7 +1471,12 @@ function AddEvent() {
       })
       .catch((error) => {
         console.log(error);
-        scrollToFirstError(error);
+        scrollToFirstError(error, form, {
+          getElement: (fieldNamePath, fieldName) =>
+            document.getElementsByClassName(fieldName)?.[0] ??
+            (fieldName === 'prices' ? document.getElementById('ticket-section') : null) ??
+            document.getElementById(fieldName),
+        });
         setShowDialog(isValuesChanged);
         message.warning({
           duration: 10,

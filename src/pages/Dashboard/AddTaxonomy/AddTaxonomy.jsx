@@ -49,6 +49,7 @@ import {
 } from '../../../redux/reducer/languageLiteralSlice';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -300,29 +301,6 @@ const AddTaxonomy = () => {
     };
   }
 
-  const scrollToFirstError = (error) => {
-    if (!error?.errorFields?.length) return;
-    let topmostEl = null;
-    let topmostTop = Infinity;
-    for (const { name: fieldNamePath } of error.errorFields) {
-      const fieldName = String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
-      const el = document.getElementsByClassName(fieldName)?.[0];
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY;
-        if (top < topmostTop) {
-          topmostTop = top;
-          topmostEl = el;
-        }
-      }
-    }
-    if (topmostEl) {
-      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    } else {
-      const firstField = error.errorFields[0]?.name;
-      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
-    }
-  };
-
   const saveTaxonomyHandler = (e) => {
     e.preventDefault();
     const filteredConceptData = modifyConceptData(conceptData);
@@ -407,7 +385,7 @@ const AddTaxonomy = () => {
       })
       .catch((error) => {
         console.error(error);
-        scrollToFirstError(error);
+        scrollToFirstError(error, form);
         setIsDirty({
           formState: form.isFieldsTouched([
             'userAccess',

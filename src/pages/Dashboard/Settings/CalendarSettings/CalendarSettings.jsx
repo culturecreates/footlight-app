@@ -9,6 +9,7 @@ import { entitiesClass } from '../../../../constants/entitiesClass';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { contentLanguageBilingual } from '../../../../utils/bilingual';
+import { scrollToFirstError } from '../../../../utils/scrollToFirstError';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
@@ -140,34 +141,6 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     calendarLogo: currentCalendarData?.logo?.original?.uri,
     readOnly: currentCalendarData?.mode === calendarModes.READ_ONLY ? true : false,
     enableGallery: imageConfig?.enableGallery,
-  };
-
-  const scrollToFirstError = (error) => {
-    if (!error?.errorFields?.length) return;
-    let topmostEl = null;
-    let topmostTop = Infinity;
-    for (const { name: fieldNamePath } of error.errorFields) {
-      const fieldName = String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
-      let el;
-      if ((fieldName === 'imageAspectRatio' || fieldName === 'imageMaxWidth') && Array.isArray(fieldNamePath)) {
-        el = document.getElementsByClassName(`calendar-settings-${fieldNamePath[1]}`)?.[0];
-      } else {
-        el = document.getElementsByClassName(fieldName)?.[0];
-      }
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY;
-        if (top < topmostTop) {
-          topmostTop = top;
-          topmostEl = el;
-        }
-      }
-    }
-    if (topmostEl) {
-      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    } else {
-      const firstField = error.errorFields[0]?.name;
-      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
-    }
   };
 
   const udpateCalendarHandler = (data) => {
@@ -302,7 +275,14 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         }
       })
       .catch((errorInfo) => {
-        scrollToFirstError(errorInfo);
+        scrollToFirstError(errorInfo, form, {
+          getElement: (fieldNamePath, fieldName) => {
+            if ((fieldName === 'imageAspectRatio' || fieldName === 'imageMaxWidth') && Array.isArray(fieldNamePath)) {
+              return document.getElementsByClassName(`calendar-settings-${fieldNamePath[1]}`)?.[0];
+            }
+            return document.getElementsByClassName(fieldName)?.[0];
+          },
+        });
         message.warning({
           duration: 10,
           maxCount: 1,
