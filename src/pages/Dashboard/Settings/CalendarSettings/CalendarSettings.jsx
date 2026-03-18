@@ -142,6 +142,34 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     enableGallery: imageConfig?.enableGallery,
   };
 
+  const scrollToFirstError = (error) => {
+    if (!error?.errorFields?.length) return;
+    let topmostEl = null;
+    let topmostTop = Infinity;
+    for (const { name: fieldNamePath } of error.errorFields) {
+      const fieldName = String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
+      let el;
+      if ((fieldName === 'imageAspectRatio' || fieldName === 'imageMaxWidth') && Array.isArray(fieldNamePath)) {
+        el = document.getElementsByClassName(`calendar-settings-${fieldNamePath[1]}`)?.[0];
+      } else {
+        el = document.getElementsByClassName(fieldName)?.[0];
+      }
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY;
+        if (top < topmostTop) {
+          topmostTop = top;
+          topmostEl = el;
+        }
+      }
+    }
+    if (topmostEl) {
+      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else {
+      const firstField = error.errorFields[0]?.name;
+      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const udpateCalendarHandler = (data) => {
     updateCalendar({ calendarId, data })
       .unwrap()
@@ -274,6 +302,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         }
       })
       .catch((errorInfo) => {
+        scrollToFirstError(errorInfo);
         message.warning({
           duration: 10,
           maxCount: 1,
