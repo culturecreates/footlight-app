@@ -24,6 +24,7 @@ import { dataTypes, formCategory, formFieldValue, returnFormDataWithFields } fro
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import {
   useAddOrganizationMutation,
   useGetOrganizationQuery,
@@ -710,6 +711,13 @@ function CreateNewOrganization() {
         })
         .catch((error) => {
           console.log(error);
+          scrollToFirstError(error, form, {
+            getElement: (fieldNamePath, fieldName) => {
+              const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
+              const className = isDynamic ? String(fieldNamePath[1]) : fieldName;
+              return document.getElementsByClassName(className)?.[0];
+            },
+          });
           message.warning({
             duration: 10,
             maxCount: 1,

@@ -161,7 +161,7 @@ export const calendarSettingsFormFields = {
   GENERAL_SETTINGS: [
     {
       name: 'calendarSlug',
-      className: 'calendar-settings-calendar-slug',
+      className: 'calendar-settings-calendar-slug calendarSlug',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarSlug')}</Translation>,
       field: () => (
         <StyledInput
@@ -175,7 +175,7 @@ export const calendarSettingsFormFields = {
     },
     {
       name: 'calendarName',
-      className: 'calendar-settings-calendar-name',
+      className: 'calendar-settings-calendar-name calendarName',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
       field: ({ t, initialValues, form, calendarContentLanguage, entityId }) => {
         return (
@@ -207,6 +207,7 @@ export const calendarSettingsFormFields = {
     },
     {
       name: 'calendarLanguage',
+      className: 'calendarLanguage',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarLanguage')}</Translation>,
       field: ({ t }) => (
         <TreeSelectOption
@@ -238,6 +239,7 @@ export const calendarSettingsFormFields = {
     },
     {
       name: 'calendarTimeZone',
+      className: 'calendarTimeZone',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timezone')}</Translation>,
       field: ({ t }) => (
         <Select
@@ -252,6 +254,7 @@ export const calendarSettingsFormFields = {
     },
     {
       name: 'calendarContactEmail',
+      className: 'calendarContactEmail',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.contact')}</Translation>,
       field: () => (
         <StyledInput
