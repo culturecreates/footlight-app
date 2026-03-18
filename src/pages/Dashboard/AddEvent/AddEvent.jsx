@@ -532,6 +532,20 @@ function AddEvent() {
     return promise;
   };
 
+  const scrollToFirstError = (error) => {
+    const firstErrorField = error?.errorFields?.[0]?.name;
+    if (!firstErrorField) return;
+    const fieldName = String(Array.isArray(firstErrorField) ? firstErrorField[0] : firstErrorField);
+    const classEl = document.getElementsByClassName(fieldName)?.[0];
+    if (classEl) {
+      classEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else if (fieldName === 'prices') {
+      document.getElementById('ticket-section')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else {
+      form.scrollToField(firstErrorField, { behavior: 'smooth', block: 'center' });
+    }
+  };
+
   function validateNestedEntities(data, form) {
     if (!data) return { isValid: true, firstInvalidField: null };
 
@@ -1261,13 +1275,7 @@ function AddEvent() {
           .catch((error) => {
             console.log(error);
             reject(error);
-            const firstErrorField = error?.errorFields?.[0].name;
-            if (firstErrorField) {
-              form.scrollToField(firstErrorField, {
-                behavior: 'smooth',
-                block: 'center',
-              });
-            }
+            scrollToFirstError(error);
             setShowDialog(previousShowDialog);
             message.warning({
               duration: 10,
@@ -1471,6 +1479,7 @@ function AddEvent() {
       })
       .catch((error) => {
         console.log(error);
+        scrollToFirstError(error);
         setShowDialog(isValuesChanged);
         message.warning({
           duration: 10,
@@ -3451,6 +3460,7 @@ function AddEvent() {
                     : false
                 }
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME)}
+                className="name"
                 data-cy="form-item-event-name-label">
                 <CreateMultiLingualFormItems
                   entityId={eventId}
@@ -3480,6 +3490,7 @@ function AddEvent() {
 
                 <Form.Item
                   name="eventType"
+                  className="eventType"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
                   initialValue={
                     eventData?.additionalType?.map((type) => {
@@ -3533,6 +3544,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="targetAudience"
+                  className="targetAudience"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
                   initialValue={
                     eventData?.audience?.map((audience) => {
@@ -3586,6 +3598,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="eventDiscipline"
+                  className="eventDiscipline"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
                   initialValue={
                     eventData?.discipline?.map((type) => type?.entityId) ??
@@ -4031,6 +4044,7 @@ function AddEvent() {
             }>
             <Form.Item
               name="location-form-wrapper"
+              className="location-form-wrapper"
               rules={[
                 ({ getFieldValue }) => ({
                   validator() {
@@ -4369,6 +4383,7 @@ function AddEvent() {
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
+                className="editor"
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION)
                     ? adminCheckHandler({ calendar, user })
@@ -4883,6 +4898,7 @@ function AddEvent() {
               </Form.Item>
               <Form.Item
                 name="multipleImages"
+                className="multipleImages"
                 label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                 data-cy="form-item-event-multiple-image"
                 hidden={!imageConfig?.enableGallery}>
@@ -4928,6 +4944,7 @@ function AddEvent() {
                 </Row>
                 <Form.Item
                   name="performers"
+                  className="performers"
                   initialValue={selectedPerformers}
                   rules={[
                     () => ({
@@ -5174,6 +5191,7 @@ function AddEvent() {
                 </Row>
                 <Form.Item
                   name="supporters"
+                  className="supporters"
                   initialValue={selectedSupporters}
                   rules={[
                     () => ({
@@ -5870,6 +5888,7 @@ function AddEvent() {
                   <Col flex={'423px'}>
                     <Form.Item
                       name="ticketPickerWrapper"
+                      className="ticketPickerWrapper"
                       rules={[
                         ({ getFieldValue }) => ({
                           validator() {
@@ -6111,7 +6130,7 @@ function AddEvent() {
               {(ticketType == offerTypes.FREE ||
                 ticketType == offerTypes.PAYING ||
                 ticketType == offerTypes.REGISTER) && (
-                <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
+                <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')} className="ticketNote">
                   <CreateMultiLingualFormItems
                     entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
