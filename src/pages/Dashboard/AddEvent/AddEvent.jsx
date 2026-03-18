@@ -533,16 +533,31 @@ function AddEvent() {
   };
 
   const scrollToFirstError = (error) => {
-    const firstErrorField = error?.errorFields?.[0]?.name;
-    if (!firstErrorField) return;
-    const fieldName = String(Array.isArray(firstErrorField) ? firstErrorField[0] : firstErrorField);
-    const classEl = document.getElementsByClassName(fieldName)?.[0];
-    if (classEl) {
-      classEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    } else if (fieldName === 'prices') {
-      document.getElementById('ticket-section')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (!error?.errorFields?.length) return;
+
+    let topmostEl = null;
+    let topmostTop = Infinity;
+
+    for (const { name: fieldNamePath } of error.errorFields) {
+      const fieldName = String(Array.isArray(fieldNamePath) ? fieldNamePath[0] : fieldNamePath);
+      const el =
+        document.getElementsByClassName(fieldName)?.[0] ??
+        (fieldName === 'prices' ? document.getElementById('ticket-section') : null) ??
+        document.getElementById(fieldName);
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY;
+        if (top < topmostTop) {
+          topmostTop = top;
+          topmostEl = el;
+        }
+      }
+    }
+
+    if (topmostEl) {
+      topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
     } else {
-      form.scrollToField(firstErrorField, { behavior: 'smooth', block: 'center' });
+      const firstField = error.errorFields[0]?.name;
+      if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
     }
   };
 
