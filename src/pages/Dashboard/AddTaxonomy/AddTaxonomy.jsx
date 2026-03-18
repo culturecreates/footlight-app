@@ -332,7 +332,7 @@ const AddTaxonomy = () => {
     });
     form
       .validateFields([
-        ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
+        ...(calendarContentLanguage?.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
       ])
       .then(() => {
         var values = form.getFieldsValue(true);
