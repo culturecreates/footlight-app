@@ -214,7 +214,7 @@ const AdditionalLinks = ({
                         autoComplete="off"
                         style={{
                           borderRadius: '4px',
-                          border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                          border: '1px solid #B6C1C9',
                           width: '100%',
                         }}
                         size="large"
