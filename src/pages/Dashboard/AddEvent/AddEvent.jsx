@@ -5822,6 +5822,7 @@ function AddEvent() {
                         borderRadius: '4px',
                         border: '1px solid #B6C1C9',
                         resize: 'vertical',
+                        width: '423px',
                       }}
                       size="large"
                     />
