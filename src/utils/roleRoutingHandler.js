@@ -31,8 +31,13 @@ export const routinghandler = (user, calendarId, creatorId, publishState = '', i
       } else return false;
       break;
     case userRoles.CONTRIBUTOR:
-      if (user?.id === creatorId || entityAccess) return true;
-      else return false;
+      if (user?.id === creatorId || entityAccess) {
+        if (isEntity == false) {
+          if (eventPublishState.DRAFT === publishState) return true;
+          else return false;
+        } else if (isEntity == true) return true;
+      } else return false;
+      break;
     case userRoles.EDITOR:
       return true;
     case userRoles.ADMIN:
