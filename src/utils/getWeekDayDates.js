@@ -14,13 +14,13 @@ export const getWeekDayDates = (schedule) => {
   const { startDate, endDate, weekDays } = schedule;
   const start = moment(startDate);
   const end = moment(endDate);
-  const targetWeekDays = weekDays.map((day) => weekDaysMap[day.toLowerCase()]);
+  const targetWeekDays = weekDays?.map((day) => weekDaysMap[day.toLowerCase()]);
 
   let dates = [];
   let currentDate = moment(start);
 
   while (currentDate <= end) {
-    if (targetWeekDays.includes(currentDate.day())) {
+    if (targetWeekDays?.includes(currentDate.day())) {
       dates.push(currentDate.format('YYYY-MM-DD'));
     }
     currentDate.add(1, 'days');

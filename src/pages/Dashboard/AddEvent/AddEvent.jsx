@@ -804,7 +804,7 @@ function AddEvent() {
                 recurringEvent = recurEvent;
               }
             }
-            const { customDates, frequency } = form.getFieldsValue() || {};
+            const { customDates, frequency } = form.getFieldsValue(true) || {};
 
             if ((customDates || customDatesCollection) && frequency === 'CUSTOM') {
               const customDatesData =
