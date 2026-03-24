@@ -8,10 +8,6 @@ import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
-import { useSelector } from 'react-redux';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { userRoles } from '../../../constants/userRoles';
-import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 const { confirm } = Modal;
 function EventStatusOptions({
   children,
@@ -29,58 +25,52 @@ function EventStatusOptions({
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const [, , , , , isReadOnly] = useOutletContext();
-  const { user } = useSelector(getUserDetails);
-  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
-  const isContributor = calendar[0]?.role === userRoles.CONTRIBUTOR;
-
-  const items = eventPublishOptions
-    .filter((item) => !isContributor || (item.key !== '4' && item.key !== '5'))
-    .map((item) => {
-      if (publishState == eventPublishState.PUBLISHED) {
-        if (item.key != '0' && item.key != '6') {
-          if (isFeatured) {
-            if (item.key !== '4') {
-              return {
-                key: item?.key,
-                label: item?.label,
-                type: item?.type,
-              };
-            }
-          } else {
-            if (item.key !== '5') {
-              return {
-                key: item?.key,
-                label: item?.label,
-                type: item?.type,
-              };
-            }
+  const items = eventPublishOptions.map((item) => {
+    if (publishState == eventPublishState.PUBLISHED) {
+      if (item.key != '0' && item.key != '6') {
+        if (isFeatured) {
+          if (item.key !== '4') {
+            return {
+              key: item?.key,
+              label: item?.label,
+              type: item?.type,
+            };
+          }
+        } else {
+          if (item.key !== '5') {
+            return {
+              key: item?.key,
+              label: item?.label,
+              type: item?.type,
+            };
           }
         }
-      } else {
-        if (publishState == eventPublishState.DRAFT || publishState === eventPublishState.PENDING_REVIEW)
-          if (item.key != '1' && item.key !== '5' && item.key !== '4') {
-            if (item.key === '6') {
-              if (publishState === eventPublishState.PENDING_REVIEW)
-                return {
-                  key: item?.key,
-                  label: item?.label,
-                  type: item?.type,
-                };
-            } else
+      }
+    } else {
+      if (publishState == eventPublishState.DRAFT || publishState === eventPublishState.PENDING_REVIEW)
+        if (item.key != '1' && item.key !== '5' && item.key !== '4') {
+          if (item.key === '6') {
+            if (publishState === eventPublishState.PENDING_REVIEW)
               return {
                 key: item?.key,
                 label: item?.label,
                 type: item?.type,
               };
-          }
-        if (item?.type === 'divider')
-          return {
-            key: item?.key,
-            label: item?.label,
-            type: item?.type,
-          };
-      }
-    });
+          } else
+            return {
+              key: item?.key,
+              label: item?.label,
+              type: item?.type,
+            };
+        }
+      if (item?.type === 'divider')
+        return {
+          key: item?.key,
+          label: item?.label,
+          type: item?.type,
+        };
+    }
+  });
 
   const showDeleteConfirm = () => {
     confirm({
