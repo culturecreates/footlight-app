@@ -392,6 +392,7 @@ function Events() {
       const { [taxonomy]: removedKey, ...updatedFilter } = taxonomyFilter;
       setTaxonomyFilter(updatedFilter);
     } else setTaxonomyFilter({ ...taxonomyFilter, [taxonomy]: checkedKeys });
+    setPageNumber(1);
   };
 
   const onStandardTaxonomyCheck = ({ checkedKeys, taxonomy }) => {
@@ -400,6 +401,7 @@ function Events() {
       const { [taxonomy]: removedKey, ...updatedFilter } = standardTaxonomyFilter;
       setStandardTaxonomyFilter(updatedFilter);
     } else setStandardTaxonomyFilter({ ...standardTaxonomyFilter, [taxonomy]: checkedKeys });
+    setPageNumber(1);
   };
 
   const onFilterChange = (values, filterType) => {
