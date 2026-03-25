@@ -2966,7 +2966,7 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.CONTACT_TITLE:
             calendarContentLanguage.forEach((language) => {
-              publishValidateFields.push(['contactTitle', [contentLanguageKeyMap[language]]]);
+              publishValidateFields.push(['contactTitle', contentLanguageKeyMap[language]]);
             });
             initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
