@@ -9,6 +9,7 @@ import { entitiesClass } from '../../../../constants/entitiesClass';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { contentLanguageBilingual } from '../../../../utils/bilingual';
+import { scrollToFirstError } from '../../../../utils/scrollToFirstError';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
@@ -274,6 +275,14 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         }
       })
       .catch((errorInfo) => {
+        scrollToFirstError(errorInfo, form, {
+          getElement: (fieldNamePath, fieldName) => {
+            if ((fieldName === 'imageAspectRatio' || fieldName === 'imageMaxWidth') && Array.isArray(fieldNamePath)) {
+              return document.getElementsByClassName(`calendar-settings-${fieldNamePath[1]}`)?.[0];
+            }
+            return document.getElementsByClassName(fieldName)?.[0];
+          },
+        });
         message.warning({
           duration: 10,
           maxCount: 1,
