@@ -138,6 +138,7 @@ function Events() {
   const [featureEvents, { isLoading: featureEventsLoading }] = useFeatureEventsMutation();
   const isActionLoading = updateStateLoading || deleteEventLoading || featureEventsLoading;
   const hadMutationRun = useRef(false);
+  const lastEventsRequestRef = useRef({ promise: null, key: null });
 
   useEffect(() => {
     if (updateStateLoading) hadMutationRun.current = true;
@@ -417,7 +418,6 @@ function Events() {
     setFilter({
       ...filter,
       sort: selectedKeys[0],
-      order: sortOrder?.ASC,
     });
     setPageNumber(1);
   };
@@ -586,15 +586,28 @@ function Events() {
       query.append('start-date-range', '');
       query.append('end-date-range', '');
     }
-    getEvents({
+    const requestKey = [
       pageNumber,
-      limit: 10,
       calendarId,
-      query: eventSearchQuery,
-      filterkeys: decodeURIComponent(query.toString()),
-      sort: sortQuery,
-      sessionId: timestampRef,
-    });
+      eventSearchQuery,
+      decodeURIComponent(query.toString()),
+      sortQuery.toString(),
+    ].join('|');
+    if (lastEventsRequestRef.current.promise && lastEventsRequestRef.current.key !== requestKey) {
+      lastEventsRequestRef.current.promise.abort();
+    }
+    lastEventsRequestRef.current = {
+      promise: getEvents({
+        pageNumber,
+        limit: 10,
+        calendarId,
+        query: eventSearchQuery,
+        filterkeys: decodeURIComponent(query.toString()),
+        sort: sortQuery.toString(),
+        sessionId: timestampRef,
+      }),
+      key: requestKey,
+    };
 
     let params = {
       page: pageNumber,

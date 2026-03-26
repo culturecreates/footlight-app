@@ -41,6 +41,7 @@ const { useBreakpoint } = Grid;
 const Taxonomy = () => {
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const lastTaxonomyRequestRef = useRef({ promise: null, key: null });
   let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
@@ -102,15 +103,22 @@ const Taxonomy = () => {
   useEffect(() => {
     const filtersDecoded = setFiletrsForApiCall();
 
-    getAllTaxonomy({
-      calendarId,
-      query: filters.query,
-      filters: filtersDecoded,
-      taxonomyClass: '',
-      includeConcepts: false,
-      page: pageNumber,
-      limit: 10,
-    });
+    const requestKey = [pageNumber, calendarId, filters.query, filtersDecoded].join('|');
+    if (lastTaxonomyRequestRef.current.promise && lastTaxonomyRequestRef.current.key !== requestKey) {
+      lastTaxonomyRequestRef.current.promise.abort();
+    }
+    lastTaxonomyRequestRef.current = {
+      promise: getAllTaxonomy({
+        calendarId,
+        query: filters.query,
+        filters: filtersDecoded,
+        taxonomyClass: '',
+        includeConcepts: false,
+        page: pageNumber,
+        limit: 10,
+      }),
+      key: requestKey,
+    };
 
     let params = {
       page: pageNumber,
