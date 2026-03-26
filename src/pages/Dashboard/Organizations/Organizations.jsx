@@ -56,6 +56,7 @@ function Organizations() {
   const location = useLocation();
   const screens = useBreakpoint();
   const timestampRef = useRef(Date.now()).current;
+  const lastOrgsRequestRef = useRef({ promise: null, key: null });
   const { calendarId } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
@@ -319,14 +320,23 @@ function Organizations() {
       }
     });
 
-    getAllOrganization({
-      calendarId,
-      sessionId: timestampRef,
-      pageNumber,
-      query: organizationSearchQuery,
-      sort: sortQuery,
-      filterKeys: query,
-    });
+    const requestKey = [pageNumber, calendarId, organizationSearchQuery, query.toString(), sortQuery.toString()].join(
+      '|',
+    );
+    if (lastOrgsRequestRef.current.promise && lastOrgsRequestRef.current.key !== requestKey) {
+      lastOrgsRequestRef.current.promise.abort();
+    }
+    lastOrgsRequestRef.current = {
+      promise: getAllOrganization({
+        calendarId,
+        sessionId: timestampRef,
+        pageNumber,
+        query: organizationSearchQuery,
+        sort: sortQuery.toString(),
+        filterKeys: query.toString(),
+      }),
+      key: requestKey,
+    };
     let params = {
       page: pageNumber,
       order: filter?.order,

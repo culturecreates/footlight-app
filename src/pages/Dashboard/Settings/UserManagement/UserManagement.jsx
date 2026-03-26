@@ -54,6 +54,7 @@ const UserManagement = (props) => {
   const { tabKey } = props;
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const lastUsersRequestRef = useRef({ promise: null, key: null });
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
   let [searchParams, setSearchParams] = useSearchParams();
@@ -103,15 +104,22 @@ const UserManagement = (props) => {
 
     const filtersDecoded = setFiletrsForApiCall();
 
-    getAllUsers({
-      page: pageNumber,
-      limit: 10,
-      filters: filtersDecoded,
-      query: userSearchQuery,
-      sessionId: timestampRef,
-      calendarId: calendarId,
-      includeCalenderFilter: true,
-    });
+    const requestKey = [pageNumber, calendarId, userSearchQuery, filtersDecoded].join('|');
+    if (lastUsersRequestRef.current.promise && lastUsersRequestRef.current.key !== requestKey) {
+      lastUsersRequestRef.current.promise.abort();
+    }
+    lastUsersRequestRef.current = {
+      promise: getAllUsers({
+        page: pageNumber,
+        limit: 10,
+        filters: filtersDecoded,
+        query: userSearchQuery,
+        sessionId: timestampRef,
+        calendarId: calendarId,
+        includeCalenderFilter: true,
+      }),
+      key: requestKey,
+    };
 
     let params = {
       page: pageNumber,
