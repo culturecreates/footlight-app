@@ -28,6 +28,11 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless),
+.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless):hover {
+  border-color: #ff4d4f !important;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

@@ -2966,7 +2966,7 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.CONTACT_TITLE:
             calendarContentLanguage.forEach((language) => {
-              publishValidateFields.push(['contactTitle', [contentLanguageKeyMap[language]]]);
+              publishValidateFields.push(['contactTitle', contentLanguageKeyMap[language]]);
             });
             initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
@@ -3471,7 +3471,7 @@ function AddEvent() {
                     autoComplete="off"
                     style={{
                       borderRadius: '4px',
-                      border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                      border: '1px solid #B6C1C9',
                       width: '423px',
                     }}
                     size="large"
@@ -4310,7 +4310,7 @@ function AddEvent() {
                     autoComplete="off"
                     style={{
                       borderRadius: '4px',
-                      border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                      border: '1px solid #B6C1C9',
                       width: '423px',
                     }}
                     size="large"
@@ -4738,7 +4738,7 @@ function AddEvent() {
                       autoComplete="off"
                       style={{
                         borderRadius: '4px',
-                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        border: '1px solid #B6C1C9',
                         width: '423px',
                       }}
                       size="large"
@@ -5820,9 +5820,9 @@ function AddEvent() {
                       autoComplete="off"
                       style={{
                         borderRadius: '4px',
-                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
-                        width: '423px',
+                        border: '1px solid #B6C1C9',
                         resize: 'vertical',
+                        width: '423px',
                       }}
                       size="large"
                     />
