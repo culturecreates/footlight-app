@@ -44,8 +44,12 @@ function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly, e
         return children;
       }
 
-      case userRoles.CONTRIBUTOR:
-        return user?.id === creator || entityAccess ? children : undefined;
+      case userRoles.CONTRIBUTOR: {
+        const canAccess = user?.id === creator || entityAccess;
+        if (!canAccess) return;
+        if (eventState && eventState !== eventPublishState.DRAFT) return;
+        return children;
+      }
 
       case userRoles.EDITOR:
       case userRoles.ADMIN:

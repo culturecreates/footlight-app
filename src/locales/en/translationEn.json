@@ -127,7 +127,8 @@
       "readOnlyEvent": {
         "notification": {
           "underReview": "This event is under review.",
-          "underPublished": "This event has been published. If you would like to make a change, please contact the calendar admin at {{adminEmail}}."
+          "underPublished": "This event has been published. If you would like to make a change, please contact the calendar admin at {{adminEmail}}.",
+          "contributorPublished": "Want to edit this event? Return to the event list and unpublish it first via the event's context menu."
         }
       },
       "addEditEvent": {
