@@ -55,6 +55,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ImageUpload from '../../../components/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import ChangeType from '../../../components/ChangeType';
@@ -767,6 +768,10 @@ function CreateNewPlace() {
         })
         .catch((error) => {
           console.log(error);
+          scrollToFirstError(error, form, {
+            getElement: (fieldNamePath, fieldName) =>
+              document.getElementsByClassName(fieldName)?.[0] ?? document.getElementById(fieldName),
+          });
           message.warning({
             duration: 10,
             maxCount: 1,
@@ -1655,7 +1660,7 @@ function CreateNewPlace() {
                     </Col>
                   </Row>
                 )}
-                <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
+                <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true} className="name">
                   <CreateMultiLingualFormItems
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
@@ -1695,6 +1700,7 @@ function CreateNewPlace() {
                 <Form.Item
                   data-cy="form-item-place-type"
                   name={formFieldNames.TYPE}
+                  className="type"
                   label={taxonomyDetails(
                     allTaxonomyData?.data,
                     user,
@@ -1748,6 +1754,7 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   data-cy="form-item-place-disambiguating-description-title"
+                  className="disambiguatingDescription"
                   label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)}>
                   <CreateMultiLingualFormItems
@@ -1788,6 +1795,7 @@ function CreateNewPlace() {
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.description.description')}
                   data-cy="form-item-place-description-title"
+                  className="description"
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)}>
                   <MultiLingualTextEditor
                     data={
@@ -2102,6 +2110,7 @@ function CreateNewPlace() {
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.streetAddress')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames.STREET_ADDRESS)}
+                  className="streetAddress"
                   data-cy="form-item-street-address-title">
                   <CreateMultiLingualFormItems
                     entityId={placeId}
@@ -2140,6 +2149,7 @@ function CreateNewPlace() {
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.city.city')}
                   data-cy="form-item-place-city-title"
+                  className="addressLocality"
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames.CITY)}>
                   <CreateMultiLingualFormItems
                     entityId={placeId}
@@ -2178,6 +2188,7 @@ function CreateNewPlace() {
                 <Form.Item
                   data-cy="form-item-postal-code-title"
                   name={formFieldNames.POSTAL_CODE}
+                  className="postalCode"
                   initialValue={
                     placeData?.address?.postalCode
                       ? placeData?.address?.postalCode
@@ -2208,6 +2219,7 @@ function CreateNewPlace() {
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.province.province')}
                       data-cy="form-item-province-title"
+                      className="addressRegion"
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.PROVINCE)}>
                       <CreateMultiLingualFormItems
                         entityId={placeId}
@@ -2248,6 +2260,7 @@ function CreateNewPlace() {
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.country.country')}
                       data-cy="form-item-country-title"
+                      className="addressCountry"
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.COUNTRY)}>
                       <CreateMultiLingualFormItems
                         entityId={placeId}
@@ -2287,6 +2300,7 @@ function CreateNewPlace() {
                 </Row>
                 <Form.Item
                   name={formFieldNames.COORDINATES}
+                  className="coordinates"
                   initialValue={
                     placeData?.geoCoordinates?.latitude || placeData?.geoCoordinates?.longitude
                       ? placeData?.geoCoordinates?.latitude + ',' + placeData?.geoCoordinates?.longitude
@@ -2325,6 +2339,7 @@ function CreateNewPlace() {
                 <Form.Item
                   data-cy="form-item-place-region"
                   name={formFieldNames.REGION}
+                  className="region"
                   label={taxonomyDetails(
                     allTaxonomyData?.data,
                     user,
@@ -2446,7 +2461,7 @@ function CreateNewPlace() {
                 <Form.Item
                   data-cy="form-item-contains-place-title"
                   name={formFieldNames.CONTAINS_PLACE}
-                  className="subheading-wrap"
+                  className="containsPlace subheading-wrap"
                   // initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.places.createNew.addPlace.containsPlace.addPlace')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINS_PLACE)}
@@ -2650,7 +2665,7 @@ function CreateNewPlace() {
                 </Row>
                 <Form.Item
                   name={formFieldNames.CONTAINED_IN_PLACE}
-                  className="subheading-wrap"
+                  className="containedInPlace subheading-wrap"
                   data-cy="form-item-contains-place"
                   label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)}
@@ -2871,6 +2886,7 @@ function CreateNewPlace() {
                   <Form.Item
                     data-cy="form-item-accessibility-title"
                     name={formFieldNames.PLACE_ACCESSIBILITY}
+                    className="placeAccessibility"
                     label={taxonomyDetails(
                       allTaxonomyData?.data,
                       user,
