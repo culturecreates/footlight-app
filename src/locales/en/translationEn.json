@@ -128,7 +128,7 @@
         "notification": {
           "underReview": "This event is under review.",
           "underPublished": "This event has been published. If you would like to make a change, please contact the calendar admin at {{adminEmail}}.",
-          "contributorPublished": "This event is published. To make a change, use the context menu located to the right of the event in the List view and unpublish the event."
+          "contributorPublished": "Want to edit this event? Return to the event list and unpublish it first via the event's context menu."
         }
       },
       "addEditEvent": {

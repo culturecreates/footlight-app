@@ -128,7 +128,7 @@
         "notification": {
           "underReview": "Cet événement est en cours de validation.",
           "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier à {{adminEmail}}.",
-          "contributorPublished": "Cet événement est publié. Pour apporter une modification, utilisez le menu contextuel situé à droite de l'événement à la vue Liste et désactivez la publication de l'événement."
+          "contributorPublished": "Voulez-vous modifier cet événement ? Retournez à la liste des événements et désactivez sa publication en premier via le menu contextuel de l'événement."
         }
       },
       "addEditEvent": {
