@@ -1400,10 +1400,10 @@ function AddEvent() {
               .catch((error) => console.log(error));
           }
         } else if (
-          (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
+          (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId || artsDataId) &&
           (type === 'PUBLISH' || type === 'REVIEW')
         ) {
-          if (isValuesChanged || duplicateId) {
+          if (isValuesChanged || duplicateId || artsDataId) {
             saveAsDraftHandler(event, true, type)
               .then((id) => {
                 updateEventState({ id: eventId ?? id, calendarId, publishState })
