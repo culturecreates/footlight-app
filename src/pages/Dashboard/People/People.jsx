@@ -61,6 +61,7 @@ function People() {
   const location = useLocation();
   const navigate = useNavigate();
   const timestampRef = useRef(Date.now()).current;
+  const lastPeopleRequestRef = useRef({ promise: null, key: null });
   const { calendarId } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
@@ -147,7 +148,7 @@ function People() {
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
-  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
+  let customFilters = currentCalendarData?.filterPersonalization?.people ?? [];
 
   const deletePersonHandler = (personId) => {
     getDependencyDetails({ ids: personId, calendarId })
@@ -202,6 +203,7 @@ function People() {
       const { [taxonomy]: removedKey, ...updatedFilter } = taxonomyFilter;
       setTaxonomyFilter(updatedFilter);
     } else setTaxonomyFilter({ ...taxonomyFilter, [taxonomy]: checkedKeys });
+    setPageNumber(1);
   };
 
   const onStandardTaxonomyCheck = ({ checkedKeys, taxonomy }) => {
@@ -210,6 +212,7 @@ function People() {
       const { [taxonomy]: removedKey, ...updatedFilter } = standardTaxonomyFilter;
       setStandardTaxonomyFilter(updatedFilter);
     } else setStandardTaxonomyFilter({ ...standardTaxonomyFilter, [taxonomy]: checkedKeys });
+    setPageNumber(1);
   };
 
   const filterClearHandler = () => {
@@ -326,14 +329,21 @@ function People() {
         });
       }
     });
-    getAllPeople({
-      calendarId,
-      sessionId: timestampRef,
-      pageNumber,
-      query: peopleSearchQuery,
-      sort: sortQuery,
-      filterKeys: query,
-    });
+    const requestKey = [pageNumber, calendarId, peopleSearchQuery, query.toString(), sortQuery.toString()].join('|');
+    if (lastPeopleRequestRef.current.promise && lastPeopleRequestRef.current.key !== requestKey) {
+      lastPeopleRequestRef.current.promise.abort();
+    }
+    lastPeopleRequestRef.current = {
+      promise: getAllPeople({
+        calendarId,
+        sessionId: timestampRef,
+        pageNumber,
+        query: peopleSearchQuery,
+        sort: sortQuery.toString(),
+        filterKeys: query.toString(),
+      }),
+      key: requestKey,
+    };
     let params = {
       page: pageNumber,
       order: filter?.order,

@@ -49,6 +49,7 @@ import {
 } from '../../../redux/reducer/languageLiteralSlice';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -308,7 +309,9 @@ const AddTaxonomy = () => {
       isSubmitting: true,
     });
     form
-      .validateFields(['name', 'disambiguatingDescription'])
+      .validateFields([
+        ...(calendarContentLanguage?.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         const fallbackStatus = activeFallbackFieldsInfo;
@@ -382,6 +385,7 @@ const AddTaxonomy = () => {
       })
       .catch((error) => {
         console.error(error);
+        scrollToFirstError(error, form);
         setIsDirty({
           formState: form.isFieldsTouched([
             'userAccess',
@@ -870,7 +874,11 @@ const AddTaxonomy = () => {
                 )}
                 <Row>
                   <Col flex="423px">
-                    <Form.Item label={t('dashboard.taxonomy.addNew.name')} required data-cy="form-item-taxonomy-name">
+                    <Form.Item
+                      label={t('dashboard.taxonomy.addNew.name')}
+                      required
+                      data-cy="form-item-taxonomy-name"
+                      className="name">
                       <CreateMultiLingualFormItems
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}

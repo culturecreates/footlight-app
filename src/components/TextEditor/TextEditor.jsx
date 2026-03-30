@@ -266,7 +266,7 @@ function TextEditor(props) {
           modules={modules}
           formats={formats}
           style={{
-            border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+            border: '1px solid #B6C1C9',
           }}
           preserveWhitespace
           onChange={onChange}

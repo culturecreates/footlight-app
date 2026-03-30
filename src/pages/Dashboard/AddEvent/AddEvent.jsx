@@ -68,6 +68,7 @@ import { otherInformationFieldNames, otherInformationOptions } from '../../../co
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
@@ -804,7 +805,7 @@ function AddEvent() {
                 recurringEvent = recurEvent;
               }
             }
-            const { customDates, frequency } = form.getFieldsValue() || {};
+            const { customDates, frequency } = form.getFieldsValue(true) || {};
 
             if ((customDates || customDatesCollection) && frequency === 'CUSTOM') {
               const customDatesData =
@@ -1261,13 +1262,12 @@ function AddEvent() {
           .catch((error) => {
             console.log(error);
             reject(error);
-            const firstErrorField = error?.errorFields?.[0].name;
-            if (firstErrorField) {
-              form.scrollToField(firstErrorField, {
-                behavior: 'smooth',
-                block: 'center',
-              });
-            }
+            scrollToFirstError(error, form, {
+              getElement: (fieldNamePath, fieldName) =>
+                document.getElementsByClassName(fieldName)?.[0] ??
+                (fieldName === 'prices' ? document.getElementById('ticket-section') : null) ??
+                document.getElementById(fieldName),
+            });
             setShowDialog(previousShowDialog);
             message.warning({
               duration: 10,
@@ -1400,10 +1400,10 @@ function AddEvent() {
               .catch((error) => console.log(error));
           }
         } else if (
-          (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
+          (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId || artsDataId) &&
           (type === 'PUBLISH' || type === 'REVIEW')
         ) {
-          if (isValuesChanged || duplicateId) {
+          if (isValuesChanged || duplicateId || artsDataId) {
             saveAsDraftHandler(event, true, type)
               .then((id) => {
                 updateEventState({ id: eventId ?? id, calendarId, publishState })
@@ -1471,6 +1471,12 @@ function AddEvent() {
       })
       .catch((error) => {
         console.log(error);
+        scrollToFirstError(error, form, {
+          getElement: (fieldNamePath, fieldName) =>
+            document.getElementsByClassName(fieldName)?.[0] ??
+            (fieldName === 'prices' ? document.getElementById('ticket-section') : null) ??
+            document.getElementById(fieldName),
+        });
         setShowDialog(isValuesChanged);
         message.warning({
           duration: 10,
@@ -2966,7 +2972,7 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.CONTACT_TITLE:
             calendarContentLanguage.forEach((language) => {
-              publishValidateFields.push(['contactTitle', [contentLanguageKeyMap[language]]]);
+              publishValidateFields.push(['contactTitle', contentLanguageKeyMap[language]]);
             });
             initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
@@ -3451,6 +3457,7 @@ function AddEvent() {
                     : false
                 }
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME)}
+                className="name"
                 data-cy="form-item-event-name-label">
                 <CreateMultiLingualFormItems
                   entityId={eventId}
@@ -3471,7 +3478,7 @@ function AddEvent() {
                     autoComplete="off"
                     style={{
                       borderRadius: '4px',
-                      border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                      border: '1px solid #B6C1C9',
                       width: '423px',
                     }}
                     size="large"
@@ -3480,6 +3487,7 @@ function AddEvent() {
 
                 <Form.Item
                   name="eventType"
+                  className="eventType"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
                   initialValue={
                     eventData?.additionalType?.map((type) => {
@@ -3533,6 +3541,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="targetAudience"
+                  className="targetAudience"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
                   initialValue={
                     eventData?.audience?.map((audience) => {
@@ -3586,6 +3595,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="eventDiscipline"
+                  className="eventDiscipline"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
                   initialValue={
                     eventData?.discipline?.map((type) => type?.entityId) ??
@@ -4031,6 +4041,7 @@ function AddEvent() {
             }>
             <Form.Item
               name="location-form-wrapper"
+              className="location-form-wrapper"
               rules={[
                 ({ getFieldValue }) => ({
                   validator() {
@@ -4310,7 +4321,7 @@ function AddEvent() {
                     autoComplete="off"
                     style={{
                       borderRadius: '4px',
-                      border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                      border: '1px solid #B6C1C9',
                       width: '423px',
                     }}
                     size="large"
@@ -4369,6 +4380,7 @@ function AddEvent() {
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
+                className="editor"
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION)
                     ? adminCheckHandler({ calendar, user })
@@ -4716,7 +4728,7 @@ function AddEvent() {
                 )}
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
-                  className="subheading-wrap"
+                  className="subheading-wrap contactTitle"
                   data-cy="form-item-event-contact-title"
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
                   <CreateMultiLingualFormItems
@@ -4738,7 +4750,7 @@ function AddEvent() {
                       autoComplete="off"
                       style={{
                         borderRadius: '4px',
-                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        border: '1px solid #B6C1C9',
                         width: '423px',
                       }}
                       size="large"
@@ -4883,6 +4895,7 @@ function AddEvent() {
               </Form.Item>
               <Form.Item
                 name="multipleImages"
+                className="multipleImages"
                 label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                 data-cy="form-item-event-multiple-image"
                 hidden={!imageConfig?.enableGallery}>
@@ -4928,6 +4941,7 @@ function AddEvent() {
                 </Row>
                 <Form.Item
                   name="performers"
+                  className="performers"
                   initialValue={selectedPerformers}
                   rules={[
                     () => ({
@@ -5174,6 +5188,7 @@ function AddEvent() {
                 </Row>
                 <Form.Item
                   name="supporters"
+                  className="supporters"
                   initialValue={selectedSupporters}
                   rules={[
                     () => ({
@@ -5820,9 +5835,9 @@ function AddEvent() {
                       autoComplete="off"
                       style={{
                         borderRadius: '4px',
-                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
-                        width: '423px',
+                        border: '1px solid #B6C1C9',
                         resize: 'vertical',
+                        width: '423px',
                       }}
                       size="large"
                     />
@@ -5870,6 +5885,7 @@ function AddEvent() {
                   <Col flex={'423px'}>
                     <Form.Item
                       name="ticketPickerWrapper"
+                      className="ticketPickerWrapper"
                       rules={[
                         ({ getFieldValue }) => ({
                           validator() {
@@ -6111,7 +6127,7 @@ function AddEvent() {
               {(ticketType == offerTypes.FREE ||
                 ticketType == offerTypes.PAYING ||
                 ticketType == offerTypes.REGISTER) && (
-                <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
+                <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')} className="ticketNote">
                   <CreateMultiLingualFormItems
                     entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}

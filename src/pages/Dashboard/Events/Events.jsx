@@ -118,6 +118,7 @@ function Events() {
 
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
@@ -137,6 +138,7 @@ function Events() {
   const [featureEvents, { isLoading: featureEventsLoading }] = useFeatureEventsMutation();
   const isActionLoading = updateStateLoading || deleteEventLoading || featureEventsLoading;
   const hadMutationRun = useRef(false);
+  const lastEventsRequestRef = useRef({ promise: null, key: null });
 
   useEffect(() => {
     if (updateStateLoading) hadMutationRun.current = true;
@@ -289,7 +291,7 @@ function Events() {
   );
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
-  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
+  let customFilters = [...(currentCalendarData?.filterPersonalization?.events ?? [])];
   const dateTypeSelector = (dates) => {
     if (dates?.length == 2) {
       if (dates?.every((date) => date === 'any')) return dateFilterTypes.ALL_EVENTS;
@@ -391,6 +393,7 @@ function Events() {
       const { [taxonomy]: removedKey, ...updatedFilter } = taxonomyFilter;
       setTaxonomyFilter(updatedFilter);
     } else setTaxonomyFilter({ ...taxonomyFilter, [taxonomy]: checkedKeys });
+    setPageNumber(1);
   };
 
   const onStandardTaxonomyCheck = ({ checkedKeys, taxonomy }) => {
@@ -399,6 +402,7 @@ function Events() {
       const { [taxonomy]: removedKey, ...updatedFilter } = standardTaxonomyFilter;
       setStandardTaxonomyFilter(updatedFilter);
     } else setStandardTaxonomyFilter({ ...standardTaxonomyFilter, [taxonomy]: checkedKeys });
+    setPageNumber(1);
   };
 
   const onFilterChange = (values, filterType) => {
@@ -414,7 +418,6 @@ function Events() {
     setFilter({
       ...filter,
       sort: selectedKeys[0],
-      order: sortOrder?.ASC,
     });
     setPageNumber(1);
   };
@@ -583,15 +586,28 @@ function Events() {
       query.append('start-date-range', '');
       query.append('end-date-range', '');
     }
-    getEvents({
+    const requestKey = [
       pageNumber,
-      limit: 10,
       calendarId,
-      query: eventSearchQuery,
-      filterkeys: decodeURIComponent(query.toString()),
-      sort: sortQuery,
-      sessionId: timestampRef,
-    });
+      eventSearchQuery,
+      decodeURIComponent(query.toString()),
+      sortQuery.toString(),
+    ].join('|');
+    if (lastEventsRequestRef.current.promise && lastEventsRequestRef.current.key !== requestKey) {
+      lastEventsRequestRef.current.promise.abort();
+    }
+    lastEventsRequestRef.current = {
+      promise: getEvents({
+        pageNumber,
+        limit: 10,
+        calendarId,
+        query: eventSearchQuery,
+        filterkeys: decodeURIComponent(query.toString()),
+        sort: sortQuery.toString(),
+        sessionId: timestampRef,
+      }),
+      key: requestKey,
+    };
 
     let params = {
       page: pageNumber,
@@ -1006,124 +1022,128 @@ function Events() {
               {allTaxonomyData?.data?.length > 0 &&
                 adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
-                    return (
-                      <Col key={index}>
-                        <Popover
-                          placement="bottom"
-                          getPopupContainer={(trigger) => trigger.parentNode}
-                          content={
-                            <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
-                              <Col span={24}>
-                                <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
-                                  <Tree
-                                    checkable
-                                    autoExpandParent={true}
-                                    onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
-                                      onStandardTaxonomyCheck({
-                                        checkedKeys,
-                                        checked,
-                                        checkedNodes,
-                                        node,
-                                        event,
-                                        halfCheckedKeys,
-                                        taxonomy: taxonomy?.mappedToField,
-                                      })
-                                    }
-                                    checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
-                                    treeData={treeTaxonomyOptions(
-                                      allTaxonomyData,
-                                      user,
-                                      taxonomy?.mappedToField,
-                                      false,
-                                      calendarContentLanguage,
-                                    )}
-                                  />
-                                </div>
-                              </Col>
-                            </Row>
-                          }
-                          trigger="click"
-                          overlayClassName="date-filter-popover">
-                          <Button
-                            size="large"
-                            className="filter-buttons"
-                            style={{
-                              borderColor: standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 > 0 && '#607EFC',
-                            }}
-                            data-cy="button-filter-dates">
-                            {bilingual({
-                              data: taxonomy?.name,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            })}
-                            {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
-                              <>
-                                &nbsp; <Badge color="#1B3DE6" />
-                              </>
-                            )}
-                          </Button>
-                        </Popover>
-                      </Col>
-                    );
-                })}
-              {allTaxonomyData?.data?.length > 0 &&
-                adminCheckHandler({ user, calendar }) &&
-                allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
-                    return (
-                      <Col key={index}>
-                        <Popover
-                          placement="bottom"
-                          getPopupContainer={(trigger) => trigger.parentNode}
-                          content={
-                            <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
-                              <Col span={24}>
-                                <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
-                                  <Tree
-                                    checkable
-                                    autoExpandParent={true}
-                                    onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
-                                      onCheck({
-                                        checkedKeys,
-                                        checked,
-                                        checkedNodes,
-                                        node,
-                                        event,
-                                        halfCheckedKeys,
-                                        taxonomy: taxonomy?.id,
-                                      })
-                                    }
-                                    checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
-                                    treeData={treeDynamicTaxonomyOptions(
-                                      taxonomy?.concept,
-                                      user,
-                                      calendarContentLanguage,
-                                    )}
-                                  />
-                                </div>
-                              </Col>
-                            </Row>
-                          }
-                          trigger="click"
-                          overlayClassName="date-filter-popover">
-                          <Button
-                            size="large"
-                            className="filter-buttons"
-                            style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
-                            data-cy="button-filter-dates">
-                            {bilingual({
-                              data: taxonomy?.name,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            })}
-                            {taxonomyFilter[taxonomy?.id]?.length > 0 && (
-                              <>
-                                &nbsp; <Badge color="#1B3DE6" />
-                              </>
-                            )}
-                          </Button>
-                        </Popover>
-                      </Col>
-                    );
+                  if (customFilters?.includes(taxonomy?.id)) {
+                    const isStandardEventTaxonomy =
+                      !taxonomy.isDynamicField &&
+                      standardTaxonomyMaps.some((m) => m.mappedToField === taxonomy.mappedToField);
+
+                    if (isStandardEventTaxonomy) {
+                      return (
+                        <Col key={index}>
+                          <Popover
+                            placement="bottom"
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            content={
+                              <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                                <Col span={24}>
+                                  <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                    <Tree
+                                      checkable
+                                      autoExpandParent={true}
+                                      onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
+                                        onStandardTaxonomyCheck({
+                                          checkedKeys,
+                                          checked,
+                                          checkedNodes,
+                                          node,
+                                          event,
+                                          halfCheckedKeys,
+                                          taxonomy: taxonomy?.mappedToField,
+                                        })
+                                      }
+                                      checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
+                                      treeData={treeTaxonomyOptions(
+                                        allTaxonomyData,
+                                        user,
+                                        taxonomy?.mappedToField,
+                                        false,
+                                        calendarContentLanguage,
+                                      )}
+                                    />
+                                  </div>
+                                </Col>
+                              </Row>
+                            }
+                            trigger="click"
+                            overlayClassName="date-filter-popover">
+                            <Button
+                              size="large"
+                              className="filter-buttons"
+                              style={{
+                                borderColor:
+                                  (standardTaxonomyFilter[taxonomy?.mappedToField]?.length ?? 0) > 0 && '#607EFC',
+                              }}
+                              data-cy="button-filter-dates">
+                              {bilingual({
+                                data: taxonomy?.name,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
+                                <>
+                                  &nbsp; <Badge color="#1B3DE6" />
+                                </>
+                              )}
+                            </Button>
+                          </Popover>
+                        </Col>
+                      );
+                    } else {
+                      return (
+                        <Col key={index}>
+                          <Popover
+                            placement="bottom"
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            content={
+                              <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                                <Col span={24}>
+                                  <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                    <Tree
+                                      checkable
+                                      autoExpandParent={true}
+                                      onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
+                                        onCheck({
+                                          checkedKeys,
+                                          checked,
+                                          checkedNodes,
+                                          node,
+                                          event,
+                                          halfCheckedKeys,
+                                          taxonomy: taxonomy?.id,
+                                        })
+                                      }
+                                      checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
+                                      treeData={treeDynamicTaxonomyOptions(
+                                        taxonomy?.concept,
+                                        user,
+                                        calendarContentLanguage,
+                                      )}
+                                    />
+                                  </div>
+                                </Col>
+                              </Row>
+                            }
+                            trigger="click"
+                            overlayClassName="date-filter-popover">
+                            <Button
+                              size="large"
+                              className="filter-buttons"
+                              style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 && '#607EFC' }}
+                              data-cy="button-filter-dates">
+                              {bilingual({
+                                data: taxonomy?.name,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              {taxonomyFilter[taxonomy?.id]?.length > 0 && (
+                                <>
+                                  &nbsp; <Badge color="#1B3DE6" />
+                                </>
+                              )}
+                            </Button>
+                          </Popover>
+                        </Col>
+                      );
+                    }
+                  }
                 })}
 
               <Col>

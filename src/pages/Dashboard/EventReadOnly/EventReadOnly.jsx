@@ -47,6 +47,7 @@ import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { PathName } from '../../../constants/pathName';
+import { userRoles } from '../../../constants/userRoles';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout';
 import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
@@ -397,8 +398,11 @@ function EventReadOnly() {
                       state?.value === eventPublishState?.PUBLISHED) &&
                     eventData?.publishState === state?.value
                   ) {
+                    const isContributor = calendar[0]?.role === userRoles.CONTRIBUTOR;
                     const translationKey =
-                      state?.value === eventPublishState?.PUBLISHED
+                      state?.value === eventPublishState?.PUBLISHED && isContributor
+                        ? 'dashboard.events.readOnlyEvent.notification.contributorPublished'
+                        : state?.value === eventPublishState?.PUBLISHED
                         ? 'dashboard.events.readOnlyEvent.notification.underPublished'
                         : 'dashboard.events.readOnlyEvent.notification.underReview';
 
