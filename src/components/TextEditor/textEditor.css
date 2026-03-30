@@ -13,6 +13,7 @@
 
 .text-editor .ql-toolbar.ql-snow {
   background-color: #f7f7f7;
+  border-radius: 4px 4px 0 0;
 }
 
 .text-editor .ql-editor {
@@ -36,6 +37,10 @@
 
 .text-editor .ql-toolbar .ql-clean svg {
   display: none;
+}
+
+.ant-form-item-has-error .text-editor {
+  border-color: #ff4d4f !important;
 }
 
 @media (max-width: 480px) {
