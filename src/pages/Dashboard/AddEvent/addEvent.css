@@ -265,3 +265,24 @@
     margin-top: 16px;
   }
 }
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: #f9faff;
+  z-index: 100;
+  margin-left: -32px;
+  margin-right: -32px;
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-bottom: 16px;
+}
+
+@media screen and (max-width: 767px) {
+  .sticky-header {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
