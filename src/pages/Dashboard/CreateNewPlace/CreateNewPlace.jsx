@@ -64,7 +64,7 @@ import {
   placeAccessibilityTypeOptions,
   placeAccessibilityTypeOptionsFieldNames,
 } from '../../../constants/placeAccessibilityTypeOptions';
-import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
+import { urlProtocolCheck, urlValidator } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
@@ -2408,8 +2408,12 @@ function CreateNewPlace() {
                   }}
                   rules={[
                     {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
+                      validator: (_, value) => {
+                        if (!value || value === '') return Promise.resolve();
+                        return urlValidator(value)
+                          ? Promise.resolve()
+                          : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                      },
                     },
                     {
                       required: requiredFieldNames?.includes(placeFormRequiredFieldNames.OPENING_HOURS),
@@ -2421,6 +2425,12 @@ function CreateNewPlace() {
                     addonBefore="URL"
                     autoComplete="off"
                     placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
+                    onBlur={(e) => {
+                      const normalized = urlProtocolCheck(e.target.value);
+                      if (normalized !== e.target.value) {
+                        form.setFieldValue(formFieldNames.OPENING_HOURS, normalized);
+                      }
+                    }}
                   />
                 </Form.Item>
               </>
