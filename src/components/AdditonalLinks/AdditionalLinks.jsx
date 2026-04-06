@@ -7,6 +7,7 @@ import StyledInput from '../Input/Common';
 import Outlined from '../Button/Outlined';
 import { placeHolderCollectionCreator } from '../../utils/MultiLingualFormItemSupportFunctions';
 import { dataTypes } from '../../constants/formFields';
+import { urlProtocolCheck } from '../Input/Common/input.settings';
 
 const { TextArea } = Input;
 
@@ -167,6 +168,19 @@ const AdditionalLinks = ({
                               autoComplete="off"
                               placeholder={currentType === 'email' ? placeholder?.email : placeholder?.url}
                               data-cy="input-additional-link"
+                              onBlur={(e) => {
+                                if (currentType === 'url') {
+                                  const normalized = urlProtocolCheck(e.target.value);
+                                  if (normalized !== e.target.value) {
+                                    const currentFields = form.getFieldValue(name);
+                                    form.setFieldsValue({
+                                      [name]: currentFields.map((item, i) =>
+                                        i === fieldName ? { ...item, value: normalized } : item,
+                                      ),
+                                    });
+                                  }
+                                }
+                              }}
                             />
                           </Form.Item>
                         );
