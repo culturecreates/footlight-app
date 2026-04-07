@@ -78,7 +78,7 @@ export const formNames = {
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
-    rule: ({ subType }) =>
+    rule: ({ subType, t }) =>
       subType === subDataType.VIDEO_URL
         ? [
             {
@@ -91,7 +91,7 @@ const rules = [
                 if (!value || value === '') return Promise.resolve();
                 return urlValidator(value)
                   ? Promise.resolve()
-                  : Promise.reject(new Error('Enter a valid URL'));
+                  : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
               },
             },
           ],
