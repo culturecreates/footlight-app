@@ -228,6 +228,7 @@ export const formFieldValue = [
                 const normalized = urlProtocolCheck(e.target.value);
                 if (normalized !== e.target.value) {
                   form.setFieldsValue({ [Array.isArray(name) ? name[0] : name]: normalized });
+                  form.validateFields([Array.isArray(name) ? name[0] : name]);
                 }
               }}
             />
@@ -267,7 +268,7 @@ export const formFieldValue = [
                       <Col span={22}>
                         <Form.Item
                           {...field}
-                          validateTrigger={['onChange', 'onBlur']}
+                          validateTrigger="onBlur"
                           noStyle
                           rules={[
                             {
@@ -289,10 +290,9 @@ export const formFieldValue = [
                               if (normalized !== e.target.value) {
                                 const current = form.getFieldValue(name);
                                 if (Array.isArray(current)) {
-                                  form.setFieldValue(
-                                    name,
-                                    current.map((v, i) => (i === field.name ? normalized : v)),
-                                  );
+                                  const updatedArray = current.map((v, i) => (i === field.name ? normalized : v));
+                                  form.setFieldValue(name, updatedArray);
+                                  form.validateFields([[...name, field.name]]);
                                 }
                               }
                             }}

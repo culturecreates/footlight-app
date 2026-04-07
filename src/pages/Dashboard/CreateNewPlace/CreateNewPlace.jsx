@@ -2429,6 +2429,7 @@ function CreateNewPlace() {
                       const normalized = urlProtocolCheck(e.target.value);
                       if (normalized !== e.target.value) {
                         form.setFieldValue(formFieldNames.OPENING_HOURS, normalized);
+                        form.validateFields([formFieldNames.OPENING_HOURS]);
                       }
                     }}
                   />

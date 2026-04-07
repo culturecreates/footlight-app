@@ -178,6 +178,7 @@ const AdditionalLinks = ({
                                         i === fieldName ? { ...item, value: normalized } : item,
                                       ),
                                     });
+                                    form.validateFields([[name, fieldName, 'value']]);
                                   }
                                 }
                               }}
