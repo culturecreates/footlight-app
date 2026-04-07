@@ -91,7 +91,9 @@ const rules = [
                 if (!value || value === '') return Promise.resolve();
                 return urlValidator(value)
                   ? Promise.resolve()
-                  : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                  : Promise.reject(
+                      new Error(t ? t('dashboard.events.addEditEvent.validations.url') : 'Enter a valid URL'),
+                    );
               },
             },
           ],
