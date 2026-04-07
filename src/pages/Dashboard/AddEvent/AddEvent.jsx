@@ -4346,6 +4346,7 @@ function AddEvent() {
                     },
                   },
                 ]}
+                validateTrigger={['onBlur']}
                 data-cy="form-item-virtual-location-link-title">
                 <StyledInput
                   addonBefore="URL"
@@ -4788,6 +4789,7 @@ function AddEvent() {
                       message: t('common.validations.informationRequired'),
                     },
                   ]}
+                  validateTrigger={['onBlur']}
                   data-cy="form-item-event-contact-website-label">
                   <StyledInput
                     addonBefore="URL"
@@ -5462,6 +5464,7 @@ function AddEvent() {
                     message: t('common.validations.informationRequired'),
                   },
                 ]}
+                validateTrigger={['onBlur']}
                 data-cy="form-item-event-link">
                 <StyledInput
                   addonBefore="URL"
@@ -5493,6 +5496,7 @@ function AddEvent() {
                     message: t('common.validations.informationRequired'),
                   },
                 ]}
+                validateTrigger={['onBlur']}
                 data-cy="form-item-video-link">
                 <StyledInput
                   addonBefore="URL"
@@ -5503,6 +5507,7 @@ function AddEvent() {
                     const normalized = urlProtocolCheck(e.target.value);
                     if (normalized !== e.target.value) {
                       form.setFieldValue(otherInformationFieldNames.videoLink, normalized);
+                      form.validateFields([otherInformationFieldNames.videoLink]);
                     }
                   }}
                 />
@@ -5545,6 +5550,7 @@ function AddEvent() {
                       message: t('common.validations.informationRequired'),
                     },
                   ]}
+                  validateTrigger={['onBlur']}
                   data-cy="form-item-facebook-link">
                   <StyledInput
                     addonBefore="URL"
@@ -6047,6 +6053,7 @@ function AddEvent() {
                           message: t('login.validations.invalidEmail'),
                         },
                       ]}
+                      validateTrigger={['onBlur']}
                       data-cy="form-item-register-link-label">
                       <StyledInput
                         style={{ width: '70%' }}
@@ -6130,7 +6137,8 @@ function AddEvent() {
                             type: 'email',
                             message: t('login.validations.invalidEmail'),
                           },
-                        ]}>
+                        ]}
+                        validateTrigger={['onBlur']}>
                         <StyledInput
                           style={{ width: '70%' }}
                           autoComplete="off"

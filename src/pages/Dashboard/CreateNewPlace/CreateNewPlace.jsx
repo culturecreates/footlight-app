@@ -2419,7 +2419,8 @@ function CreateNewPlace() {
                       required: requiredFieldNames?.includes(placeFormRequiredFieldNames.OPENING_HOURS),
                       message: t('common.validations.informationRequired'),
                     },
-                  ]}>
+                  ]}
+                  validateTrigger={['onBlur']}>
                   <StyledInput
                     data-cy="input-place-opening-hours"
                     addonBefore="URL"
@@ -2429,6 +2430,7 @@ function CreateNewPlace() {
                       const normalized = urlProtocolCheck(e.target.value);
                       if (normalized !== e.target.value) {
                         form.setFieldValue(formFieldNames.OPENING_HOURS, normalized);
+                        form.validateFields([formFieldNames.OPENING_HOURS]);
                       }
                     }}
                   />

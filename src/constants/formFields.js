@@ -227,7 +227,9 @@ export const formFieldValue = [
               onBlur={(e) => {
                 const normalized = urlProtocolCheck(e.target.value);
                 if (normalized !== e.target.value) {
-                  form.setFieldsValue({ [Array.isArray(name) ? name[0] : name]: normalized });
+                  const fieldName = Array.isArray(name) ? name[0] : name;
+                  form.setFieldsValue({ [fieldName]: normalized });
+                  form.validateFields([fieldName]);
                 }
               }}
             />
@@ -258,6 +260,17 @@ export const formFieldValue = [
                 },
                 message: t('common.validations.informationRequired'),
               },
+              {
+                validator: async (_, value) => {
+                  if (!value) return;
+                  for (const link of value) {
+                    if (!link || link.trim() === '') continue;
+                    if (!urlValidator(link)) {
+                      return Promise.reject(new Error(''));
+                    }
+                  }
+                },
+              },
             ]}>
             {(fields, { add, remove }, { errors }) => (
               <>
@@ -267,7 +280,7 @@ export const formFieldValue = [
                       <Col span={22}>
                         <Form.Item
                           {...field}
-                          validateTrigger={['onChange', 'onBlur']}
+                          validateTrigger={['onBlur']}
                           noStyle
                           rules={[
                             {
@@ -293,6 +306,8 @@ export const formFieldValue = [
                                     name,
                                     current.map((v, i) => (i === field.name ? normalized : v)),
                                   );
+                                  const fieldPath = Array.isArray(name) ? [...name, field.name] : [name, field.name];
+                                  form.validateFields([fieldPath]);
                                 }
                               }
                             }}
@@ -318,7 +333,7 @@ export const formFieldValue = [
                     onClick={() => add()}
                     data-cy={`button-add-${mappedField}`}
                   />
-                  <Form.ErrorList errors={errors} />
+                  <Form.ErrorList errors={errors.filter(Boolean)} />
                 </Form.Item>
               </>
             )}
@@ -723,6 +738,7 @@ export const renderFormFields = ({
         hidden={hidden}
         style={style}
         className={mappedField ?? fieldName?.toLowerCase()}
+        validateTrigger={datatype === dataTypes.URI_STRING ? ['onBlur'] : undefined}
         rules={rules
           ?.map((rule) => {
             if (datatype === rule?.dataType) {

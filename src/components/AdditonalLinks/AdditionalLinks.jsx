@@ -108,7 +108,33 @@ const AdditionalLinks = ({
       {position === 'top' && datatype === dataTypes.ADDITIONAL_LINKS && (
         <p className="add-event-date-heading">{userTips}</p>
       )}
-      <Form.List name={name}>
+      <Form.List
+        name={name}
+        rules={[
+          {
+            validator: async (_, items) => {
+              if (!items) return;
+              for (const item of items) {
+                if (!item?.value || item.value.trim() === '') continue;
+                if (item.type === 'url') {
+                  try {
+                    const url = new URL(item.value.startsWith('http') ? item.value : `https://${item.value}`);
+                    if (!url.hostname || url.hostname.indexOf('.') === -1) {
+                      return Promise.reject(new Error(''));
+                    }
+                  } catch {
+                    return Promise.reject(new Error(''));
+                  }
+                } else if (item.type === 'email') {
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  if (!emailRegex.test(item.value)) {
+                    return Promise.reject(new Error(''));
+                  }
+                }
+              }
+            },
+          },
+        ]}>
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name: fieldName, ...restField }, index) => {
@@ -162,7 +188,7 @@ const AdditionalLinks = ({
                                 validator: validateInput,
                               },
                             ]}
-                            validateTrigger={['onBlur', 'onSubmit']}
+                            validateTrigger={['onSubmit']}
                             style={{ flex: 1, marginBottom: 0, width: '100%' }}>
                             <StyledInput
                               autoComplete="off"
@@ -180,6 +206,10 @@ const AdditionalLinks = ({
                                     });
                                   }
                                 }
+                                const fieldPath = Array.isArray(name)
+                                  ? [...name, fieldName, 'value']
+                                  : [name, fieldName, 'value'];
+                                form.validateFields([fieldPath]);
                               }}
                             />
                           </Form.Item>

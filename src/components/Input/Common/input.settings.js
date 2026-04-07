@@ -7,9 +7,11 @@ export const urlProtocolCheck = (url) => {
 
 export const urlValidator = (url) => {
   if (!url || url === '') return true;
+  if (/\s/.test(url)) return false;
   try {
-    const parsed = new URL(url);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    const normalized = url.includes('://') ? url : `https://${url}`;
+    new URL(normalized);
+    return true;
   } catch {
     return false;
   }
