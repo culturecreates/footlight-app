@@ -20,6 +20,7 @@ import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelec
 import { getEmbedUrl, validateVideoLink } from '../utils/getEmbedVideoUrl';
 import AdditionalLinks from '../components/AdditonalLinks/AdditionalLinks';
 import { formFieldPlaceholderHandler } from '../utils/formFieldPlaceholderHandler';
+import { urlProtocolCheck, urlValidator } from '../components/Input/Common/input.settings';
 
 const { TextArea } = Input;
 
@@ -86,8 +87,14 @@ const rules = [
           ]
         : [
             {
-              type: 'url',
-              message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+              validator: (_, value) => {
+                if (!value || value === '') return Promise.resolve();
+                return urlValidator(value)
+                  ? Promise.resolve()
+                  : Promise.reject(
+                      <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+                    );
+              },
             },
           ],
   },
@@ -217,6 +224,13 @@ export const formFieldValue = [
                 calendarContentLanguage: calendarContentLanguage,
               })}
               data-cy={`input-${mappedField}`}
+              onBlur={(e) => {
+                const normalized = urlProtocolCheck(e.target.value);
+                if (normalized !== e.target.value) {
+                  form.setFieldsValue({ [Array.isArray(name) ? name[0] : name]: normalized });
+                  form.validateFields([Array.isArray(name) ? name[0] : name]);
+                }
+              }}
             />
           );
         }
@@ -254,12 +268,16 @@ export const formFieldValue = [
                       <Col span={22}>
                         <Form.Item
                           {...field}
-                          validateTrigger={['onChange', 'onBlur']}
+                          validateTrigger="onBlur"
                           noStyle
                           rules={[
                             {
-                              type: 'url',
-                              message: t('dashboard.events.addEditEvent.validations.url'),
+                              validator: (_, value) => {
+                                if (!value || value === '') return Promise.resolve();
+                                return urlValidator(value)
+                                  ? Promise.resolve()
+                                  : Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
+                              },
                             },
                           ]}>
                           <StyledInput
@@ -267,6 +285,17 @@ export const formFieldValue = [
                             autoComplete="off"
                             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
                             data-cy={`input-${mappedField}-${field.key}`}
+                            onBlur={(e) => {
+                              const normalized = urlProtocolCheck(e.target.value);
+                              if (normalized !== e.target.value) {
+                                const current = form.getFieldValue(name);
+                                if (Array.isArray(current)) {
+                                  const updatedArray = current.map((v, i) => (i === field.name ? normalized : v));
+                                  form.setFieldValue(name, updatedArray);
+                                  form.validateFields([[...name, field.name]]);
+                                }
+                              }
+                            }}
                           />
                         </Form.Item>
                       </Col>

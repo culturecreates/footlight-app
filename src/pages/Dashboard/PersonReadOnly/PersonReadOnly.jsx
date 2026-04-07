@@ -6,6 +6,7 @@ import { Col, Row, Skeleton } from 'antd';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import OrganizationLogo from '../../../assets/icons/organization-light.svg?react';
@@ -470,7 +471,7 @@ function PersonReadOnly() {
                                 {personData?.url?.uri && (
                                   <p>
                                     <a
-                                      href={personData?.url?.uri}
+                                      href={urlProtocolCheck(personData?.url?.uri)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="url-links"
@@ -493,7 +494,7 @@ function PersonReadOnly() {
                                   personData?.socialMediaLinks?.map((link, index) => (
                                     <p key={index}>
                                       <a
-                                        href={link}
+                                        href={urlProtocolCheck(link)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="url-links"
@@ -531,7 +532,7 @@ function PersonReadOnly() {
                                       {(link.uri || link.email) && (
                                         <p>
                                           <a
-                                            href={link.email ? `mailto:${link.email}` : link.uri}
+                                            href={link.email ? `mailto:${link.email}` : urlProtocolCheck(link.uri)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="url-links"
@@ -587,7 +588,7 @@ function PersonReadOnly() {
                                 {personData?.videoUrl?.uri && (
                                   <p>
                                     <a
-                                      href={personData?.videoUrl?.uri}
+                                      href={urlProtocolCheck(personData?.videoUrl?.uri)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="url-links">

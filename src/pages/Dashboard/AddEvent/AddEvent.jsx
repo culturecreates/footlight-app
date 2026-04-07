@@ -51,7 +51,7 @@ import {
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
-import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
+import { urlProtocolCheck, urlValidator } from '../../../components/Input/Common/input.settings';
 import { offerTypeOptions, offerTypes } from '../../../constants/ticketOffers';
 import Money from '../../../assets/icons/Money.svg?react';
 import MoneyFree from '../../../assets/icons/Money-Free.svg?react';
@@ -4338,8 +4338,12 @@ function AddEvent() {
                 initialValue={initialVirtualLocation && initialVirtualLocation[0]?.url?.uri}
                 rules={[
                   {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
+                    validator: (_, value) => {
+                      if (!value || value === '') return Promise.resolve();
+                      return urlValidator(value)
+                        ? Promise.resolve()
+                        : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                    },
                   },
                 ]}
                 data-cy="form-item-virtual-location-link-title">
@@ -4348,6 +4352,13 @@ function AddEvent() {
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
                   data-cy="input-virtual-location-link"
+                  onBlur={(e) => {
+                    const normalized = urlProtocolCheck(e.target.value);
+                    if (normalized !== e.target.value) {
+                      form.setFieldValue(virtualLocationFieldNames.virtualLocationOnlineLink, normalized);
+                      form.validateFields([virtualLocationFieldNames.virtualLocationOnlineLink]);
+                    }
+                  }}
                 />
               </Form.Item>
             </Form.Item>
@@ -4765,8 +4776,12 @@ function AddEvent() {
                   initialValue={eventData?.contactPoint?.url?.uri}
                   rules={[
                     {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
+                      validator: (_, value) => {
+                        if (!value || value === '') return Promise.resolve();
+                        return urlValidator(value)
+                          ? Promise.resolve()
+                          : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                      },
                     },
                     {
                       required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_WEBSITE),
@@ -4779,6 +4794,13 @@ function AddEvent() {
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
                     data-cy="input-contact-website"
+                    onBlur={(e) => {
+                      const normalized = urlProtocolCheck(e.target.value);
+                      if (normalized !== e.target.value) {
+                        form.setFieldValue('contactWebsiteUrl', normalized);
+                        form.validateFields(['contactWebsiteUrl']);
+                      }
+                    }}
                   />
                 </Form.Item>
                 <Form.Item
@@ -5428,8 +5450,12 @@ function AddEvent() {
                 initialValue={eventData?.url?.uri ?? artsData?.url?.uri}
                 rules={[
                   {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
+                    validator: (_, value) => {
+                      if (!value || value === '') return Promise.resolve();
+                      return urlValidator(value)
+                        ? Promise.resolve()
+                        : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                    },
                   },
                   {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_LINK),
@@ -5442,6 +5468,13 @@ function AddEvent() {
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                   data-cy="input-event-link"
+                  onBlur={(e) => {
+                    const normalized = urlProtocolCheck(e.target.value);
+                    if (normalized !== e.target.value) {
+                      form.setFieldValue(otherInformationFieldNames.eventLink, normalized);
+                      form.validateFields([otherInformationFieldNames.eventLink]);
+                    }
+                  }}
                 />
               </Form.Item>
               <Form.Item
@@ -5466,6 +5499,12 @@ function AddEvent() {
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                   data-cy="input-video-link"
+                  onBlur={(e) => {
+                    const normalized = urlProtocolCheck(e.target.value);
+                    if (normalized !== e.target.value) {
+                      form.setFieldValue(otherInformationFieldNames.videoLink, normalized);
+                    }
+                  }}
                 />
               </Form.Item>
               {getEmbedUrl(form.getFieldValue(otherInformationFieldNames.videoLink)) !== '' && (
@@ -5494,8 +5533,12 @@ function AddEvent() {
                   initialValue={eventData?.facebookUrl}
                   rules={[
                     {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
+                      validator: (_, value) => {
+                        if (!value || value === '') return Promise.resolve();
+                        return urlValidator(value)
+                          ? Promise.resolve()
+                          : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                      },
                     },
                     {
                       required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.FACEBOOK_URL),
@@ -5508,6 +5551,13 @@ function AddEvent() {
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                     data-cy="input-facebook-link"
+                    onBlur={(e) => {
+                      const normalized = urlProtocolCheck(e.target.value);
+                      if (normalized !== e.target.value) {
+                        form.setFieldValue('facebookLink', normalized);
+                        form.validateFields(['facebookLink']);
+                      }
+                    }}
                   />
                 </Form.Item>
                 <p className="add-event-date-heading" data-cy="para-facebook-link-footer">
@@ -5973,8 +6023,12 @@ function AddEvent() {
                       }
                       rules={[
                         form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value && {
-                          type: 'url',
-                          message: t('dashboard.events.addEditEvent.validations.url'),
+                          validator: (_, value) => {
+                            if (!value || value === '') return Promise.resolve();
+                            return urlValidator(value)
+                              ? Promise.resolve()
+                              : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                          },
                         },
 
                         ({ getFieldValue }) => ({
@@ -6003,6 +6057,15 @@ function AddEvent() {
                             : t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
                         }
                         data-cy="input-ticket-registration-link"
+                        onBlur={(e) => {
+                          if (form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value) {
+                            const normalized = urlProtocolCheck(e.target.value);
+                            if (normalized !== e.target.value) {
+                              form.setFieldValue('registerLink', normalized);
+                              form.validateFields(['registerLink']);
+                            }
+                          }
+                        }}
                       />
                     </Form.Item>
                   </Input.Group>
@@ -6038,8 +6101,12 @@ function AddEvent() {
                         }
                         rules={[
                           form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value && {
-                            type: 'url',
-                            message: t('dashboard.events.addEditEvent.validations.url'),
+                            validator: (_, value) => {
+                              if (!value || value === '') return Promise.resolve();
+                              return urlValidator(value)
+                                ? Promise.resolve()
+                                : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                            },
                           },
                           ({ getFieldValue }) => ({
                             validator(_, value) {
@@ -6073,6 +6140,15 @@ function AddEvent() {
                               : t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
                           }
                           data-cy="input-ticket-buy-link"
+                          onBlur={(e) => {
+                            if (form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value) {
+                              const normalized = urlProtocolCheck(e.target.value);
+                              if (normalized !== e.target.value) {
+                                form.setFieldValue('ticketLink', normalized);
+                                form.validateFields(['ticketLink']);
+                              }
+                            }
+                          }}
                         />
                       </Form.Item>
                     </Input.Group>
