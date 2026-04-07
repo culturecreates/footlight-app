@@ -91,9 +91,7 @@ const rules = [
                 if (!value || value === '') return Promise.resolve();
                 return urlValidator(value)
                   ? Promise.resolve()
-                  : Promise.reject(
-                      <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-                    );
+                  : Promise.reject(new Error('Enter a valid URL'));
               },
             },
           ],
@@ -276,7 +274,7 @@ export const formFieldValue = [
                                 if (!value || value === '') return Promise.resolve();
                                 return urlValidator(value)
                                   ? Promise.resolve()
-                                  : Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
+                                  : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
                               },
                             },
                           ]}>
