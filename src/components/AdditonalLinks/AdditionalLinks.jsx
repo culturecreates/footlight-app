@@ -7,7 +7,7 @@ import StyledInput from '../Input/Common';
 import Outlined from '../Button/Outlined';
 import { placeHolderCollectionCreator } from '../../utils/MultiLingualFormItemSupportFunctions';
 import { dataTypes } from '../../constants/formFields';
-import { urlProtocolCheck } from '../Input/Common/input.settings';
+import { urlProtocolCheck, urlValidator } from '../Input/Common/input.settings';
 
 const { TextArea } = Input;
 
@@ -87,13 +87,7 @@ const AdditionalLinks = ({
           return;
         }
       } else if (type === 'url') {
-        try {
-          const url = new URL(value.startsWith('http') ? value : `https://${value}`);
-          if (!url.hostname || url.hostname.indexOf('.') === -1) {
-            callback(t('common.components.additionalLinks.validations.url'));
-            return;
-          }
-        } catch (e) {
+        if (!urlValidator(value)) {
           callback(t('common.components.additionalLinks.validations.url'));
           return;
         }
@@ -117,12 +111,7 @@ const AdditionalLinks = ({
               for (const item of items) {
                 if (!item?.value || item.value.trim() === '') continue;
                 if (item.type === 'url') {
-                  try {
-                    const url = new URL(item.value.startsWith('http') ? item.value : `https://${item.value}`);
-                    if (!url.hostname || url.hostname.indexOf('.') === -1) {
-                      return Promise.reject(new Error(''));
-                    }
-                  } catch {
+                  if (!urlValidator(item.value)) {
                     return Promise.reject(new Error(''));
                   }
                 } else if (item.type === 'email') {
