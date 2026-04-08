@@ -1,4 +1,5 @@
 import { dataTypes, formTypes } from '../constants/formFields';
+import { urlProtocolCheck } from '../components/Input/Common/input.settings';
 import { filterUneditedFallbackValues } from './removeUneditedFallbackValues';
 
 const write = (object, path, value) => {
@@ -66,14 +67,14 @@ export const formPayloadHandler = (
         else return { [mappedField]: value };
 
       case dataTypes.URI_STRING:
-        return write({}, currentMappedField?.concat(['uri']), value ?? '');
+        return write({}, currentMappedField?.concat(['uri']), urlProtocolCheck(value) || '');
 
       case dataTypes.IDENTITY_STRING:
         return write({}, currentMappedField?.concat(['entityId']), value ?? '');
 
       case dataTypes.URI_STRING_ARRAY:
         if (value?.length > 0) {
-          payload = value?.filter((link) => link != undefined);
+          payload = value?.filter((link) => link != undefined).map((link) => urlProtocolCheck(link));
           return { [mappedField]: payload };
         } else return { [mappedField]: [] };
 
@@ -92,7 +93,7 @@ export const formPayloadHandler = (
             }
             if (!labelType || !(link?.value && link?.value.trim() !== '')) return null;
             return {
-              [labelType]: link?.value,
+              [labelType]: labelType === 'uri' ? urlProtocolCheck(link?.value) : link?.value,
               name: link?.name,
             };
           });

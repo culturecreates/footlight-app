@@ -7,6 +7,7 @@ import StyledInput from '../Input/Common';
 import Outlined from '../Button/Outlined';
 import { placeHolderCollectionCreator } from '../../utils/MultiLingualFormItemSupportFunctions';
 import { dataTypes } from '../../constants/formFields';
+import { urlProtocolCheck, urlValidator } from '../Input/Common/input.settings';
 
 const { TextArea } = Input;
 
@@ -86,13 +87,7 @@ const AdditionalLinks = ({
           return;
         }
       } else if (type === 'url') {
-        try {
-          const url = new URL(value.startsWith('http') ? value : `https://${value}`);
-          if (!url.hostname || url.hostname.indexOf('.') === -1) {
-            callback(t('common.components.additionalLinks.validations.url'));
-            return;
-          }
-        } catch (e) {
+        if (!urlValidator(value)) {
           callback(t('common.components.additionalLinks.validations.url'));
           return;
         }
@@ -107,7 +102,28 @@ const AdditionalLinks = ({
       {position === 'top' && datatype === dataTypes.ADDITIONAL_LINKS && (
         <p className="add-event-date-heading">{userTips}</p>
       )}
-      <Form.List name={name}>
+      <Form.List
+        name={name}
+        rules={[
+          {
+            validator: async (_, items) => {
+              if (!items) return;
+              for (const item of items) {
+                if (!item?.value || item.value.trim() === '') continue;
+                if (item.type === 'url') {
+                  if (!urlValidator(item.value)) {
+                    return Promise.reject(new Error(''));
+                  }
+                } else if (item.type === 'email') {
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  if (!emailRegex.test(item.value)) {
+                    return Promise.reject(new Error(''));
+                  }
+                }
+              }
+            },
+          },
+        ]}>
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name: fieldName, ...restField }, index) => {
@@ -161,12 +177,29 @@ const AdditionalLinks = ({
                                 validator: validateInput,
                               },
                             ]}
-                            validateTrigger={['onBlur', 'onSubmit']}
+                            validateTrigger={['onSubmit']}
                             style={{ flex: 1, marginBottom: 0, width: '100%' }}>
                             <StyledInput
                               autoComplete="off"
                               placeholder={currentType === 'email' ? placeholder?.email : placeholder?.url}
                               data-cy="input-additional-link"
+                              onBlur={(e) => {
+                                if (currentType === 'url') {
+                                  const normalized = urlProtocolCheck(e.target.value);
+                                  if (normalized !== e.target.value) {
+                                    const currentFields = form.getFieldValue(name);
+                                    form.setFieldsValue({
+                                      [name]: currentFields.map((item, i) =>
+                                        i === fieldName ? { ...item, value: normalized } : item,
+                                      ),
+                                    });
+                                  }
+                                }
+                                const fieldPath = Array.isArray(name)
+                                  ? [...name, fieldName, 'value']
+                                  : [name, fieldName, 'value'];
+                                form.validateFields([fieldPath]);
+                              }}
                             />
                           </Form.Item>
                         );
