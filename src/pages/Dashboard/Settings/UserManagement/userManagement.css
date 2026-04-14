@@ -89,6 +89,15 @@
   padding-top: 24px;
 }
 
+.user-management-wrapper .user-management-sticky-controls {
+  position: sticky;
+  top: 190px;
+  z-index: 8;
+  background: #fff;
+  box-shadow: 0 -30px 0 0 #fff;
+  padding-bottom: 8px;
+}
+
 .user-management-wrapper .invitation-details-text-prologue {
   color: var(--content-neutral-secondary, #646d7b);
   font-size: 12px;

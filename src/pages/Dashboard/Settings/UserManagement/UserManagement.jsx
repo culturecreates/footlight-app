@@ -498,7 +498,7 @@ const UserManagement = (props) => {
 
   return (
     <Row gutter={[10, 24]} className="user-management-wrapper">
-      <Col span={24}>
+      <Col span={24} className="user-management-sticky-controls">
         <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
           <Col flex={'auto'}>
             <Row gutter={[8, 8]} align="middle">

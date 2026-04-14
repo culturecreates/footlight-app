@@ -1,3 +1,33 @@
+.event-read-only-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9faff;
+  padding-top: 34px;
+  padding-bottom: 8px;
+  width: 100%;
+}
+
+@media only screen and (max-width: 767px) {
+  .event-read-only-sticky-header {
+    padding-top: 0;
+  }
+}
+
+/* ant-tabs sets overflow: hidden by default which blocks sticky on .ant-tabs-nav */
+.events-read-only-wrapper .read-only-tab-layout,
+.events-read-only-wrapper .ant-tabs-content-holder,
+.events-read-only-wrapper .ant-tabs-content {
+  overflow: visible !important;
+}
+
+.read-only-tab-layout .ant-tabs-nav {
+  position: sticky;
+  top: var(--event-read-only-header-height, 0px);
+  z-index: 9;
+  background: #f9faff;
+}
+
 .read-only-wrapper .read-only-event-heading h4 {
   font-weight: 700;
   font-size: 34px;

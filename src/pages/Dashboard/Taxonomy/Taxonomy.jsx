@@ -280,236 +280,242 @@ const Taxonomy = () => {
       )}
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper ">
         <Col span={24}>
-          <Row justify="space-between" gutter={16} align="top" style={{ marginBottom: 16 }}>
-            <Col>
-              <div className="events-heading-wrapper">
-                <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
-                  {t('dashboard.taxonomy.listing.heading')}
-                </h4>
-              </div>
-            </Col>
-
-            {adminCheckHandler({ calendar, user }) && (
-              <Col style={{ display: 'flex', gap: '12px' }}>
-                <EntityReports
-                  entity={entitiesClass.taxonomy}
-                  includedDropdownKeys={[REPORT_ACTION_KEY]}
-                  immediateDownload={true}
-                />
-                <ReadOnlyProtectedComponent creator={user?.id}>
-                  <AddEvent
-                    disabled={isReadOnly ? true : false}
-                    label={t('dashboard.taxonomy.listing.addNew')}
-                    onClick={addTaxonomyHandler}
-                    data-cy="button-add-taxonomy"
-                  />
-                </ReadOnlyProtectedComponent>
+          <div className="taxonomy-sticky-header">
+            <Row justify="space-between" gutter={16} align="top" style={{ marginBottom: 16 }}>
+              <Col>
+                <div className="events-heading-wrapper">
+                  <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
+                    {t('dashboard.taxonomy.listing.heading')}
+                  </h4>
+                </div>
               </Col>
-            )}
-          </Row>
-          <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: screens.md ? 16 : 8 }}>
-            <Col flex={'auto'}>
-              <Row gutter={[16, 8]} align="middle">
-                <Col flex="423px">
-                  <UserSearch
-                    placeholder={t('dashboard.taxonomy.listing.search')}
-                    onPressEnter={(e) => onSearchHandler(e)}
-                    defaultValue={filters.query}
-                    allowClear={true}
-                    onChange={onSearchChangeHandler}
-                    data-cy="input-taxonomy-search"
-                  />
-                </Col>
-                <Col>
-                  <Row align="middle" className="sort-option-row" gutter={8}>
-                    <span
-                      style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}
-                      data-cy="span-taxonomy-sort-title">
-                      {t('dashboard.settings.userManagement.sort')}
-                    </span>
 
-                    <Dropdown
-                      data-cy="dropdown-taxonomy-sort"
-                      overlayClassName="filter-sort-dropdown-wrapper"
-                      overlayStyle={{ minWidth: '200px' }}
-                      getPopupContainer={(trigger) => trigger.parentNode}
-                      menu={{
-                        items: sortByOptionsTaxonomy,
-                        selectedKeys: [filters?.sort],
-                        selectable: true,
-                        onSelect: onSortSelect,
-                      }}
-                      trigger={['click']}>
-                      <Button size="large" className="filter-sort-button" data-cy="button-taxonomy-sort">
-                        <Space>
-                          {sortByOptionsTaxonomy?.map((sortBy, index) => {
-                            if (sortBy?.key === filters?.sort) return <span key={index}>{sortBy?.label}</span>;
-                          })}
-                          <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                        </Space>
-                      </Button>
-                    </Dropdown>
-                    <Button
-                      className="filter-sort-button"
-                      style={{ borderColor: filters?.order && '#1B3DE6' }}
-                      onClick={handleSortOrderChange}
-                      icon={
-                        filters?.order === sortOrder?.ASC ? (
-                          <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                        ) : (
-                          filters?.order === sortOrder?.DESC && (
-                            <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                          )
-                        )
-                      }
-                      size={'large'}
-                      data-cy="button-taxonomy-sort-order"
-                    />
-                  </Row>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-          <Row gutter={[16, 16]}>
-            <Col>
-              <SearchableCheckbox
-                data-cy="search-checkbox-taxonomy-class"
-                overlayClassName="filter-sort-dropdown-wrapper"
-                getPopupContainer={(trigger) => trigger.parentNode}
-                overlayStyle={{ minWidth: '200px' }}
-                onFilterChange={classFilterChangeHandler}
-                data={taxonomyClassTranslations?.map((classType) => {
-                  return {
-                    key: classType.key,
-                    label: (
-                      <Checkbox
-                        value={classType.key}
-                        key={classType.key}
-                        style={{ marginLeft: '8px' }}
-                        data-cy="checkbox-taxonomy-class">
-                        {classType.label}
-                      </Checkbox>
-                    ),
-                    filtervalue: classType.key,
-                  };
-                })}
-                allowSearch={false}
-                value={filters?.class}
-                trigger={['click']}>
-                <Button
-                  data-cy="button-taxonomy-class-type"
-                  size="large"
-                  className="filter-buttons"
-                  style={{ borderColor: filters?.class?.length > 0 && filters?.class[0] !== '' && '#607EFC' }}>
-                  {t('dashboard.taxonomy.listing.classType')}
-                  {filters?.class?.length > 0 && (
-                    <>
-                      &nbsp;
-                      <Badge
-                        count={filters?.class?.length > 0 && filters?.class[0] !== '' ? filters?.class?.length : <></>}
-                        showZero={false}
-                        color="#1B3DE6"
-                      />
-                    </>
-                  )}
-                </Button>
-              </SearchableCheckbox>
-            </Col>
-            <Col>
-              {(filters.order !== sortOrder.ASC ||
-                filters.sort !== `${sortByOptionsTaxonomy[0].key}` ||
-                (filters?.class?.length > 0 && filters?.class[0] !== '')) && (
-                <Button
-                  data-cy="button-taxonomy-filter-clear"
-                  size="large"
-                  className="filter-buttons"
-                  style={{ color: '#1B3DE6' }}
-                  onClick={filterClearHandler}>
-                  {t('dashboard.events.filter.clear')}&nbsp;
-                  <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                </Button>
-              )}
-            </Col>
-          </Row>
-        </Col>
-        {!isTaxonomyFetching && !deleteTaxonomyLoading ? (
-          <Col flex={'832px'}>
-            <Row>
-              <Col span={24}>
-                {allTaxonomy?.data.length && !isTaxonomyFetching > 0 ? (
-                  <List
-                    data-cy="list-taxonomy"
-                    className={`event-list-wrapper responsvie-list-wrapper-class ${
-                      adminCheckHandler({ calendar, user }) ? '' : 'non-admin-class'
-                    }`}
-                    itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                    dataSource={allTaxonomy?.data}
-                    bordered={false}
-                    pagination={{
-                      onChange: (page) => {
-                        setPageNumber(page);
-                        window.scrollTo({
-                          top: 0,
-                          left: 0,
-                          behavior: 'smooth',
-                        });
-                      },
-                      pageSize: 10,
-                      hideOnSinglePage: true,
-                      total: totalCount,
-                      current: Number(pageNumber),
-                      showSizeChanger: false,
-                    }}
-                    renderItem={(item, index) => (
-                      <ListItem
-                        data-cy="list-item-taxonomy"
-                        key={index}
-                        id={index}
-                        styles={handleListCardStyles()}
-                        logo={item?.logo?.thumbnail?.uri}
-                        defaultLogo={<TagOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
-                        title={contentLanguageBilingual({
-                          data: item?.name,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        description={contentLanguageBilingual({
-                          data: item?.disambiguatingDescription,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        createdDate={item?.creator?.date}
-                        createdByUserName={item?.creator?.userName}
-                        updatedDate={item?.modifier?.date}
-                        updatedByUserName={item?.modifier?.userName}
-                        listItemHandler={() => listItemHandler(item?.id)}
-                        actions={[
-                          adminCheckHandler({ calendar, user }) && !isReadOnly && (
-                            <DeleteOutlined
-                              data-cy="icon-taxonomy-delete"
-                              key={'delete-icon'}
-                              style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteTaxonomyHandler(item?.id);
-                              }}
-                            />
-                          ),
-                        ]}
-                      />
-                    )}
+              {adminCheckHandler({ calendar, user }) && (
+                <Col style={{ display: 'flex', gap: '12px' }}>
+                  <EntityReports
+                    entity={entitiesClass.taxonomy}
+                    includedDropdownKeys={[REPORT_ACTION_KEY]}
+                    immediateDownload={true}
                   />
-                ) : (
-                  <NoContent style={{ height: '200px' }} />
+                  <ReadOnlyProtectedComponent creator={user?.id}>
+                    <AddEvent
+                      disabled={isReadOnly ? true : false}
+                      label={t('dashboard.taxonomy.listing.addNew')}
+                      onClick={addTaxonomyHandler}
+                      data-cy="button-add-taxonomy"
+                    />
+                  </ReadOnlyProtectedComponent>
+                </Col>
+              )}
+            </Row>
+            <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: screens.md ? 16 : 8 }}>
+              <Col flex={'auto'}>
+                <Row gutter={[16, 8]} align="middle">
+                  <Col flex="423px">
+                    <UserSearch
+                      placeholder={t('dashboard.taxonomy.listing.search')}
+                      onPressEnter={(e) => onSearchHandler(e)}
+                      defaultValue={filters.query}
+                      allowClear={true}
+                      onChange={onSearchChangeHandler}
+                      data-cy="input-taxonomy-search"
+                    />
+                  </Col>
+                  <Col>
+                    <Row align="middle" className="sort-option-row" gutter={8}>
+                      <span
+                        style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}
+                        data-cy="span-taxonomy-sort-title">
+                        {t('dashboard.settings.userManagement.sort')}
+                      </span>
+
+                      <Dropdown
+                        data-cy="dropdown-taxonomy-sort"
+                        overlayClassName="filter-sort-dropdown-wrapper"
+                        overlayStyle={{ minWidth: '200px' }}
+                        getPopupContainer={(trigger) => trigger.parentNode}
+                        menu={{
+                          items: sortByOptionsTaxonomy,
+                          selectedKeys: [filters?.sort],
+                          selectable: true,
+                          onSelect: onSortSelect,
+                        }}
+                        trigger={['click']}>
+                        <Button size="large" className="filter-sort-button" data-cy="button-taxonomy-sort">
+                          <Space>
+                            {sortByOptionsTaxonomy?.map((sortBy, index) => {
+                              if (sortBy?.key === filters?.sort) return <span key={index}>{sortBy?.label}</span>;
+                            })}
+                            <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                          </Space>
+                        </Button>
+                      </Dropdown>
+                      <Button
+                        className="filter-sort-button"
+                        style={{ borderColor: filters?.order && '#1B3DE6' }}
+                        onClick={handleSortOrderChange}
+                        icon={
+                          filters?.order === sortOrder?.ASC ? (
+                            <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                          ) : (
+                            filters?.order === sortOrder?.DESC && (
+                              <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                            )
+                          )
+                        }
+                        size={'large'}
+                        data-cy="button-taxonomy-sort-order"
+                      />
+                    </Row>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row gutter={[16, 16]}>
+              <Col>
+                <SearchableCheckbox
+                  data-cy="search-checkbox-taxonomy-class"
+                  overlayClassName="filter-sort-dropdown-wrapper"
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  overlayStyle={{ minWidth: '200px' }}
+                  onFilterChange={classFilterChangeHandler}
+                  data={taxonomyClassTranslations?.map((classType) => {
+                    return {
+                      key: classType.key,
+                      label: (
+                        <Checkbox
+                          value={classType.key}
+                          key={classType.key}
+                          style={{ marginLeft: '8px' }}
+                          data-cy="checkbox-taxonomy-class">
+                          {classType.label}
+                        </Checkbox>
+                      ),
+                      filtervalue: classType.key,
+                    };
+                  })}
+                  allowSearch={false}
+                  value={filters?.class}
+                  trigger={['click']}>
+                  <Button
+                    data-cy="button-taxonomy-class-type"
+                    size="large"
+                    className="filter-buttons"
+                    style={{ borderColor: filters?.class?.length > 0 && filters?.class[0] !== '' && '#607EFC' }}>
+                    {t('dashboard.taxonomy.listing.classType')}
+                    {filters?.class?.length > 0 && (
+                      <>
+                        &nbsp;
+                        <Badge
+                          count={
+                            filters?.class?.length > 0 && filters?.class[0] !== '' ? filters?.class?.length : <></>
+                          }
+                          showZero={false}
+                          color="#1B3DE6"
+                        />
+                      </>
+                    )}
+                  </Button>
+                </SearchableCheckbox>
+              </Col>
+              <Col>
+                {(filters.order !== sortOrder.ASC ||
+                  filters.sort !== `${sortByOptionsTaxonomy[0].key}` ||
+                  (filters?.class?.length > 0 && filters?.class[0] !== '')) && (
+                  <Button
+                    data-cy="button-taxonomy-filter-clear"
+                    size="large"
+                    className="filter-buttons"
+                    style={{ color: '#1B3DE6' }}
+                    onClick={filterClearHandler}>
+                    {t('dashboard.events.filter.clear')}&nbsp;
+                    <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                  </Button>
                 )}
               </Col>
             </Row>
-          </Col>
-        ) : (
-          <div style={{ width: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <LoadingIndicator data-cy="loading-indicator-taxonomy-list" />
           </div>
-        )}
+          <Row className="events-content">
+            {!isTaxonomyFetching && !deleteTaxonomyLoading ? (
+              <Col flex={'832px'}>
+                <Row>
+                  <Col span={24}>
+                    {allTaxonomy?.data.length && !isTaxonomyFetching > 0 ? (
+                      <List
+                        data-cy="list-taxonomy"
+                        className={`event-list-wrapper responsvie-list-wrapper-class ${
+                          adminCheckHandler({ calendar, user }) ? '' : 'non-admin-class'
+                        }`}
+                        itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+                        dataSource={allTaxonomy?.data}
+                        bordered={false}
+                        pagination={{
+                          onChange: (page) => {
+                            setPageNumber(page);
+                            window.scrollTo({
+                              top: 0,
+                              left: 0,
+                              behavior: 'smooth',
+                            });
+                          },
+                          pageSize: 10,
+                          hideOnSinglePage: true,
+                          total: totalCount,
+                          current: Number(pageNumber),
+                          showSizeChanger: false,
+                        }}
+                        renderItem={(item, index) => (
+                          <ListItem
+                            data-cy="list-item-taxonomy"
+                            key={index}
+                            id={index}
+                            styles={handleListCardStyles()}
+                            logo={item?.logo?.thumbnail?.uri}
+                            defaultLogo={<TagOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
+                            title={contentLanguageBilingual({
+                              data: item?.name,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            description={contentLanguageBilingual({
+                              data: item?.disambiguatingDescription,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            createdDate={item?.creator?.date}
+                            createdByUserName={item?.creator?.userName}
+                            updatedDate={item?.modifier?.date}
+                            updatedByUserName={item?.modifier?.userName}
+                            listItemHandler={() => listItemHandler(item?.id)}
+                            actions={[
+                              adminCheckHandler({ calendar, user }) && !isReadOnly && (
+                                <DeleteOutlined
+                                  data-cy="icon-taxonomy-delete"
+                                  key={'delete-icon'}
+                                  style={{ color: '#222732', fontSize: '24px' }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteTaxonomyHandler(item?.id);
+                                  }}
+                                />
+                              ),
+                            ]}
+                          />
+                        )}
+                      />
+                    ) : (
+                      <NoContent style={{ height: '200px' }} />
+                    )}
+                  </Col>
+                </Row>
+              </Col>
+            ) : (
+              <div style={{ width: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <LoadingIndicator data-cy="loading-indicator-taxonomy-list" />
+              </div>
+            )}
+          </Row>
+        </Col>
       </Row>
     </FeatureFlag>
   );

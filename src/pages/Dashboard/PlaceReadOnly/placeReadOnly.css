@@ -1,3 +1,33 @@
+.place-read-only-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9faff;
+  padding-top: 34px;
+  padding-bottom: 8px;
+  width: 100%;
+}
+
+@media only screen and (max-width: 767px) {
+  .place-read-only-sticky-header {
+    padding-top: 0;
+  }
+}
+
+/* ant-tabs sets overflow: hidden by default which blocks sticky on .ant-tabs-nav */
+.place-read-only .read-only-tab-layout,
+.place-read-only .ant-tabs-content-holder,
+.place-read-only .ant-tabs-content {
+  overflow: visible !important;
+}
+
+.place-read-only .read-only-tab-layout .ant-tabs-nav {
+  position: sticky;
+  top: var(--place-read-only-header-height, 0px);
+  z-index: 9;
+  background: #f9faff;
+}
+
 .place-read-only .read-only-detail-heading {
   font-size: 24px;
 }

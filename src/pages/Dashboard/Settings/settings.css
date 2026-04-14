@@ -1,3 +1,25 @@
+.settings-wrapper .settings-heading-col {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  padding-top: 34px;
+  padding-bottom: 8px;
+}
+
+.settings-wrapper .ant-tabs-nav {
+  position: sticky;
+  top: 112px;
+  z-index: 9;
+  background: #fff;
+}
+
+.settings-wrapper .ant-tabs-content-holder,
+.settings-wrapper .ant-tabs-content,
+.settings-wrapper .ant-tabs-tabpane {
+  overflow: visible;
+}
+
 .settings-wrapper .settings-heading {
   font-weight: 700;
   white-space: nowrap;

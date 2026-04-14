@@ -130,7 +130,7 @@ const Settings = () => {
       <RouteLeavingGuard isBlocking={isFormDirty} />
       {currentCalendarData && (
         <Row className="settings-wrapper">
-          <Col span={24}>
+          <Col span={24} className="settings-heading-col">
             <h4 className="settings-heading" data-cy="heading-settings-title">
               {t('dashboard.settings.heading')}
             </h4>

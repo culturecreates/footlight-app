@@ -12,6 +12,21 @@
   padding-top: 24px;
 }
 
+.events-wrapper .events-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  padding-top: 34px; /* visual top spacing (Content's padding-top was removed on desktop) */
+  padding-bottom: 8px;
+}
+
+@media only screen and (max-width: 767px) {
+  .events-wrapper .events-sticky-header {
+    padding-top: 0; /* Content keeps its padding-top: 32px on mobile */
+  }
+}
+
 .events-wrapper .filter-buttons {
   background-color: #f9faff;
   border: 1px solid #b6c1c9;

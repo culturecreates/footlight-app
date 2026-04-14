@@ -674,502 +674,510 @@ function Events() {
   return !isLoading && currentCalendarData && !taxonomyLoading ? (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={24} className="events-wrapper-cloumn">
-        <Col style={{ paddingLeft: 0 }}>
-          <Row justify="space-between" align={'middle'} style={{ marginBottom: '16px' }}>
-            <Col>
-              <div className="events-heading-wrapper">
-                <h4 className="events-heading" data-cy="heading-events-list" style={{ margin: '0px' }}>
-                  {t('dashboard.events.heading')}
-                </h4>
+        <div className="events-sticky-header">
+          <Col style={{ paddingLeft: 0 }}>
+            <Row justify="space-between" align={'middle'} style={{ marginBottom: '16px' }}>
+              <Col>
+                <div className="events-heading-wrapper">
+                  <h4 className="events-heading" data-cy="heading-events-list" style={{ margin: '0px' }}>
+                    {t('dashboard.events.heading')}
+                  </h4>
+                </div>
+              </Col>
+              <Row align={'middle'} gutter={[12, 0]}>
+                <EntityReports
+                  entity={entitiesClass.event}
+                  includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY, DATABASE_ACTION_KEY, EXPORT_ACTION_KEY]}
+                />
+                <Col style={{ display: 'flex', alignItems: 'center' }}>
+                  <AddEvent
+                    disabled={isReadOnly ? true : false}
+                    label={t('dashboard.events.addEvent')}
+                    onClick={addEventHandler}
+                    data-cy="button-add-new-event"
+                  />
+                </Col>
+              </Row>
+            </Row>
+          </Col>
+          <Row gutter={[20, 20]}>
+            <Col xs={24} sm={24} md={12} lg={10} xl={8}>
+              <EventsSearch
+                placeholder={t('dashboard.events.searchPlaceholder')}
+                onPressEnter={(e) => onSearchHandler(e)}
+                defaultValue={eventSearchQuery}
+                allowClear={true}
+                onChange={onChangeHandler}
+                data-cy="input-search-events"
+              />
+            </Col>
+            <Col style={{ ...(!screens.md && { marginTop: '-6px' }) }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span style={{ fontSize: '16px', fontWeight: 700 }} data-cy="span-sort-by-text">
+                  {t('dashboard.events.filter.sort.sortBy')}
+                </span>
+
+                <Dropdown
+                  overlayClassName="filter-sort-dropdown-wrapper"
+                  overlayStyle={{ minWidth: '200px' }}
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  menu={{
+                    items: sortByOptions,
+                    selectable: true,
+                    selectedKeys: [filter?.sort],
+                    onSelect: onSortSelect,
+                  }}
+                  trigger={['click']}>
+                  <Button size="large" className="filter-sort-button" data-cy="button-sort-by">
+                    <Space>
+                      {sortByOptions?.map((sortBy, index) => {
+                        if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
+                      })}
+                      <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                    </Space>
+                  </Button>
+                </Dropdown>
+
+                <Button
+                  className="filter-sort-button"
+                  style={{ borderColor: filter?.order && '#1B3DE6' }}
+                  onClick={onSortOrderChange}
+                  icon={
+                    filter?.order === sortOrder?.ASC ? (
+                      <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                    ) : (
+                      filter?.order === sortOrder?.DESC && (
+                        <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                      )
+                    )
+                  }
+                  size={'large'}
+                  data-cy="button-sort-order"
+                />
               </div>
             </Col>
-            <Row align={'middle'} gutter={[12, 0]}>
-              <EntityReports
-                entity={entitiesClass.event}
-                includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY, DATABASE_ACTION_KEY, EXPORT_ACTION_KEY]}
-              />
-              <Col style={{ display: 'flex', alignItems: 'center' }}>
-                <AddEvent
-                  disabled={isReadOnly ? true : false}
-                  label={t('dashboard.events.addEvent')}
-                  onClick={addEventHandler}
-                  data-cy="button-add-new-event"
-                />
-              </Col>
-            </Row>
-          </Row>
-        </Col>
-        <Row gutter={[20, 20]}>
-          <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-            <EventsSearch
-              placeholder={t('dashboard.events.searchPlaceholder')}
-              onPressEnter={(e) => onSearchHandler(e)}
-              defaultValue={eventSearchQuery}
-              allowClear={true}
-              onChange={onChangeHandler}
-              data-cy="input-search-events"
-            />
-          </Col>
-          <Col style={{ ...(!screens.md && { marginTop: '-6px' }) }}>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '16px', fontWeight: 700 }} data-cy="span-sort-by-text">
-                {t('dashboard.events.filter.sort.sortBy')}
-              </span>
 
-              <Dropdown
-                overlayClassName="filter-sort-dropdown-wrapper"
-                overlayStyle={{ minWidth: '200px' }}
-                getPopupContainer={(trigger) => trigger.parentNode}
-                menu={{
-                  items: sortByOptions,
-                  selectable: true,
-                  selectedKeys: [filter?.sort],
-                  onSelect: onSortSelect,
-                }}
-                trigger={['click']}>
-                <Button size="large" className="filter-sort-button" data-cy="button-sort-by">
-                  <Space>
-                    {sortByOptions?.map((sortBy, index) => {
-                      if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
-                    })}
-                    <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                  </Space>
-                </Button>
-              </Dropdown>
-
-              <Button
-                className="filter-sort-button"
-                style={{ borderColor: filter?.order && '#1B3DE6' }}
-                onClick={onSortOrderChange}
-                icon={
-                  filter?.order === sortOrder?.ASC ? (
-                    <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                  ) : (
-                    filter?.order === sortOrder?.DESC && (
-                      <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                    )
-                  )
-                }
-                size={'large'}
-                data-cy="button-sort-order"
-              />
-            </div>
-          </Col>
-
-          <Col span={24} className="filter-container">
-            <Row gutter={[16, 8]}>
-              <Space>
-                <Col>
+            <Col span={24} className="filter-container">
+              <Row gutter={[16, 8]}>
+                <Space>
+                  <Col>
+                    <SearchableCheckbox
+                      onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
+                      data={eventPublishStateOptions?.map((publication) => {
+                        return {
+                          key: publication.key,
+                          label: (
+                            <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
+                              {publication.title}
+                            </Checkbox>
+                          ),
+                          filtervalue: publication.value,
+                        };
+                      })}
+                      value={filter?.publication}>
+                      <Button
+                        size="large"
+                        className="filter-buttons"
+                        style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}
+                        data-cy="button-filter-publication">
+                        {t('dashboard.events.filter.publication.label')}
+                        {filter?.publication?.length > 0 && (
+                          <>
+                            &nbsp;
+                            <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                          </>
+                        )}
+                      </Button>
+                    </SearchableCheckbox>
+                  </Col>
+                </Space>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
-                    onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
-                    data={eventPublishStateOptions?.map((publication) => {
+                    allowSearch={true}
+                    loading={allUsersLoading}
+                    open={isUserOpen}
+                    setOpen={setIsUserOpen}
+                    selectedData={selectedUsersData}
+                    overlayStyle={{ height: '304px' }}
+                    searchImplementation={debounceUsersSearch}
+                    setSearchKey={setSearchKey}
+                    onOpenChangeHandler={() => {
+                      if (!allUsersSuccess && (usersData.length === 0 || usersData.length === 1)) {
+                        let allUsersWithSelected = [];
+                        if (user?.id !== '' && user?.id) {
+                          getAllUsers({
+                            page: 1,
+                            limit: 30,
+                            query: '',
+                            filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+                            sessionId: timestampRef,
+                            calendarId: calendarId,
+                            includeCalenderFilter: true,
+                          })
+                            .unwrap()
+                            .then((response) => {
+                              allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(response?.data);
+                              allUsersWithSelected = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+                              if (userFilter?.length > 0) {
+                                let userIds = new URLSearchParams();
+                                userFilter?.forEach((userId) => userIds.append('ids', userId));
+                                getAllUsers({
+                                  page: 1,
+                                  limit: 30,
+                                  query: '',
+                                  filters: `sort=asc(${sortByOptionsUsers[1].key})&${userIds}`,
+                                  sessionId: timestampRef,
+                                  calendarId: calendarId,
+                                  includeCalenderFilter: true,
+                                })
+                                  .unwrap()
+                                  .then((response) => {
+                                    setSelectedUsersData(response?.data);
+                                    allUsersWithSelected = response?.data?.concat(allUsersWithSelected);
+                                    allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(allUsersWithSelected);
+                                    let uniqueArray = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+                                    setUsersData(uniqueArray);
+                                  })
+                                  .catch((error) => console.log(error));
+                              } else setUsersData(allUsersWithSelected);
+                            })
+                            .catch((error) => console.log(error));
+                        }
+                      }
+                    }}
+                    searchKey={searchKey}
+                    data={usersData?.map((userDetail) => {
                       return {
-                        key: publication.key,
+                        key: userDetail?._id,
                         label: (
-                          <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
-                            {publication.title}
-                          </Checkbox>
+                          <>
+                            <Checkbox
+                              value={userDetail?._id}
+                              key={userDetail?._id}
+                              style={{ marginLeft: '8px' }}
+                              onChange={(e) => onCheckboxChange(e)}>
+                              {user?.id == userDetail?._id
+                                ? t('dashboard.events.filter.users.myEvents')
+                                : userDetail?.userName}
+                            </Checkbox>
+                            {user?.id == userDetail?._id && <Divider style={{ margin: 8 }} />}
+                          </>
                         ),
-                        filtervalue: publication.value,
+                        filtervalue: userDetail?.userName,
                       };
                     })}
-                    value={filter?.publication}>
+                    value={userFilter}>
                     <Button
                       size="large"
                       className="filter-buttons"
-                      style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}
-                      data-cy="button-filter-publication">
-                      {t('dashboard.events.filter.publication.label')}
-                      {filter?.publication?.length > 0 && (
+                      style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}
+                      data-cy="button-filter-users">
+                      {t('dashboard.events.filter.users.label')}
+                      {userFilter?.length > 0 && (
                         <>
-                          &nbsp;
-                          <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                          &nbsp; <Badge count={userFilter?.length} showZero={false} color="#1B3DE6" />
                         </>
                       )}
                     </Button>
                   </SearchableCheckbox>
                 </Col>
-              </Space>
-              <Col className="event-filter-item-mobile-full-width">
-                <SearchableCheckbox
-                  allowSearch={true}
-                  loading={allUsersLoading}
-                  open={isUserOpen}
-                  setOpen={setIsUserOpen}
-                  selectedData={selectedUsersData}
-                  overlayStyle={{ height: '304px' }}
-                  searchImplementation={debounceUsersSearch}
-                  setSearchKey={setSearchKey}
-                  onOpenChangeHandler={() => {
-                    if (!allUsersSuccess && (usersData.length === 0 || usersData.length === 1)) {
-                      let allUsersWithSelected = [];
-                      if (user?.id !== '' && user?.id) {
-                        getAllUsers({
-                          page: 1,
+                <Col>
+                  <Popover
+                    placement="bottom"
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    content={
+                      <div style={{ display: 'flex', width: 'max-content' }}>
+                        <Radio.Group
+                          onChange={(e) => dateFilterHandler(e)}
+                          value={selectedDateType}
+                          style={{
+                            padding: '12px',
+                            borderRight: selectedDateType === dateFilterTypes.DATE_RANGE && '1px solid #B6C1C9',
+                          }}>
+                          <Space direction="vertical">
+                            {dateFilterOptions.map((option) => (
+                              <Radio value={option.type} key={option.type}>
+                                {option.label}
+                              </Radio>
+                            ))}
+                          </Space>
+                        </Radio.Group>
+
+                        {selectedDateType === dateFilterTypes.DATE_RANGE && (
+                          <RcCalendar
+                            onApply={(dates) => {
+                              setSelectedDates(dates);
+                              setFilter({ ...filter, dates: dates });
+                              setIsDatePopoverOpen(false);
+                            }}
+                            selectedValue={selectedDates?.length > 0 ? selectedDates : []}
+                            setSelectedValue={setSelectedDates}
+                          />
+                        )}
+                      </div>
+                    }
+                    trigger="click"
+                    overlayClassName="date-filter-popover"
+                    style={{ minWidth: '200px' }}
+                    open={isDatePopoverOpen}
+                    onOpenChange={(open) => setIsDatePopoverOpen(open)}>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: filter?.dates?.length > 0 > 0 && '#607EFC' }}
+                      data-cy="button-filter-dates">
+                      {t('dashboard.events.filter.dates.dates')}
+                      {filter?.dates?.length > 0 && (
+                        <>
+                          &nbsp; <Badge color="#1B3DE6" />
+                        </>
+                      )}
+                    </Button>
+                  </Popover>
+                </Col>
+                <Col className="event-filter-item-mobile-full-width">
+                  <SearchableCheckbox
+                    allowSearch={true}
+                    loading={organizerLoading}
+                    overlayStyle={{ height: '304px' }}
+                    selectedData={selectedOrganizersData}
+                    searchImplementation={debounceSearchOrganizationSearch}
+                    setSearchKey={setOrganizationSearchKey}
+                    searchKey={organizationSearchKey}
+                    open={isOrganizerOpen}
+                    onOpenChangeHandler={() => {
+                      if (!allOrgSuccess && (organizersData.length === 0 || organizersData.length === 1)) {
+                        let allOrganizersWithSelected = [];
+                        getAllOrganization({
+                          calendarId,
                           limit: 30,
-                          query: '',
-                          filters: `sort=asc(${sortByOptionsUsers[1].key})`,
                           sessionId: timestampRef,
-                          calendarId: calendarId,
-                          includeCalenderFilter: true,
+                          pageNumber: 1,
+                          query: '',
+                          sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
                         })
                           .unwrap()
                           .then((response) => {
-                            allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(response?.data);
-                            allUsersWithSelected = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
-                            if (userFilter?.length > 0) {
-                              let userIds = new URLSearchParams();
-                              userFilter?.forEach((userId) => userIds.append('ids', userId));
-                              getAllUsers({
-                                page: 1,
+                            allOrganizersWithSelected = response?.data;
+                            if (organizerFilter?.length > 0) {
+                              let organizerIds = new URLSearchParams();
+                              organizerFilter?.forEach((organizerId) => organizerIds.append('ids', organizerId));
+                              getAllOrganization({
+                                calendarId,
                                 limit: 30,
-                                query: '',
-                                filters: `sort=asc(${sortByOptionsUsers[1].key})&${userIds}`,
                                 sessionId: timestampRef,
-                                calendarId: calendarId,
-                                includeCalenderFilter: true,
+                                pageNumber: 1,
+                                query: '',
+                                sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
+                                ids: organizerIds,
                               })
                                 .unwrap()
                                 .then((response) => {
-                                  setSelectedUsersData(response?.data);
-                                  allUsersWithSelected = response?.data?.concat(allUsersWithSelected);
-                                  allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(allUsersWithSelected);
-                                  let uniqueArray = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
-                                  setUsersData(uniqueArray);
+                                  setSelectedOrganizersData(response?.data);
+                                  allOrganizersWithSelected = response?.data?.concat(allOrganizersWithSelected);
+                                  let uniqueArray = removeObjectArrayDuplicates(allOrganizersWithSelected, 'id');
+                                  setOrganizersData(uniqueArray);
                                 })
                                 .catch((error) => console.log(error));
-                            } else setUsersData(allUsersWithSelected);
-                          })
-                          .catch((error) => console.log(error));
+                            } else setOrganizersData(allOrganizersWithSelected);
+                          });
+                      }
+                    }}
+                    setOpen={setIsOrganizerOpen}
+                    data={organizersData?.map((organizer) => {
+                      return {
+                        key: organizer?.id,
+                        label: (
+                          <>
+                            <Checkbox
+                              value={organizer?.id}
+                              key={organizer?.id}
+                              style={{ marginLeft: '8px' }}
+                              onChange={(e) => onOrganizerCheckboxChange(e)}>
+                              {contentLanguageBilingual({
+                                data: organizer?.name,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                            </Checkbox>
+                          </>
+                        ),
+                        filtervalue: organizer?.id,
+                      };
+                    })}
+                    value={organizerFilter}>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: organizerFilter?.length > 0 && '#607EFC' }}
+                      data-cy="button-filter-users">
+                      {t('dashboard.events.filter.organizer.label')}
+                      {organizerFilter?.length > 0 && (
+                        <>
+                          &nbsp; <Badge count={organizerFilter?.length} showZero={false} color="#1B3DE6" />
+                        </>
+                      )}
+                    </Button>
+                  </SearchableCheckbox>
+                </Col>
+                {allTaxonomyData?.data?.length > 0 &&
+                  adminCheckHandler({ user, calendar }) &&
+                  allTaxonomyData?.data?.map((taxonomy, index) => {
+                    if (customFilters?.includes(taxonomy?.id)) {
+                      const isStandardEventTaxonomy =
+                        !taxonomy.isDynamicField &&
+                        standardTaxonomyMaps.some((m) => m.mappedToField === taxonomy.mappedToField);
+
+                      if (isStandardEventTaxonomy) {
+                        return (
+                          <Col key={index}>
+                            <Popover
+                              placement="bottom"
+                              getPopupContainer={(trigger) => trigger.parentNode}
+                              content={
+                                <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                                  <Col span={24}>
+                                    <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                      <Tree
+                                        checkable
+                                        autoExpandParent={true}
+                                        onCheck={(
+                                          checkedKeys,
+                                          { checked, checkedNodes, node, event, halfCheckedKeys },
+                                        ) =>
+                                          onStandardTaxonomyCheck({
+                                            checkedKeys,
+                                            checked,
+                                            checkedNodes,
+                                            node,
+                                            event,
+                                            halfCheckedKeys,
+                                            taxonomy: taxonomy?.mappedToField,
+                                          })
+                                        }
+                                        checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
+                                        treeData={treeTaxonomyOptions(
+                                          allTaxonomyData,
+                                          user,
+                                          taxonomy?.mappedToField,
+                                          false,
+                                          calendarContentLanguage,
+                                        )}
+                                      />
+                                    </div>
+                                  </Col>
+                                </Row>
+                              }
+                              trigger="click"
+                              overlayClassName="date-filter-popover">
+                              <Button
+                                size="large"
+                                className="filter-buttons"
+                                style={{
+                                  borderColor:
+                                    (standardTaxonomyFilter[taxonomy?.mappedToField]?.length ?? 0) > 0 && '#607EFC',
+                                }}
+                                data-cy="button-filter-dates">
+                                {bilingual({
+                                  data: taxonomy?.name,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                })}
+                                {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
+                                  <>
+                                    &nbsp; <Badge color="#1B3DE6" />
+                                  </>
+                                )}
+                              </Button>
+                            </Popover>
+                          </Col>
+                        );
+                      } else {
+                        return (
+                          <Col key={index}>
+                            <Popover
+                              placement="bottom"
+                              getPopupContainer={(trigger) => trigger.parentNode}
+                              content={
+                                <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                                  <Col span={24}>
+                                    <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                      <Tree
+                                        checkable
+                                        autoExpandParent={true}
+                                        onCheck={(
+                                          checkedKeys,
+                                          { checked, checkedNodes, node, event, halfCheckedKeys },
+                                        ) =>
+                                          onCheck({
+                                            checkedKeys,
+                                            checked,
+                                            checkedNodes,
+                                            node,
+                                            event,
+                                            halfCheckedKeys,
+                                            taxonomy: taxonomy?.id,
+                                          })
+                                        }
+                                        checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
+                                        treeData={treeDynamicTaxonomyOptions(
+                                          taxonomy?.concept,
+                                          user,
+                                          calendarContentLanguage,
+                                        )}
+                                      />
+                                    </div>
+                                  </Col>
+                                </Row>
+                              }
+                              trigger="click"
+                              overlayClassName="date-filter-popover">
+                              <Button
+                                size="large"
+                                className="filter-buttons"
+                                style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 && '#607EFC' }}
+                                data-cy="button-filter-dates">
+                                {bilingual({
+                                  data: taxonomy?.name,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                })}
+                                {taxonomyFilter[taxonomy?.id]?.length > 0 && (
+                                  <>
+                                    &nbsp; <Badge color="#1B3DE6" />
+                                  </>
+                                )}
+                              </Button>
+                            </Popover>
+                          </Col>
+                        );
                       }
                     }
-                  }}
-                  searchKey={searchKey}
-                  data={usersData?.map((userDetail) => {
-                    return {
-                      key: userDetail?._id,
-                      label: (
-                        <>
-                          <Checkbox
-                            value={userDetail?._id}
-                            key={userDetail?._id}
-                            style={{ marginLeft: '8px' }}
-                            onChange={(e) => onCheckboxChange(e)}>
-                            {user?.id == userDetail?._id
-                              ? t('dashboard.events.filter.users.myEvents')
-                              : userDetail?.userName}
-                          </Checkbox>
-                          {user?.id == userDetail?._id && <Divider style={{ margin: 8 }} />}
-                        </>
-                      ),
-                      filtervalue: userDetail?.userName,
-                    };
                   })}
-                  value={userFilter}>
-                  <Button
-                    size="large"
-                    className="filter-buttons"
-                    style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}
-                    data-cy="button-filter-users">
-                    {t('dashboard.events.filter.users.label')}
-                    {userFilter?.length > 0 && (
-                      <>
-                        &nbsp; <Badge count={userFilter?.length} showZero={false} color="#1B3DE6" />
-                      </>
-                    )}
-                  </Button>
-                </SearchableCheckbox>
-              </Col>
-              <Col>
-                <Popover
-                  placement="bottom"
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  content={
-                    <div style={{ display: 'flex', width: 'max-content' }}>
-                      <Radio.Group
-                        onChange={(e) => dateFilterHandler(e)}
-                        value={selectedDateType}
-                        style={{
-                          padding: '12px',
-                          borderRight: selectedDateType === dateFilterTypes.DATE_RANGE && '1px solid #B6C1C9',
-                        }}>
-                        <Space direction="vertical">
-                          {dateFilterOptions.map((option) => (
-                            <Radio value={option.type} key={option.type}>
-                              {option.label}
-                            </Radio>
-                          ))}
-                        </Space>
-                      </Radio.Group>
 
-                      {selectedDateType === dateFilterTypes.DATE_RANGE && (
-                        <RcCalendar
-                          onApply={(dates) => {
-                            setSelectedDates(dates);
-                            setFilter({ ...filter, dates: dates });
-                            setIsDatePopoverOpen(false);
-                          }}
-                          selectedValue={selectedDates?.length > 0 ? selectedDates : []}
-                          setSelectedValue={setSelectedDates}
-                        />
-                      )}
-                    </div>
-                  }
-                  trigger="click"
-                  overlayClassName="date-filter-popover"
-                  style={{ minWidth: '200px' }}
-                  open={isDatePopoverOpen}
-                  onOpenChange={(open) => setIsDatePopoverOpen(open)}>
-                  <Button
-                    size="large"
-                    className="filter-buttons"
-                    style={{ borderColor: filter?.dates?.length > 0 > 0 && '#607EFC' }}
-                    data-cy="button-filter-dates">
-                    {t('dashboard.events.filter.dates.dates')}
-                    {filter?.dates?.length > 0 && (
-                      <>
-                        &nbsp; <Badge color="#1B3DE6" />
-                      </>
-                    )}
-                  </Button>
-                </Popover>
-              </Col>
-              <Col className="event-filter-item-mobile-full-width">
-                <SearchableCheckbox
-                  allowSearch={true}
-                  loading={organizerLoading}
-                  overlayStyle={{ height: '304px' }}
-                  selectedData={selectedOrganizersData}
-                  searchImplementation={debounceSearchOrganizationSearch}
-                  setSearchKey={setOrganizationSearchKey}
-                  searchKey={organizationSearchKey}
-                  open={isOrganizerOpen}
-                  onOpenChangeHandler={() => {
-                    if (!allOrgSuccess && (organizersData.length === 0 || organizersData.length === 1)) {
-                      let allOrganizersWithSelected = [];
-                      getAllOrganization({
-                        calendarId,
-                        limit: 30,
-                        sessionId: timestampRef,
-                        pageNumber: 1,
-                        query: '',
-                        sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
-                      })
-                        .unwrap()
-                        .then((response) => {
-                          allOrganizersWithSelected = response?.data;
-                          if (organizerFilter?.length > 0) {
-                            let organizerIds = new URLSearchParams();
-                            organizerFilter?.forEach((organizerId) => organizerIds.append('ids', organizerId));
-                            getAllOrganization({
-                              calendarId,
-                              limit: 30,
-                              sessionId: timestampRef,
-                              pageNumber: 1,
-                              query: '',
-                              sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
-                              ids: organizerIds,
-                            })
-                              .unwrap()
-                              .then((response) => {
-                                setSelectedOrganizersData(response?.data);
-                                allOrganizersWithSelected = response?.data?.concat(allOrganizersWithSelected);
-                                let uniqueArray = removeObjectArrayDuplicates(allOrganizersWithSelected, 'id');
-                                setOrganizersData(uniqueArray);
-                              })
-                              .catch((error) => console.log(error));
-                          } else setOrganizersData(allOrganizersWithSelected);
-                        });
-                    }
-                  }}
-                  setOpen={setIsOrganizerOpen}
-                  data={organizersData?.map((organizer) => {
-                    return {
-                      key: organizer?.id,
-                      label: (
-                        <>
-                          <Checkbox
-                            value={organizer?.id}
-                            key={organizer?.id}
-                            style={{ marginLeft: '8px' }}
-                            onChange={(e) => onOrganizerCheckboxChange(e)}>
-                            {contentLanguageBilingual({
-                              data: organizer?.name,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                          </Checkbox>
-                        </>
-                      ),
-                      filtervalue: organizer?.id,
-                    };
-                  })}
-                  value={organizerFilter}>
-                  <Button
-                    size="large"
-                    className="filter-buttons"
-                    style={{ borderColor: organizerFilter?.length > 0 && '#607EFC' }}
-                    data-cy="button-filter-users">
-                    {t('dashboard.events.filter.organizer.label')}
-                    {organizerFilter?.length > 0 && (
-                      <>
-                        &nbsp; <Badge count={organizerFilter?.length} showZero={false} color="#1B3DE6" />
-                      </>
-                    )}
-                  </Button>
-                </SearchableCheckbox>
-              </Col>
-              {allTaxonomyData?.data?.length > 0 &&
-                adminCheckHandler({ user, calendar }) &&
-                allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (customFilters?.includes(taxonomy?.id)) {
-                    const isStandardEventTaxonomy =
-                      !taxonomy.isDynamicField &&
-                      standardTaxonomyMaps.some((m) => m.mappedToField === taxonomy.mappedToField);
-
-                    if (isStandardEventTaxonomy) {
-                      return (
-                        <Col key={index}>
-                          <Popover
-                            placement="bottom"
-                            getPopupContainer={(trigger) => trigger.parentNode}
-                            content={
-                              <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
-                                <Col span={24}>
-                                  <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
-                                    <Tree
-                                      checkable
-                                      autoExpandParent={true}
-                                      onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
-                                        onStandardTaxonomyCheck({
-                                          checkedKeys,
-                                          checked,
-                                          checkedNodes,
-                                          node,
-                                          event,
-                                          halfCheckedKeys,
-                                          taxonomy: taxonomy?.mappedToField,
-                                        })
-                                      }
-                                      checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
-                                      treeData={treeTaxonomyOptions(
-                                        allTaxonomyData,
-                                        user,
-                                        taxonomy?.mappedToField,
-                                        false,
-                                        calendarContentLanguage,
-                                      )}
-                                    />
-                                  </div>
-                                </Col>
-                              </Row>
-                            }
-                            trigger="click"
-                            overlayClassName="date-filter-popover">
-                            <Button
-                              size="large"
-                              className="filter-buttons"
-                              style={{
-                                borderColor:
-                                  (standardTaxonomyFilter[taxonomy?.mappedToField]?.length ?? 0) > 0 && '#607EFC',
-                              }}
-                              data-cy="button-filter-dates">
-                              {bilingual({
-                                data: taxonomy?.name,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
-                              {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
-                                <>
-                                  &nbsp; <Badge color="#1B3DE6" />
-                                </>
-                              )}
-                            </Button>
-                          </Popover>
-                        </Col>
-                      );
-                    } else {
-                      return (
-                        <Col key={index}>
-                          <Popover
-                            placement="bottom"
-                            getPopupContainer={(trigger) => trigger.parentNode}
-                            content={
-                              <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
-                                <Col span={24}>
-                                  <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
-                                    <Tree
-                                      checkable
-                                      autoExpandParent={true}
-                                      onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
-                                        onCheck({
-                                          checkedKeys,
-                                          checked,
-                                          checkedNodes,
-                                          node,
-                                          event,
-                                          halfCheckedKeys,
-                                          taxonomy: taxonomy?.id,
-                                        })
-                                      }
-                                      checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
-                                      treeData={treeDynamicTaxonomyOptions(
-                                        taxonomy?.concept,
-                                        user,
-                                        calendarContentLanguage,
-                                      )}
-                                    />
-                                  </div>
-                                </Col>
-                              </Row>
-                            }
-                            trigger="click"
-                            overlayClassName="date-filter-popover">
-                            <Button
-                              size="large"
-                              className="filter-buttons"
-                              style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 && '#607EFC' }}
-                              data-cy="button-filter-dates">
-                              {bilingual({
-                                data: taxonomy?.name,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
-                              {taxonomyFilter[taxonomy?.id]?.length > 0 && (
-                                <>
-                                  &nbsp; <Badge color="#1B3DE6" />
-                                </>
-                              )}
-                            </Button>
-                          </Popover>
-                        </Col>
-                      );
-                    }
-                  }
-                })}
-
-              <Col>
-                {(userFilter.length > 0 ||
-                  filter?.publication?.length > 0 ||
-                  filter?.dates?.length > 0 ||
-                  filter?.order === sortOrder?.DESC ||
-                  filter?.sort != sortByOptions[3]?.key ||
-                  organizerFilter?.length > 0 ||
-                  eventIds?.length > 0 ||
-                  Object.keys(taxonomyFilter)?.length > 0 ||
-                  Object.keys(standardTaxonomyFilter)?.length > 0) && (
-                  <Button
-                    size="large"
-                    className="filter-buttons"
-                    style={{ color: '#1B3DE6' }}
-                    onClick={filterClearHandler}
-                    data-cy="button-filter-clear">
-                    {t('dashboard.events.filter.clear')}&nbsp;
-                    <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                  </Button>
-                )}
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+                <Col>
+                  {(userFilter.length > 0 ||
+                    filter?.publication?.length > 0 ||
+                    filter?.dates?.length > 0 ||
+                    filter?.order === sortOrder?.DESC ||
+                    filter?.sort != sortByOptions[3]?.key ||
+                    organizerFilter?.length > 0 ||
+                    eventIds?.length > 0 ||
+                    Object.keys(taxonomyFilter)?.length > 0 ||
+                    Object.keys(standardTaxonomyFilter)?.length > 0) && (
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ color: '#1B3DE6' }}
+                      onClick={filterClearHandler}
+                      data-cy="button-filter-clear">
+                      {t('dashboard.events.filter.clear')}&nbsp;
+                      <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                    </Button>
+                  )}
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </div>
         <Row className="events-content">
           <Col flex="832px">
             {(isFetching || isActionLoading) && (
