@@ -654,7 +654,7 @@ function CreateNewPlace() {
             ...(isDataValid(description) ? { description } : { description: {} }),
             ...(isDataValid(accessibilityNote) && { accessibilityNote }),
             ...(isDataValid(disambiguatingDescription) && { disambiguatingDescription }),
-            ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
+            openingHours: values?.openingHours?.trim() ? { uri: urlProtocolCheck(values?.openingHours?.trim()) } : null,
             ...(values?.containedInPlace && {
               containedInPlace: containedInPlaceObj,
             }),
@@ -1234,7 +1234,8 @@ function CreateNewPlace() {
               placesOptions(initialContainsPlace, user, calendarContentLanguage, sourceOptions.CMS),
             );
           }
-          if (placeData?.openingHours) initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
+          if (placeData?.openingHours?.uri)
+            initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
           if (placeData?.accessibilityNote)
             initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
           form.setFieldsValue({
@@ -1362,7 +1363,7 @@ function CreateNewPlace() {
             placesOptions(initialContainsPlace, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
           );
         }
-        if (externalCalendarEntityData[0]?.openingHours)
+        if (externalCalendarEntityData[0]?.openingHours?.uri)
           initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
         if (externalCalendarEntityData[0]?.accessibilityNote)
           initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
@@ -2409,7 +2410,7 @@ function CreateNewPlace() {
                   rules={[
                     {
                       validator: (_, value) => {
-                        if (!value || value === '') return Promise.resolve();
+                        if (!value || value.trim() === '') return Promise.resolve();
                         return urlValidator(value)
                           ? Promise.resolve()
                           : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
@@ -2427,7 +2428,8 @@ function CreateNewPlace() {
                     autoComplete="off"
                     placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
                     onBlur={(e) => {
-                      const normalized = urlProtocolCheck(e.target.value);
+                      const trimmed = e.target.value.trim();
+                      const normalized = urlProtocolCheck(trimmed);
                       if (normalized !== e.target.value) {
                         form.setFieldValue(formFieldNames.OPENING_HOURS, normalized);
                         form.validateFields([formFieldNames.OPENING_HOURS]);
