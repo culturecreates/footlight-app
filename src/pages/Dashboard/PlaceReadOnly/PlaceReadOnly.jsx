@@ -191,7 +191,7 @@ function PlaceReadOnly() {
   }, [placeId]);
 
   useEffect(() => {
-    if (placeSuccess) {
+    if (placeData) {
       if (placeData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(placeData?.sameAs);
         getArtsDataPlace(sourceId);
@@ -253,7 +253,7 @@ function PlaceReadOnly() {
         );
       }
     }
-  }, [placeSuccess]);
+  }, [placeData]);
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
