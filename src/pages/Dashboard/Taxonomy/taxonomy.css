@@ -9,7 +9,7 @@
 
 @media only screen and (max-width: 767px) {
   .taxonomy-listing-wrapper .taxonomy-sticky-header {
-    padding-top: 0;
+    padding-top: 32px; /* matches Content's 32px top padding on mobile */
   }
 }
 

@@ -23,7 +23,7 @@
 
 @media only screen and (max-width: 767px) {
   .events-wrapper .events-sticky-header {
-    padding-top: 0; /* Content keeps its padding-top: 32px on mobile */
+    padding-top: 32px; /* matches Content's 32px top padding on mobile */
   }
 }
 
