@@ -55,6 +55,15 @@
   display: none;
 }
 
+@media only screen and (max-width: 767px) {
+  .settings-wrapper .settings-heading-col {
+    padding-top: 32px;
+  }
+  .settings-wrapper .ant-tabs-nav {
+    top: 80px;
+  }
+}
+
 @media screen and (max-width: 480px) {
   .settings-wrapper .settings-heading {
     font-size: 24px;
@@ -66,5 +75,9 @@
     line-height: 16px;
     letter-spacing: 0em;
     text-align: left;
+  }
+
+  .settings-wrapper .ant-tabs-nav {
+    top: 82px; /* heading: 32px pt + ~29px text + ~12px margin + 8px pb ≈ 82px */
   }
 }
