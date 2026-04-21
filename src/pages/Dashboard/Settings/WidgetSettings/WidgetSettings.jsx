@@ -751,7 +751,7 @@ const WidgetSettings = ({ tabKey }) => {
 
                       <Divider />
 
-                      <Col>
+                      <Col className="widget-section-heading-col">
                         <h4 className="heading" data-cy="widget-settings-title">
                           {t(`${localePath}.filterHeading`)}
                         </h4>
@@ -1014,7 +1014,7 @@ const WidgetSettings = ({ tabKey }) => {
 
                       <Divider />
 
-                      <Col>
+                      <Col className="widget-section-heading-col">
                         <h4 className="heading" data-cy="widget-settings-title">
                           {t(`${localePath}.codeSectionTitle`)}
                         </h4>

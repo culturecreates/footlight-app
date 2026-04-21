@@ -84,3 +84,21 @@
 #calendar-settings__help .ant-form-item-explain-error {
   display: none;
 }
+
+.calendar-settings-wrapper .calendar-settings-save-col {
+  position: sticky;
+  top: 160px;
+  z-index: 8;
+  background: #fff;
+  padding-bottom: 8px;
+}
+
+.calendar-settings-wrapper .calendar-settings-section-heading {
+  position: sticky;
+  top: 208px;
+  z-index: 7;
+  background: #fff;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  width: 100%;
+}

@@ -5,6 +5,14 @@
   color: #222732;
 }
 
+.mandatory-fields-wrapper .mandatory-fields-heading-wrapper {
+  position: sticky;
+  top: 160px;
+  z-index: 8;
+  background: #fff;
+  padding-bottom: 8px;
+}
+
 .mandatory-fields-wrapper .mandatory-fields-description {
   font-size: 16px;
   font-weight: 400;

@@ -30,7 +30,7 @@ const WidgetPreview = ({
   };
 
   return (
-    <Col flex={'448px'} style={{ display: `${!screens.xl ? 'none' : 'block'}` }}>
+    <Col flex={'448px'} style={{ display: `${!screens.xl ? 'none' : 'block'}` }} className="widget-preview-col">
       <div className="preview-section-wrapper">
         <div className="preview-section-wrapper-header">
           <span>{t(`${localePath}.previewMobile`)}</span>

@@ -41,6 +41,11 @@
 .widget-settings .widget-settings-heading-wrapper {
   display: flex;
   justify-content: space-between;
+  position: sticky;
+  top: 160px;
+  z-index: 7;
+  background: #fff;
+  padding-bottom: 8px;
 }
 
 .widget-settings .widget-settings-wrapper > div {
@@ -142,6 +147,22 @@
   width: 80%;
 }
 
+.widget-settings .widget-preview-col {
+  position: sticky;
+  top: 160px;
+  align-self: flex-start;
+}
+
+.widget-settings .widget-section-heading-col {
+  position: sticky;
+  top: 160px;
+  z-index: 7;
+  background: #fff;
+  width: 100%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 .widget-settings .preview-section-wrapper {
   display: flex;
   gap: 24px;
@@ -152,6 +173,11 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  position: sticky;
+  top: 160px;
+  z-index: 7;
+  background: #fff;
+  padding-bottom: 8px;
 }
 
 .widget-settings .preview-section-wrapper > .preview-section-wrapper-header > span {
