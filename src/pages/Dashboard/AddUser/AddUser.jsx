@@ -916,7 +916,9 @@ const AddUser = () => {
                                       name={contentLanguageBilingual({
                                         data: selectedCalendar?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
+                                        calendarContentLanguage:
+                                          allCalendarsData?.find((cal) => cal.id === selectedCalendar?.calendarId)
+                                            ?.contentLanguage ?? calendarContentLanguage,
                                       })}
                                       role={selectedCalendar?.role}
                                       readOnly={adminCheckHandler({ calendar, user }) ? false : true}
