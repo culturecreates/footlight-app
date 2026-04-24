@@ -330,6 +330,7 @@
   max-height: 200px;
   overflow: hidden;
   opacity: 1;
+  margin-top: 16px;
   margin-bottom: 16px;
   transition: max-height 0.25s ease, opacity 0.25s ease, margin-bottom 0.25s ease;
 }
