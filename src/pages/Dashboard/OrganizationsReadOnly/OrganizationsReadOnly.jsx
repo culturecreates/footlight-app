@@ -248,7 +248,7 @@ function OrganizationsReadOnly() {
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-      <Row gutter={[32, 24]} className="read-only-wrapper organization-read-only">
+      <Row gutter={[32, 24]} className="read-only-wrapper organization-read-only" style={{ margin: 0 }}>
         <div className="org-read-only-sticky-header" ref={stickyHeaderRef}>
           <Col span={24} className="top-level-column">
             <Row>

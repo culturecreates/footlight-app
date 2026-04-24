@@ -266,7 +266,7 @@ function PlaceReadOnly() {
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-      <Row gutter={[32, 24]} className="read-only-wrapper place-read-only">
+      <Row gutter={[32, 24]} className="read-only-wrapper place-read-only" style={{ margin: 0 }}>
         <div className="place-read-only-sticky-header" ref={stickyHeaderRef}>
           <Col className="top-level-column" span={24}>
             <Row>

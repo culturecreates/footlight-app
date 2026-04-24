@@ -10,7 +10,7 @@
 
 @media only screen and (max-width: 767px) {
   .person-read-only-sticky-header {
-    padding-top: 0;
+    padding-top: 16px;
   }
 }
 
@@ -26,6 +26,10 @@
   top: var(--person-read-only-header-height, 0px);
   z-index: 9;
   background: #f9faff;
+}
+
+.person-read-only-sticky-header .top-level-column {
+  padding: 0px !important;
 }
 
 .person-read-only-wrapper .read-only-detail-heading {
@@ -105,10 +109,6 @@
 
   .person-read-only-wrapper .url-links {
     font-size: 12px;
-  }
-
-  .person-read-only-wrapper .top-level-column {
-    padding: 0px !important;
   }
 
   .person-read-only-wrapper .tags-wrapper {
