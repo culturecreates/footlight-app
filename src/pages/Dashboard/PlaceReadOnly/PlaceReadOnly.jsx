@@ -6,6 +6,7 @@ import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined } from '@ant-
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
@@ -200,7 +201,7 @@ function PlaceReadOnly() {
   }, [placeId]);
 
   useEffect(() => {
-    if (placeSuccess) {
+    if (placeData) {
       if (placeData?.sameAs?.length > 0) {
         let sourceId = artsDataLinkChecker(placeData?.sameAs);
         getArtsDataPlace(sourceId);
@@ -262,7 +263,7 @@ function PlaceReadOnly() {
         );
       }
     }
-  }, [placeSuccess]);
+  }, [placeData]);
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -776,7 +777,7 @@ function PlaceReadOnly() {
                               <p>
                                 <a
                                   data-cy="anchor-place-opening-hours"
-                                  href={placeData?.openingHours?.uri}
+                                  href={urlProtocolCheck(placeData?.openingHours?.uri)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="url-links">

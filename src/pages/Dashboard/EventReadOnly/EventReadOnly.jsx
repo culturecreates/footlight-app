@@ -9,6 +9,7 @@ import { useGetEventQuery } from '../../../services/events';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { eventStatusOptions } from '../../../constants/eventStatus';
 import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
@@ -902,7 +903,7 @@ function EventReadOnly() {
                                   {t('dashboard.events.addEditEvent.location.onlineLink')}
                                 </p>
                                 <a
-                                  href={eventData?.contactPoint?.url?.uri}
+                                  href={urlProtocolCheck(eventData?.contactPoint?.url?.uri)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="url-links">
@@ -1064,7 +1065,7 @@ function EventReadOnly() {
                               </p>
                               <p>
                                 <a
-                                  href={eventData?.contactPoint?.url?.uri}
+                                  href={urlProtocolCheck(eventData?.contactPoint?.url?.uri)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="url-links">
@@ -1164,7 +1165,7 @@ function EventReadOnly() {
                               {eventData?.url && eventData?.url?.uri && (
                                 <p>
                                   <a
-                                    href={eventData?.url?.uri}
+                                    href={urlProtocolCheck(eventData?.url?.uri)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="url-links">
@@ -1185,7 +1186,7 @@ function EventReadOnly() {
                               {eventData?.videoUrl?.uri && (
                                 <p>
                                   <a
-                                    href={eventData?.videoUrl?.uri}
+                                    href={urlProtocolCheck(eventData?.videoUrl?.uri)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="url-links">
@@ -1220,7 +1221,7 @@ function EventReadOnly() {
                                 <div style={{ width: '420px' }}>
                                   <p>
                                     <a
-                                      href={eventData?.facebookUrl}
+                                      href={urlProtocolCheck(eventData?.facebookUrl)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="url-links">
@@ -1397,7 +1398,9 @@ function EventReadOnly() {
                                   <p>
                                     <a
                                       href={
-                                        eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email
+                                        eventData?.offerConfiguration?.url?.uri
+                                          ? urlProtocolCheck(eventData?.offerConfiguration?.url?.uri)
+                                          : eventData?.offerConfiguration?.email
                                       }
                                       target="_blank"
                                       rel="noopener noreferrer"

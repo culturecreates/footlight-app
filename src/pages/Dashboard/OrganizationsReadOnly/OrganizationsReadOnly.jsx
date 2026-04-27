@@ -8,6 +8,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useGetOrganizationQuery } from '../../../services/organization';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useLazyGetPlaceQuery } from '../../../services/places';
@@ -463,7 +464,7 @@ function OrganizationsReadOnly() {
                             {organizationData?.url?.uri && (
                               <p>
                                 <a
-                                  href={organizationData?.url?.uri}
+                                  href={urlProtocolCheck(organizationData?.url?.uri)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="url-links"
@@ -488,7 +489,7 @@ function OrganizationsReadOnly() {
                               organizationData?.socialMediaLinks?.map((link, index) => (
                                 <p key={index}>
                                   <a
-                                    href={link}
+                                    href={urlProtocolCheck(link)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="url-links"
@@ -526,7 +527,7 @@ function OrganizationsReadOnly() {
                                   {(link.uri || link.email) && (
                                     <p>
                                       <a
-                                        href={link.email ? `mailto:${link.email}` : link.uri}
+                                        href={link.email ? `mailto:${link.email}` : urlProtocolCheck(link.uri)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="url-links"
@@ -626,7 +627,7 @@ function OrganizationsReadOnly() {
                                 </p>
                                 <p>
                                   <a
-                                    href={organizationData?.contactPoint?.url?.uri}
+                                    href={urlProtocolCheck(organizationData?.contactPoint?.url?.uri)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="url-links"
@@ -759,7 +760,7 @@ function OrganizationsReadOnly() {
                             {organizationData?.videoUrl?.uri && (
                               <p>
                                 <a
-                                  href={organizationData?.videoUrl?.uri}
+                                  href={urlProtocolCheck(organizationData?.videoUrl?.uri)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="url-links">
