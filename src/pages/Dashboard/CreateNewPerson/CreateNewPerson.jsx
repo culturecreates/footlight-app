@@ -781,83 +781,82 @@ function CreateNewPerson() {
 
       <div className="add-edit-wrapper add-organization-wrapper">
         <Form form={form} layout="vertical" name="person" onFieldsChange={onFieldsChange}>
+          <div className="sticky-header add-edit-wrapper">
+            <Row gutter={[32, 2]}>
+              <Col span={24}>
+                <Row justify="space-between">
+                  <Col>
+                    <div className="button-container">
+                      <Button
+                        data-cy="button-person-back-to-previous"
+                        type="link"
+                        onClick={() => {
+                          if (isRoutingToEventPage) {
+                            navigate(isRoutingToEventPage);
+                          } else {
+                            navigate(-1);
+                          }
+                        }}
+                        icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
+                        {t('dashboard.organization.createNew.search.breadcrumb')}
+                      </Button>
+                    </div>
+                  </Col>
+                  <Col>
+                    <div className="add-event-button-wrap">
+                      <Form.Item>
+                        <PrimaryButton
+                          data-cy="button-save-person"
+                          label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                          onClick={(e) => onSaveHandler(e)}
+                          disabled={addPersonLoading || imageUploadLoading || updatePersonLoading ? true : false}
+                        />
+                      </Form.Item>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+
+              <Col>
+                <div className="add-edit-event-heading">
+                  <h4 data-cy="heading-add-edit-person-title">
+                    {personId
+                      ? t('dashboard.people.createNew.addPerson.editPerson')
+                      : t('dashboard.people.createNew.addPerson.newPerson')}
+                  </h4>
+                </div>
+              </Col>
+            </Row>
+          </div>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
-            <Col span={24}>
-              <Row gutter={[32, 2]}>
-                <Col span={24}>
-                  <Row justify="space-between">
-                    <Col>
-                      <div className="button-container">
-                        <Button
-                          data-cy="button-person-back-to-previous"
-                          type="link"
-                          onClick={() => {
-                            if (isRoutingToEventPage) {
-                              navigate(isRoutingToEventPage);
-                            } else {
-                              navigate(-1);
-                            }
-                          }}
-                          icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
-                          {t('dashboard.organization.createNew.search.breadcrumb')}
-                        </Button>
-                      </div>
-                    </Col>
-                    <Col>
-                      <div className="add-event-button-wrap">
-                        <Form.Item>
-                          <PrimaryButton
-                            data-cy="button-save-person"
-                            label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                            onClick={(e) => onSaveHandler(e)}
-                            disabled={addPersonLoading || imageUploadLoading || updatePersonLoading ? true : false}
-                          />
-                        </Form.Item>
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-
-                <Col>
-                  <div className="add-edit-event-heading">
-                    <h4 data-cy="heading-add-edit-person-title">
-                      {personId
-                        ? t('dashboard.people.createNew.addPerson.editPerson')
-                        : t('dashboard.people.createNew.addPerson.newPerson')}
-                    </h4>
-                  </div>
-                </Col>
-
-                {languageLiteralBannerDisplayStatus && (
-                  <Col span={24} className="language-literal-banner">
-                    <Row>
-                      <Col flex={'780px'}>
-                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                          <Col span={24}>
-                            <Alert
-                              message={t('common.forms.languageLiterals.bannerTitle')}
-                              type="info"
-                              showIcon={false}
-                              action={
-                                <OutlinedButton
-                                  data-cy="button-change-interface-language"
-                                  size="large"
-                                  label={t('common.dismiss')}
-                                  onClick={() => {
-                                    dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(setBannerDismissed(true));
-                                  }}
-                                />
-                              }
+            {languageLiteralBannerDisplayStatus && (
+              <Col span={24} className="language-literal-banner">
+                <Row>
+                  <Col flex={'780px'}>
+                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                      <Col span={24}>
+                        <Alert
+                          message={t('common.forms.languageLiterals.bannerTitle')}
+                          type="info"
+                          showIcon={false}
+                          action={
+                            <OutlinedButton
+                              data-cy="button-change-interface-language"
+                              size="large"
+                              label={t('common.dismiss')}
+                              onClick={() => {
+                                dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                                dispatch(setBannerDismissed(true));
+                              }}
                             />
-                          </Col>
-                        </Row>
+                          }
+                        />
                       </Col>
                     </Row>
                   </Col>
-                )}
-              </Row>
-            </Col>
+                </Row>
+              </Col>
+            )}
             {fields?.map((section, index) => {
               if (section?.length > 0)
                 return (

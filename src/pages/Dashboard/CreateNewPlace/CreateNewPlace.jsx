@@ -1504,92 +1504,92 @@ function CreateNewPlace() {
           layout="vertical"
           name="place"
           onFieldsChange={onFieldsChange}>
-          <Row gutter={[32, 24]} className="add-edit-wrapper">
-            <Col span={24}>
-              <Row gutter={[32, 2]}>
-                <Col span={24}>
-                  <Row justify="space-between">
-                    <Col>
-                      <div className="button-container">
-                        <Button
-                          data-cy="button-place-back-to-previous"
-                          type="link"
-                          onClick={() => {
-                            if (isRoutingToEventPage && isRoutingToOrganization) {
-                              navigate(isRoutingToOrganization, {
-                                state: {
-                                  data: {
-                                    isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
-                                  },
+          <div className="sticky-header add-edit-wrapper">
+            <Row gutter={[32, 2]}>
+              <Col span={24}>
+                <Row justify="space-between">
+                  <Col>
+                    <div className="button-container">
+                      <Button
+                        data-cy="button-place-back-to-previous"
+                        type="link"
+                        onClick={() => {
+                          if (isRoutingToEventPage && isRoutingToOrganization) {
+                            navigate(isRoutingToOrganization, {
+                              state: {
+                                data: {
+                                  isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
                                 },
-                              });
-                            } else if (isRoutingToEventPage && !isRoutingToOrganization) {
-                              navigate(isRoutingToEventPage);
-                            } else if (!isRoutingToEventPage && isRoutingToOrganization) {
-                              navigate(isRoutingToOrganization);
-                            } else {
-                              navigate(-1);
-                            }
-                          }}
-                          icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
-                          {t('dashboard.places.createNew.search.breadcrumb')}
-                        </Button>
-                      </div>
-                    </Col>
-                    <Col>
-                      <div className="add-event-button-wrap">
-                        <Form.Item>
-                          <PrimaryButton
-                            data-cy="button-place-save"
-                            label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                            onClick={(e) => onSaveHandler(e)}
-                            disabled={addImageLoading || addPlaceLoading || updatePlaceLoading ? true : false}
-                          />
-                        </Form.Item>
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
+                              },
+                            });
+                          } else if (isRoutingToEventPage && !isRoutingToOrganization) {
+                            navigate(isRoutingToEventPage);
+                          } else if (!isRoutingToEventPage && isRoutingToOrganization) {
+                            navigate(isRoutingToOrganization);
+                          } else {
+                            navigate(-1);
+                          }
+                        }}
+                        icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
+                        {t('dashboard.places.createNew.search.breadcrumb')}
+                      </Button>
+                    </div>
+                  </Col>
+                  <Col>
+                    <div className="add-event-button-wrap">
+                      <Form.Item>
+                        <PrimaryButton
+                          data-cy="button-place-save"
+                          label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                          onClick={(e) => onSaveHandler(e)}
+                          disabled={addImageLoading || addPlaceLoading || updatePlaceLoading ? true : false}
+                        />
+                      </Form.Item>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
 
-                <Col>
-                  <div className="add-edit-event-heading">
-                    <h4 data-cy="heading-place-add-edit">
-                      {placeId
-                        ? t('dashboard.places.createNew.addPlace.editPlace')
-                        : t('dashboard.places.createNew.addPlace.newPlace')}
-                    </h4>
-                  </div>
-                </Col>
-                {languageLiteralBannerDisplayStatus && (
-                  <Col span={24} className="language-literal-banner">
-                    <Row>
-                      <Col flex={'780px'}>
-                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                          <Col span={24}>
-                            <Alert
-                              message={t('common.forms.languageLiterals.bannerTitle')}
-                              type="info"
-                              showIcon={false}
-                              action={
-                                <OutlinedButton
-                                  data-cy="button-change-interface-language"
-                                  size="large"
-                                  label={t('common.dismiss')}
-                                  onClick={() => {
-                                    dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(setBannerDismissed(true));
-                                  }}
-                                />
-                              }
+              <Col>
+                <div className="add-edit-event-heading">
+                  <h4 data-cy="heading-place-add-edit">
+                    {placeId
+                      ? t('dashboard.places.createNew.addPlace.editPlace')
+                      : t('dashboard.places.createNew.addPlace.newPlace')}
+                  </h4>
+                </div>
+              </Col>
+            </Row>
+          </div>
+          <Row gutter={[32, 24]} className="add-edit-wrapper">
+            {languageLiteralBannerDisplayStatus && (
+              <Col span={24} className="language-literal-banner">
+                <Row>
+                  <Col flex={'780px'}>
+                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                      <Col span={24}>
+                        <Alert
+                          message={t('common.forms.languageLiterals.bannerTitle')}
+                          type="info"
+                          showIcon={false}
+                          action={
+                            <OutlinedButton
+                              data-cy="button-change-interface-language"
+                              size="large"
+                              label={t('common.dismiss')}
+                              onClick={() => {
+                                dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                                dispatch(setBannerDismissed(true));
+                              }}
                             />
-                          </Col>
-                        </Row>
+                          }
+                        />
                       </Col>
                     </Row>
                   </Col>
-                )}
-              </Row>
-            </Col>
+                </Row>
+              </Col>
+            )}
             <Card marginResponsive="0px">
               <>
                 {(artsDataLinkChecker(placeData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) && (

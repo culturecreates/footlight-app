@@ -624,8 +624,8 @@ const AddUser = () => {
           { name: ['languagePreference'], value: userData.languagePreference },
         ]}>
         {!(isUserFetching || isCurrentUserFetching) ? (
-          <Row gutter={[0, 32]} className="add-edit-wrapper add-user-wrapper">
-            <Col span={24}>
+          <>
+            <div className="sticky-header add-edit-wrapper add-user-wrapper">
               <Row gutter={[0, 16]}>
                 <Col span={24}>
                   <Row justify="space-between">
@@ -665,282 +665,284 @@ const AddUser = () => {
                   </div>
                 </Col>
               </Row>
-            </Col>
-            <Col flex={'780px'}>
-              <Card style={{ border: 'none', width: '100%' }}>
-                <Row gutter={[0, 24]}>
-                  <Col flex={'423px'}>
-                    <div className="details-card-description" data-cy="div-user-profile-edit-add-page">
-                      {isCurrentUser
-                        ? t('dashboard.settings.addUser.detailsCardDescriptionCurrentUser')
-                        : userId
-                        ? t('dashboard.settings.addUser.detailsCardDescriptionEditPage')
-                        : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
-                    </div>
-                  </Col>
-                  <Col flex={'423px'}>
-                    <Form.Item
-                      data-cy="form-item-user-first-name-title"
-                      name="firstName"
-                      required
-                      label={t('dashboard.settings.addUser.firstName')}
-                      rules={[
-                        {
-                          validator: (_, value) =>
-                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.firstName')),
-                        },
-                      ]}>
-                      <Row>
-                        <Col flex={'423px'}>
-                          {userId ? (
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
-                              value={userData.firstName}
-                            />
-                          ) : (
-                            <>
-                              <div className="search-bar-organization">
-                                <Popover
-                                  open={
-                                    userSearchData?.data?.length > 0 &&
-                                    isPopoverOpen?.searchUserFirstName &&
-                                    userSearchKeyword != ''
-                                  }
-                                  arrow={false}
-                                  overlayClassName="entity-popover"
-                                  placement="bottom"
-                                  onOpenChange={(open) => {
-                                    setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
-                                    if (userSearchKeyword != '') {
-                                      debounceSearch(userSearchKeyword);
+            </div>
+            <Row gutter={[0, 32]} className="add-edit-wrapper add-user-wrapper">
+              <Col flex={'780px'}>
+                <Card style={{ border: 'none', width: '100%' }}>
+                  <Row gutter={[0, 24]}>
+                    <Col flex={'423px'}>
+                      <div className="details-card-description" data-cy="div-user-profile-edit-add-page">
+                        {isCurrentUser
+                          ? t('dashboard.settings.addUser.detailsCardDescriptionCurrentUser')
+                          : userId
+                          ? t('dashboard.settings.addUser.detailsCardDescriptionEditPage')
+                          : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
+                      </div>
+                    </Col>
+                    <Col flex={'423px'}>
+                      <Form.Item
+                        data-cy="form-item-user-first-name-title"
+                        name="firstName"
+                        required
+                        label={t('dashboard.settings.addUser.firstName')}
+                        rules={[
+                          {
+                            validator: (_, value) =>
+                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.firstName')),
+                          },
+                        ]}>
+                        <Row>
+                          <Col flex={'423px'}>
+                            {userId ? (
+                              <AuthenticationInput
+                                size="small"
+                                placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
+                                value={userData.firstName}
+                              />
+                            ) : (
+                              <>
+                                <div className="search-bar-organization">
+                                  <Popover
+                                    open={
+                                      userSearchData?.data?.length > 0 &&
+                                      isPopoverOpen?.searchUserFirstName &&
+                                      userSearchKeyword != ''
                                     }
-                                  }}
-                                  autoAdjustOverflow={false}
-                                  getPopupContainer={(trigger) => trigger.parentNode}
-                                  trigger={['focus']}
-                                  content={
-                                    <div>
-                                      <div className="search-scrollable-content">
-                                        {userSearchData?.data?.map((item, index) => (
-                                          <div
-                                            key={index}
-                                            className="search-popover-options"
-                                            onClick={() => {
-                                              setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                              onSearchCardClick(item);
-                                            }}>
-                                            <p>{item?.firstName + ' ' + item?.lastName}</p>
-                                            <p>{item?.email}</p>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  }>
-                                  <Input
-                                    style={{ borderRadius: '4px' }}
-                                    placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                                    value={userSearchKeyword}
-                                    onPressEnter={(e) => {
-                                      e.preventDefault();
-                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                      e.target.blur();
+                                    arrow={false}
+                                    overlayClassName="entity-popover"
+                                    placement="bottom"
+                                    onOpenChange={(open) => {
+                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
+                                      if (userSearchKeyword != '') {
+                                        debounceSearch(userSearchKeyword);
+                                      }
                                     }}
-                                    onFocus={(e) => {
-                                      if (e.target.value != '') {
-                                        if (userSearchData?.data?.length > 0) {
-                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                    autoAdjustOverflow={false}
+                                    getPopupContainer={(trigger) => trigger.parentNode}
+                                    trigger={['focus']}
+                                    content={
+                                      <div>
+                                        <div className="search-scrollable-content">
+                                          {userSearchData?.data?.map((item, index) => (
+                                            <div
+                                              key={index}
+                                              className="search-popover-options"
+                                              onClick={() => {
+                                                setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                                onSearchCardClick(item);
+                                              }}>
+                                              <p>{item?.firstName + ' ' + item?.lastName}</p>
+                                              <p>{item?.email}</p>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    }>
+                                    <Input
+                                      style={{ borderRadius: '4px' }}
+                                      placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                      value={userSearchKeyword}
+                                      onPressEnter={(e) => {
+                                        e.preventDefault();
+                                        setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                        e.target.blur();
+                                      }}
+                                      onFocus={(e) => {
+                                        if (e.target.value != '') {
+                                          if (userSearchData?.data?.length > 0) {
+                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                            debounceSearch(e.target.value);
+                                          }
+                                        }
+                                      }}
+                                      onClick={(e) => {
+                                        if (e.target.value != '') {
+                                          if (userSearchData?.data?.length > 0) {
+                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                          }
                                           debounceSearch(e.target.value);
                                         }
-                                      }
-                                    }}
-                                    onClick={(e) => {
-                                      if (e.target.value != '') {
-                                        if (userSearchData?.data?.length > 0) {
-                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-                                        }
-                                        debounceSearch(e.target.value);
-                                      }
-                                    }}
-                                    onChange={(e) => {
-                                      setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
-                                      setUserSearchKeyword(e.target.value);
-
-                                      if (e.target.value == '') {
-                                        setUserSearchData([]);
-                                      } else {
-                                        debounceSearch(e.target.value);
-                                      }
-                                    }}
-                                    className="events-search"
-                                  />
-                                </Popover>
-                              </div>
-                            </>
-                          )}
-                        </Col>
-                      </Row>
-                    </Form.Item>
-
-                    <Form.Item
-                      data-cy="form-item-user-last-name-title"
-                      name="lastName"
-                      required
-                      label={t('dashboard.settings.addUser.lastName')}
-                      rules={[
-                        {
-                          validator: (_, value) =>
-                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.lastName')),
-                        },
-                      ]}>
-                      <Row>
-                        <Col flex={'423px'}>
-                          <AuthenticationInput
-                            size="small"
-                            placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
-                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
-                            value={userData.lastName}
-                          />
-                        </Col>
-                      </Row>
-                    </Form.Item>
-                    <Form.Item
-                      data-cy="form-item-user-phonenumber-title"
-                      name="phoneNumber"
-                      label={t('dashboard.settings.addUser.phoneNumber')}
-                      rules={[
-                        {
-                          pattern: /^\d+$/,
-                          message: 'Phone number must be a number!',
-                        },
-                      ]}>
-                      <Row>
-                        <Col flex={'423px'}>
-                          <AuthenticationInput
-                            size="small"
-                            placeholder={t('dashboard.settings.addUser.placeHolder.phoneNumber')}
-                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'phoneNumber' })}
-                            value={userData.phoneNumber}
-                          />
-                        </Col>
-                      </Row>
-                    </Form.Item>
-
-                    <Form.Item
-                      data-cy="form-item-user-email-title"
-                      name="email"
-                      required
-                      label={t('dashboard.settings.addUser.email')}
-                      rules={[
-                        {
-                          validator: (_, value) =>
-                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
-                        },
-                        {
-                          type: 'email',
-                          message: t('login.validations.invalidEmail'),
-                        },
-                      ]}>
-                      <Row>
-                        <Col flex={'423px'}>
-                          <AuthenticationInput
-                            size="small"
-                            placeholder={t('dashboard.settings.addUser.placeHolder.email')}
-                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
-                            value={userData.email}
-                          />
-                        </Col>
-                      </Row>
-                    </Form.Item>
-
-                    <Form.Item
-                      data-cy="form-item-user-language-title"
-                      name="languagePreference"
-                      required
-                      label={t('dashboard.settings.addUser.languagePreference')}
-                      rules={[
-                        {
-                          validator: (_, value) =>
-                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
-                        },
-                      ]}>
-                      <Select
-                        options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
-                        onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
-                        data-cy="select-user-language"
-                      />
-                    </Form.Item>
-
-                    {isCurrentUser && (
-                      <div className="password-modal">
-                        <div className="button-container">
-                          <OutlinedButton
-                            data-cy="button-changepassword"
-                            label={t('dashboard.settings.addUser.passwordModal.btnText')}
-                            size="large"
-                            style={{ height: '40px' }}
-                            onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
-                          />
-                        </div>
-                        <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-            {selectedCalendars?.length > 0 && (
-              <Col span={24}>
-                <Row>
-                  <Col flex={'780px'}>
-                    <Card style={{ border: 'none' }}>
-                      <Row>
-                        <Col span={24} className="card-heading-container">
-                          <h5 data-cy="heading-user-calendars">{t(`dashboard.settings.addUser.calendars`)}</h5>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col flex={'423px'} className="calendar-search">
-                          <Row gutter={[0, 4]}>
-                            <Col flex={'423px'}>
-                              <Col>
-                                <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-                                  {selectedCalendars?.map((selectedCalendar, index) => (
-                                    <CalendarAccordion
-                                      form={formInstance}
-                                      data-cy="accordion-selected-calendars"
-                                      key={index}
-                                      setRouteBlockingFlag={setRouteBlockingFlag}
-                                      selectedCalendarId={selectedCalendar?.calendarId}
-                                      name={contentLanguageBilingual({
-                                        data: selectedCalendar?.name,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      })}
-                                      role={selectedCalendar?.role}
-                                      readOnly={adminCheckHandler({ calendar, user }) ? false : true}
-                                      disabled={selectedCalendar?.disabled}
-                                      organizationIds={selectedCalendar?.organizations}
-                                      peopleIds={selectedCalendar?.people}
-                                      isCurrentUser={isCurrentUser}
-                                      removeCalendarHandler={() => {
-                                        removeCalendarHandler({ item: selectedCalendar, index });
                                       }}
+                                      onChange={(e) => {
+                                        setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
+                                        setUserSearchKeyword(e.target.value);
+
+                                        if (e.target.value == '') {
+                                          setUserSearchData([]);
+                                        } else {
+                                          debounceSearch(e.target.value);
+                                        }
+                                      }}
+                                      className="events-search"
                                     />
-                                  ))}
+                                  </Popover>
                                 </div>
-                              </Col>
-                            </Col>
-                          </Row>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </Col>
-                </Row>
+                              </>
+                            )}
+                          </Col>
+                        </Row>
+                      </Form.Item>
+
+                      <Form.Item
+                        data-cy="form-item-user-last-name-title"
+                        name="lastName"
+                        required
+                        label={t('dashboard.settings.addUser.lastName')}
+                        rules={[
+                          {
+                            validator: (_, value) =>
+                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.lastName')),
+                          },
+                        ]}>
+                        <Row>
+                          <Col flex={'423px'}>
+                            <AuthenticationInput
+                              size="small"
+                              placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
+                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
+                              value={userData.lastName}
+                            />
+                          </Col>
+                        </Row>
+                      </Form.Item>
+                      <Form.Item
+                        data-cy="form-item-user-phonenumber-title"
+                        name="phoneNumber"
+                        label={t('dashboard.settings.addUser.phoneNumber')}
+                        rules={[
+                          {
+                            pattern: /^\d+$/,
+                            message: 'Phone number must be a number!',
+                          },
+                        ]}>
+                        <Row>
+                          <Col flex={'423px'}>
+                            <AuthenticationInput
+                              size="small"
+                              placeholder={t('dashboard.settings.addUser.placeHolder.phoneNumber')}
+                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'phoneNumber' })}
+                              value={userData.phoneNumber}
+                            />
+                          </Col>
+                        </Row>
+                      </Form.Item>
+
+                      <Form.Item
+                        data-cy="form-item-user-email-title"
+                        name="email"
+                        required
+                        label={t('dashboard.settings.addUser.email')}
+                        rules={[
+                          {
+                            validator: (_, value) =>
+                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
+                          },
+                          {
+                            type: 'email',
+                            message: t('login.validations.invalidEmail'),
+                          },
+                        ]}>
+                        <Row>
+                          <Col flex={'423px'}>
+                            <AuthenticationInput
+                              size="small"
+                              placeholder={t('dashboard.settings.addUser.placeHolder.email')}
+                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
+                              value={userData.email}
+                            />
+                          </Col>
+                        </Row>
+                      </Form.Item>
+
+                      <Form.Item
+                        data-cy="form-item-user-language-title"
+                        name="languagePreference"
+                        required
+                        label={t('dashboard.settings.addUser.languagePreference')}
+                        rules={[
+                          {
+                            validator: (_, value) =>
+                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
+                          },
+                        ]}>
+                        <Select
+                          options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
+                          onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
+                          data-cy="select-user-language"
+                        />
+                      </Form.Item>
+
+                      {isCurrentUser && (
+                        <div className="password-modal">
+                          <div className="button-container">
+                            <OutlinedButton
+                              data-cy="button-changepassword"
+                              label={t('dashboard.settings.addUser.passwordModal.btnText')}
+                              size="large"
+                              style={{ height: '40px' }}
+                              onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
+                            />
+                          </div>
+                          <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                </Card>
               </Col>
-            )}
-          </Row>
+              {selectedCalendars?.length > 0 && (
+                <Col span={24}>
+                  <Row>
+                    <Col flex={'780px'}>
+                      <Card style={{ border: 'none' }}>
+                        <Row>
+                          <Col span={24} className="card-heading-container">
+                            <h5 data-cy="heading-user-calendars">{t(`dashboard.settings.addUser.calendars`)}</h5>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col flex={'423px'} className="calendar-search">
+                            <Row gutter={[0, 4]}>
+                              <Col flex={'423px'}>
+                                <Col>
+                                  <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+                                    {selectedCalendars?.map((selectedCalendar, index) => (
+                                      <CalendarAccordion
+                                        form={formInstance}
+                                        data-cy="accordion-selected-calendars"
+                                        key={index}
+                                        setRouteBlockingFlag={setRouteBlockingFlag}
+                                        selectedCalendarId={selectedCalendar?.calendarId}
+                                        name={contentLanguageBilingual({
+                                          data: selectedCalendar?.name,
+                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                          calendarContentLanguage: calendarContentLanguage,
+                                        })}
+                                        role={selectedCalendar?.role}
+                                        readOnly={adminCheckHandler({ calendar, user }) ? false : true}
+                                        disabled={selectedCalendar?.disabled}
+                                        organizationIds={selectedCalendar?.organizations}
+                                        peopleIds={selectedCalendar?.people}
+                                        isCurrentUser={isCurrentUser}
+                                        removeCalendarHandler={() => {
+                                          removeCalendarHandler({ item: selectedCalendar, index });
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+                                </Col>
+                              </Col>
+                            </Row>
+                          </Col>
+                        </Row>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Col>
+              )}
+            </Row>
+          </>
         ) : (
           <div style={{ height: 400, width: '100%', display: 'grid', placeContent: 'center' }}>
             <LoadingIndicator data-cy="loading-indicator-user" />

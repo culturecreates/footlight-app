@@ -1217,85 +1217,84 @@ function CreateNewOrganization() {
 
       <div className="add-edit-wrapper add-organization-wrapper">
         <Form form={form} layout="vertical" name="organization" onFieldsChange={onFieldsChange}>
+          <div className="sticky-header add-edit-wrapper">
+            <Row gutter={[32, 2]}>
+              <Col span={24}>
+                <Row justify="space-between">
+                  <Col>
+                    <div className="button-container">
+                      <Button
+                        data-cy="button-back-to-previous-screen"
+                        type="link"
+                        onClick={() => {
+                          if (isRoutingToEventPage) {
+                            navigate(isRoutingToEventPage);
+                          } else {
+                            navigate(-1);
+                          }
+                        }}
+                        icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
+                        {t('dashboard.organization.createNew.search.breadcrumb')}
+                      </Button>
+                    </div>
+                  </Col>
+                  <Col>
+                    <div className="add-event-button-wrap">
+                      <Form.Item>
+                        <PrimaryButton
+                          data-cy="button-save-organization"
+                          label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                          onClick={() => onSaveHandler()}
+                          disabled={
+                            addOrganizationLoading || imageUploadLoading || updateOrganizationLoading ? true : false
+                          }
+                        />
+                      </Form.Item>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+
+              <Col>
+                <div className="add-edit-event-heading">
+                  <h4 data-cy="heading-add-edit-organization">
+                    {organizationId
+                      ? t('dashboard.organization.createNew.addOrganization.editOrganization')
+                      : t('dashboard.organization.createNew.addOrganization.newOrganization')}
+                  </h4>
+                </div>
+              </Col>
+            </Row>
+          </div>
           <Row gutter={[32, 24]}>
-            <Col span={24}>
-              <Row gutter={[32, 2]}>
-                <Col span={24}>
-                  <Row justify="space-between">
-                    <Col>
-                      <div className="button-container">
-                        <Button
-                          data-cy="button-back-to-previous-screen"
-                          type="link"
-                          onClick={() => {
-                            if (isRoutingToEventPage) {
-                              navigate(isRoutingToEventPage);
-                            } else {
-                              navigate(-1);
-                            }
-                          }}
-                          icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
-                          {t('dashboard.organization.createNew.search.breadcrumb')}
-                        </Button>
-                      </div>
-                    </Col>
-                    <Col>
-                      <div className="add-event-button-wrap">
-                        <Form.Item>
-                          <PrimaryButton
-                            data-cy="button-save-organization"
-                            label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                            onClick={() => onSaveHandler()}
-                            disabled={
-                              addOrganizationLoading || imageUploadLoading || updateOrganizationLoading ? true : false
-                            }
-                          />
-                        </Form.Item>
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-
-                <Col>
-                  <div className="add-edit-event-heading">
-                    <h4 data-cy="heading-add-edit-organization">
-                      {organizationId
-                        ? t('dashboard.organization.createNew.addOrganization.editOrganization')
-                        : t('dashboard.organization.createNew.addOrganization.newOrganization')}
-                    </h4>
-                  </div>
-                </Col>
-
-                {languageLiteralBannerDisplayStatus && (
-                  <Col span={24} className="language-literal-banner">
-                    <Row>
-                      <Col flex={'780px'}>
-                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                          <Col span={24}>
-                            <Alert
-                              message={t('common.forms.languageLiterals.bannerTitle')}
-                              type="info"
-                              showIcon={false}
-                              action={
-                                <OutlinedButton
-                                  data-cy="button-change-interface-language"
-                                  size="large"
-                                  label={t('common.dismiss')}
-                                  onClick={() => {
-                                    dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(setBannerDismissed(true));
-                                  }}
-                                />
-                              }
+            {languageLiteralBannerDisplayStatus && (
+              <Col span={24} className="language-literal-banner">
+                <Row>
+                  <Col flex={'780px'}>
+                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                      <Col span={24}>
+                        <Alert
+                          message={t('common.forms.languageLiterals.bannerTitle')}
+                          type="info"
+                          showIcon={false}
+                          action={
+                            <OutlinedButton
+                              data-cy="button-change-interface-language"
+                              size="large"
+                              label={t('common.dismiss')}
+                              onClick={() => {
+                                dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                                dispatch(setBannerDismissed(true));
+                              }}
                             />
-                          </Col>
-                        </Row>
+                          }
+                        />
                       </Col>
                     </Row>
                   </Col>
-                )}
-              </Row>
-            </Col>
+                </Row>
+              </Col>
+            )}
             {fields?.map((section, index) => {
               if (section?.length > 0)
                 return (

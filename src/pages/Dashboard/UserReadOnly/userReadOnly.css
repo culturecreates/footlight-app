@@ -1,3 +1,19 @@
+.user-read-only-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9faff;
+  padding-top: 34px;
+  padding-bottom: 8px;
+  width: 100%;
+}
+
+@media only screen and (max-width: 767px) {
+  .user-read-only-sticky-header {
+    padding-top: 16px;
+  }
+}
+
 .user-read-only-heading-wrapper {
   height: fit-content;
 }
