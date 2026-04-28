@@ -10,7 +10,24 @@
   top: 160px;
   z-index: 8;
   background: #fff;
+  padding-top: 24px;
   padding-bottom: 8px;
+  box-shadow: 0 2px 8px -6px rgba(34, 39, 50, 0.08);
+}
+@media (max-width: 600px) {
+  .mandatory-fields-wrapper .mandatory-fields-heading-wrapper {
+    top: 56px;
+    padding-top: 16px;
+    padding-bottom: 8px;
+  }
+  .mandatory-fields-wrapper .mandatory-fields-heading {
+    font-size: 18px;
+    line-height: 24px;
+  }
+  .mandatory-fields-wrapper .mandatory-fields-description {
+    font-size: 14px;
+    line-height: 20px;
+  }
 }
 
 .mandatory-fields-wrapper .mandatory-fields-description {
