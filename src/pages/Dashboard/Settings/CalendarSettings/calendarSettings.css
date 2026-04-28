@@ -95,10 +95,14 @@
 
 .calendar-settings-wrapper .calendar-settings-section-heading {
   position: sticky;
-  top: 208px;
-  z-index: 7;
+  top: 160px;
+  z-index: 9;
   background: #fff;
   padding-top: 8px;
   padding-bottom: 8px;
   width: 100%;
+}
+
+.calendar-settings-wrapper .bilingual-input-tab .ant-tabs-nav {
+  z-index: 0;
 }
