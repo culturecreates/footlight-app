@@ -281,7 +281,7 @@ const Taxonomy = () => {
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper ">
         <Col span={24}>
           <div className="taxonomy-sticky-header">
-            <Row justify="space-between" gutter={16} align="top" style={{ marginBottom: 16 }}>
+            <Row justify="space-between" gutter={16} align="top" style={{ marginBottom: screens.sm ? 16 : 8 }}>
               <Col>
                 <div className="events-heading-wrapper">
                   <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
@@ -291,12 +291,28 @@ const Taxonomy = () => {
               </Col>
 
               {adminCheckHandler({ calendar, user }) && (
-                <Col style={{ display: 'flex', gap: '12px' }}>
+                <Col style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <EntityReports
                     entity={entitiesClass.taxonomy}
                     includedDropdownKeys={[REPORT_ACTION_KEY]}
                     immediateDownload={true}
                   />
+                  {screens.sm && (
+                    <ReadOnlyProtectedComponent creator={user?.id}>
+                      <AddEvent
+                        disabled={isReadOnly ? true : false}
+                        label={t('dashboard.taxonomy.listing.addNew')}
+                        onClick={addTaxonomyHandler}
+                        data-cy="button-add-taxonomy"
+                      />
+                    </ReadOnlyProtectedComponent>
+                  )}
+                </Col>
+              )}
+            </Row>
+            {!screens.sm && adminCheckHandler({ calendar, user }) && (
+              <Row style={{ marginBottom: 16 }}>
+                <Col>
                   <ReadOnlyProtectedComponent creator={user?.id}>
                     <AddEvent
                       disabled={isReadOnly ? true : false}
@@ -306,8 +322,8 @@ const Taxonomy = () => {
                     />
                   </ReadOnlyProtectedComponent>
                 </Col>
-              )}
-            </Row>
+              </Row>
+            )}
             <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: screens.md ? 16 : 8 }}>
               <Col flex={'auto'}>
                 <Row gutter={[16, 8]} align="middle">

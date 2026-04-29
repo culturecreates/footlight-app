@@ -676,7 +676,7 @@ function Events() {
       <Col span={24} className="events-wrapper-cloumn">
         <div className="events-sticky-header">
           <Col style={{ paddingLeft: 0 }}>
-            <Row justify="space-between" align={'middle'} style={{ marginBottom: '16px' }}>
+            <Row justify="space-between" align={'middle'} style={{ marginBottom: screens.md ? '16px' : '8px' }}>
               <Col>
                 <div className="events-heading-wrapper">
                   <h4 className="events-heading" data-cy="heading-events-list" style={{ margin: '0px' }}>
@@ -689,7 +689,21 @@ function Events() {
                   entity={entitiesClass.event}
                   includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY, DATABASE_ACTION_KEY, EXPORT_ACTION_KEY]}
                 />
-                <Col style={{ display: 'flex', alignItems: 'center' }}>
+                {screens.md && (
+                  <Col style={{ display: 'flex', alignItems: 'center' }}>
+                    <AddEvent
+                      disabled={isReadOnly ? true : false}
+                      label={t('dashboard.events.addEvent')}
+                      onClick={addEventHandler}
+                      data-cy="button-add-new-event"
+                    />
+                  </Col>
+                )}
+              </Row>
+            </Row>
+            {!screens.md && (
+              <Row style={{ marginBottom: '16px' }}>
+                <Col>
                   <AddEvent
                     disabled={isReadOnly ? true : false}
                     label={t('dashboard.events.addEvent')}
@@ -698,7 +712,7 @@ function Events() {
                   />
                 </Col>
               </Row>
-            </Row>
+            )}
           </Col>
           <Row gutter={[20, 20]}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>

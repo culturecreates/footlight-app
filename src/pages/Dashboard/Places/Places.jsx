@@ -407,23 +407,40 @@ function Places() {
       {allPlacesSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
-            <h4 className="events-heading" data-cy="heading-place-title">
-              {t('dashboard.places.places')}
-            </h4>
+            <>
+              <h4 className="events-heading" data-cy="heading-place-title">
+                {t('dashboard.places.places')}
+              </h4>
+              {!screens.md && (
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <div style={{ marginTop: '8px' }}>
+                    <AddPlace
+                      label={t('dashboard.places.place')}
+                      disabled={isReadOnly ? true : false}
+                      onClick={() => {
+                        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
+                      }}
+                      data-cy="button-add-new-place"
+                    />
+                  </div>
+                </FeatureFlag>
+              )}
+            </>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <Col style={{ display: 'flex', gap: '12px' }}>
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <EntityReports entity={entitiesClass.place} />
                 </ReadOnlyProtectedComponent>
-
-                <AddPlace
-                  label={t('dashboard.places.place')}
-                  disabled={isReadOnly ? true : false}
-                  onClick={() => {
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
-                  }}
-                  data-cy="button-add-new-place"
-                />
+                {screens.md && (
+                  <AddPlace
+                    label={t('dashboard.places.place')}
+                    disabled={isReadOnly ? true : false}
+                    onClick={() => {
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
+                    }}
+                    data-cy="button-add-new-place"
+                  />
+                )}
               </Col>
             </FeatureFlag>
 
