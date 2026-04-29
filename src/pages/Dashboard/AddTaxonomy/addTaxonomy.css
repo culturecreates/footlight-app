@@ -292,7 +292,13 @@
 
 @media only screen and (max-width: 767px) {
   .add-taxonomy-wrapper .add-taxonomy-sticky-header {
-    padding-top: 0;
+    padding-top: 34px;
+  }
+}
+
+@media only screen and (max-width: 428px) {
+  .add-taxonomy-wrapper .add-taxonomy-sticky-header {
+    padding-top: 16px;
   }
 }
 
