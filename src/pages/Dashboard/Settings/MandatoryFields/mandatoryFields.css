@@ -14,9 +14,9 @@
   padding-bottom: 8px;
   box-shadow: 0 2px 8px -6px rgba(34, 39, 50, 0.08);
 }
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .mandatory-fields-wrapper .mandatory-fields-heading-wrapper {
-    top: 56px;
+    top: 128px;
     padding-top: 16px;
     padding-bottom: 8px;
   }
@@ -27,6 +27,12 @@
   .mandatory-fields-wrapper .mandatory-fields-description {
     font-size: 14px;
     line-height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mandatory-fields-wrapper .mandatory-fields-heading-wrapper {
+    top: 130px;
   }
 }
 
