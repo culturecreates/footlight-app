@@ -261,6 +261,15 @@ const Taxonomy = () => {
     }
   }, [user, calendar]);
 
+  // Shared EntityReports component to avoid duplication
+  const TaxonomyEntityReports = () => (
+    <EntityReports
+      entity={entitiesClass.taxonomy}
+      includedDropdownKeys={[REPORT_ACTION_KEY]}
+      immediateDownload={true}
+    />
+  );
+
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       {dependencyDetailsFetching && (
@@ -298,11 +307,7 @@ const Taxonomy = () => {
                   </Col>
                   {adminCheckHandler({ calendar, user }) && (
                     <Col className="listing-header-dots-mobile">
-                      <EntityReports
-                        entity={entitiesClass.taxonomy}
-                        includedDropdownKeys={[REPORT_ACTION_KEY]}
-                        immediateDownload={true}
-                      />
+                      <TaxonomyEntityReports />
                     </Col>
                   )}
                 </Row>
@@ -311,11 +316,7 @@ const Taxonomy = () => {
               {adminCheckHandler({ calendar, user }) && (
                 <Col className="listing-header-actions-col" style={{ display: 'flex', gap: '12px' }}>
                   <span className="listing-header-dots-desktop">
-                    <EntityReports
-                      entity={entitiesClass.taxonomy}
-                      includedDropdownKeys={[REPORT_ACTION_KEY]}
-                      immediateDownload={true}
-                    />
+                    <TaxonomyEntityReports />
                   </span>
                   <ReadOnlyProtectedComponent creator={user?.id}>
                     <AddEvent

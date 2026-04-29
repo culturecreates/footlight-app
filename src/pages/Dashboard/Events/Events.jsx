@@ -671,6 +671,14 @@ function Events() {
     standardTaxonomyFilter,
   ]);
 
+  // Shared EntityReports component to avoid duplication
+  const EventsEntityReports = () => (
+    <EntityReports
+      entity={entitiesClass.event}
+      includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY, DATABASE_ACTION_KEY, EXPORT_ACTION_KEY]}
+    />
+  );
+
   return !isLoading && currentCalendarData && !taxonomyLoading ? (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={24} className="events-wrapper-cloumn">
@@ -692,30 +700,14 @@ function Events() {
                     </div>
                   </Col>
                   <Col className="listing-header-dots-mobile">
-                    <EntityReports
-                      entity={entitiesClass.event}
-                      includedDropdownKeys={[
-                        IMPORT_ACTION_KEY,
-                        REPORT_ACTION_KEY,
-                        DATABASE_ACTION_KEY,
-                        EXPORT_ACTION_KEY,
-                      ]}
-                    />
+                    <EventsEntityReports />
                   </Col>
                 </Row>
               </Col>
               <Col className="listing-header-actions-col">
                 <Row align={'middle'} gutter={[12, 0]}>
                   <Col className="listing-header-dots-desktop">
-                    <EntityReports
-                      entity={entitiesClass.event}
-                      includedDropdownKeys={[
-                        IMPORT_ACTION_KEY,
-                        REPORT_ACTION_KEY,
-                        DATABASE_ACTION_KEY,
-                        EXPORT_ACTION_KEY,
-                      ]}
-                    />
+                    <EventsEntityReports />
                   </Col>
                   <Col style={{ display: 'flex', alignItems: 'center' }}>
                     <AddEvent
