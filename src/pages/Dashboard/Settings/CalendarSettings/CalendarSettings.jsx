@@ -327,7 +327,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   return !debouncedLoading ? (
     <div>
       <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
-        <Col span={24} className="calendar-settings-save-col" style={{ paddingTop: '24px' }}>
+        <Col span={24} className="calendar-settings-save-col">
           <Row justify={'space-between'} align={'middle'}>
             <Col>
               <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">

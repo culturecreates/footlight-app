@@ -90,6 +90,7 @@
   top: 160px;
   z-index: 8;
   background: #fff;
+  padding-top: 24px;
   padding-bottom: 8px;
 }
 
@@ -100,6 +101,22 @@
   background: #fff;
   padding-bottom: 8px;
   width: 100%;
+}
+
+@media (max-width: 767px) {
+  .calendar-settings-wrapper .calendar-settings-save-col {
+    top: 128px;
+    padding-top: 40px;
+  }
+  .calendar-settings-wrapper .calendar-settings-section-heading {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-settings-wrapper .calendar-settings-save-col {
+    top: 130px;
+  }
 }
 
 .calendar-settings-wrapper .bilingual-input-tab .ant-tabs-nav {
