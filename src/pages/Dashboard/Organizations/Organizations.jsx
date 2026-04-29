@@ -391,16 +391,16 @@ function Organizations() {
       )}
       {allOrganizationSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-          <Main>
-            <h4 className="events-heading" data-cy="heading-organizations">
-              {t('dashboard.organization.organizations')}
-            </h4>
-            <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-              <Col style={{ display: 'flex', gap: '12px' }}>
+          <Main
+            entityReports={
+              <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <EntityReports entity={entitiesClass.organization} />
                 </ReadOnlyProtectedComponent>
-
+              </FeatureFlag>
+            }
+            addButton={
+              <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
                 <AddOrganization
                   disabled={isReadOnly ? true : false}
                   label={t('dashboard.organization.organization')}
@@ -409,8 +409,11 @@ function Organizations() {
                   }
                   data-cy="button-add-organization"
                 />
-              </Col>
-            </FeatureFlag>
+              </FeatureFlag>
+            }>
+            <h4 className="events-heading" data-cy="heading-organizations">
+              {t('dashboard.organization.organizations')}
+            </h4>
 
             <OrganizationSearch
               placeholder={t('dashboard.organization.search.placeholder')}

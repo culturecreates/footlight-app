@@ -676,28 +676,57 @@ function Events() {
       <Col span={24} className="events-wrapper-cloumn">
         <div className="events-sticky-header">
           <Col style={{ paddingLeft: 0 }}>
-            <Row justify="space-between" align={'middle'} style={{ marginBottom: '16px' }}>
-              <Col>
-                <div className="events-heading-wrapper">
-                  <h4 className="events-heading" data-cy="heading-events-list" style={{ margin: '0px' }}>
-                    {t('dashboard.events.heading')}
-                  </h4>
-                </div>
+            <Row
+              justify="space-between"
+              align={'middle'}
+              gutter={[0, 12]}
+              style={{ marginBottom: '16px' }}
+              className="listing-header-row">
+              <Col className="listing-header-title-col">
+                <Row align={'middle'} justify="space-between" wrap={false}>
+                  <Col>
+                    <div className="events-heading-wrapper">
+                      <h4 className="events-heading" data-cy="heading-events-list" style={{ margin: '0px' }}>
+                        {t('dashboard.events.heading')}
+                      </h4>
+                    </div>
+                  </Col>
+                  <Col className="listing-header-dots-mobile">
+                    <EntityReports
+                      entity={entitiesClass.event}
+                      includedDropdownKeys={[
+                        IMPORT_ACTION_KEY,
+                        REPORT_ACTION_KEY,
+                        DATABASE_ACTION_KEY,
+                        EXPORT_ACTION_KEY,
+                      ]}
+                    />
+                  </Col>
+                </Row>
               </Col>
-              <Row align={'middle'} gutter={[12, 0]}>
-                <EntityReports
-                  entity={entitiesClass.event}
-                  includedDropdownKeys={[IMPORT_ACTION_KEY, REPORT_ACTION_KEY, DATABASE_ACTION_KEY, EXPORT_ACTION_KEY]}
-                />
-                <Col style={{ display: 'flex', alignItems: 'center' }}>
-                  <AddEvent
-                    disabled={isReadOnly ? true : false}
-                    label={t('dashboard.events.addEvent')}
-                    onClick={addEventHandler}
-                    data-cy="button-add-new-event"
-                  />
-                </Col>
-              </Row>
+              <Col className="listing-header-actions-col">
+                <Row align={'middle'} gutter={[12, 0]}>
+                  <Col className="listing-header-dots-desktop">
+                    <EntityReports
+                      entity={entitiesClass.event}
+                      includedDropdownKeys={[
+                        IMPORT_ACTION_KEY,
+                        REPORT_ACTION_KEY,
+                        DATABASE_ACTION_KEY,
+                        EXPORT_ACTION_KEY,
+                      ]}
+                    />
+                  </Col>
+                  <Col style={{ display: 'flex', alignItems: 'center' }}>
+                    <AddEvent
+                      disabled={isReadOnly ? true : false}
+                      label={t('dashboard.events.addEvent')}
+                      onClick={addEventHandler}
+                      data-cy="button-add-new-event"
+                    />
+                  </Col>
+                </Row>
+              </Col>
             </Row>
           </Col>
           <Row gutter={[20, 20]}>

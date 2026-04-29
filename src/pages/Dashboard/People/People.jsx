@@ -394,16 +394,16 @@ function People() {
       )}
       {allPeopleSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-          <Main>
-            <h4 className="events-heading" data-cy="heading-people-title">
-              {t('dashboard.people.people')}
-            </h4>
-            <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-              <Col style={{ display: 'flex', gap: '12px' }}>
+          <Main
+            entityReports={
+              <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <EntityReports entity={entitiesClass.person} />
                 </ReadOnlyProtectedComponent>
-
+              </FeatureFlag>
+            }
+            addButton={
+              <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
                 <AddPerson
                   disabled={isReadOnly ? true : false}
                   label={t('dashboard.people.person')}
@@ -412,8 +412,11 @@ function People() {
                   }}
                   data-cy="button-add-new-person"
                 />
-              </Col>
-            </FeatureFlag>
+              </FeatureFlag>
+            }>
+            <h4 className="events-heading" data-cy="heading-people-title">
+              {t('dashboard.people.people')}
+            </h4>
             <PersonSearch
               placeholder={t('dashboard.people.search.placeholder')}
               onPressEnter={(e) => onSearchHandler(e)}

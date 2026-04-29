@@ -281,22 +281,42 @@ const Taxonomy = () => {
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper ">
         <Col span={24}>
           <div className="taxonomy-sticky-header">
-            <Row justify="space-between" gutter={16} align="top" style={{ marginBottom: 16 }}>
-              <Col>
-                <div className="events-heading-wrapper">
-                  <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
-                    {t('dashboard.taxonomy.listing.heading')}
-                  </h4>
-                </div>
+            <Row
+              justify="space-between"
+              gutter={[16, 12]}
+              align="top"
+              style={{ marginBottom: 16 }}
+              className="listing-header-row">
+              <Col className="listing-header-title-col">
+                <Row align={'middle'} justify="space-between" wrap={false}>
+                  <Col>
+                    <div className="events-heading-wrapper">
+                      <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
+                        {t('dashboard.taxonomy.listing.heading')}
+                      </h4>
+                    </div>
+                  </Col>
+                  {adminCheckHandler({ calendar, user }) && (
+                    <Col className="listing-header-dots-mobile">
+                      <EntityReports
+                        entity={entitiesClass.taxonomy}
+                        includedDropdownKeys={[REPORT_ACTION_KEY]}
+                        immediateDownload={true}
+                      />
+                    </Col>
+                  )}
+                </Row>
               </Col>
 
               {adminCheckHandler({ calendar, user }) && (
-                <Col style={{ display: 'flex', gap: '12px' }}>
-                  <EntityReports
-                    entity={entitiesClass.taxonomy}
-                    includedDropdownKeys={[REPORT_ACTION_KEY]}
-                    immediateDownload={true}
-                  />
+                <Col className="listing-header-actions-col" style={{ display: 'flex', gap: '12px' }}>
+                  <span className="listing-header-dots-desktop">
+                    <EntityReports
+                      entity={entitiesClass.taxonomy}
+                      includedDropdownKeys={[REPORT_ACTION_KEY]}
+                      immediateDownload={true}
+                    />
+                  </span>
                   <ReadOnlyProtectedComponent creator={user?.id}>
                     <AddEvent
                       disabled={isReadOnly ? true : false}

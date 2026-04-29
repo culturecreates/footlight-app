@@ -127,6 +127,33 @@
   align-items: flex-start;
 }
 
+@media only screen and (max-width: 768px) {
+  .taxonomy-listing-wrapper .listing-header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .taxonomy-listing-wrapper .listing-header-title-col {
+    width: 100%;
+  }
+
+  .taxonomy-listing-wrapper .listing-header-dots-desktop {
+    display: none;
+  }
+
+  .taxonomy-listing-wrapper .listing-header-dots-mobile {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+  }
+}
+
+@media only screen and (min-width: 769px) {
+  .taxonomy-listing-wrapper .listing-header-dots-mobile {
+    display: none;
+  }
+}
+
 @media only screen and (max-width: 480px) {
   .taxonomy-listing-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
