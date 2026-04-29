@@ -241,7 +241,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
     );
 
   return (
-    <div style={{ paddingTop: '24px' }}>
+    <div>
       <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
         <Col span={24} className="mandatory-fields-heading-wrapper">
           <Row justify={'space-between'}>

@@ -342,6 +342,8 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               />
             </Col>
           </Row>
+        </Col>
+        <Col span={24}>
           <p className="calendar-settings-description" data-cy="para-calendar-settings-description">
             {t('dashboard.settings.calendarSettings.setUpCalendarDescription')}
           </p>
@@ -386,14 +388,12 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               );
             })}
             <Divider />
-            <div className="calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
-              <h5 className="calendar-settings-heading">
-                {t('dashboard.settings.calendarSettings.calendarWidgetSetup')}
-              </h5>
-              <p className="calendar-settings-description">
-                {t('dashboard.settings.calendarSettings.calendarWidgetDescription')}
-              </p>
-            </div>
+            <h5 className="calendar-settings-heading calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
+              {t('dashboard.settings.calendarSettings.calendarWidgetSetup')}
+            </h5>
+            <p className="calendar-settings-description">
+              {t('dashboard.settings.calendarSettings.calendarWidgetDescription')}
+            </p>
             {calendarSettingsFormFields.WIDGET_SETTINGS.map((item, index) => {
               return (
                 <Form.Item
@@ -408,14 +408,12 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               );
             })}
             <Divider />
-            <div className="calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
-              <h5 className="calendar-settings-heading">
-                {t('dashboard.settings.calendarSettings.filterPersonalization')}
-              </h5>
-              <p className="calendar-settings-description">
-                {t('dashboard.settings.calendarSettings.filterDescription')}
-              </p>
-            </div>
+            <h5 className="calendar-settings-heading calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
+              {t('dashboard.settings.calendarSettings.filterPersonalization')}
+            </h5>
+            <p className="calendar-settings-description">
+              {t('dashboard.settings.calendarSettings.filterDescription')}
+            </p>
             {calendarSettingsFormFields.FILTER_PERSONALIZATION.map((item, index) => {
               return (
                 <Form.Item
