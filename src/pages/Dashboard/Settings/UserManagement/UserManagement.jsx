@@ -61,6 +61,13 @@ const UserManagement = (props) => {
 
   const navigate = useNavigate();
   const screens = useBreakpoint();
+  const [isWideLayout, setIsWideLayout] = useState(window.innerWidth > 841);
+
+  useEffect(() => {
+    const handleResize = () => setIsWideLayout(window.innerWidth > 841);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const sortByParam = searchParams.get('sortBy');
   const orderParam = searchParams.get('order');
@@ -499,87 +506,105 @@ const UserManagement = (props) => {
   return (
     <Row gutter={[10, 24]} className="user-management-wrapper">
       <Col span={24} className="user-management-sticky-controls">
-        <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
-          <Col flex={'auto'}>
-            <Row gutter={[8, 8]} align="middle">
-              <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }} className="user-search-wrapper">
-                <UserSearch
-                  placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
-                  onPressEnter={(e) => onSearchHandler(e)}
-                  defaultValue={userSearchQuery}
-                  allowClear={true}
-                  onChange={onSearchChangeHandler}
-                  data-cy="input-user-search"
-                />
-              </Col>
-              <Col>
-                <Row align="middle" className="sort-option-row">
-                  <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }} data-cy="span-user-sort">
-                    {t('dashboard.settings.userManagement.sort')}
-                  </span>
-
-                  <Dropdown
-                    data-cy="dropdown-user-sort"
-                    overlayClassName="filter-sort-dropdown-wrapper"
-                    overlayStyle={{ minWidth: '200px' }}
-                    getPopupContainer={(trigger) => trigger.parentNode}
-                    menu={{
-                      items: sortByOptionsUsers,
-                      selectedKeys: [filter?.sort],
-                      selectable: true,
-                      onSelect: onSortSelect,
-                    }}
-                    trigger={['click']}>
-                    <Button size="large" className="filter-sort-button" data-cy="button-user-sort">
-                      <Space>
-                        {sortByOptionsUsers?.map((sortBy, index) => {
-                          if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
-                        })}
-                        <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                      </Space>
-                    </Button>
-                  </Dropdown>
-                  <Button
-                    data-cy="button-user-sort-order"
-                    className="filter-sort-button"
-                    style={{ borderColor: filter?.order && '#1B3DE6' }}
-                    onClick={handleSortOrderChange}
-                    icon={
-                      filter?.order === sortOrder?.ASC ? (
-                        <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                      ) : (
-                        filter?.order === sortOrder?.DESC && (
-                          <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                        )
-                      )
-                    }
-                    size={'large'}
+        <div style={{ marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'nowrap' }}>
+            <div style={{ flex: '1 1 auto', minWidth: 0 }}>
+              <Row gutter={[8, 8]} align="middle">
+                <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }} className="user-search-wrapper">
+                  <UserSearch
+                    placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
+                    onPressEnter={(e) => onSearchHandler(e)}
+                    defaultValue={userSearchQuery}
+                    allowClear={true}
+                    onChange={onSearchChangeHandler}
+                    data-cy="input-user-search"
                   />
-                </Row>
-              </Col>
-            </Row>
-          </Col>
+                </Col>
+                <Col>
+                  <Row align="middle" className="sort-option-row" style={{ rowGap: '8px' }}>
+                    <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }} data-cy="span-user-sort">
+                      {t('dashboard.settings.userManagement.sort')}
+                    </span>
 
-          <Col flex={'140px'} className="add-btn-container">
-            {adminCheckHandler({ calendar, user }) && (
+                    <Dropdown
+                      data-cy="dropdown-user-sort"
+                      overlayClassName="filter-sort-dropdown-wrapper"
+                      overlayStyle={{ minWidth: '200px' }}
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      menu={{
+                        items: sortByOptionsUsers,
+                        selectedKeys: [filter?.sort],
+                        selectable: true,
+                        onSelect: onSortSelect,
+                      }}
+                      trigger={['click']}>
+                      <Button size="large" className="filter-sort-button" data-cy="button-user-sort">
+                        <Space>
+                          {sortByOptionsUsers?.map((sortBy, index) => {
+                            if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
+                          })}
+                          <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                        </Space>
+                      </Button>
+                    </Dropdown>
+                    <Button
+                      data-cy="button-user-sort-order"
+                      className="filter-sort-button"
+                      style={{ borderColor: filter?.order && '#1B3DE6' }}
+                      onClick={handleSortOrderChange}
+                      icon={
+                        filter?.order === sortOrder?.ASC ? (
+                          <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                        ) : (
+                          filter?.order === sortOrder?.DESC && (
+                            <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                          )
+                        )
+                      }
+                      size={'large'}
+                    />
+                    {!isWideLayout && adminCheckHandler({ calendar, user }) && (
+                      <ReadOnlyProtectedComponent>
+                        <EntityReports
+                          entity={entitiesClass.user}
+                          includedDropdownKeys={[REPORT_ACTION_KEY]}
+                          immediateDownload={true}
+                        />
+                      </ReadOnlyProtectedComponent>
+                    )}
+                  </Row>
+                </Col>
+              </Row>
+            </div>
+            {isWideLayout && adminCheckHandler({ calendar, user }) && (
               <ReadOnlyProtectedComponent>
-                <Col style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                   <EntityReports
                     entity={entitiesClass.user}
                     includedDropdownKeys={[REPORT_ACTION_KEY]}
                     immediateDownload={true}
                   />
-
                   <AddEvent
                     label={t('dashboard.settings.userManagement.addUser')}
                     onClick={addUserHandler}
                     data-cy="button-add-user"
                   />
-                </Col>
+                </div>
               </ReadOnlyProtectedComponent>
             )}
-          </Col>
-        </Row>
+          </div>
+          {!isWideLayout && adminCheckHandler({ calendar, user }) && (
+            <ReadOnlyProtectedComponent>
+              <div style={{ marginTop: '8px' }}>
+                <AddEvent
+                  label={t('dashboard.settings.userManagement.addUser')}
+                  onClick={addUserHandler}
+                  data-cy="button-add-user"
+                />
+              </div>
+            </ReadOnlyProtectedComponent>
+          )}
+        </div>
 
         <Row gutter={[8]} align="middle">
           <Col>
