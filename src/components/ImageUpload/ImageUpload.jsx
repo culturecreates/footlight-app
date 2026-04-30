@@ -31,6 +31,7 @@ function ImageUpload(props) {
     isTransparent,
     setFailedImports,
     resetAddImage,
+    setShowDialog,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -382,6 +383,7 @@ function ImageUpload(props) {
           setImage={setImageUrl}
           largeAspectRatio={largeAspectRatio}
           thumbnailAspectRatio={thumbnailAspectRatio}
+          setShowDialog={setShowDialog}
         />
       )}
       {currentCalendarData?.contentLanguage && (
