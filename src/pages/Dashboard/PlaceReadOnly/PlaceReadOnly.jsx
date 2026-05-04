@@ -271,7 +271,10 @@ function PlaceReadOnly() {
             </Col>
             <Col flex="60px" style={{ marginLeft: 'auto' }}>
               <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-                <ReadOnlyProtectedComponent creator={placeData.createdByUserId} isReadOnly={isReadOnly}>
+                <ReadOnlyProtectedComponent
+                  creator={placeData.createdByUserId}
+                  isReadOnly={isReadOnly}
+                  entityId={placeData?.id}>
                   <div className="button-container">
                     <OutlinedButton
                       data-cy="button-edit-place"

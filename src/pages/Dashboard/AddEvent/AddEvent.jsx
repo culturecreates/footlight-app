@@ -238,7 +238,8 @@ function AddEvent() {
       updateEventLoading ||
       addEventLoading ||
       addImageLoading ||
-      updateEventStateLoading,
+      updateEventStateLoading ||
+      (artsDataId && !eventId && artsDataLoading),
     [
       isLoading,
       taxonomyLoading,
@@ -247,6 +248,9 @@ function AddEvent() {
       addEventLoading,
       addImageLoading,
       updateEventStateLoading,
+      artsDataId,
+      eventId,
+      artsDataLoading,
     ],
   );
 
@@ -2122,6 +2126,18 @@ function AddEvent() {
     return result;
   }
 
+  const fetchArtsDataForDisplay = (uri) => {
+    setArtsDataLoading(true);
+    loadArtsDataEventEntity({ entityId: uri })
+      .then((response) => {
+        if (response?.data?.length > 0) {
+          setArtsData(response.data[0]);
+        }
+      })
+      .catch((e) => console.error('Failed to fetch ArtsData event for display', e))
+      .finally(() => setArtsDataLoading(false));
+  };
+
   const getArtsDataEvent = () => {
     let initialAddedFields = [...addedFields];
     let importFailures = {
@@ -2466,6 +2482,15 @@ function AddEvent() {
           };
 
           data = addFields(data);
+
+          if (data.name) {
+            calendarContentLanguage.forEach((language) => {
+              const langKey = contentLanguageKeyMap[language];
+              if (data.name[langKey]) {
+                form.setFieldValue(['name', langKey], data.name[langKey]);
+              }
+            });
+          }
 
           setArtsData(data);
           setAddedFields(initialAddedFields);
@@ -2909,6 +2934,13 @@ function AddEvent() {
             form.setFieldsValue({
               multipleImagesCrop: galleryImages,
             });
+          }
+        }
+        if (eventData?.sameAs?.length > 0 && !artsDataId && !duplicateId && !hasFetchedRef.current) {
+          const artsdataUri = artsDataLinkChecker(eventData.sameAs);
+          if (artsdataUri) {
+            hasFetchedRef.current = true;
+            fetchArtsDataForDisplay(artsdataUri);
           }
         }
       } else {
@@ -3364,12 +3396,12 @@ function AddEvent() {
                       <ArtsDataInfo
                         artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
                         name={contentLanguageBilingual({
-                          data: eventData?.name,
+                          data: artsData?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         disambiguatingDescription={contentLanguageBilingual({
-                          data: eventData?.disambiguatingDescription,
+                          data: artsData?.disambiguatingDescription,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
@@ -3940,6 +3972,7 @@ function AddEvent() {
                             artsDataId={artsDataId}
                             currentCalendarData={currentCalendarData}
                             eventData={eventData}
+                            setShowDialog={setShowDialog}
                           />
                         </>
                       )}
@@ -4907,6 +4940,7 @@ function AddEvent() {
                       ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
                       : null
                   }
+                  setShowDialog={setShowDialog}
                   thumbnailAspectRatio={
                     currentCalendarData?.imageConfig?.length > 0
                       ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio

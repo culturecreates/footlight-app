@@ -36,6 +36,7 @@ const RecurringEvents = function ({
   artsData,
   currentCalendarData,
   eventData,
+  setShowDialog,
 }) {
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -159,6 +160,7 @@ const RecurringEvents = function ({
         customDates: custom,
         startDateRecur: [moment(custom[0]?.startDate), moment(custom[custom?.length - 1]?.startDate)],
       });
+      if (typeof setShowDialog === 'function') setShowDialog(true);
     }
   };
   useEffect(() => {

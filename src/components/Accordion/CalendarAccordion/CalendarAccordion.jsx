@@ -23,6 +23,8 @@ import { sortByOptionsOrgsPlacesPerson } from '../../../constants/sortByOptions'
 import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
 import { UserOutlined } from '@ant-design/icons';
 import { useLazyGetAllPeopleQuery } from '../../../services/people';
+import { useLazyGetAllPlacesQuery } from '../../../services/places';
+import { placesOptions } from '../../Select/selectOption.settings';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 
 const { Panel } = Collapse;
@@ -36,6 +38,7 @@ function CalendarAccordion(props) {
     disabled,
     organizationIds,
     peopleIds,
+    placeIds,
     readOnly,
     removeCalendarHandler,
     isCurrentUser,
@@ -64,6 +67,7 @@ function CalendarAccordion(props) {
 
   let queryPerson = new URLSearchParams();
   queryPerson.append('classes', entitiesClass.person);
+
   const { currentData: initialPersonEntities, isLoading: initialPersonEntityLoading } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
@@ -71,16 +75,29 @@ function CalendarAccordion(props) {
     sessionId: timestampRef,
   });
 
+  let queryPlace = new URLSearchParams();
+  queryPlace.append('classes', entitiesClass.place);
+  const { currentData: initialPlaceEntities, isLoading: initialPlaceEntityLoading } = useGetEntitiesQuery({
+    calendarId,
+    searchKey: '',
+    classes: decodeURIComponent(queryPlace.toString()),
+    sessionId: timestampRef,
+  });
+
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getAllOrganization] = useLazyGetAllOrganizationQuery();
   const [getAllPeople] = useLazyGetAllPeopleQuery();
+  const [getAllPlaces] = useLazyGetAllPlacesQuery();
 
   const [organizersList, setOrganizersList] = useState([]);
   const [peopleList, setPeopleList] = useState([]);
+  const [placesList, setPlacesList] = useState([]);
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPeople, setSelectedPeople] = useState([]);
+  const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isPeoplePopoverOpen, setIsPeoplePopoverOpen] = useState(false);
+  const [isPlacesPopoverOpen, setIsPlacesPopoverOpen] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -104,6 +121,7 @@ function CalendarAccordion(props) {
     const queryMap = {
       organizers: query,
       people: queryPerson,
+      places: queryPlace,
     };
 
     const currentQuery = queryMap[type];
@@ -115,6 +133,8 @@ function CalendarAccordion(props) {
           updateList(response, setOrganizersList);
         } else if (type === 'people') {
           updateList(response, setPeopleList);
+        } else if (type === 'places') {
+          setPlacesList(placesOptions(processEntities(response), user, calendarContentLanguage, sourceOptions.CMS));
         }
       })
       .catch((error) => console.log(error));
@@ -141,6 +161,14 @@ function CalendarAccordion(props) {
       updateList(initialPersonEntities, setPeopleList);
     }
   }, [initialPersonEntityLoading, currentCalendarData]);
+
+  useEffect(() => {
+    if (initialPlaceEntities && currentCalendarData) {
+      setPlacesList(
+        placesOptions(processEntities(initialPlaceEntities), user, calendarContentLanguage, sourceOptions.CMS),
+      );
+    }
+  }, [initialPlaceEntityLoading, currentCalendarData]);
 
   useEffect(() => {
     if (organizationIds?.length > 0) {
@@ -171,6 +199,42 @@ function CalendarAccordion(props) {
         .catch((error) => console.log(error));
     } else setSelectedOrganizers([]);
   }, [organizationIds]);
+
+  useEffect(() => {
+    if (selectedPlaces && !readOnly) form.setFieldValue(['places', selectedCalendarId], selectedPlaces);
+  }, [selectedPlaces]);
+
+  useEffect(() => {
+    if (placeIds?.length > 0) {
+      let placeFilterKeys = new URLSearchParams();
+      placeIds?.forEach((place) => placeFilterKeys.append('ids', place?.entityId));
+      getAllPlaces({
+        calendarId,
+        limit: 30,
+        sessionId: timestampRef,
+        pageNumber: 1,
+        filterKeys: placeFilterKeys.toString(),
+      })
+        .unwrap()
+        .then((response) => {
+          if (response?.data?.length > 0)
+            setSelectedPlaces(
+              placesOptions(
+                response?.data?.map((v) => ({
+                  ...v,
+                  type: entitiesClass.place,
+                  image: v?.image?.find((image) => image?.isMain),
+                })),
+                user,
+                calendarContentLanguage,
+                sourceOptions.CMS,
+              ),
+            );
+          else setSelectedPlaces([]);
+        })
+        .catch((error) => console.log(error));
+    } else setSelectedPlaces([]);
+  }, [placeIds]);
 
   useEffect(() => {
     if (peopleIds?.length > 0) {
@@ -485,6 +549,122 @@ function CalendarAccordion(props) {
                   setSelectedPeople(selectedPeople?.filter((selectedOrganizer, indexValue) => indexValue != index));
                 }}
                 creatorId={people?.creatorId}
+              />
+            );
+          })}
+        </Form.Item>
+        <Form.Item
+          name={['places', selectedCalendarId]}
+          label={t('dashboard.places.places')}
+          hidden={
+            (readOnly && selectedPlaces?.length === 0) ||
+            (calendarId !== selectedCalendarId && selectedPlaces?.length === 0)
+              ? true
+              : false
+          }
+          initialValue={selectedPlaces}>
+          {(disabled || !readOnly) && (
+            <span className="span-organization-help-text">{t('dashboard.settings.addUser.placesHelp')}</span>
+          )}
+          {!readOnly && (
+            <KeyboardAccessibleLayout
+              setItem={(place) => setSelectedPlaces([...selectedPlaces, place])}
+              data={[placesList]}
+              setFieldValue={() => {
+                return;
+              }}
+              popOverHandler={() => setIsPlacesPopoverOpen(false)}
+              isPopoverOpen={isPlacesPopoverOpen}>
+              <CustomPopover
+                open={isPlacesPopoverOpen}
+                onOpenChange={(open) => {
+                  setIsPlacesPopoverOpen(open);
+                }}
+                destroyTooltipOnHide={true}
+                overlayClassName="user-popover"
+                placement="bottom"
+                autoAdjustOverflow={false}
+                getPopupContainer={(trigger) => trigger.parentNode}
+                trigger={['click']}
+                data-cy="user-places"
+                content={
+                  <div>
+                    <div>
+                      <>
+                        <div className="popover-section-header" data-cy="div-places-footlight-entity-heading">
+                          {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                        </div>
+                        <div className="search-scrollable-content">
+                          {isEntitiesFetching && (
+                            <div
+                              style={{
+                                height: '200px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <LoadingIndicator />
+                            </div>
+                          )}
+                          {!isEntitiesFetching &&
+                            (placesList?.length > 0 ? (
+                              placesList?.map((place, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setRouteBlockingFlag();
+                                    setSelectedPlaces([...selectedPlaces, place]);
+                                    setIsPlacesPopoverOpen(false);
+                                  }}
+                                  data-cy={`div-select-place-${index}`}>
+                                  {place?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            ))}
+                        </div>
+                      </>
+                    </div>
+                  </div>
+                }>
+                <EventsSearch
+                  style={{ borderRadius: '4px', display: selectedCalendarId === calendarId ? 'flex' : 'none' }}
+                  placeholder={t('dashboard.places.search.placeholder')}
+                  onChange={(e) => {
+                    debounceSearchOrganizationPersonSearch(e.target.value, 'places');
+                    setIsPlacesPopoverOpen(true);
+                  }}
+                  onClick={() => {
+                    setIsPlacesPopoverOpen(true);
+                  }}
+                  data-cy="input-places-keyword"
+                />
+              </CustomPopover>
+            </KeyboardAccessibleLayout>
+          )}
+
+          {selectedPlaces?.map((place, index) => {
+            return (
+              <SelectionItem
+                key={index}
+                icon={place?.label?.props?.icon}
+                onClickHandle={{
+                  navigationFlag: readOnly,
+                  entityType: place?.type ?? taxonomyClass.PLACE,
+                  entityId: place?.value,
+                }}
+                name={place?.name}
+                description={place?.description}
+                calendarContentLanguage={calendarContentLanguage}
+                bordered
+                closable={readOnly ? false : true}
+                itemWidth="100%"
+                onClose={() => {
+                  setSelectedPlaces(selectedPlaces?.filter((_, indexValue) => indexValue != index));
+                }}
+                creatorId={place?.creatorId}
               />
             );
           })}

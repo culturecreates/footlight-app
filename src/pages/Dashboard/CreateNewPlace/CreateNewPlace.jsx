@@ -1106,7 +1106,7 @@ function CreateNewPlace() {
         initialPlaceAccessibiltiy = [],
         initialPlace;
       if (placeData) {
-        if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
+        if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true, placeData?.id)) {
           if (placeData?.sameAs?.length) {
             let sourceId = artsDataLinkChecker(placeData?.sameAs);
             getArtsDataPlace(sourceId);

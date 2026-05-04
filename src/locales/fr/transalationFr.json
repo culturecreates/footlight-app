@@ -1015,6 +1015,7 @@
         "role": "Rôle",
         "organizationHelp": "Donner à cet utilisateur l'accès à modifier une ou plusieurs fiches d'organisations.",
         "peopleHelp": "Donner à cet utilisateur l'accès à modifier une ou plusieurs fiches de personnes.",
+        "placesHelp": "Donner à cet utilisateur l'accès à modifier une ou plusieurs fiches de lieux.",
         "passwordModal": {
           "btnText": "Changer le mot de passe",
           "Password": "Mot de passe",
