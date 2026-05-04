@@ -3972,6 +3972,7 @@ function AddEvent() {
                             artsDataId={artsDataId}
                             currentCalendarData={currentCalendarData}
                             eventData={eventData}
+                            setShowDialog={setShowDialog}
                           />
                         </>
                       )}
@@ -4939,6 +4940,7 @@ function AddEvent() {
                       ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
                       : null
                   }
+                  setShowDialog={setShowDialog}
                   thumbnailAspectRatio={
                     currentCalendarData?.imageConfig?.length > 0
                       ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio

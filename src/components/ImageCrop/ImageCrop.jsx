@@ -11,8 +11,18 @@ import getCroppedImg from '../../utils/getCroppedImg';
 import { ratioChecker } from '../../utils/ratioChecker';
 
 function ImageCrop(props) {
-  const { image, open, setOpen, largeAspectRatio, thumbnailAspectRatio, form, cropValues, setCropValues, setImage } =
-    props;
+  const {
+    image,
+    open,
+    setOpen,
+    largeAspectRatio,
+    thumbnailAspectRatio,
+    form,
+    cropValues,
+    setCropValues,
+    setImage,
+    setShowDialog,
+  } = props;
   const { t } = useTranslation();
 
   const ASPECT_RATIO_TYPE = {
@@ -114,6 +124,7 @@ function ImageCrop(props) {
     form.setFieldsValue({
       imageCrop: cropValues,
     });
+    if (typeof setShowDialog === 'function') setShowDialog(true);
     showCroppedImage();
     setInitialLargeCroppedArea(cropValues?.large);
     setInitialThumbnailCroppedArea(cropValues?.thumbnail);
