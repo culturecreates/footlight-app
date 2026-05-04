@@ -18,6 +18,11 @@ export const routinghandler = (user, calendarId, creatorId, publishState = '', i
           entityAccess = true;
         }
       });
+      calendar?.places?.forEach((place) => {
+        if (place?.entityId === entityId) {
+          entityAccess = true;
+        }
+      });
     });
   }
 
