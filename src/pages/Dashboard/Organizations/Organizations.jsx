@@ -392,23 +392,40 @@ function Organizations() {
       {allOrganizationSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
-            <h4 className="events-heading" data-cy="heading-organizations">
-              {t('dashboard.organization.organizations')}
-            </h4>
+            <>
+              <h4 className="events-heading" data-cy="heading-organizations">
+                {t('dashboard.organization.organizations')}
+              </h4>
+              {!screens.md && (
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <div style={{ marginTop: '8px' }}>
+                    <AddOrganization
+                      disabled={isReadOnly ? true : false}
+                      label={t('dashboard.organization.organization')}
+                      onClick={() =>
+                        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)
+                      }
+                      data-cy="button-add-organization"
+                    />
+                  </div>
+                </FeatureFlag>
+              )}
+            </>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <Col style={{ display: 'flex', gap: '12px' }}>
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <EntityReports entity={entitiesClass.organization} />
                 </ReadOnlyProtectedComponent>
-
-                <AddOrganization
-                  disabled={isReadOnly ? true : false}
-                  label={t('dashboard.organization.organization')}
-                  onClick={() =>
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)
-                  }
-                  data-cy="button-add-organization"
-                />
+                {screens.md && (
+                  <AddOrganization
+                    disabled={isReadOnly ? true : false}
+                    label={t('dashboard.organization.organization')}
+                    onClick={() =>
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)
+                    }
+                    data-cy="button-add-organization"
+                  />
+                )}
               </Col>
             </FeatureFlag>
 

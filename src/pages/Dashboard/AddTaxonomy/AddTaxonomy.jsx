@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { getStandardFieldTranslation, standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
@@ -109,6 +109,11 @@ const AddTaxonomy = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [isVocabularyInputHovered, setIsVocabularyInputHovered] = useState(false);
   const [loadedTaxonomyData, setLoadedTaxonomyData] = useState(null);
+
+  const [stickyHeaderEl, setStickyHeaderEl] = useState(null);
+  const [conceptCardEl, setConceptCardEl] = useState(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [tabsSticky, setTabsSticky] = useState(false);
 
   const [getTaxonomy, { isLoading: initialLoad }] = useLazyGetTaxonomyQuery({
     sessionId: timestampRef,
@@ -747,6 +752,33 @@ const AddTaxonomy = () => {
     }
   }, [conceptData, selectedVocabulary]);
 
+  useLayoutEffect(() => {
+    if (!stickyHeaderEl) return;
+    const update = () => {
+      const h = stickyHeaderEl.offsetHeight;
+      setHeaderHeight(h);
+      stickyHeaderEl.closest('.add-taxonomy-wrapper')?.style.setProperty('--taxonomy-header-height', `${h}px`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(stickyHeaderEl);
+    return () => ro.disconnect();
+  }, [stickyHeaderEl]);
+
+  useEffect(() => {
+    const scrollContainer = document.querySelector('.site-layout-background');
+    if (!scrollContainer || !conceptCardEl) return;
+    const onScroll = () => {
+      const cardTop = conceptCardEl.getBoundingClientRect().top;
+      setTabsSticky(cardTop < headerHeight);
+    };
+    scrollContainer.addEventListener('scroll', onScroll, { passive: true });
+    return () => scrollContainer.removeEventListener('scroll', onScroll);
+  }, [headerHeight, conceptCardEl]);
+
+  const TABS_NAV_HEIGHT = 58; // 46px tabs bar + 12px padding-top added for visual separation
+  const tableSticky = { offsetHeader: headerHeight + TABS_NAV_HEIGHT };
+
   return isSaving ? (
     <div
       style={{
@@ -772,7 +804,7 @@ const AddTaxonomy = () => {
       {!initialLoad && calendarContentLanguage && (loadedTaxonomyData || !taxonomyId) ? (
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>
-            <Col span={24}>
+            <Col span={24} className="add-taxonomy-sticky-header" ref={setStickyHeaderEl}>
               <Row>
                 <Col span={24}>
                   <Row justify="space-between">
@@ -1160,7 +1192,7 @@ const AddTaxonomy = () => {
             </CardEvent>
             <Col span={24}>
               <Row>
-                <Col flex="780px" style={{ margin: '32px 0px' }} className="concept-card">
+                <Col flex="780px" style={{ margin: '32px 0px' }} className="concept-card" ref={setConceptCardEl}>
                   <Card bordered={false}>
                     <Tabs
                       activeKey={tabKey}
@@ -1177,7 +1209,7 @@ const AddTaxonomy = () => {
                                 <Row gutter={[16, 16]}>
                                   <Col>
                                     <Row>
-                                      <Col className="text-concepts">
+                                      <Col className={`text-concepts${tabsSticky ? ' text-concepts--hidden' : ''}`}>
                                         {t('dashboard.taxonomy.addNew.concepts.description')}
                                       </Col>
                                     </Row>
@@ -1201,6 +1233,7 @@ const AddTaxonomy = () => {
                                         transformedData={transformedConceptData}
                                         setTransformedData={setTransformedConceptData}
                                         onBeforeDelete={handleBeforeDelete}
+                                        stickyOffset={tableSticky}
                                       />
                                     </Row>
                                   </Col>
@@ -1236,7 +1269,7 @@ const AddTaxonomy = () => {
                                 ) : (
                                   <div>
                                     <div style={{ marginBottom: '16px' }}>
-                                      <Col className="text-concepts">
+                                      <Col className={`text-concepts${tabsSticky ? ' text-concepts--hidden' : ''}`}>
                                         {t('dashboard.taxonomy.addNew.mapConcepts.description')}
                                       </Col>
                                     </div>
@@ -1246,6 +1279,7 @@ const AddTaxonomy = () => {
                                       dataSource={conceptData}
                                       pagination={false}
                                       rowKey="id"
+                                      sticky={tableSticky}
                                       expandable={{
                                         indentSize: 30,
                                         expandedRowKeys: expandedRowKeys,

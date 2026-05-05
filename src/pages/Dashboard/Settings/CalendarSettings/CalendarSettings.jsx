@@ -325,10 +325,10 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   }, []);
 
   return !debouncedLoading ? (
-    <div style={{ paddingTop: '24px' }}>
+    <div>
       <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
-        <Col span={24}>
-          <Row justify={'space-between'}>
+        <Col span={24} className="calendar-settings-save-col">
+          <Row justify={'space-between'} align={'middle'}>
             <Col>
               <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
                 {t('dashboard.settings.calendarSettings.generalSettings')}
@@ -388,7 +388,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               );
             })}
             <Divider />
-            <h5 className="calendar-settings-heading">
+            <h5 className="calendar-settings-heading calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
               {t('dashboard.settings.calendarSettings.calendarWidgetSetup')}
             </h5>
             <p className="calendar-settings-description">
@@ -408,7 +408,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               );
             })}
             <Divider />
-            <h5 className="calendar-settings-heading">
+            <h5 className="calendar-settings-heading calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
               {t('dashboard.settings.calendarSettings.filterPersonalization')}
             </h5>
             <p className="calendar-settings-description">

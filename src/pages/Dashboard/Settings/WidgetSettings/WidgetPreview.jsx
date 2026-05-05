@@ -30,32 +30,15 @@ const WidgetPreview = ({
   };
 
   return (
-    <Col flex={'448px'} style={{ display: `${!screens.xl ? 'none' : 'block'}` }}>
+    <Col
+      flex={'448px'}
+      style={{
+        display: `${!screens.xl ? 'none' : 'block'}`,
+        position: 'sticky',
+        top: '170px',
+        alignSelf: 'flex-start',
+      }}>
       <div className="preview-section-wrapper">
-        <div className="preview-section-wrapper-header">
-          <span>{t(`${localePath}.previewMobile`)}</span>
-          <Outlined
-            size="large"
-            label={t(`${localePath}.previewDesktop`)}
-            data-cy="button-preview"
-            onClick={() => {
-              form
-                .validateFields(['width', 'height', 'limit', 'color'])
-                .then(() => {
-                  handleUpdate();
-                  setPreviewModal(true);
-                })
-                .catch((error) => {
-                  error?.errorFields?.map((e, index) => {
-                    notify({
-                      index,
-                      messageText: e.errors[0] != ' ' ? e.errors[0] : t(`${localePath}.validation.color`),
-                    });
-                  });
-                });
-            }}
-          />
-        </div>
         <CustomModal
           open={previewModal}
           centered
@@ -84,6 +67,29 @@ const WidgetPreview = ({
             </div>
           )}
         </CustomModal>
+        <div className="preview-desktop-btn-wrapper">
+          <Outlined
+            size="large"
+            label={t(`${localePath}.previewDesktop`)}
+            data-cy="button-preview"
+            onClick={() => {
+              form
+                .validateFields(['width', 'height', 'limit', 'color'])
+                .then(() => {
+                  handleUpdate();
+                  setPreviewModal(true);
+                })
+                .catch((error) => {
+                  error?.errorFields?.map((e, index) => {
+                    notify({
+                      index,
+                      messageText: e.errors[0] != ' ' ? e.errors[0] : t(`${localePath}.validation.color`),
+                    });
+                  });
+                });
+            }}
+          />
+        </div>
         <div className="mobile-iframe-container">
           {!isLoading ? (
             <>

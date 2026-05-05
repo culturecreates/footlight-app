@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import './personReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +49,7 @@ function PersonReadOnly() {
   const { t } = useTranslation();
   const { personId, calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const stickyHeaderRef = useRef(null);
   const navigate = useNavigate();
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -155,6 +156,15 @@ function PersonReadOnly() {
       });
   };
 
+  useLayoutEffect(() => {
+    if (stickyHeaderRef.current) {
+      document.documentElement.style.setProperty(
+        '--person-read-only-header-height',
+        `${stickyHeaderRef.current.offsetHeight}px`,
+      );
+    }
+  }); // no deps — runs after every render to always capture the correct header height
+
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');
   }, [setContentBackgroundColor]);
@@ -194,93 +204,95 @@ function PersonReadOnly() {
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
       <Row gutter={[32, 24]} className="read-only-wrapper person-read-only-wrapper" style={{ margin: 0 }}>
-        <Col span={24} className="top-level-column">
-          <Row gutter={[16, 16]}>
-            <Col flex="auto">
-              <Breadcrumbs
-                name={contentLanguageBilingual({
-                  data: personData?.name,
-                  requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                  calendarContentLanguage: calendarContentLanguage,
-                })}
-              />
-            </Col>
-            <Col flex="60px" style={{ marginLeft: 'auto' }}>
-              <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-                <ReadOnlyProtectedComponent
-                  creator={personData.createdByUserId}
-                  entityId={personData?.id}
-                  isReadOnly={isReadOnly}>
-                  <div className="button-container">
-                    <OutlinedButton
-                      data-cy="button-edit-person"
-                      label={t('dashboard.people.readOnly.edit')}
-                      size="middle"
-                      style={{ height: '40px', width: '60px' }}
-                      onClick={() =>
-                        navigate(
-                          `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${personData?.id}`,
-                        )
-                      }
-                    />
-                  </div>
-                </ReadOnlyProtectedComponent>
-              </FeatureFlag>
-            </Col>
-          </Row>
-        </Col>
-
-        <Col span={24} className="top-level-column">
-          <Row>
-            <Col flex="780px">
-              <div className="read-only-event-heading">
-                <h4 data-cy="heading-person-name">
-                  {contentLanguageBilingual({
+        <div className="person-read-only-sticky-header" ref={stickyHeaderRef}>
+          <Col span={24} className="top-level-column">
+            <Row gutter={[16, 16]}>
+              <Col flex="auto">
+                <Breadcrumbs
+                  name={contentLanguageBilingual({
                     data: personData?.name,
                     requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
-                </h4>
-                <p
-                  className="read-only-event-content-sub-title-primary"
-                  data-cy="para-person-disambiguating-description">
-                  {contentLanguageBilingual({
-                    data: personData?.disambiguatingDescription,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                </p>
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        {artsDataLinkChecker(personData?.sameAs) && (
-          <Col span={24} className="artsdata-link-wrapper top-level-column">
-            <Row>
-              <Col flex={'750px'}>
-                {artsDataLoading ? (
-                  <div style={{ padding: '12px 0' }}>
-                    <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
-                  </div>
-                ) : artsData ? (
-                  <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(personData?.sameAs)}
-                    name={contentLanguageBilingual({
-                      data: artsData?.name,
-                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    disambiguatingDescription={contentLanguageBilingual({
-                      data: artsData?.disambiguatingDescription,
-                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                  />
-                ) : null}
+                />
+              </Col>
+              <Col flex="60px" style={{ marginLeft: 'auto' }}>
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <ReadOnlyProtectedComponent
+                    creator={personData.createdByUserId}
+                    entityId={personData?.id}
+                    isReadOnly={isReadOnly}>
+                    <div className="button-container">
+                      <OutlinedButton
+                        data-cy="button-edit-person"
+                        label={t('dashboard.people.readOnly.edit')}
+                        size="middle"
+                        style={{ height: '40px', width: '60px' }}
+                        onClick={() =>
+                          navigate(
+                            `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${personData?.id}`,
+                          )
+                        }
+                      />
+                    </div>
+                  </ReadOnlyProtectedComponent>
+                </FeatureFlag>
               </Col>
             </Row>
           </Col>
-        )}
+
+          <Col span={24} className="top-level-column">
+            <Row>
+              <Col flex="780px">
+                <div className="read-only-event-heading">
+                  <h4 data-cy="heading-person-name">
+                    {contentLanguageBilingual({
+                      data: personData?.name,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  </h4>
+                  <p
+                    className="read-only-event-content-sub-title-primary"
+                    data-cy="para-person-disambiguating-description">
+                    {contentLanguageBilingual({
+                      data: personData?.disambiguatingDescription,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  </p>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          {artsDataLinkChecker(personData?.sameAs) && (
+            <Col span={24} className="artsdata-link-wrapper top-level-column">
+              <Row>
+                <Col flex={'750px'}>
+                  {artsDataLoading ? (
+                    <div style={{ padding: '12px 0' }}>
+                      <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
+                    </div>
+                  ) : artsData ? (
+                    <ArtsDataInfo
+                      artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                      name={contentLanguageBilingual({
+                        data: artsData?.name,
+                        requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      disambiguatingDescription={contentLanguageBilingual({
+                        data: artsData?.disambiguatingDescription,
+                        requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                    />
+                  ) : null}
+                </Col>
+              </Row>
+            </Col>
+          )}
+        </div>
         <Col span={24} flex={'780px'}>
           <Row>
             <ReadOnlyPageTabLayout>

@@ -1,3 +1,25 @@
+.settings-wrapper .settings-heading-col {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  padding-top: 34px;
+  padding-bottom: 8px;
+}
+
+.settings-wrapper .ant-tabs-nav {
+  position: sticky;
+  top: 112px;
+  z-index: 10;
+  background: #fff;
+}
+
+.settings-wrapper .ant-tabs-content-holder,
+.settings-wrapper .ant-tabs-content,
+.settings-wrapper .ant-tabs-tabpane {
+  overflow: visible;
+}
+
 .settings-wrapper .settings-heading {
   font-weight: 700;
   white-space: nowrap;
@@ -33,6 +55,15 @@
   display: none;
 }
 
+@media only screen and (max-width: 767px) {
+  .settings-wrapper .settings-heading-col {
+    padding-top: 32px;
+  }
+  .settings-wrapper .ant-tabs-nav {
+    top: 80px;
+  }
+}
+
 @media screen and (max-width: 480px) {
   .settings-wrapper .settings-heading {
     font-size: 24px;
@@ -44,5 +75,9 @@
     line-height: 16px;
     letter-spacing: 0em;
     text-align: left;
+  }
+
+  .settings-wrapper .ant-tabs-nav {
+    top: 82px; /* heading: 32px pt + ~29px text + ~12px margin + 8px pb ≈ 82px */
   }
 }

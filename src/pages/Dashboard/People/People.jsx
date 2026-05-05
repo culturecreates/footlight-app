@@ -395,23 +395,40 @@ function People() {
       {allPeopleSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
-            <h4 className="events-heading" data-cy="heading-people-title">
-              {t('dashboard.people.people')}
-            </h4>
+            <>
+              <h4 className="events-heading" data-cy="heading-people-title">
+                {t('dashboard.people.people')}
+              </h4>
+              {!screens.md && (
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <div style={{ marginTop: '8px' }}>
+                    <AddPerson
+                      disabled={isReadOnly ? true : false}
+                      label={t('dashboard.people.person')}
+                      onClick={() => {
+                        navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                      }}
+                      data-cy="button-add-new-person"
+                    />
+                  </div>
+                </FeatureFlag>
+              )}
+            </>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <Col style={{ display: 'flex', gap: '12px' }}>
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <EntityReports entity={entitiesClass.person} />
                 </ReadOnlyProtectedComponent>
-
-                <AddPerson
-                  disabled={isReadOnly ? true : false}
-                  label={t('dashboard.people.person')}
-                  onClick={() => {
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
-                  }}
-                  data-cy="button-add-new-person"
-                />
+                {screens.md && (
+                  <AddPerson
+                    disabled={isReadOnly ? true : false}
+                    label={t('dashboard.people.person')}
+                    onClick={() => {
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                    }}
+                    data-cy="button-add-new-person"
+                  />
+                )}
               </Col>
             </FeatureFlag>
             <PersonSearch
