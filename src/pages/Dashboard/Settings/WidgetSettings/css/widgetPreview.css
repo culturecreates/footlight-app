@@ -1,7 +1,9 @@
 .preview-section-wrapper .mobile-iframe-container {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: calc(100vh - 390px);
+  min-height: 350px;
+  max-height: 680px;
   overflow: hidden;
   border-radius: 8px;
   border: 1px solid #b6c1c9;
@@ -72,4 +74,10 @@
 
 .preview-section-wrapper .iframe-mask.visible:hover .mask-content {
   transform: scale(1.05);
+}
+
+.preview-section-wrapper .preview-desktop-btn-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
 }

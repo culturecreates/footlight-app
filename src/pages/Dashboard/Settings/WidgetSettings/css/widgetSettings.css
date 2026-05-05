@@ -147,30 +147,6 @@
   gap: 24px;
 }
 
-.widget-settings .preview-section-wrapper > .preview-section-wrapper-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.widget-settings .preview-section-wrapper > .preview-section-wrapper-header > span {
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 32px;
-  letter-spacing: 0em;
-  text-align: left;
-  color: #222732;
-}
-
-.widget-settings .preview-section-wrapper > .preview-section-wrapper-header .outlined-label {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  letter-spacing: 0em;
-  text-align: center;
-}
-
 .widget-settings .widget-settings-code-container {
   width: 100%;
   display: flex;

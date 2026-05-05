@@ -32,6 +32,7 @@ const DraggableTable = ({
   transformedData,
   setTransformedData,
   onBeforeDelete,
+  stickyOffset,
 }) => {
   const [currentCalendarData] = useOutletContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -281,6 +282,7 @@ const DraggableTable = ({
             pagination={false}
             tableLayout="fixed"
             indentSize={20}
+            sticky={stickyOffset}
             expandable={{
               expandIcon: ({ expanded, onExpand, record }) => {
                 const defaultIcon = record?.isDefault ? (

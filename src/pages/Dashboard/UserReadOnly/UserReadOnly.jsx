@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ const UserReadOnly = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const timestampRef = useRef(Date.now()).current;
+  const stickyHeaderRef = useRef(null);
   const { userId, calendarId } = useParams();
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -47,6 +48,15 @@ const UserReadOnly = () => {
     isSuccess: userSuccess,
     isLoading: userLoading,
   } = useGetUserByIdQuery({ userId, calendarId, sessionId: timestampRef }, { skip: userId ? false : true });
+
+  useLayoutEffect(() => {
+    if (stickyHeaderRef.current) {
+      document.documentElement.style.setProperty(
+        '--user-read-only-header-height',
+        `${stickyHeaderRef.current.offsetHeight}px`,
+      );
+    }
+  });
 
   useEffect(() => {
     if (userSuccess) {
@@ -88,7 +98,7 @@ const UserReadOnly = () => {
         </div>
       ) : (
         <Row className="user-read-only-wrapper" gutter={[0, 32]}>
-          <Col span={24}>
+          <div className="user-read-only-sticky-header" ref={stickyHeaderRef}>
             <Row gutter={[32, 24]} className="user-read-only-heading-wrapper">
               <Col span={24}>
                 <Row>
@@ -135,7 +145,7 @@ const UserReadOnly = () => {
                 </Row>
               </Col>
             </Row>
-          </Col>
+          </div>
           <Col span={24}>
             <Row>
               <Col flex={'780px'}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { Row, Col, Button, Skeleton } from 'antd';
 import { CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
@@ -64,6 +64,7 @@ function EventReadOnly() {
   const { t } = useTranslation();
   const { calendarId, eventId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const stickyHeaderRef = useRef(null);
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -113,6 +114,15 @@ function EventReadOnly() {
   const dispatch = useDispatch();
 
   const isAnyLoading = useMemo(() => isLoading || taxonomyLoading, [isLoading, taxonomyLoading]);
+
+  useLayoutEffect(() => {
+    if (stickyHeaderRef.current) {
+      document.documentElement.style.setProperty(
+        '--event-read-only-header-height',
+        `${stickyHeaderRef.current.offsetHeight}px`,
+      );
+    }
+  }); // no deps — runs after every render to always capture the correct header height
 
   useEffect(() => {
     if (isAnyLoading) {
@@ -310,123 +320,125 @@ function EventReadOnly() {
   return !debouncedLoading ? (
     <div>
       <Row gutter={[32, 24]} className="read-only-wrapper events-read-only-wrapper " style={{ margin: 0 }}>
-        <Col className="top-level-column" span={24}>
-          <Row>
-            <Col flex="auto">
-              <Breadcrumbs
-                name={contentLanguageBilingual({
-                  data: eventData?.name,
-                  requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                  calendarContentLanguage: calendarContentLanguage,
-                })}
-              />
-            </Col>
-            <Col flex="60px" style={{ marginLeft: 'auto' }}>
-              <ReadOnlyProtectedComponent
-                creator={eventData.createdByUserId}
-                isReadOnly={isReadOnly}
-                eventState={eventData?.publishState}>
-                <div className="button-container">
-                  <OutlinedButton
-                    data-cy="button-edit-place"
-                    label={t('dashboard.places.readOnly.edit')}
-                    size="middle"
-                    style={{ height: '40px', width: '60px' }}
-                    onClick={() =>
-                      navigate(
-                        `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${eventData.id}`,
-                        {
-                          replace: true,
-                        },
-                      )
-                    }
-                  />
-                </div>
-              </ReadOnlyProtectedComponent>
-            </Col>
-          </Row>
-        </Col>
-
-        <Col span={24} className="top-level-column">
-          <Row>
-            <Col>
-              <div className="read-only-event-heading">
-                <h4>
-                  {bilingual({
+        <div className="event-read-only-sticky-header" ref={stickyHeaderRef}>
+          <Col className="top-level-column" span={24}>
+            <Row>
+              <Col flex="auto">
+                <Breadcrumbs
+                  name={contentLanguageBilingual({
                     data: eventData?.name,
-                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                    calendarContentLanguage: calendarContentLanguage,
                   })}
-                </h4>
-              </div>
-            </Col>
-          </Row>
-        </Col>
-
-        {artsDataLink?.length > 0 && (
-          <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
-            <Row>
-              <Col flex={'723px'}>
-                {artsDataLoading ? (
-                  <div style={{ padding: '12px 0' }}>
-                    <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
+                />
+              </Col>
+              <Col flex="60px" style={{ marginLeft: 'auto' }}>
+                <ReadOnlyProtectedComponent
+                  creator={eventData.createdByUserId}
+                  isReadOnly={isReadOnly}
+                  eventState={eventData?.publishState}>
+                  <div className="button-container">
+                    <OutlinedButton
+                      data-cy="button-edit-place"
+                      label={t('dashboard.places.readOnly.edit')}
+                      size="middle"
+                      style={{ height: '40px', width: '60px' }}
+                      onClick={() =>
+                        navigate(
+                          `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${eventData.id}`,
+                          {
+                            replace: true,
+                          },
+                        )
+                      }
+                    />
                   </div>
-                ) : artsData ? (
-                  <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
-                    name={contentLanguageBilingual({
-                      data: artsData?.name,
-                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    disambiguatingDescription={contentLanguageBilingual({
-                      data: artsData?.disambiguatingDescription,
-                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                  />
-                ) : null}
+                </ReadOnlyProtectedComponent>
               </Col>
             </Row>
           </Col>
-        )}
-        {!routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) && (
-          <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
-            <Row>
-              <Col flex={'723px'}>
-                {eventPublishStateOptions?.map((state, index) => {
-                  if (
-                    (state?.value === eventPublishState?.PENDING_REVIEW ||
-                      state?.value === eventPublishState?.PUBLISHED) &&
-                    eventData?.publishState === state?.value
-                  ) {
-                    const isContributor = calendar[0]?.role === userRoles.CONTRIBUTOR;
-                    const translationKey =
-                      state?.value === eventPublishState?.PUBLISHED && isContributor
-                        ? 'dashboard.events.readOnlyEvent.notification.contributorPublished'
-                        : state?.value === eventPublishState?.PUBLISHED
-                        ? 'dashboard.events.readOnlyEvent.notification.underPublished'
-                        : 'dashboard.events.readOnlyEvent.notification.underReview';
 
-                    return (
-                      <Alert
-                        key={index}
-                        message={
-                          <Translation>
-                            {(t) => t(translationKey, { adminEmail: currentCalendarData.contact })}
-                          </Translation>
-                        }
-                        type="info"
-                        showIcon
-                        icon={<InfoCircleOutlined />}
-                        additionalClassName="alert-information"
-                      />
-                    );
-                  }
-                })}
+          <Col span={24} className="top-level-column">
+            <Row>
+              <Col>
+                <div className="read-only-event-heading">
+                  <h4>
+                    {bilingual({
+                      data: eventData?.name,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    })}
+                  </h4>
+                </div>
               </Col>
             </Row>
           </Col>
-        )}
+
+          {artsDataLink?.length > 0 && (
+            <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
+              <Row>
+                <Col flex={'723px'}>
+                  {artsDataLoading ? (
+                    <div style={{ padding: '12px 0' }}>
+                      <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
+                    </div>
+                  ) : artsData ? (
+                    <ArtsDataInfo
+                      artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
+                      name={contentLanguageBilingual({
+                        data: artsData?.name,
+                        requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      disambiguatingDescription={contentLanguageBilingual({
+                        data: artsData?.disambiguatingDescription,
+                        requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                    />
+                  ) : null}
+                </Col>
+              </Row>
+            </Col>
+          )}
+          {!routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) && (
+            <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
+              <Row>
+                <Col flex={'723px'}>
+                  {eventPublishStateOptions?.map((state, index) => {
+                    if (
+                      (state?.value === eventPublishState?.PENDING_REVIEW ||
+                        state?.value === eventPublishState?.PUBLISHED) &&
+                      eventData?.publishState === state?.value
+                    ) {
+                      const isContributor = calendar[0]?.role === userRoles.CONTRIBUTOR;
+                      const translationKey =
+                        state?.value === eventPublishState?.PUBLISHED && isContributor
+                          ? 'dashboard.events.readOnlyEvent.notification.contributorPublished'
+                          : state?.value === eventPublishState?.PUBLISHED
+                          ? 'dashboard.events.readOnlyEvent.notification.underPublished'
+                          : 'dashboard.events.readOnlyEvent.notification.underReview';
+
+                      return (
+                        <Alert
+                          key={index}
+                          message={
+                            <Translation>
+                              {(t) => t(translationKey, { adminEmail: currentCalendarData.contact })}
+                            </Translation>
+                          }
+                          type="info"
+                          showIcon
+                          icon={<InfoCircleOutlined />}
+                          additionalClassName="alert-information"
+                        />
+                      );
+                    }
+                  })}
+                </Col>
+              </Row>
+            </Col>
+          )}
+        </div>
 
         <Col span={24} flex={'723px'} style={{ padding: '0px' }}>
           <Row>

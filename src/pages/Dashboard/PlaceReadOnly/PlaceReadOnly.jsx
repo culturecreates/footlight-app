@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Col, Row, Skeleton } from 'antd';
@@ -51,6 +51,7 @@ function PlaceReadOnly() {
   const { t } = useTranslation();
   const { placeId, calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const stickyHeaderRef = useRef(null);
   const navigate = useNavigate();
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -167,6 +168,15 @@ function PlaceReadOnly() {
       });
   };
 
+  useLayoutEffect(() => {
+    if (stickyHeaderRef.current) {
+      document.documentElement.style.setProperty(
+        '--place-read-only-header-height',
+        `${stickyHeaderRef.current.offsetHeight}px`,
+      );
+    }
+  }); // no deps — runs after every render to always capture the correct header height
+
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
   }, []);
@@ -257,94 +267,96 @@ function PlaceReadOnly() {
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-      <Row gutter={[32, 24]} className="read-only-wrapper place-read-only">
-        <Col className="top-level-column" span={24}>
-          <Row>
-            <Col flex="auto">
-              <Breadcrumbs
-                name={contentLanguageBilingual({
-                  data: placeData?.name,
-                  requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                  calendarContentLanguage: calendarContentLanguage,
-                })}
-              />
-            </Col>
-            <Col flex="60px" style={{ marginLeft: 'auto' }}>
-              <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-                <ReadOnlyProtectedComponent
-                  creator={placeData.createdByUserId}
-                  isReadOnly={isReadOnly}
-                  entityId={placeData?.id}>
-                  <div className="button-container">
-                    <OutlinedButton
-                      data-cy="button-edit-place"
-                      label={t('dashboard.places.readOnly.edit')}
-                      size="middle"
-                      style={{ height: '40px', width: '60px' }}
-                      onClick={() =>
-                        navigate(
-                          `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${placeData?.id}`,
-                        )
-                      }
-                    />
-                  </div>
-                </ReadOnlyProtectedComponent>
-              </FeatureFlag>
-            </Col>
-          </Row>
-        </Col>
-
-        <Col className="top-level-column" span={24}>
-          <Row>
-            <Col>
-              <div className="read-only-event-heading">
-                <h4 data-cy="heading-place-name">
-                  {contentLanguageBilingual({
+      <Row gutter={[32, 24]} className="read-only-wrapper place-read-only" style={{ margin: 0 }}>
+        <div className="place-read-only-sticky-header" ref={stickyHeaderRef}>
+          <Col className="top-level-column" span={24}>
+            <Row>
+              <Col flex="auto">
+                <Breadcrumbs
+                  name={contentLanguageBilingual({
                     data: placeData?.name,
                     requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
-                </h4>
-                <p
-                  className="read-only-event-content-sub-title-primary"
-                  data-cy="para-place-disambiguating-description">
-                  {contentLanguageBilingual({
-                    data: placeData?.disambiguatingDescription,
-                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                </p>
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        {artsDataLinkChecker(placeData?.sameAs) && (
-          <Col span={24} className="artsdata-link-wrapper top-level-column">
-            <Row>
-              <Col flex={'750px'}>
-                {artsDataLoading ? (
-                  <div style={{ padding: '12px 0' }}>
-                    <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
-                  </div>
-                ) : artsData ? (
-                  <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
-                    name={contentLanguageBilingual({
-                      data: artsData?.name,
-                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    disambiguatingDescription={contentLanguageBilingual({
-                      data: artsData?.disambiguatingDescription,
-                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                  />
-                ) : null}
+                />
+              </Col>
+              <Col flex="60px" style={{ marginLeft: 'auto' }}>
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <ReadOnlyProtectedComponent
+                    creator={placeData.createdByUserId}
+                    isReadOnly={isReadOnly}
+                    entityId={placeData?.id}>
+                    <div className="button-container">
+                      <OutlinedButton
+                        data-cy="button-edit-place"
+                        label={t('dashboard.places.readOnly.edit')}
+                        size="middle"
+                        style={{ height: '40px', width: '60px' }}
+                        onClick={() =>
+                          navigate(
+                            `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${placeData?.id}`,
+                          )
+                        }
+                      />
+                    </div>
+                  </ReadOnlyProtectedComponent>
+                </FeatureFlag>
               </Col>
             </Row>
           </Col>
-        )}
+
+          <Col className="top-level-column" span={24}>
+            <Row>
+              <Col>
+                <div className="read-only-event-heading">
+                  <h4 data-cy="heading-place-name">
+                    {contentLanguageBilingual({
+                      data: placeData?.name,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  </h4>
+                  <p
+                    className="read-only-event-content-sub-title-primary"
+                    data-cy="para-place-disambiguating-description">
+                    {contentLanguageBilingual({
+                      data: placeData?.disambiguatingDescription,
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  </p>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          {artsDataLinkChecker(placeData?.sameAs) && (
+            <Col span={24} className="artsdata-link-wrapper top-level-column">
+              <Row>
+                <Col flex={'750px'}>
+                  {artsDataLoading ? (
+                    <div style={{ padding: '12px 0' }}>
+                      <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={false} style={{ width: '100%' }} />
+                    </div>
+                  ) : artsData ? (
+                    <ArtsDataInfo
+                      artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                      name={contentLanguageBilingual({
+                        data: artsData?.name,
+                        requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      disambiguatingDescription={contentLanguageBilingual({
+                        data: artsData?.disambiguatingDescription,
+                        requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                    />
+                  ) : null}
+                </Col>
+              </Row>
+            </Col>
+          )}
+        </div>
 
         <Col span={24} flex={'780px'}>
           <Row>

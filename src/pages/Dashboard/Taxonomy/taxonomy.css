@@ -1,3 +1,18 @@
+.taxonomy-listing-wrapper .taxonomy-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  padding-top: 34px;
+  padding-bottom: 8px;
+}
+
+@media only screen and (max-width: 767px) {
+  .taxonomy-listing-wrapper .taxonomy-sticky-header {
+    padding-top: 32px; /* matches Content's 32px top padding on mobile */
+  }
+}
+
 .taxonomy-listing-wrapper .events-heading {
   color: var(--content-neutral-primary, #222732);
   font-size: 34px;

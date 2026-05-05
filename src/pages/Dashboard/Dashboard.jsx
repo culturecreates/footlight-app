@@ -195,7 +195,7 @@ function Dashboard() {
               <Content
                 className="site-layout-background"
                 style={{
-                  padding: `${screens.md ? '34px 32px 32px 32px' : '32px 16px'}`,
+                  padding: `${screens.md ? '0px 32px 32px 32px' : '0px 16px 32px 16px'}`,
                   margin: 0,
                   minHeight: 280,
                   overflowY: 'scroll',

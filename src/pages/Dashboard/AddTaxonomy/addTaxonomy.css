@@ -279,3 +279,70 @@
   border-bottom: 2px solid var(--content-action-darker, #0f0e98);
   background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
 }
+
+/* ===== STICKY HEADER (Layer 1) ===== */
+.add-taxonomy-wrapper .add-taxonomy-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9faff;
+  padding-top: 34px;
+  padding-bottom: 8px;
+}
+
+@media only screen and (max-width: 767px) {
+  .add-taxonomy-wrapper .add-taxonomy-sticky-header {
+    padding-top: 34px;
+  }
+}
+
+@media only screen and (max-width: 428px) {
+  .add-taxonomy-wrapper .add-taxonomy-sticky-header {
+    padding-top: 16px;
+  }
+}
+
+/* ===== STICKY TABS NAV (Layer 2) ===== */
+/*
+  For position: sticky to work on .ant-tabs-nav, no ancestor between it and the
+  scroll container (.site-layout-background) can have overflow set to anything
+  other than visible. Override .ant-card (which Ant Design sets to overflow:hidden
+  by default) and all intermediate Tabs containers.
+*/
+.add-taxonomy-wrapper .concept-card .ant-card,
+.add-taxonomy-wrapper .concept-card .ant-card-body,
+.add-taxonomy-wrapper .concept-card .ant-tabs,
+.add-taxonomy-wrapper .concept-card .ant-tabs-content-holder,
+.add-taxonomy-wrapper .concept-card .ant-tabs-content {
+  overflow: visible !important;
+}
+
+.add-taxonomy-wrapper .concept-card .ant-tabs-nav {
+  position: sticky;
+  top: var(--taxonomy-header-height, 0px);
+  z-index: 9;
+  background: #fff;
+  margin-bottom: 0;
+  padding-top: 12px;
+}
+
+/* Remove Card top padding so there's no visible gap under the sticky tabs nav */
+.add-taxonomy-wrapper .concept-card .ant-card-body {
+  padding-top: 0;
+}
+
+/* ===== DESCRIPTION HIDE/SHOW ANIMATION ===== */
+.add-taxonomy-wrapper .concept-card .text-concepts {
+  max-height: 200px;
+  overflow: hidden;
+  opacity: 1;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  transition: max-height 0.25s ease, opacity 0.25s ease, margin-bottom 0.25s ease;
+}
+
+.add-taxonomy-wrapper .concept-card .text-concepts--hidden {
+  max-height: 0;
+  opacity: 0;
+  margin-bottom: 0;
+}
