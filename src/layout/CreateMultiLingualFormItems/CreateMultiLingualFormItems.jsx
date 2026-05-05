@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { Form } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +52,18 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
     }) || [];
 
   useWatch(fieldPathsToWatch, form);
+
+  useEffect(() => {
+    if (!data || !form) return;
+    calendarContentLanguage?.forEach((language) => {
+      const lanKey = contentLanguageKeyMap[language];
+      const content = data?.[lanKey];
+      const value = Array.isArray(content) ? content[0] : content;
+      if (value !== undefined && !form.isFieldTouched(isListContext ? [...name, lanKey] : [name, lanKey])) {
+        form.setFieldValue(isListContext ? [...name, lanKey] : [name, lanKey], value);
+      }
+    });
+  }, [data]);
 
   // Track dirty fields
   const isFieldDirty = {};

@@ -249,6 +249,7 @@ const UserReadOnly = () => {
                                       disabled={calendar?.disabled}
                                       organizationIds={calendar?.organizations}
                                       peopleIds={calendar?.people}
+                                      placeIds={calendar?.places}
                                     />
                                   );
                                 })}

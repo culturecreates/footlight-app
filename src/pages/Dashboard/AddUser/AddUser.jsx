@@ -281,6 +281,12 @@ const AddUser = () => {
           people = people?.map((organizer) => {
             return { entityId: organizer?.value };
           });
+
+          let places = values?.places?.[calendarId];
+          places = places?.map((place) => {
+            return { entityId: place?.value };
+          });
+
           let userType = values?.userType[calendarId];
           inviteUser({
             firstName: values.firstName?.trim(),
@@ -291,6 +297,7 @@ const AddUser = () => {
             calendarId,
             organizationIds: organizations,
             peopleIds: people,
+            places,
           })
             .unwrap()
             .then((res) => {
@@ -330,6 +337,11 @@ const AddUser = () => {
           let people = values?.people?.[calendarId] ?? [];
           people = people.map((organizer) => {
             return { entityId: organizer?.value };
+          });
+
+          let places = values?.places?.[calendarId] ?? [];
+          places = places.map((place) => {
+            return { entityId: place?.value };
           });
 
           let userType = values?.userType?.[calendarId] ?? [];
@@ -427,6 +439,7 @@ const AddUser = () => {
                   calendarId,
                   organizations,
                   people,
+                  places,
                 },
               },
             })
@@ -917,17 +930,31 @@ const AddUser = () => {
                                         name={contentLanguageBilingual({
                                           data: selectedCalendar?.name,
                                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                          calendarContentLanguage: calendarContentLanguage,
+                                          calendarContentLanguage:
+                                            allCalendarsData?.find((cal) => cal.id === selectedCalendar?.calendarId)
+                                              ?.contentLanguage ?? calendarContentLanguage,
                                         })}
                                         role={selectedCalendar?.role}
                                         readOnly={adminCheckHandler({ calendar, user }) ? false : true}
                                         disabled={selectedCalendar?.disabled}
                                         organizationIds={selectedCalendar?.organizations}
                                         peopleIds={selectedCalendar?.people}
+                                        placeIds={selectedCalendar?.places}
                                         isCurrentUser={isCurrentUser}
                                         removeCalendarHandler={() => {
                                           removeCalendarHandler({ item: selectedCalendar, index });
                                         }}
+                                        onChange={(e) => {
+                                          setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
+                                          setUserSearchKeyword(e.target.value);
+
+                                          if (e.target.value == '') {
+                                            setUserSearchData([]);
+                                          } else {
+                                            debounceSearch(e.target.value);
+                                          }
+                                        }}
+                                        className="events-search"
                                       />
                                     ))}
                                   </div>
