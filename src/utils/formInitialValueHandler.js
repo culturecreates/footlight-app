@@ -33,12 +33,14 @@ export const formInitialValueHandler = (
 
     case formTypes.IMAGE:
       if (Array.isArray(initialData) && initialData.length > 0) {
+        const mainImage = initialData.find((image) => image?.isMain);
+        if (!mainImage) break;
         return [
           {
-            uid: initialData[0]?.original?.entityId,
-            name: initialData[0]?.original?.entityId,
+            uid: mainImage?.original?.entityId,
+            name: mainImage?.original?.entityId,
             status: 'done',
-            url: initialData[0]?.original?.uri,
+            url: mainImage?.original?.uri,
           },
         ];
       } else if (initialData?.original?.uri) {
