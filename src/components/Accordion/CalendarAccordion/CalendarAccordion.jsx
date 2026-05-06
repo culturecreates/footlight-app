@@ -316,7 +316,7 @@ function CalendarAccordion(props) {
         </Form.Item>
         <Form.Item
           name={['organizers', selectedCalendarId]}
-          label={t('dashboard.organization.organization')}
+          label={t('dashboard.organization.organizations')}
           hidden={
             (readOnly && selectedOrganizers?.length === 0) ||
             (calendarId !== selectedCalendarId && selectedOrganizers?.length === 0)
