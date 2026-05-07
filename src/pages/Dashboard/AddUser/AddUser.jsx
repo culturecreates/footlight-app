@@ -124,8 +124,15 @@ const AddUser = () => {
           const activeCalendars = response?.roles?.filter((r) => {
             return r.status === userActivityStatus[0].key || r.status === userActivityStatus[2].key;
           });
+          const viewerAdminCalendarIds =
+            user?.roles
+              ?.filter((r) => r.role === userRoles.ADMIN && r.status === userActivityStatus[0].key)
+              ?.map((r) => r.calendarId) ?? [];
+          const visibleCalendars = user?.isSuperAdmin
+            ? activeCalendars
+            : activeCalendars?.filter((c) => viewerAdminCalendarIds.includes(c.calendarId));
           setSelectedCalendars(
-            activeCalendars
+            visibleCalendars
               ?.map((calendar) => ({
                 ...calendar,
                 disabled: calendarId === calendar?.calendarId ? false : true,

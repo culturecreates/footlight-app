@@ -6,7 +6,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Button, Card, Col, Form, Row } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import './userReadOnly.css';
-import { useGetUserByIdQuery } from '../../../services/users';
+import { useGetUserByIdQuery, useGetCurrentUserQuery } from '../../../services/users';
 import StatusTag from '../../../components/Tags/UserStatus/StatusTag';
 import { roleHandler } from '../../../utils/roleHandler';
 import { copyText } from '../../../utils/copyText';
@@ -16,6 +16,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { PathName } from '../../../constants/pathName';
+import { userRoles } from '../../../constants/userRoles';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
@@ -33,7 +34,7 @@ const UserReadOnly = () => {
     _getCalendar,
     setContentBackgroundColor,
   ] = useOutletContext();
-  const { user } = useSelector(getUserDetails);
+  const { user, accessToken } = useSelector(getUserDetails);
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');
@@ -43,11 +44,23 @@ const UserReadOnly = () => {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  const isCurrentUser = userId === user?.id;
+
   const {
-    data: userInfo,
-    isSuccess: userSuccess,
-    isLoading: userLoading,
-  } = useGetUserByIdQuery({ userId, calendarId, sessionId: timestampRef }, { skip: userId ? false : true });
+    data: userByIdData,
+    isSuccess: userByIdSuccess,
+    isLoading: userByIdLoading,
+  } = useGetUserByIdQuery({ userId, calendarId, sessionId: timestampRef }, { skip: isCurrentUser || !userId });
+
+  const {
+    data: currentUserData,
+    isSuccess: currentUserSuccess,
+    isLoading: currentUserLoading,
+  } = useGetCurrentUserQuery({ accessToken, calendarId }, { skip: !isCurrentUser });
+
+  const userInfo = isCurrentUser ? currentUserData : userByIdData;
+  const userSuccess = isCurrentUser ? currentUserSuccess : userByIdSuccess;
+  const userLoading = isCurrentUser ? currentUserLoading : userByIdLoading;
 
   useLayoutEffect(() => {
     if (stickyHeaderRef.current) {
@@ -63,7 +76,17 @@ const UserReadOnly = () => {
       const activeCalendars = userInfo?.roles.filter((r) => {
         return r.status == userActivityStatus[0].key;
       });
-      setUserSubscribedCalenders(activeCalendars);
+
+      const isViewingOtherUser = user?.id !== userInfo?.id;
+      if (isViewingOtherUser && !user?.isSuperAdmin) {
+        const viewerAdminCalendarIds =
+          user?.roles
+            ?.filter((r) => r.role === userRoles.ADMIN && r.status === userActivityStatus[0].key)
+            ?.map((r) => r.calendarId) ?? [];
+        setUserSubscribedCalenders(activeCalendars.filter((c) => viewerAdminCalendarIds.includes(c.calendarId)));
+      } else {
+        setUserSubscribedCalenders(activeCalendars);
+      }
     }
   }, [userLoading]);
 
@@ -112,7 +135,7 @@ const UserReadOnly = () => {
                   </Col>
                   {(!userInfo?.isSuperAdmin || user?.id === userInfo?.id) && (
                     <Col flex="60px">
-                      <ReadOnlyProtectedComponent>
+                      {isCurrentUser ? (
                         <div className="button-container">
                           <OutlinedButton
                             data-cy="button-user-edit"
@@ -127,7 +150,24 @@ const UserReadOnly = () => {
                             }
                           />
                         </div>
-                      </ReadOnlyProtectedComponent>
+                      ) : (
+                        <ReadOnlyProtectedComponent>
+                          <div className="button-container">
+                            <OutlinedButton
+                              data-cy="button-user-edit"
+                              label={t('dashboard.settings.userReadOnly.editBtn')}
+                              size="middle"
+                              style={{ height: '40px' }}
+                              onClick={() =>
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${userInfo?.id}`,
+                                  { state: { data: userInfo } },
+                                )
+                              }
+                            />
+                          </div>
+                        </ReadOnlyProtectedComponent>
+                      )}
                     </Col>
                   )}
                 </Row>
