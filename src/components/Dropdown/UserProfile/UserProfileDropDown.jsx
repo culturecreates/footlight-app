@@ -34,9 +34,7 @@ const UserProfileDropDown = () => {
         break;
       case 'userProfile':
         if (featureFlags.settingsScreenUsers === 'true')
-          navigate(
-            `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${user.id}`,
-          );
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${user.id}`);
         else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
         break;
       case 'help':

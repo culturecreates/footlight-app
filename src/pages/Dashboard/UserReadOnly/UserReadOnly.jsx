@@ -8,7 +8,6 @@ import { LeftOutlined } from '@ant-design/icons';
 import './userReadOnly.css';
 import { useGetUserByIdQuery, useGetCurrentUserQuery } from '../../../services/users';
 import StatusTag from '../../../components/Tags/UserStatus/StatusTag';
-import { roleHandler } from '../../../utils/roleHandler';
 import { copyText } from '../../../utils/copyText';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
@@ -20,6 +19,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import ImageUpload from '../../../components/ImageUpload';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -89,6 +89,8 @@ const UserReadOnly = () => {
       }
     }
   }, [userLoading]);
+
+  const mainImageData = userInfo?.image?.find((img) => img?.isMain) || userInfo?.image?.[0] || null;
 
   const createUserInfoRowItem = ({ isCopiableText, infoType, infoText, onClick }) => {
     return (
@@ -190,67 +192,85 @@ const UserReadOnly = () => {
             <Row>
               <Col flex={'780px'}>
                 <Card className="user-read-only-card" style={{ border: 'none' }}>
-                  <Row gutter={[0, 4]}>
-                    <Col>
-                      <h2 className="user-info-details-card-heading" data-cy="heading-user-details-title">
-                        {t('dashboard.settings.userReadOnly.details')}
-                      </h2>
+                  <Row wrap={false} align="top">
+                    <Col style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1 }}>
+                      <Row gutter={[0, 4]}>
+                        <Col>
+                          <h2 className="user-info-details-card-heading" data-cy="heading-user-details-title">
+                            {t('dashboard.settings.userReadOnly.details')}
+                          </h2>
+                        </Col>
+                      </Row>
+                      {userInfo?.email &&
+                        createUserInfoRowItem({
+                          isCopiableText: true,
+                          infoType: 'email',
+                          infoText: userInfo.email,
+                          onClick: (e) => {
+                            copyText({
+                              textToCopy: e.target.textContent,
+                              message: t(`common.copied`),
+                            });
+                          },
+                        })}
+
+                      {userInfo?.userName &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'userName',
+                          infoText: userInfo?.userName,
+                        })}
+
+                      {userInfo?.firstName &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'firstName',
+                          infoText: userInfo.firstName,
+                        })}
+
+                      {userInfo?.lastName &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'lastName',
+                          infoText: userInfo.lastName,
+                        })}
+
+                      {mainImageData?.large?.uri && (
+                        <div>
+                          <div className="user-read-only-info-label">
+                            {t('dashboard.settings.addUser.profilePicture')}
+                          </div>
+                          <div style={{ marginTop: '4px' }}>
+                            <ImageUpload
+                              imageUrl={mainImageData.large.uri}
+                              imageReadOnly={true}
+                              preview={true}
+                              eventImageData={mainImageData}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {userInfo?.interfaceLanguage &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'languagePreference',
+                          infoText:
+                            userInfo?.interfaceLanguage === 'EN' ? t('common.tabEnglish') : t('common.tabFrench'),
+                        })}
                     </Col>
+
+                    {mainImageData?.thumbnail?.uri && (
+                      <Col style={{ paddingLeft: '24px' }}>
+                        <img
+                          src={mainImageData.thumbnail.uri}
+                          alt="profile"
+                          style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
+                          data-cy="image-user-profile-thumbnail"
+                        />
+                      </Col>
+                    )}
                   </Row>
-                  {userInfo?.userName &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'userName',
-                      infoText: userInfo?.userName,
-                    })}
-
-                  {userInfo?.firstName &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'firstName',
-                      infoText: userInfo.firstName,
-                    })}
-
-                  {userInfo?.lastName &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'lastName',
-                      infoText: userInfo.lastName,
-                    })}
-
-                  {userInfo?.phoneNumber &&
-                    createUserInfoRowItem({
-                      isCopiableText: true,
-                      infoType: 'phoneNumber',
-                      infoText: userInfo.phoneNumber,
-                    })}
-
-                  {userInfo?.email &&
-                    createUserInfoRowItem({
-                      isCopiableText: true,
-                      infoType: 'email',
-                      infoText: userInfo.email,
-                      onClick: (e) => {
-                        copyText({
-                          textToCopy: e.target.textContent,
-                          message: t(`common.copied`),
-                        });
-                      },
-                    })}
-
-                  {(userInfo?.roles || userInfo?.isSuperAdmin) &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'userType',
-                      infoText: roleHandler({ roles: userInfo.roles, calendarId, isSuperAdmin: userInfo.isSuperAdmin }),
-                    })}
-
-                  {userInfo?.interfaceLanguage &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'languagePreference',
-                      infoText: userInfo?.interfaceLanguage === 'EN' ? t('common.tabEnglish') : t('common.tabFrench'),
-                    })}
                 </Card>
               </Col>
             </Row>

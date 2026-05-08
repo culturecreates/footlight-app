@@ -83,7 +83,6 @@ const AddUser = () => {
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
-    phoneNumber: '',
     email: '',
     userType: '',
     languagePreference: '',
@@ -95,6 +94,10 @@ const AddUser = () => {
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
+
+  const isViewingOtherUser = !!(userId && userId !== user?.id);
+  const canEditPersonalInfo = !isViewingOtherUser || user?.isSuperAdmin;
+  const canEditCalendarInfo = adminCheckHandler({ calendar, user });
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
@@ -110,6 +113,8 @@ const AddUser = () => {
     inviteUserLoading || updateUserByIdLoading || updateCurrentUserLoading || isUserFetching || isCurrentUserFetching;
 
   useEffect(() => {
+    setSelectedCalendars([]);
+
     if (userId !== user?.id) {
       !adminCheckHandler({ calendar, user }) &&
         dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
@@ -352,7 +357,101 @@ const AddUser = () => {
           });
 
           let userType = values?.userType?.[calendarId] ?? [];
-          if (isCurrentUser && adminCheckHandler({ calendar, user }) == false) {
+
+          const warningHandler = (error) => {
+            message.warning({
+              duration: 10,
+              maxCount: 1,
+              key: 'udpate-user-warning',
+              content: (
+                <>
+                  {error?.data?.message} &nbsp;
+                  <Button
+                    type="text"
+                    icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                    onClick={() => message.destroy('udpate-user-warning')}
+                  />
+                </>
+              ),
+              icon: <ExclamationCircleOutlined />,
+            });
+          };
+
+          const refreshCurrentUserState = (values) => {
+            i18n.changeLanguage(values?.languagePreference?.toLowerCase());
+            getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+              .unwrap()
+              .then((response) => {
+                const requiredRole = response?.roles.filter((r) => r.calendarId === calendarId);
+                setUserData({
+                  firstName: response?.firstName,
+                  lastName: response?.lastName,
+                  email: response?.email,
+                  userType: requiredRole[0]?.role,
+                  userName: response?.userName,
+                  languagePreference: response.interfaceLanguage,
+                  calendars: response.roles,
+                });
+                dispatch(
+                  setUser({
+                    accessToken,
+                    expiredTime,
+                    refreshToken,
+                    user: {
+                      id: response?.id,
+                      firstName: response?.firstName,
+                      lastName: response?.lastName,
+                      email: response?.email,
+                      profileImage: response?.profileImage,
+                      roles: response?.roles,
+                      isSuperAdmin: response?.isSuperAdmin ? true : false,
+                      userName: response?.userName,
+                      interfaceLanguage: response?.interfaceLanguage,
+                    },
+                  }),
+                );
+                Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
+              });
+          };
+
+          if (isCurrentUser && adminCheckHandler({ calendar, user })) {
+            // Admin editing own profile: personal info + role/access via updateUserById
+            updateUserById({
+              id: userId,
+              calendarId,
+              body: {
+                firstName: values?.firstName?.trim(),
+                lastName: values?.lastName?.trim(),
+                email: values?.email,
+                interfaceLanguage: values?.languagePreference,
+                modifyRole: {
+                  userId: userId,
+                  role: userType,
+                  calendarId,
+                  organizations,
+                  people,
+                  places,
+                },
+              },
+            })
+              .unwrap()
+              .then(() => {
+                refreshCurrentUserState(values);
+                notification.success({
+                  description: t('dashboard.userProfile.notification.profileUpdate'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`);
+              })
+              .catch((error) => {
+                console.log(error);
+                warningHandler(error);
+              });
+          } else if (isCurrentUser) {
+            // Non-admin current user: personal info only via updateCurrentUser
             updateCurrentUser({
               calendarId,
               body: {
@@ -365,43 +464,7 @@ const AddUser = () => {
               .unwrap()
               .then((response) => {
                 if (response?.statusCode == 202) {
-                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
-                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      const requiredRole = response?.roles.filter((r) => {
-                        return r.calendarId === calendarId;
-                      });
-
-                      setUserData({
-                        firstName: response?.firstName,
-                        lastName: response?.lastName,
-                        phoneNumber: response?.phoneNumber,
-                        email: response?.email,
-                        userType: requiredRole[0]?.role,
-                        userName: response?.userName,
-                        languagePreference: response.interfaceLanguage,
-                        calendars: response.roles,
-                      });
-                      let userDetails = {
-                        accessToken,
-                        expiredTime,
-                        refreshToken,
-                        user: {
-                          id: response?.id,
-                          firstName: response?.firstName,
-                          lastName: response?.lastName,
-                          email: response?.email,
-                          profileImage: response?.profileImage,
-                          roles: response?.roles,
-                          isSuperAdmin: response?.isSuperAdmin ? true : false,
-                          userName: response?.userName,
-                          interfaceLanguage: response?.interfaceLanguage,
-                        },
-                      };
-                      dispatch(setUser(userDetails));
-                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
-                    });
+                  refreshCurrentUserState(values);
                   notification.success({
                     description: t('dashboard.userProfile.notification.profileUpdate'),
                     placement: 'top',
@@ -409,29 +472,14 @@ const AddUser = () => {
                     maxCount: 1,
                     duration: 3,
                   });
-
-                  navigate(-1);
+                  navigate(
+                    `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`,
+                  );
                 }
               })
-              .catch((error) => {
-                message.warning({
-                  duration: 10,
-                  maxCount: 1,
-                  key: 'udpate-user-warning',
-                  content: (
-                    <>
-                      {error?.data?.message} &nbsp;
-                      <Button
-                        type="text"
-                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                        onClick={() => message.destroy('udpate-user-warning')}
-                      />
-                    </>
-                  ),
-                  icon: <ExclamationCircleOutlined />,
-                });
-              });
-          } else if (adminCheckHandler({ calendar, user })) {
+              .catch(warningHandler);
+          } else if (user?.isSuperAdmin) {
+            // Super admin editing another user: full update — personal info and role
             updateUserById({
               id: userId,
               calendarId,
@@ -452,83 +500,55 @@ const AddUser = () => {
             })
               .unwrap()
               .then((res) => {
-                if (isCurrentUser) {
-                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
-                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      const requiredRole = response?.roles.filter((r) => {
-                        return r.calendarId === calendarId;
-                      });
-                      setUserData({
-                        firstName: response?.firstName,
-                        lastName: response?.lastName,
-                        phoneNumber: response?.phoneNumber,
-                        email: response?.email,
-                        userType: requiredRole?.length > 0 && requiredRole[0]?.role,
-                        userName: response?.userName,
-                        languagePreference: response.interfaceLanguage,
-                        calendars: response.roles,
-                      });
-                      notification.success({
-                        description: t(`dashboard.settings.addUser.notification.updateUser`),
-                        key: res.message,
-                        placement: 'top',
-                        closeIcon: <></>,
-                        maxCount: 1,
-                        duration: 3,
-                      });
-                      let userDetails = {
-                        accessToken,
-                        expiredTime,
-                        refreshToken,
-                        user: {
-                          id: response?.id,
-                          firstName: response?.firstName,
-                          lastName: response?.lastName,
-                          email: response?.email,
-                          profileImage: response?.profileImage,
-                          roles: response?.roles,
-                          isSuperAdmin: response?.isSuperAdmin ? true : false,
-                          userName: response?.userName,
-                          interfaceLanguage: response?.interfaceLanguage,
-                        },
-                      };
-                      dispatch(setUser(userDetails));
-                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
-
-                      navigate(-2);
-                    });
-                } else {
-                  notification.success({
-                    description: t(`dashboard.settings.addUser.notification.updateUser`),
-                    key: res.message,
-                    placement: 'top',
-                    closeIcon: <></>,
-                    maxCount: 1,
-                    duration: 3,
-                  });
-                  navigate(-2);
-                }
+                notification.success({
+                  description: t(`dashboard.settings.addUser.notification.updateUser`),
+                  key: res.message,
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`);
               })
               .catch((error) => {
                 console.log(error);
-                message.warning({
-                  duration: 10,
+                warningHandler(error);
+              });
+          } else if (adminCheckHandler({ calendar, user })) {
+            // Regular admin editing another user: role/access only — personal info fields are disabled
+            updateUserById({
+              id: userId,
+              calendarId,
+              body: {
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                interfaceLanguage: userData.languagePreference,
+                modifyRole: {
+                  userId: userId,
+                  role: userType,
+                  calendarId,
+                  organizations,
+                  people,
+                  places,
+                },
+              },
+            })
+              .unwrap()
+              .then((res) => {
+                notification.success({
+                  description: t(`dashboard.settings.addUser.notification.updateUser`),
+                  key: res.message,
+                  placement: 'top',
+                  closeIcon: <></>,
                   maxCount: 1,
-                  key: 'udpate-user-warning',
-                  content: (
-                    <>
-                      {error?.data?.message} &nbsp;
-                      <Button
-                        type="text"
-                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                        onClick={() => message.destroy('udpate-user-warning')}
-                      />
-                    </>
-                  ),
-                  icon: <ExclamationCircleOutlined />,
+                  duration: 3,
                 });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`);
+              })
+              .catch((error) => {
+                console.log(error);
+                warningHandler(error);
               });
           }
         })
@@ -634,10 +654,6 @@ const AddUser = () => {
             value: userData.lastName,
           },
           {
-            name: ['phoneNumber'],
-            value: userData.phoneNumber,
-          },
-          {
             name: ['email'],
             value: userData.email,
           },
@@ -701,6 +717,46 @@ const AddUser = () => {
                     </Col>
                     <Col flex={'423px'}>
                       <Form.Item
+                        data-cy="form-item-user-email-title"
+                        name="email"
+                        required
+                        label={t('dashboard.settings.addUser.email')}
+                        rules={[
+                          {
+                            validator: (_, value) =>
+                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
+                          },
+                          {
+                            type: 'email',
+                            message: t('login.validations.invalidEmail'),
+                          },
+                        ]}>
+                        <Row>
+                          <Col flex={'423px'}>
+                            <AuthenticationInput
+                              size="small"
+                              placeholder={t('dashboard.settings.addUser.placeHolder.email')}
+                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
+                              value={userData.email}
+                              disabled={userId && !canEditPersonalInfo}
+                            />
+                          </Col>
+                        </Row>
+                      </Form.Item>
+
+                      {userId && (
+                        <Form.Item
+                          data-cy="form-item-user-username-title"
+                          label={t('dashboard.settings.addUser.userName')}>
+                          <Row>
+                            <Col flex={'423px'}>
+                              <AuthenticationInput size="small" disabled value={userData.userName} />
+                            </Col>
+                          </Row>
+                        </Form.Item>
+                      )}
+
+                      <Form.Item
                         data-cy="form-item-user-first-name-title"
                         name="firstName"
                         required
@@ -719,6 +775,7 @@ const AddUser = () => {
                                 placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
                                 onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
                                 value={userData.firstName}
+                                disabled={!canEditPersonalInfo}
                               />
                             ) : (
                               <>
@@ -822,58 +879,23 @@ const AddUser = () => {
                               placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
                               onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
                               value={userData.lastName}
-                            />
-                          </Col>
-                        </Row>
-                      </Form.Item>
-                      <Form.Item
-                        data-cy="form-item-user-phonenumber-title"
-                        name="phoneNumber"
-                        label={t('dashboard.settings.addUser.phoneNumber')}
-                        rules={[
-                          {
-                            pattern: /^\d+$/,
-                            message: 'Phone number must be a number!',
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.phoneNumber')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'phoneNumber' })}
-                              value={userData.phoneNumber}
+                              disabled={userId && !canEditPersonalInfo}
                             />
                           </Col>
                         </Row>
                       </Form.Item>
 
-                      <Form.Item
-                        data-cy="form-item-user-email-title"
-                        name="email"
-                        required
-                        label={t('dashboard.settings.addUser.email')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
-                          },
-                          {
-                            type: 'email',
-                            message: t('login.validations.invalidEmail'),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.email')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
-                              value={userData.email}
-                            />
-                          </Col>
-                        </Row>
-                      </Form.Item>
+                      {userId && (
+                        <Form.Item
+                          data-cy="form-item-user-profile-picture-title"
+                          label={t('dashboard.settings.addUser.profilePicture')}>
+                          <Row>
+                            <Col flex={'423px'}>
+                              <AuthenticationInput size="small" disabled value="" placeholder="—" />
+                            </Col>
+                          </Row>
+                        </Form.Item>
+                      )}
 
                       <Form.Item
                         data-cy="form-item-user-language-title"
@@ -890,6 +912,7 @@ const AddUser = () => {
                           options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
                           onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
                           data-cy="select-user-language"
+                          disabled={userId && !canEditPersonalInfo}
                         />
                       </Form.Item>
 
@@ -931,7 +954,7 @@ const AddUser = () => {
                                       <CalendarAccordion
                                         form={formInstance}
                                         data-cy="accordion-selected-calendars"
-                                        key={index}
+                                        key={selectedCalendar?.calendarId}
                                         setRouteBlockingFlag={setRouteBlockingFlag}
                                         selectedCalendarId={selectedCalendar?.calendarId}
                                         name={contentLanguageBilingual({
@@ -942,7 +965,7 @@ const AddUser = () => {
                                               ?.contentLanguage ?? calendarContentLanguage,
                                         })}
                                         role={selectedCalendar?.role}
-                                        readOnly={adminCheckHandler({ calendar, user }) ? false : true}
+                                        readOnly={!canEditCalendarInfo}
                                         disabled={selectedCalendar?.disabled}
                                         organizationIds={selectedCalendar?.organizations}
                                         peopleIds={selectedCalendar?.people}

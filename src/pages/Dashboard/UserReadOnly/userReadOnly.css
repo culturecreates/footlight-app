@@ -81,8 +81,9 @@
 
 .user-read-only-card .ant-card-body {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 24px;
 }
 
 .user-read-only-card .user-read-only-info-copiable {
@@ -144,9 +145,5 @@
   .user-read-only-calendar-card .user-info-details-card-heading {
     font-size: 20px;
     line-height: 28px;
-  }
-
-  .user-read-only-card .ant-card-body {
-    gap: 16px;
   }
 }
