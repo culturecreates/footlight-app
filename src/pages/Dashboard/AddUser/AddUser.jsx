@@ -491,7 +491,11 @@ const AddUser = () => {
                       firstName: response?.firstName,
                       lastName: response?.lastName,
                       email: response?.email,
-                      profileImage: response?.profileImage,
+                      profileImage:
+                        response?.profileImage ??
+                        response?.image?.find((img) => img?.isMain)?.thumbnail?.uri ??
+                        response?.image?.[0]?.thumbnail?.uri ??
+                        null,
                       roles: response?.roles,
                       isSuperAdmin: response?.isSuperAdmin ? true : false,
                       userName: response?.userName,

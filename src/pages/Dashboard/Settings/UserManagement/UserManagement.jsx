@@ -11,7 +11,7 @@ import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
-import { MoreOutlined } from '@ant-design/icons';
+import { MoreOutlined, UserOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import './userManagement.css';
 import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
@@ -214,8 +214,8 @@ const UserManagement = (props) => {
   const handleListCardStyles = (item) => {
     const listCardStyles =
       calendar[0]?.role === userRoles.GUEST && item._id != user.id
-        ? { style: { cursor: 'initial', padding: '24px' } }
-        : { style: { padding: '24px' } };
+        ? { style: { cursor: 'initial', padding: '24px 0px 24px 0px' } }
+        : { style: { padding: '24px 0px 24px 0px' } };
     return listCardStyles;
   };
 
@@ -706,6 +706,10 @@ const UserManagement = (props) => {
                         return i;
                       }
                     });
+                    const thumbnailUrl =
+                      item?.image?.find((img) => img?.isMain)?.thumbnail?.uri ??
+                      item?.image?.[0]?.thumbnail?.uri ??
+                      null;
                     return (
                       <ListCard
                         data-cy="list-card-user"
@@ -714,6 +718,34 @@ const UserManagement = (props) => {
                         listItemHandler={() => {
                           return listItemHandler(item?._id);
                         }}
+                        avatar={
+                          thumbnailUrl ? (
+                            <div style={{ height: '40px', width: '40px' }}>
+                              <img
+                                src={thumbnailUrl}
+                                alt="profile"
+                                style={{ height: '40px', width: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                                data-cy="image-user-list-thumbnail"
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                height: '40px',
+                                width: '40px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '4px',
+                                backgroundColor: '#E3E8FF',
+                              }}>
+                              <UserOutlined
+                                style={{ color: '#607EFC', fontSize: '18px' }}
+                                data-cy="icon-user-list-fallback"
+                              />
+                            </div>
+                          )
+                        }
                         title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
                         description={roleHandler({ roles: item?.roles, calendarId, isSuperAdmin: item?.isSuperAdmin })}
                         activityStatus={currentCalendarUserStatus(item)}
