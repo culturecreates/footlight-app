@@ -43,6 +43,7 @@ function CalendarAccordion(props) {
     removeCalendarHandler,
     isCurrentUser,
     setRouteBlockingFlag,
+    required = false,
   } = props;
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
@@ -297,6 +298,7 @@ function CalendarAccordion(props) {
         <Form.Item
           name={['userType', selectedCalendarId]}
           label={t('dashboard.settings.addUser.userType')}
+          required={required}
           initialValue={role ?? userRoles.GUEST}
           data-cy="form-item-user-type-label">
           {!readOnly ? (

@@ -839,6 +839,7 @@ const AddUser = () => {
                           {userId && (
                             <Form.Item
                               data-cy="form-item-user-username-title"
+                              required
                               label={t('dashboard.settings.addUser.userName')}>
                               <Row>
                                 <Col flex={'423px'}>
@@ -851,14 +852,22 @@ const AddUser = () => {
                           <Form.Item
                             data-cy="form-item-user-first-name-title"
                             name="firstName"
-                            required
+                            required={!!userId}
                             label={t('dashboard.settings.addUser.firstName')}
-                            rules={[
-                              {
-                                validator: (_, value) =>
-                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.firstName')),
-                              },
-                            ]}>
+                            rules={
+                              userId
+                                ? [
+                                    {
+                                      validator: (_, value) =>
+                                        validateNotEmpty(
+                                          _,
+                                          value,
+                                          t('dashboard.settings.addUser.validationTexts.firstName'),
+                                        ),
+                                    },
+                                  ]
+                                : []
+                            }>
                             <Row>
                               <Col flex={'423px'}>
                                 {userId ? (
@@ -889,14 +898,22 @@ const AddUser = () => {
                           <Form.Item
                             data-cy="form-item-user-last-name-title"
                             name="lastName"
-                            required
+                            required={!!userId}
                             label={t('dashboard.settings.addUser.lastName')}
-                            rules={[
-                              {
-                                validator: (_, value) =>
-                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.lastName')),
-                              },
-                            ]}>
+                            rules={
+                              userId
+                                ? [
+                                    {
+                                      validator: (_, value) =>
+                                        validateNotEmpty(
+                                          _,
+                                          value,
+                                          t('dashboard.settings.addUser.validationTexts.lastName'),
+                                        ),
+                                    },
+                                  ]
+                                : []
+                            }>
                             <Row>
                               <Col flex={'423px'}>
                                 <AuthenticationInput
@@ -1064,6 +1081,7 @@ const AddUser = () => {
                                         data-cy="accordion-selected-calendars"
                                         key={selectedCalendar?.calendarId}
                                         setRouteBlockingFlag={setRouteBlockingFlag}
+                                        required={selectedCalendar?.calendarId === calendarId}
                                         selectedCalendarId={selectedCalendar?.calendarId}
                                         name={contentLanguageBilingual({
                                           data: selectedCalendar?.name,
