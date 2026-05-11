@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LeftOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, message, notification, Popover, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -40,6 +46,8 @@ import Select from '../../../components/Select';
 import Cookies from 'js-cookie';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
+import ImageUpload from '../../../components/ImageUpload';
+import { useAddImageMutation } from '../../../services/image';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -90,6 +98,10 @@ const AddUser = () => {
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [userSearchKeyword, setUserSearchKeyword] = useState('');
   const [userSearchData, setUserSearchData] = useState([]);
+  const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [profileThumbnailUrl, setProfileThumbnailUrl] = useState(null);
+  const [profileImageKey, setProfileImageKey] = useState(0);
+  const [profileImageDeleted, setProfileImageDeleted] = useState(false);
 
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
@@ -98,6 +110,8 @@ const AddUser = () => {
   const isViewingOtherUser = !!(userId && userId !== user?.id);
   const canEditPersonalInfo = !isViewingOtherUser || user?.isSuperAdmin;
   const canEditCalendarInfo = adminCheckHandler({ calendar, user });
+
+  const mainImageData = userData?.image?.find((img) => img?.isMain) || userData?.image?.[0] || null;
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
@@ -109,8 +123,14 @@ const AddUser = () => {
     sessionId: timestampRef,
   });
   const [updateCurrentUser, { isLoading: updateCurrentUserLoading }] = useUpdateCurrentUserMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
   const isSaving =
-    inviteUserLoading || updateUserByIdLoading || updateCurrentUserLoading || isUserFetching || isCurrentUserFetching;
+    inviteUserLoading ||
+    updateUserByIdLoading ||
+    updateCurrentUserLoading ||
+    isUserFetching ||
+    isCurrentUserFetching ||
+    imageUploadLoading;
 
   useEffect(() => {
     setSelectedCalendars([]);
@@ -230,6 +250,15 @@ const AddUser = () => {
     }
   }, [userData]);
 
+  useEffect(() => {
+    setProfileImageDeleted(false);
+    if (mainImageData) {
+      setProfileThumbnailUrl(mainImageData.thumbnail?.uri || mainImageData.large?.uri || null);
+    } else {
+      setProfileThumbnailUrl(null);
+    }
+  }, [userData.image]);
+
   // handlers
 
   const validateNotEmpty = (_, value, message) => {
@@ -339,8 +368,47 @@ const AddUser = () => {
     } else if (userId) {
       formInstance
         .validateFields()
-        .then((values) => {
+        .then(async (values) => {
           setIsFormDirty(false);
+
+          const buildImagePayload = async () => {
+            const profilePictureFiles = values?.profilePicture;
+            const imageCropData = formInstance.getFieldValue('imageCrop');
+            if (profilePictureFiles?.[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', profilePictureFiles[0].originFileObj);
+              const response = await addImage({ data: formdata, calendarId }).unwrap();
+              const entityId = response?.data?.original?.entityId;
+              return [
+                {
+                  large: imageCropData?.large
+                    ? {
+                        xCoordinate: imageCropData.large.x,
+                        yCoordinate: imageCropData.large.y,
+                        height: imageCropData.large.height,
+                        width: imageCropData.large.width,
+                      }
+                    : undefined,
+                  thumbnail: imageCropData?.thumbnail
+                    ? {
+                        xCoordinate: imageCropData.thumbnail.x,
+                        yCoordinate: imageCropData.thumbnail.y,
+                        height: imageCropData.thumbnail.height,
+                        width: imageCropData.thumbnail.width,
+                      }
+                    : undefined,
+                  original: { entityId, height: response?.data?.height, width: response?.data?.width },
+                  isMain: true,
+                },
+              ];
+            } else if (Array.isArray(profilePictureFiles) && profilePictureFiles.length === 0) {
+              return [];
+            }
+            return undefined;
+          };
+
+          const imagePayload = await buildImagePayload();
+          const imagePatch = imagePayload !== undefined ? { image: imagePayload } : {};
           let organizations = values?.organizers?.[calendarId] ?? [];
           organizations = organizations.map((organizer) => {
             return { entityId: organizer?.value };
@@ -424,6 +492,7 @@ const AddUser = () => {
                 lastName: values?.lastName?.trim(),
                 email: values?.email,
                 interfaceLanguage: values?.languagePreference,
+                ...imagePatch,
                 modifyRole: {
                   userId: userId,
                   role: userType,
@@ -459,6 +528,7 @@ const AddUser = () => {
                 lastName: values?.lastName?.trim(),
                 email: values?.email,
                 interfaceLanguage: values?.languagePreference,
+                ...imagePatch,
               },
             })
               .unwrap()
@@ -488,6 +558,7 @@ const AddUser = () => {
                 lastName: values.lastName?.trim(),
                 email: values.email,
                 interfaceLanguage: values?.languagePreference,
+                ...imagePatch,
                 modifyRole: {
                   userId: userId,
                   role: userType,
@@ -524,6 +595,7 @@ const AddUser = () => {
                 lastName: userData.lastName,
                 email: userData.email,
                 interfaceLanguage: userData.languagePreference,
+                ...imagePatch,
                 modifyRole: {
                   userId: userId,
                   role: userType,
@@ -715,221 +787,278 @@ const AddUser = () => {
                           : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
                       </div>
                     </Col>
-                    <Col flex={'423px'}>
-                      <Form.Item
-                        data-cy="form-item-user-email-title"
-                        name="email"
-                        required
-                        label={t('dashboard.settings.addUser.email')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
-                          },
-                          {
-                            type: 'email',
-                            message: t('login.validations.invalidEmail'),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.email')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
-                              value={userData.email}
-                              disabled={userId && !canEditPersonalInfo}
-                            />
-                          </Col>
-                        </Row>
-                      </Form.Item>
+                    <Col span={24}>
+                      <Row wrap={false} align="top" justify="space-between">
+                        <Col flex={'423px'}>
+                          <Form.Item
+                            data-cy="form-item-user-email-title"
+                            name="email"
+                            required
+                            label={t('dashboard.settings.addUser.email')}
+                            rules={[
+                              {
+                                validator: (_, value) =>
+                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
+                              },
+                              {
+                                type: 'email',
+                                message: t('login.validations.invalidEmail'),
+                              },
+                            ]}>
+                            <Row>
+                              <Col flex={'423px'}>
+                                <AuthenticationInput
+                                  size="small"
+                                  placeholder={t('dashboard.settings.addUser.placeHolder.email')}
+                                  onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
+                                  value={userData.email}
+                                  disabled={userId && !canEditPersonalInfo}
+                                />
+                              </Col>
+                            </Row>
+                          </Form.Item>
 
-                      {userId && (
-                        <Form.Item
-                          data-cy="form-item-user-username-title"
-                          label={t('dashboard.settings.addUser.userName')}>
-                          <Row>
-                            <Col flex={'423px'}>
-                              <AuthenticationInput size="small" disabled value={userData.userName} />
-                            </Col>
-                          </Row>
-                        </Form.Item>
-                      )}
+                          {userId && (
+                            <Form.Item
+                              data-cy="form-item-user-username-title"
+                              label={t('dashboard.settings.addUser.userName')}>
+                              <Row>
+                                <Col flex={'423px'}>
+                                  <AuthenticationInput size="small" disabled value={userData.userName} />
+                                </Col>
+                              </Row>
+                            </Form.Item>
+                          )}
 
-                      <Form.Item
-                        data-cy="form-item-user-first-name-title"
-                        name="firstName"
-                        required
-                        label={t('dashboard.settings.addUser.firstName')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.firstName')),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            {userId ? (
-                              <AuthenticationInput
-                                size="small"
-                                placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                                onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
-                                value={userData.firstName}
-                                disabled={!canEditPersonalInfo}
-                              />
-                            ) : (
-                              <>
-                                <div className="search-bar-organization">
-                                  <Popover
-                                    open={
-                                      userSearchData?.data?.length > 0 &&
-                                      isPopoverOpen?.searchUserFirstName &&
-                                      userSearchKeyword != ''
+                          <Form.Item
+                            data-cy="form-item-user-first-name-title"
+                            name="firstName"
+                            required
+                            label={t('dashboard.settings.addUser.firstName')}
+                            rules={[
+                              {
+                                validator: (_, value) =>
+                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.firstName')),
+                              },
+                            ]}>
+                            <Row>
+                              <Col flex={'423px'}>
+                                {userId ? (
+                                  <AuthenticationInput
+                                    size="small"
+                                    placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                    onChange={(e) =>
+                                      setFormItemValues({ value: e.target.value, fieldType: 'firstName' })
                                     }
-                                    arrow={false}
-                                    overlayClassName="entity-popover"
-                                    placement="bottom"
-                                    onOpenChange={(open) => {
-                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
-                                      if (userSearchKeyword != '') {
-                                        debounceSearch(userSearchKeyword);
-                                      }
-                                    }}
-                                    autoAdjustOverflow={false}
-                                    getPopupContainer={(trigger) => trigger.parentNode}
-                                    trigger={['focus']}
-                                    content={
-                                      <div>
-                                        <div className="search-scrollable-content">
-                                          {userSearchData?.data?.map((item, index) => (
-                                            <div
-                                              key={index}
-                                              className="search-popover-options"
-                                              onClick={() => {
-                                                setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                                onSearchCardClick(item);
-                                              }}>
-                                              <p>{item?.firstName + ' ' + item?.lastName}</p>
-                                              <p>{item?.email}</p>
+                                    value={userData.firstName}
+                                    disabled={!canEditPersonalInfo}
+                                  />
+                                ) : (
+                                  <>
+                                    <div className="search-bar-organization">
+                                      <Popover
+                                        open={
+                                          userSearchData?.data?.length > 0 &&
+                                          isPopoverOpen?.searchUserFirstName &&
+                                          userSearchKeyword != ''
+                                        }
+                                        arrow={false}
+                                        overlayClassName="entity-popover"
+                                        placement="bottom"
+                                        onOpenChange={(open) => {
+                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
+                                          if (userSearchKeyword != '') {
+                                            debounceSearch(userSearchKeyword);
+                                          }
+                                        }}
+                                        autoAdjustOverflow={false}
+                                        getPopupContainer={(trigger) => trigger.parentNode}
+                                        trigger={['focus']}
+                                        content={
+                                          <div>
+                                            <div className="search-scrollable-content">
+                                              {userSearchData?.data?.map((item, index) => (
+                                                <div
+                                                  key={index}
+                                                  className="search-popover-options"
+                                                  onClick={() => {
+                                                    setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                                    onSearchCardClick(item);
+                                                  }}>
+                                                  <p>{item?.firstName + ' ' + item?.lastName}</p>
+                                                  <p>{item?.email}</p>
+                                                </div>
+                                              ))}
                                             </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    }>
-                                    <Input
-                                      style={{ borderRadius: '4px' }}
-                                      placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                                      value={userSearchKeyword}
-                                      onPressEnter={(e) => {
-                                        e.preventDefault();
-                                        setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                        e.target.blur();
-                                      }}
-                                      onFocus={(e) => {
-                                        if (e.target.value != '') {
-                                          if (userSearchData?.data?.length > 0) {
-                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-                                            debounceSearch(e.target.value);
-                                          }
-                                        }
-                                      }}
-                                      onClick={(e) => {
-                                        if (e.target.value != '') {
-                                          if (userSearchData?.data?.length > 0) {
-                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-                                          }
-                                          debounceSearch(e.target.value);
-                                        }
-                                      }}
-                                      onChange={(e) => {
-                                        setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
-                                        setUserSearchKeyword(e.target.value);
+                                          </div>
+                                        }>
+                                        <Input
+                                          style={{ borderRadius: '4px' }}
+                                          placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                          value={userSearchKeyword}
+                                          onPressEnter={(e) => {
+                                            e.preventDefault();
+                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                            e.target.blur();
+                                          }}
+                                          onFocus={(e) => {
+                                            if (e.target.value != '') {
+                                              if (userSearchData?.data?.length > 0) {
+                                                setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                                debounceSearch(e.target.value);
+                                              }
+                                            }
+                                          }}
+                                          onClick={(e) => {
+                                            if (e.target.value != '') {
+                                              if (userSearchData?.data?.length > 0) {
+                                                setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                              }
+                                              debounceSearch(e.target.value);
+                                            }
+                                          }}
+                                          onChange={(e) => {
+                                            setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
+                                            setUserSearchKeyword(e.target.value);
 
-                                        if (e.target.value == '') {
-                                          setUserSearchData([]);
-                                        } else {
-                                          debounceSearch(e.target.value);
-                                        }
-                                      }}
-                                      className="events-search"
-                                    />
-                                  </Popover>
-                                </div>
-                              </>
-                            )}
-                          </Col>
-                        </Row>
-                      </Form.Item>
+                                            if (e.target.value == '') {
+                                              setUserSearchData([]);
+                                            } else {
+                                              debounceSearch(e.target.value);
+                                            }
+                                          }}
+                                          className="events-search"
+                                        />
+                                      </Popover>
+                                    </div>
+                                  </>
+                                )}
+                              </Col>
+                            </Row>
+                          </Form.Item>
 
-                      <Form.Item
-                        data-cy="form-item-user-last-name-title"
-                        name="lastName"
-                        required
-                        label={t('dashboard.settings.addUser.lastName')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.lastName')),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
-                              value={userData.lastName}
+                          <Form.Item
+                            data-cy="form-item-user-last-name-title"
+                            name="lastName"
+                            required
+                            label={t('dashboard.settings.addUser.lastName')}
+                            rules={[
+                              {
+                                validator: (_, value) =>
+                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.lastName')),
+                              },
+                            ]}>
+                            <Row>
+                              <Col flex={'423px'}>
+                                <AuthenticationInput
+                                  size="small"
+                                  placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
+                                  onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
+                                  value={userData.lastName}
+                                  disabled={userId && !canEditPersonalInfo}
+                                />
+                              </Col>
+                            </Row>
+                          </Form.Item>
+
+                          {userId && (
+                            <Form.Item
+                              data-cy="form-item-user-profile-picture-title"
+                              label={t('dashboard.settings.addUser.profilePicture')}>
+                              <Row>
+                                <Col flex={'423px'}>
+                                  <ImageUpload
+                                    key={profileImageKey}
+                                    form={formInstance}
+                                    formName="profilePicture"
+                                    isCrop={canEditPersonalInfo}
+                                    imageCropOpen={imageCropOpen}
+                                    setImageCropOpen={setImageCropOpen}
+                                    largeAspectRatio="1:1"
+                                    thumbnailAspectRatio="1:1"
+                                    imageUrl={!profileImageDeleted ? mainImageData?.large?.uri : undefined}
+                                    originalImageUrl={!profileImageDeleted ? mainImageData?.original?.uri : undefined}
+                                    thumbnailImage={!profileImageDeleted ? mainImageData?.thumbnail?.uri : undefined}
+                                    eventImageData={!profileImageDeleted ? mainImageData : undefined}
+                                    preview={true}
+                                    imageReadOnly={!canEditPersonalInfo}
+                                    hideMetadataOptions={true}
+                                    onImageChange={setProfileThumbnailUrl}
+                                    setShowDialog={setRouteBlockingFlag}
+                                  />
+                                </Col>
+                              </Row>
+                            </Form.Item>
+                          )}
+
+                          <Form.Item
+                            data-cy="form-item-user-language-title"
+                            name="languagePreference"
+                            required
+                            label={t('dashboard.settings.addUser.languagePreference')}
+                            rules={[
+                              {
+                                validator: (_, value) =>
+                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
+                              },
+                            ]}>
+                            <Select
+                              options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
+                              onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
+                              data-cy="select-user-language"
                               disabled={userId && !canEditPersonalInfo}
                             />
+                          </Form.Item>
+
+                          {isCurrentUser && (
+                            <div className="password-modal">
+                              <div className="button-container">
+                                <OutlinedButton
+                                  data-cy="button-changepassword"
+                                  label={t('dashboard.settings.addUser.passwordModal.btnText')}
+                                  size="large"
+                                  style={{ height: '40px' }}
+                                  onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
+                                />
+                              </div>
+                              <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
+                            </div>
+                          )}
+                        </Col>
+
+                        {profileThumbnailUrl && userId && (
+                          <Col style={{ paddingLeft: '24px' }}>
+                            <div className="profile-thumbnail-wrapper">
+                              <img
+                                src={profileThumbnailUrl}
+                                alt="profile"
+                                style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
+                                data-cy="image-user-profile-thumbnail-edit"
+                              />
+                              {canEditPersonalInfo && (
+                                <div className="profile-thumbnail-overlay">
+                                  <EditOutlined
+                                    className="profile-thumbnail-action-icon"
+                                    data-cy="icon-edit-profile-picture"
+                                    onClick={() => setImageCropOpen(true)}
+                                  />
+                                  <DeleteOutlined
+                                    className="profile-thumbnail-action-icon"
+                                    data-cy="icon-delete-profile-picture"
+                                    onClick={() => {
+                                      setProfileThumbnailUrl(null);
+                                      setProfileImageDeleted(true);
+                                      setProfileImageKey((k) => k + 1);
+                                      formInstance.setFieldsValue({ profilePicture: [], imageCrop: null });
+                                      setRouteBlockingFlag();
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </div>
                           </Col>
-                        </Row>
-                      </Form.Item>
-
-                      {userId && (
-                        <Form.Item
-                          data-cy="form-item-user-profile-picture-title"
-                          label={t('dashboard.settings.addUser.profilePicture')}>
-                          <Row>
-                            <Col flex={'423px'}>
-                              <AuthenticationInput size="small" disabled value="" placeholder="—" />
-                            </Col>
-                          </Row>
-                        </Form.Item>
-                      )}
-
-                      <Form.Item
-                        data-cy="form-item-user-language-title"
-                        name="languagePreference"
-                        required
-                        label={t('dashboard.settings.addUser.languagePreference')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
-                          },
-                        ]}>
-                        <Select
-                          options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
-                          onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
-                          data-cy="select-user-language"
-                          disabled={userId && !canEditPersonalInfo}
-                        />
-                      </Form.Item>
-
-                      {isCurrentUser && (
-                        <div className="password-modal">
-                          <div className="button-container">
-                            <OutlinedButton
-                              data-cy="button-changepassword"
-                              label={t('dashboard.settings.addUser.passwordModal.btnText')}
-                              size="large"
-                              style={{ height: '40px' }}
-                              onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
-                            />
-                          </div>
-                          <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
-                        </div>
-                      )}
+                        )}
+                      </Row>
                     </Col>
                   </Row>
                 </Card>

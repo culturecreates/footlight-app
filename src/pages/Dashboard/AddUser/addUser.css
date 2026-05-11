@@ -185,6 +185,42 @@
   }
 }
 
+.add-user-wrapper .profile-thumbnail-wrapper {
+  position: relative;
+  width: 151px;
+  height: 151px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.add-user-wrapper .profile-thumbnail-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 4px;
+}
+
+.add-user-wrapper .profile-thumbnail-wrapper:hover .profile-thumbnail-overlay {
+  opacity: 1;
+}
+
+.add-user-wrapper .profile-thumbnail-action-icon {
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.add-user-wrapper .profile-thumbnail-action-icon:hover {
+  color: #e3e8ff;
+}
+
 @media screen and (max-width: 480px) {
   .add-user-wrapper .card-heading-container h5 {
     font-size: 20px;
