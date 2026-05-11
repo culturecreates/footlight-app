@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   LeftOutlined,
   CloseCircleOutlined,
@@ -6,7 +6,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import { Button, Card, Col, Form, Input, message, notification, Popover, Row } from 'antd';
+import { Button, Card, Col, Form, message, notification, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -34,8 +34,6 @@ import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassw
 import { useInviteUserMutation } from '../../../services/invite';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
-import { useDebounce } from '../../../hooks/debounce';
-import { SEARCH_DELAY } from '../../../constants/search';
 import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import LoadingIndicator from '../../../components/LoadingIndicator';
@@ -84,7 +82,6 @@ const AddUser = () => {
     organization: false,
     calendar: false,
     password: false,
-    searchUserFirstName: false,
   });
   const [selectedCalendars, setSelectedCalendars] = useState([]);
   const [isFormDirty, setIsFormDirty] = useState(false);
@@ -96,8 +93,9 @@ const AddUser = () => {
     languagePreference: '',
   });
   const [isCurrentUser, setIsCurrentUser] = useState(false);
-  const [userSearchKeyword, setUserSearchKeyword] = useState('');
-  const [userSearchData, setUserSearchData] = useState([]);
+  const [isExistingCmsUser, setIsExistingCmsUser] = useState(false);
+  const [isFirstNameDisabled, setIsFirstNameDisabled] = useState(false);
+  const [isLastNameDisabled, setIsLastNameDisabled] = useState(false);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [profileThumbnailUrl, setProfileThumbnailUrl] = useState(null);
   const [profileImageKey, setProfileImageKey] = useState(0);
@@ -112,6 +110,9 @@ const AddUser = () => {
   const canEditCalendarInfo = adminCheckHandler({ calendar, user });
 
   const mainImageData = userData?.image?.find((img) => img?.isMain) || userData?.image?.[0] || null;
+
+  const newUserFoundImageData =
+    !userId && isExistingCmsUser ? userData?.image?.find((img) => img?.isMain) || userData?.image?.[0] || null : null;
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
@@ -269,42 +270,62 @@ const AddUser = () => {
     }
   };
 
-  const onSearchCardClick = (item) => {
-    setUserSearchKeyword(item?.firstName);
-    getUser({ userId: item?._id, calendarId })
+  const onEmailBlur = (e) => {
+    if (userId) return;
+    const email = e.target.value?.trim();
+    if (!email || !email.includes('@')) return;
+
+    getUserSearch({ includeCalenderFilter: false, calendarId, query: email, page: 1, limit: 10, filters: '' })
       .unwrap()
-      .then((response) => {
-        let activeCalendars = response?.roles.filter((r) => {
-          return r.status == userActivityStatus[0].key;
-        });
-        const currentCalendarRole = {
-          calendarId: currentCalendarData?.id,
-          image: currentCalendarData?.image,
-          name: currentCalendarData?.name,
-          role: userRoles.GUEST,
-        };
-        activeCalendars = [...activeCalendars, currentCalendarRole];
-        activeCalendars = removeObjectArrayDuplicates(activeCalendars, 'calendarId');
-
-        setSelectedCalendars(
-          activeCalendars
-            ?.map((calendar) => ({
-              ...calendar,
-              disabled: calendarId === calendar?.calendarId ? false : true,
-            }))
-            .sort((a, b) => a.disabled - b.disabled),
-        );
-
-        setUserData({
-          firstName: response?.firstName,
-          lastName: response?.lastName,
-          phoneNumber: response?.phoneNumber,
-          email: response?.email,
-          languagePreference: response.interfaceLanguage,
-          calendars: response.roles,
-          ...response,
-        });
-      });
+      .then((res) => {
+        const foundUser = res?.data?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+        if (!foundUser) {
+          setIsExistingCmsUser(false);
+          setIsFirstNameDisabled(false);
+          setIsLastNameDisabled(false);
+          return;
+        }
+        getUser({ userId: foundUser._id, calendarId })
+          .unwrap()
+          .then((response) => {
+            let activeCalendars = response?.roles?.filter((r) => r.status === userActivityStatus[0].key) ?? [];
+            const viewerAdminCalendarIds =
+              user?.roles
+                ?.filter((r) => r.role === userRoles.ADMIN && r.status === userActivityStatus[0].key)
+                ?.map((r) => r.calendarId) ?? [];
+            activeCalendars = user?.isSuperAdmin
+              ? activeCalendars
+              : activeCalendars.filter((c) => viewerAdminCalendarIds.includes(c.calendarId));
+            const currentCalendarRole = {
+              calendarId: currentCalendarData?.id,
+              image: currentCalendarData?.image,
+              name: currentCalendarData?.name,
+              role: userRoles.GUEST,
+            };
+            activeCalendars = removeObjectArrayDuplicates([...activeCalendars, currentCalendarRole], 'calendarId');
+            setSelectedCalendars(
+              activeCalendars
+                .map((cal) => ({ ...cal, disabled: calendarId === cal?.calendarId ? false : true }))
+                .sort((a, b) => a.disabled - b.disabled),
+            );
+            setUserData({
+              firstName: response?.firstName,
+              lastName: response?.lastName,
+              phoneNumber: response?.phoneNumber,
+              email: response?.email,
+              languagePreference: response?.interfaceLanguage,
+              calendars: response?.roles,
+              ...response,
+            });
+            setIsExistingCmsUser(true);
+            setIsFirstNameDisabled(!!response?.firstName);
+            setIsLastNameDisabled(!!response?.lastName);
+            const imgData = response?.image?.find((img) => img?.isMain) || response?.image?.[0] || null;
+            setProfileThumbnailUrl(imgData?.thumbnail?.uri || imgData?.large?.uri || null);
+          })
+          .catch(() => setIsExistingCmsUser(false));
+      })
+      .catch(() => setIsExistingCmsUser(false));
   };
 
   const onSaveHandler = () => {
@@ -634,18 +655,6 @@ const AddUser = () => {
     setUserData({ ...userData, [fieldType]: value });
   };
 
-  const searchHandlerUserSearch = (value) => {
-    value != ''
-      ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
-          .unwrap()
-          .then((res) => {
-            setUserSearchData(res);
-          })
-      : setUserSearchData([]);
-  };
-
-  const debounceSearch = useCallback(useDebounce(searchHandlerUserSearch, SEARCH_DELAY), []);
-
   const removeCalendarHandler = ({ item, index }) => {
     if (isCurrentUser) {
       Confirm({
@@ -810,7 +819,16 @@ const AddUser = () => {
                                 <AuthenticationInput
                                   size="small"
                                   placeholder={t('dashboard.settings.addUser.placeHolder.email')}
-                                  onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
+                                  onChange={(e) => {
+                                    setFormItemValues({ value: e.target.value, fieldType: 'email' });
+                                    if (isExistingCmsUser) {
+                                      setIsExistingCmsUser(false);
+                                      setIsFirstNameDisabled(false);
+                                      setIsLastNameDisabled(false);
+                                      if (!userId) setProfileThumbnailUrl(null);
+                                    }
+                                  }}
+                                  onBlur={onEmailBlur}
                                   value={userData.email}
                                   disabled={userId && !canEditPersonalInfo}
                                 />
@@ -854,84 +872,15 @@ const AddUser = () => {
                                     disabled={!canEditPersonalInfo}
                                   />
                                 ) : (
-                                  <>
-                                    <div className="search-bar-organization">
-                                      <Popover
-                                        open={
-                                          userSearchData?.data?.length > 0 &&
-                                          isPopoverOpen?.searchUserFirstName &&
-                                          userSearchKeyword != ''
-                                        }
-                                        arrow={false}
-                                        overlayClassName="entity-popover"
-                                        placement="bottom"
-                                        onOpenChange={(open) => {
-                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
-                                          if (userSearchKeyword != '') {
-                                            debounceSearch(userSearchKeyword);
-                                          }
-                                        }}
-                                        autoAdjustOverflow={false}
-                                        getPopupContainer={(trigger) => trigger.parentNode}
-                                        trigger={['focus']}
-                                        content={
-                                          <div>
-                                            <div className="search-scrollable-content">
-                                              {userSearchData?.data?.map((item, index) => (
-                                                <div
-                                                  key={index}
-                                                  className="search-popover-options"
-                                                  onClick={() => {
-                                                    setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                                    onSearchCardClick(item);
-                                                  }}>
-                                                  <p>{item?.firstName + ' ' + item?.lastName}</p>
-                                                  <p>{item?.email}</p>
-                                                </div>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        }>
-                                        <Input
-                                          style={{ borderRadius: '4px' }}
-                                          placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                                          value={userSearchKeyword}
-                                          onPressEnter={(e) => {
-                                            e.preventDefault();
-                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                            e.target.blur();
-                                          }}
-                                          onFocus={(e) => {
-                                            if (e.target.value != '') {
-                                              if (userSearchData?.data?.length > 0) {
-                                                setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-                                                debounceSearch(e.target.value);
-                                              }
-                                            }
-                                          }}
-                                          onClick={(e) => {
-                                            if (e.target.value != '') {
-                                              if (userSearchData?.data?.length > 0) {
-                                                setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-                                              }
-                                              debounceSearch(e.target.value);
-                                            }
-                                          }}
-                                          onChange={(e) => {
-                                            setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
-                                            setUserSearchKeyword(e.target.value);
-
-                                            if (e.target.value == '') {
-                                              setUserSearchData([]);
-                                            } else {
-                                              debounceSearch(e.target.value);
-                                            }
-                                          }}
-                                          className="events-search"
-                                        />
-                                      </Popover>
-                                    </div>
-                                  </>
+                                  <AuthenticationInput
+                                    size="small"
+                                    placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                    onChange={(e) =>
+                                      setFormItemValues({ value: e.target.value, fieldType: 'firstName' })
+                                    }
+                                    value={userData.firstName}
+                                    disabled={isFirstNameDisabled}
+                                  />
                                 )}
                               </Col>
                             </Row>
@@ -955,13 +904,13 @@ const AddUser = () => {
                                   placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
                                   onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
                                   value={userData.lastName}
-                                  disabled={userId && !canEditPersonalInfo}
+                                  disabled={(userId && !canEditPersonalInfo) || isLastNameDisabled}
                                 />
                               </Col>
                             </Row>
                           </Form.Item>
 
-                          {userId && (
+                          {(userId || (isExistingCmsUser && newUserFoundImageData)) && (
                             <Form.Item
                               data-cy="form-item-user-profile-picture-title"
                               label={t('dashboard.settings.addUser.profilePicture')}>
@@ -971,19 +920,43 @@ const AddUser = () => {
                                     key={profileImageKey}
                                     form={formInstance}
                                     formName="profilePicture"
-                                    isCrop={canEditPersonalInfo}
+                                    isCrop={userId ? canEditPersonalInfo : false}
                                     imageCropOpen={imageCropOpen}
                                     setImageCropOpen={setImageCropOpen}
                                     largeAspectRatio="1:1"
                                     thumbnailAspectRatio="1:1"
-                                    imageUrl={!profileImageDeleted ? mainImageData?.large?.uri : undefined}
-                                    originalImageUrl={!profileImageDeleted ? mainImageData?.original?.uri : undefined}
-                                    thumbnailImage={!profileImageDeleted ? mainImageData?.thumbnail?.uri : undefined}
-                                    eventImageData={!profileImageDeleted ? mainImageData : undefined}
+                                    imageUrl={
+                                      userId
+                                        ? !profileImageDeleted
+                                          ? mainImageData?.large?.uri
+                                          : undefined
+                                        : newUserFoundImageData?.large?.uri
+                                    }
+                                    originalImageUrl={
+                                      userId
+                                        ? !profileImageDeleted
+                                          ? mainImageData?.original?.uri
+                                          : undefined
+                                        : newUserFoundImageData?.original?.uri
+                                    }
+                                    thumbnailImage={
+                                      userId
+                                        ? !profileImageDeleted
+                                          ? mainImageData?.thumbnail?.uri
+                                          : undefined
+                                        : newUserFoundImageData?.thumbnail?.uri
+                                    }
+                                    eventImageData={
+                                      userId
+                                        ? !profileImageDeleted
+                                          ? mainImageData
+                                          : undefined
+                                        : newUserFoundImageData
+                                    }
                                     preview={true}
-                                    imageReadOnly={!canEditPersonalInfo}
+                                    imageReadOnly={userId ? !canEditPersonalInfo : true}
                                     hideMetadataOptions={true}
-                                    onImageChange={setProfileThumbnailUrl}
+                                    onImageChange={userId ? setProfileThumbnailUrl : undefined}
                                     setShowDialog={setRouteBlockingFlag}
                                   />
                                 </Col>
@@ -991,24 +964,30 @@ const AddUser = () => {
                             </Form.Item>
                           )}
 
-                          <Form.Item
-                            data-cy="form-item-user-language-title"
-                            name="languagePreference"
-                            required
-                            label={t('dashboard.settings.addUser.languagePreference')}
-                            rules={[
-                              {
-                                validator: (_, value) =>
-                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
-                              },
-                            ]}>
-                            <Select
-                              options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
-                              onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
-                              data-cy="select-user-language"
-                              disabled={userId && !canEditPersonalInfo}
-                            />
-                          </Form.Item>
+                          {userId && !isExistingCmsUser && (
+                            <Form.Item
+                              data-cy="form-item-user-language-title"
+                              name="languagePreference"
+                              required
+                              label={t('dashboard.settings.addUser.languagePreference')}
+                              rules={[
+                                {
+                                  validator: (_, value) =>
+                                    validateNotEmpty(
+                                      _,
+                                      value,
+                                      t('dashboard.settings.addUser.validationTexts.language'),
+                                    ),
+                                },
+                              ]}>
+                              <Select
+                                options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
+                                onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
+                                data-cy="select-user-language"
+                                disabled={userId && !canEditPersonalInfo}
+                              />
+                            </Form.Item>
+                          )}
 
                           {isCurrentUser && (
                             <div className="password-modal">
@@ -1026,7 +1005,7 @@ const AddUser = () => {
                           )}
                         </Col>
 
-                        {profileThumbnailUrl && userId && (
+                        {profileThumbnailUrl && (userId || isExistingCmsUser) && (
                           <Col style={{ paddingLeft: '24px' }}>
                             <div className="profile-thumbnail-wrapper">
                               <img
@@ -1035,7 +1014,7 @@ const AddUser = () => {
                                 style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
                                 data-cy="image-user-profile-thumbnail-edit"
                               />
-                              {canEditPersonalInfo && (
+                              {userId && canEditPersonalInfo && (
                                 <div className="profile-thumbnail-overlay">
                                   <EditOutlined
                                     className="profile-thumbnail-action-icon"
@@ -1103,17 +1082,6 @@ const AddUser = () => {
                                         removeCalendarHandler={() => {
                                           removeCalendarHandler({ item: selectedCalendar, index });
                                         }}
-                                        onChange={(e) => {
-                                          setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
-                                          setUserSearchKeyword(e.target.value);
-
-                                          if (e.target.value == '') {
-                                            setUserSearchData([]);
-                                          } else {
-                                            debounceSearch(e.target.value);
-                                          }
-                                        }}
-                                        className="events-search"
                                       />
                                     ))}
                                   </div>
