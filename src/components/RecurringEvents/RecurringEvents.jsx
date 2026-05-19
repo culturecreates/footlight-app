@@ -53,12 +53,19 @@ const RecurringEvents = function ({
   Form.useWatch('startTimeRecur', form);
 
   const initialRenderRef = useRef(true);
+  const prevFrequencyRef = useRef(frequency);
 
   useEffect(() => {
     if (!frequency) return;
 
-    if (frequency === 'CUSTOM' && !isModalVisible && !initialRenderRef.current) setIsModalVisible(true);
+    // Only open modal when frequency changes TO 'CUSTOM' from a different value
+    // This prevents reopening the modal when it's closed via the Add button
+    const frequencyChangedToCustom = frequency === 'CUSTOM' && prevFrequencyRef.current !== 'CUSTOM';
+    if (frequencyChangedToCustom && !isModalVisible && !initialRenderRef.current) {
+      setIsModalVisible(true);
+    }
 
+    prevFrequencyRef.current = frequency;
     initialRenderRef.current = false;
   }, [frequency]);
 
