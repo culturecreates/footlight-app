@@ -41,11 +41,16 @@ export const inviteApi = createApi({
     }),
 
     acceptInvite: builder.mutation({
-      query: ({ id, password }) => {
+      query: ({ id, password, firstName, lastName, interfaceLanguage }) => {
         return {
           url: `invite/${id}/accept`,
           method: 'POST',
-          body: { ...(password && { password }) },
+          body: {
+            ...(password && { password }),
+            ...(firstName && { firstName }),
+            ...(lastName && { lastName }),
+            ...(interfaceLanguage && { interfaceLanguage }),
+          },
         };
       },
     }),

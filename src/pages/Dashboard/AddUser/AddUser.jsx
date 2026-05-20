@@ -350,9 +350,11 @@ const AddUser = () => {
           });
 
           let userType = values?.userType[calendarId];
+          const trimmedFirstName = values.firstName?.trim();
+          const trimmedLastName = values.lastName?.trim();
           inviteUser({
-            firstName: values.firstName?.trim(),
-            lastName: values.lastName?.trim(),
+            ...(trimmedFirstName && { firstName: trimmedFirstName }),
+            ...(trimmedLastName && { lastName: trimmedLastName }),
             email: values.email,
             role: userType,
             language: values?.languagePreference,
