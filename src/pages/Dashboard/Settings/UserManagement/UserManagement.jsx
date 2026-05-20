@@ -706,10 +706,7 @@ const UserManagement = (props) => {
                         return i;
                       }
                     });
-                    const thumbnailUrl =
-                      item?.image?.find((img) => img?.isMain)?.thumbnail?.uri ??
-                      item?.image?.[0]?.thumbnail?.uri ??
-                      null;
+                    const thumbnailUrl = item?.profileImage ?? null;
                     return (
                       <ListCard
                         data-cy="list-card-user"

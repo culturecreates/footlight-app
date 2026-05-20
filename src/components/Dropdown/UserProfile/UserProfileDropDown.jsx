@@ -1,4 +1,4 @@
-import { CaretDownOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, UserOutlined } from '@ant-design/icons';
 import { Dropdown, Avatar } from 'antd';
 import React from 'react';
 import './UserProfileDropDown.css';
@@ -62,7 +62,12 @@ const UserProfileDropDown = () => {
       }}
       trigger={['click']}>
       <div className="user-profile-dropwdown-content">
-        <Avatar className="dropdown-avatar" src={user.profileImage} size={32} />
+        <Avatar
+          className="dropdown-avatar"
+          src={user.profileImage || undefined}
+          icon={user.profileImage && <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
+          size={32}
+        />
         <span className="user-profile-user-name">{user?.userName}</span>
         <CaretDownOutlined />
       </div>

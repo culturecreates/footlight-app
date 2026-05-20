@@ -19,7 +19,6 @@ import { userRoles } from '../../../constants/userRoles';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import ImageUpload from '../../../components/ImageUpload';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -90,7 +89,7 @@ const UserReadOnly = () => {
     }
   }, [userLoading]);
 
-  const mainImageData = userInfo?.image?.find((img) => img?.isMain) || userInfo?.image?.[0] || null;
+  const profileImageUrl = userInfo?.profileImage ?? null;
 
   const createUserInfoRowItem = ({ isCopiableText, infoType, infoText, onClick }) => {
     return (
@@ -193,7 +192,7 @@ const UserReadOnly = () => {
               <Col flex={'780px'}>
                 <Card className="user-read-only-card" style={{ border: 'none' }}>
                   <Row wrap={false} align="top">
-                    <Col style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1 }}>
+                    <Col flex={'423px'} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                       <Row gutter={[0, 4]}>
                         <Col>
                           <h2 className="user-info-details-card-heading" data-cy="heading-user-details-title">
@@ -235,17 +234,17 @@ const UserReadOnly = () => {
                           infoText: userInfo.lastName,
                         })}
 
-                      {mainImageData?.large?.uri && (
+                      {profileImageUrl && (
                         <div>
                           <div className="user-read-only-info-label">
                             {t('dashboard.settings.addUser.profilePicture')}
                           </div>
                           <div style={{ marginTop: '4px' }}>
-                            <ImageUpload
-                              imageUrl={mainImageData.large.uri}
-                              imageReadOnly={true}
-                              preview={true}
-                              eventImageData={mainImageData}
+                            <img
+                              src={profileImageUrl}
+                              alt="profile"
+                              style={{ maxWidth: '423px', width: '100%' }}
+                              data-cy="image-user-profile-readonly"
                             />
                           </div>
                         </div>
@@ -260,10 +259,10 @@ const UserReadOnly = () => {
                         })}
                     </Col>
 
-                    {mainImageData?.thumbnail?.uri && (
+                    {profileImageUrl && (
                       <Col style={{ paddingLeft: '24px' }}>
                         <img
-                          src={mainImageData.thumbnail.uri}
+                          src={profileImageUrl}
                           alt="profile"
                           style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
                           data-cy="image-user-profile-thumbnail"

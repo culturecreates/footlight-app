@@ -44,7 +44,7 @@ import Select from '../../../components/Select';
 import Cookies from 'js-cookie';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
-import ImageUpload from '../../../components/ImageUpload';
+import ProfileImageUpload from '../../../components/ProfileImageUpload/ProfileImageUpload';
 import { useAddImageMutation } from '../../../services/image';
 
 const AddUser = () => {
@@ -96,10 +96,9 @@ const AddUser = () => {
   const [isExistingCmsUser, setIsExistingCmsUser] = useState(false);
   const [isFirstNameDisabled, setIsFirstNameDisabled] = useState(false);
   const [isLastNameDisabled, setIsLastNameDisabled] = useState(false);
-  const [imageCropOpen, setImageCropOpen] = useState(false);
-  const [profileThumbnailUrl, setProfileThumbnailUrl] = useState(null);
-  const [profileImageKey, setProfileImageKey] = useState(0);
-  const [profileImageDeleted, setProfileImageDeleted] = useState(false);
+  const [profileImageState, setProfileImageState] = useState({ croppedBlobUrl: null, isDeleted: false });
+  const [profileHasOriginal, setProfileHasOriginal] = useState(false);
+  const profileImageRef = useRef(null);
 
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
@@ -109,10 +108,9 @@ const AddUser = () => {
   const canEditPersonalInfo = !isViewingOtherUser || user?.isSuperAdmin;
   const canEditCalendarInfo = adminCheckHandler({ calendar, user });
 
-  const mainImageData = userData?.image?.find((img) => img?.isMain) || userData?.image?.[0] || null;
-
-  const newUserFoundImageData =
-    !userId && isExistingCmsUser ? userData?.image?.find((img) => img?.isMain) || userData?.image?.[0] || null : null;
+  const profileDisplayUrl = profileImageState.isDeleted
+    ? null
+    : profileImageState.croppedBlobUrl || userData?.profileImage || null;
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
@@ -135,6 +133,8 @@ const AddUser = () => {
 
   useEffect(() => {
     setSelectedCalendars([]);
+    setProfileImageState({ croppedBlobUrl: null, isDeleted: false });
+    setProfileHasOriginal(false);
 
     if (userId !== user?.id) {
       !adminCheckHandler({ calendar, user }) &&
@@ -251,15 +251,6 @@ const AddUser = () => {
     }
   }, [userData]);
 
-  useEffect(() => {
-    setProfileImageDeleted(false);
-    if (mainImageData) {
-      setProfileThumbnailUrl(mainImageData.thumbnail?.uri || mainImageData.large?.uri || null);
-    } else {
-      setProfileThumbnailUrl(null);
-    }
-  }, [userData.image]);
-
   // handlers
 
   const validateNotEmpty = (_, value, message) => {
@@ -320,8 +311,6 @@ const AddUser = () => {
             setIsExistingCmsUser(true);
             setIsFirstNameDisabled(!!response?.firstName);
             setIsLastNameDisabled(!!response?.lastName);
-            const imgData = response?.image?.find((img) => img?.isMain) || response?.image?.[0] || null;
-            setProfileThumbnailUrl(imgData?.thumbnail?.uri || imgData?.large?.uri || null);
           })
           .catch(() => setIsExistingCmsUser(false));
       })
@@ -394,44 +383,23 @@ const AddUser = () => {
         .then(async (values) => {
           setIsFormDirty(false);
 
-          const buildImagePayload = async () => {
-            const profilePictureFiles = values?.profilePicture;
-            const imageCropData = formInstance.getFieldValue('imageCrop');
-            if (profilePictureFiles?.[0]?.originFileObj) {
+          const buildProfileImagePayload = async () => {
+            if (profileImageState.croppedBlobUrl) {
+              const fetchResponse = await fetch(profileImageState.croppedBlobUrl);
+              const blob = await fetchResponse.blob();
+              const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
               const formdata = new FormData();
-              formdata.append('file', profilePictureFiles[0].originFileObj);
-              const response = await addImage({ data: formdata, calendarId }).unwrap();
-              const entityId = response?.data?.original?.entityId;
-              return [
-                {
-                  large: imageCropData?.large
-                    ? {
-                        xCoordinate: imageCropData.large.x,
-                        yCoordinate: imageCropData.large.y,
-                        height: imageCropData.large.height,
-                        width: imageCropData.large.width,
-                      }
-                    : undefined,
-                  thumbnail: imageCropData?.thumbnail
-                    ? {
-                        xCoordinate: imageCropData.thumbnail.x,
-                        yCoordinate: imageCropData.thumbnail.y,
-                        height: imageCropData.thumbnail.height,
-                        width: imageCropData.thumbnail.width,
-                      }
-                    : undefined,
-                  original: { entityId, height: response?.data?.height, width: response?.data?.width },
-                  isMain: true,
-                },
-              ];
-            } else if (Array.isArray(profilePictureFiles) && profilePictureFiles.length === 0) {
-              return [];
+              formdata.append('file', file);
+              const uploadResponse = await addImage({ data: formdata, calendarId }).unwrap();
+              return uploadResponse?.data?.original?.url?.uri ?? null;
+            } else if (profileImageState.isDeleted) {
+              return null;
             }
             return undefined;
           };
 
-          const imagePayload = await buildImagePayload();
-          const imagePatch = imagePayload !== undefined ? { image: imagePayload } : {};
+          const profileImageUrl = await buildProfileImagePayload();
+          const profilePatch = profileImageUrl !== undefined ? { profileImage: profileImageUrl } : {};
           let organizations = values?.organizers?.[calendarId] ?? [];
           organizations = organizations.map((organizer) => {
             return { entityId: organizer?.value };
@@ -493,11 +461,7 @@ const AddUser = () => {
                       firstName: response?.firstName,
                       lastName: response?.lastName,
                       email: response?.email,
-                      profileImage:
-                        response?.profileImage ??
-                        response?.image?.find((img) => img?.isMain)?.thumbnail?.uri ??
-                        response?.image?.[0]?.thumbnail?.uri ??
-                        null,
+                      profileImage: response?.profileImage ?? null,
                       roles: response?.roles,
                       isSuperAdmin: response?.isSuperAdmin ? true : false,
                       userName: response?.userName,
@@ -519,7 +483,7 @@ const AddUser = () => {
                 lastName: values?.lastName?.trim(),
                 email: values?.email,
                 interfaceLanguage: values?.languagePreference,
-                ...imagePatch,
+                ...profilePatch,
                 modifyRole: {
                   userId: userId,
                   role: userType,
@@ -555,7 +519,7 @@ const AddUser = () => {
                 lastName: values?.lastName?.trim(),
                 email: values?.email,
                 interfaceLanguage: values?.languagePreference,
-                ...imagePatch,
+                ...profilePatch,
               },
             })
               .unwrap()
@@ -585,7 +549,7 @@ const AddUser = () => {
                 lastName: values.lastName?.trim(),
                 email: values.email,
                 interfaceLanguage: values?.languagePreference,
-                ...imagePatch,
+                ...profilePatch,
                 modifyRole: {
                   userId: userId,
                   role: userType,
@@ -622,7 +586,7 @@ const AddUser = () => {
                 lastName: userData.lastName,
                 email: userData.email,
                 interfaceLanguage: userData.languagePreference,
-                ...imagePatch,
+                ...profilePatch,
                 modifyRole: {
                   userId: userId,
                   role: userType,
@@ -831,7 +795,7 @@ const AddUser = () => {
                                       setIsExistingCmsUser(false);
                                       setIsFirstNameDisabled(false);
                                       setIsLastNameDisabled(false);
-                                      if (!userId) setProfileThumbnailUrl(null);
+                                      if (!userId) setProfileImageState({ croppedBlobUrl: null, isDeleted: false });
                                     }
                                   }}
                                   onBlur={onEmailBlur}
@@ -933,54 +897,21 @@ const AddUser = () => {
                             </Row>
                           </Form.Item>
 
-                          {(userId || (isExistingCmsUser && newUserFoundImageData)) && (
+                          {(userId || isExistingCmsUser) && (canEditPersonalInfo || profileDisplayUrl) && (
                             <Form.Item
                               data-cy="form-item-user-profile-picture-title"
                               label={t('dashboard.settings.addUser.profilePicture')}>
                               <Row>
                                 <Col flex={'423px'}>
-                                  <ImageUpload
-                                    key={profileImageKey}
-                                    form={formInstance}
-                                    formName="profilePicture"
-                                    isCrop={userId ? canEditPersonalInfo : false}
-                                    imageCropOpen={imageCropOpen}
-                                    setImageCropOpen={setImageCropOpen}
-                                    largeAspectRatio="1:1"
-                                    thumbnailAspectRatio="1:1"
-                                    imageUrl={
-                                      userId
-                                        ? !profileImageDeleted
-                                          ? mainImageData?.large?.uri
-                                          : undefined
-                                        : newUserFoundImageData?.large?.uri
-                                    }
-                                    originalImageUrl={
-                                      userId
-                                        ? !profileImageDeleted
-                                          ? mainImageData?.original?.uri
-                                          : undefined
-                                        : newUserFoundImageData?.original?.uri
-                                    }
-                                    thumbnailImage={
-                                      userId
-                                        ? !profileImageDeleted
-                                          ? mainImageData?.thumbnail?.uri
-                                          : undefined
-                                        : newUserFoundImageData?.thumbnail?.uri
-                                    }
-                                    eventImageData={
-                                      userId
-                                        ? !profileImageDeleted
-                                          ? mainImageData
-                                          : undefined
-                                        : newUserFoundImageData
-                                    }
-                                    preview={true}
-                                    imageReadOnly={userId ? !canEditPersonalInfo : true}
-                                    hideMetadataOptions={true}
-                                    onImageChange={userId ? setProfileThumbnailUrl : undefined}
-                                    setShowDialog={setRouteBlockingFlag}
+                                  <ProfileImageUpload
+                                    ref={profileImageRef}
+                                    imageUrl={profileDisplayUrl}
+                                    readOnly={userId ? !canEditPersonalInfo : true}
+                                    onImageChange={(state) => {
+                                      setProfileImageState(state);
+                                      setRouteBlockingFlag();
+                                    }}
+                                    onOriginalChange={setProfileHasOriginal}
                                   />
                                 </Col>
                               </Row>
@@ -1028,32 +959,33 @@ const AddUser = () => {
                           )}
                         </Col>
 
-                        {profileThumbnailUrl && (userId || isExistingCmsUser) && (
+                        {profileDisplayUrl && (userId || isExistingCmsUser) && (
                           <Col style={{ paddingLeft: '24px' }}>
                             <div className="profile-thumbnail-wrapper">
                               <img
-                                src={profileThumbnailUrl}
+                                src={profileDisplayUrl}
                                 alt="profile"
                                 style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
                                 data-cy="image-user-profile-thumbnail-edit"
                               />
-                              {userId && canEditPersonalInfo && (
+                              {(userId ? canEditPersonalInfo : false) && (
                                 <div className="profile-thumbnail-overlay">
                                   <EditOutlined
                                     className="profile-thumbnail-action-icon"
-                                    data-cy="icon-edit-profile-picture"
-                                    onClick={() => setImageCropOpen(true)}
+                                    data-cy="icon-replace-profile-picture"
+                                    onClick={() => profileImageRef.current?.triggerUpload()}
                                   />
+                                  {profileHasOriginal && (
+                                    <EditOutlined
+                                      className="profile-thumbnail-action-icon"
+                                      data-cy="icon-edit-profile-picture"
+                                      onClick={() => profileImageRef.current?.triggerReCrop()}
+                                    />
+                                  )}
                                   <DeleteOutlined
                                     className="profile-thumbnail-action-icon"
                                     data-cy="icon-delete-profile-picture"
-                                    onClick={() => {
-                                      setProfileThumbnailUrl(null);
-                                      setProfileImageDeleted(true);
-                                      setProfileImageKey((k) => k + 1);
-                                      formInstance.setFieldsValue({ profilePicture: [], imageCrop: null });
-                                      setRouteBlockingFlag();
-                                    }}
+                                    onClick={() => profileImageRef.current?.triggerDelete()}
                                   />
                                 </div>
                               )}

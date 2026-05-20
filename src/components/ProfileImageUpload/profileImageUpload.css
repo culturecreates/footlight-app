@@ -1,0 +1,67 @@
+.profile-image-upload .profile-image-thumbnail-wrapper {
+  position: relative;
+  width: 151px;
+  height: 151px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.profile-image-upload .profile-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 4px;
+}
+
+.profile-image-upload .profile-image-thumbnail-wrapper:hover .profile-image-overlay {
+  opacity: 1;
+}
+
+.profile-image-upload .profile-image-action-icon {
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.profile-image-upload .profile-image-action-icon:hover {
+  color: #e3e8ff;
+}
+
+.profile-image-upload .profile-image-upload-zone {
+  width: 151px;
+  height: 151px;
+  border: 1px dashed #b6c1c9;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #fff;
+  gap: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.profile-image-upload .profile-image-upload-zone:hover {
+  border-color: #607efc;
+}
+
+.profile-image-upload .image-actions .ant-space,
+.profile-image-upload .image-actions .ant-btn {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+.profile-image-upload .image-options-more-icon:hover {
+  background-color: #eff2ff;
+  border-radius: 4px;
+}
