@@ -5,6 +5,7 @@ import {
   ExclamationCircleOutlined,
   EditOutlined,
   DeleteOutlined,
+  ScissorOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Col, Form, message, notification, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
@@ -976,7 +977,7 @@ const AddUser = () => {
                                     onClick={() => profileImageRef.current?.triggerUpload()}
                                   />
                                   {profileHasOriginal && (
-                                    <EditOutlined
+                                    <ScissorOutlined
                                       className="profile-thumbnail-action-icon"
                                       data-cy="icon-edit-profile-picture"
                                       onClick={() => profileImageRef.current?.triggerReCrop()}

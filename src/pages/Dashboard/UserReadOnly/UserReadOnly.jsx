@@ -19,6 +19,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import ProfileImageUpload from '../../../components/ProfileImageUpload/ProfileImageUpload';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -240,10 +241,9 @@ const UserReadOnly = () => {
                             {t('dashboard.settings.addUser.profilePicture')}
                           </div>
                           <div style={{ marginTop: '4px' }}>
-                            <img
-                              src={profileImageUrl}
-                              alt="profile"
-                              style={{ maxWidth: '423px', width: '100%' }}
+                            <ProfileImageUpload
+                              imageUrl={profileImageUrl}
+                              readOnly={true}
                               data-cy="image-user-profile-readonly"
                             />
                           </div>

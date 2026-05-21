@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Dropdown, Space, Upload } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
+import { DownloadOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './profileImageUpload.css';
 import { beforeUpload } from '../../utils/beforeImageUpload';
@@ -153,7 +153,35 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
   );
 
   if (readOnly) {
-    return displayUrl ? <img src={displayUrl} alt="profile" style={{ maxWidth: '423px', width: '100%' }} /> : null;
+    if (!displayUrl) return null;
+    return (
+      <div className="profile-image-upload">
+        <img src={displayUrl} alt="profile" style={{ maxWidth: '423px', width: '100%' }} />
+        <div className="image-footer" data-cy="profile-image-footer-readonly">
+          <span className="image-contents">
+            <img
+              className="image-thumbnail"
+              src={displayUrl}
+              style={{ width: 48, height: 48, objectFit: 'cover' }}
+              alt="profile thumbnail"
+            />
+            <span className="image-name-wrapper">
+              <span className="image-name" data-cy="span-profile-image-name-readonly">
+                profile-image.jpg
+              </span>
+            </span>
+          </span>
+          <span className="image-actions">
+            <DownloadOutlined
+              className="image-options-more-icon"
+              style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px', padding: 4, cursor: 'pointer' }}
+              onClick={handleDownload}
+              data-cy="icon-profile-image-download-readonly"
+            />
+          </span>
+        </div>
+      </div>
+    );
   }
 
   return (
