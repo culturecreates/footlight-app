@@ -292,12 +292,12 @@ const UserReadOnly = () => {
                           <Col>
                             <Form layout="vertical">
                               <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-                                {userSubscribedCalenders?.map((calendar, index) => {
+                                {userSubscribedCalenders?.map((calendar) => {
                                   return (
                                     <CalendarAccordion
                                       readOnly={true}
                                       data-cy="accordion-selected-calendars"
-                                      key={index}
+                                      key={calendar?.calendarId}
                                       selectedCalendarId={calendar?.calendarId}
                                       name={contentLanguageBilingual({
                                         data: calendar?.name,
