@@ -57,7 +57,7 @@ const RecurringEvents = function ({
   useEffect(() => {
     if (!frequency) return;
 
-    if (frequency === 'CUSTOM' && !isModalVisible && !initialRenderRef.current) setIsModalVisible(true);
+    if (frequency === 'CUSTOM' && !isModalVisible && !initialRenderRef.current && !isCustom) setIsModalVisible(true);
 
     initialRenderRef.current = false;
   }, [frequency]);
