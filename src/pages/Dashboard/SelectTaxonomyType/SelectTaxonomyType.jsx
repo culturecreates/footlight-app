@@ -77,7 +77,7 @@ const SelectTaxonomyType = () => {
 
   return (
     <div className="select-taxonomy-type-wrapper">
-      <Row>
+      <Row className="select-taxonomy-type-sticky-header">
         <Col span={24}>
           <div className="button-container">
             <Button type="link" onClick={() => navigate(-1)} data-cy="button-taxonomy-back-to-previous">
