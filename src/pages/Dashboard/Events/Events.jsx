@@ -68,6 +68,7 @@ import {
   IMPORT_ACTION_KEY,
   REPORT_ACTION_KEY,
 } from '../../../constants/entitiesClass';
+import { reconcileTaxonomyFilters } from '../../../utils/taxonomyFilterReconciliation';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -291,7 +292,32 @@ function Events() {
   );
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
-  let customFilters = [...(currentCalendarData?.filterPersonalization?.events ?? [])];
+  let customFilters = currentCalendarData?.filterPersonalization?.events ?? [];
+
+  useEffect(() => {
+    if (!allTaxonomyData?.data?.length) return;
+
+    const {
+      reconciledTaxonomyFilter,
+      reconciledStandardTaxonomyFilter,
+      isTaxonomyFilterChanged,
+      isStandardTaxonomyFilterChanged,
+    } = reconcileTaxonomyFilters({
+      taxonomyFilter,
+      standardTaxonomyFilter,
+      taxonomies: allTaxonomyData?.data,
+      customFilters,
+    });
+
+    if (isTaxonomyFilterChanged) {
+      setTaxonomyFilter(reconciledTaxonomyFilter);
+    }
+
+    if (isStandardTaxonomyFilterChanged) {
+      setStandardTaxonomyFilter(reconciledStandardTaxonomyFilter);
+    }
+  }, [allTaxonomyData?.data, customFilters, taxonomyFilter, standardTaxonomyFilter]);
+
   const dateTypeSelector = (dates) => {
     if (dates?.length == 2) {
       if (dates?.every((date) => date === 'any')) return dateFilterTypes.ALL_EVENTS;

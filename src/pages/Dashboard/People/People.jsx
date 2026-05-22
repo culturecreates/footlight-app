@@ -46,6 +46,7 @@ import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDup
 import { entitiesClass } from '../../../constants/entitiesClass';
 import EntityReports from '../../../components/EntityReports/EntityReports';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { reconcileTaxonomyFilters } from '../../../utils/taxonomyFilterReconciliation';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -149,6 +150,30 @@ function People() {
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let customFilters = currentCalendarData?.filterPersonalization?.people ?? [];
+
+  useEffect(() => {
+    if (!allTaxonomyData?.data?.length) return;
+
+    const {
+      reconciledTaxonomyFilter,
+      reconciledStandardTaxonomyFilter,
+      isTaxonomyFilterChanged,
+      isStandardTaxonomyFilterChanged,
+    } = reconcileTaxonomyFilters({
+      taxonomyFilter,
+      standardTaxonomyFilter,
+      taxonomies: allTaxonomyData?.data,
+      customFilters,
+    });
+
+    if (isTaxonomyFilterChanged) {
+      setTaxonomyFilter(reconciledTaxonomyFilter);
+    }
+
+    if (isStandardTaxonomyFilterChanged) {
+      setStandardTaxonomyFilter(reconciledStandardTaxonomyFilter);
+    }
+  }, [allTaxonomyData?.data, customFilters, taxonomyFilter, standardTaxonomyFilter]);
 
   const deletePersonHandler = (personId) => {
     getDependencyDetails({ ids: personId, calendarId })
