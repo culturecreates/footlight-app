@@ -1,3 +1,16 @@
+.create-new-entity-page .create-new-entity-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9faff;
+  margin-left: -32px;
+  margin-right: -32px;
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-top: 32px;
+  padding-bottom: 8px;
+}
+
 .create-new-entity-page .button-container .ant-btn {
   color: #0f0e98;
   border: none;
@@ -43,6 +56,14 @@
 }
 
 @media (max-width: 768px) {
+  .create-new-entity-page .create-new-entity-sticky-header {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 32px;
+  }
+
   .create-new-entity-page .content .text {
     font-weight: 700;
   }
