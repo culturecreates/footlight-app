@@ -46,6 +46,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import EntityReports from '../../../components/EntityReports/EntityReports';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { reconcileTaxonomyFilters } from '../../../utils/taxonomyFilterReconciliation';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -164,6 +165,30 @@ function Places() {
 
   let customFilters = currentCalendarData?.filterPersonalization?.places ?? [];
 
+  useEffect(() => {
+    if (!allTaxonomyData?.data?.length) return;
+
+    const {
+      reconciledTaxonomyFilter,
+      reconciledStandardTaxonomyFilter,
+      isTaxonomyFilterChanged,
+      isStandardTaxonomyFilterChanged,
+    } = reconcileTaxonomyFilters({
+      taxonomyFilter,
+      standardTaxonomyFilter,
+      taxonomies: allTaxonomyData?.data,
+      customFilters,
+    });
+
+    if (isTaxonomyFilterChanged) {
+      setTaxonomyFilter(reconciledTaxonomyFilter);
+    }
+
+    if (isStandardTaxonomyFilterChanged) {
+      setStandardTaxonomyFilter(reconciledStandardTaxonomyFilter);
+    }
+  }, [allTaxonomyData?.data, customFilters, taxonomyFilter, standardTaxonomyFilter]);
+
   const deletePlaceHandler = (placeId) => {
     getDependencyDetails({ ids: placeId, calendarId })
       .unwrap()
@@ -252,8 +277,8 @@ function Places() {
     sessionStorage.removeItem('placesPage');
     sessionStorage.removeItem('placesSearchQuery');
     sessionStorage.removeItem('placeOrder');
-    sessionStorage.removeItem('taxonomyFilter');
-    sessionStorage.removeItem('standardTaxonomyFilter');
+    sessionStorage.removeItem('placeTaxonomyFilter');
+    sessionStorage.removeItem('standardPlaceTaxonomyFilter');
     sessionStorage.removeItem('placeSortBy');
   };
 
