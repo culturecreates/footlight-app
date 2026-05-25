@@ -7,6 +7,7 @@ import { sourceOptions } from '../../constants/sourceOptions';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
+import { createArtsDataLink } from '../../utils/artsDataLinkChecker';
 
 const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, parentLabel) => {
   return children?.map((child) => {
@@ -143,7 +144,7 @@ export const treeEntitiesOption = (
               : typeof entity?.description === 'string' && entity?.description
           }
           calendarContentLanguage={calendarContentLanguage}
-          artsDataLink={entity?.uri}
+          artsDataLink={createArtsDataLink(entity?.uri)}
           showExternalSourceLink={true}
         />
       ),
