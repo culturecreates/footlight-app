@@ -5,6 +5,7 @@ import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatu
 import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
 import SelectionItem from '../List/SelectionItem';
 import { EnvironmentOutlined } from '@ant-design/icons';
+import { createArtsDataLink } from '../../utils/artsDataLinkChecker';
 
 export const taxonomyOptions = (data, user, mappedToField, calendarContentLanguage) => {
   let fieldData = data?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
@@ -70,7 +71,7 @@ export const placesOptions = (
               : typeof place?.description === 'string' && place?.description
           }
           calendarContentLanguage={calendarContentLanguage}
-          artsDataLink={place?.uri}
+          artsDataLink={createArtsDataLink(place?.uri)}
           showExternalSourceLink={true}
         />
       ),

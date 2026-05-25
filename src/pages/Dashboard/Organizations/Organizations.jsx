@@ -47,6 +47,7 @@ import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import EntityReports from '../../../components/EntityReports/EntityReports';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { reconcileTaxonomyFilters } from '../../../utils/taxonomyFilterReconciliation';
 
 const { useBreakpoint } = Grid;
 
@@ -147,6 +148,30 @@ function Organizations() {
 
   let customFilters = currentCalendarData?.filterPersonalization?.organization ?? [];
 
+  useEffect(() => {
+    if (!allTaxonomyData?.data?.length) return;
+
+    const {
+      reconciledTaxonomyFilter,
+      reconciledStandardTaxonomyFilter,
+      isTaxonomyFilterChanged,
+      isStandardTaxonomyFilterChanged,
+    } = reconcileTaxonomyFilters({
+      taxonomyFilter,
+      standardTaxonomyFilter,
+      taxonomies: allTaxonomyData?.data,
+      customFilters,
+    });
+
+    if (isTaxonomyFilterChanged) {
+      setTaxonomyFilter(reconciledTaxonomyFilter);
+    }
+
+    if (isStandardTaxonomyFilterChanged) {
+      setStandardTaxonomyFilter(reconciledStandardTaxonomyFilter);
+    }
+  }, [allTaxonomyData?.data, customFilters, taxonomyFilter, standardTaxonomyFilter]);
+
   const deleteOrganizationHandler = (organizationId) => {
     getDependencyDetails({ ids: organizationId, calendarId })
       .unwrap()
@@ -222,6 +247,7 @@ function Organizations() {
       order: sortOrder?.ASC,
     });
     setTaxonomyFilter({});
+    setStandardTaxonomyFilter({});
     setUserFilter([]);
     setOrganizationIdFilter([]);
     setPageNumber(1);
@@ -661,6 +687,7 @@ function Organizations() {
               <Col>
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
+                  Object.keys(standardTaxonomyFilter)?.length > 0 ||
                   userFilter.length > 0 ||
                   organizationIdFilter.length > 0 ||
                   filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (

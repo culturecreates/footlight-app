@@ -15,7 +15,7 @@ const NewEntityLayout = ({ children, heading, text, entityName, searchHeading })
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <Row className="create-new-entity-page" gutter={[0, 24]}>
-        <Col span={24}>
+        <Col span={24} className="create-new-entity-sticky-header">
           <div className="button-container">
             <Button type="link" onClick={() => navigate(-1)} data-cy="button-breadcrumb-back-to-previous-page">
               <LeftOutlined style={{ fontSize: '12px', paddingRight: '5px' }} />
