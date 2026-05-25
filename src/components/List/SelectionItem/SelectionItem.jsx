@@ -69,9 +69,10 @@ function SelectionItem(props) {
     ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
     : t('common.forms.languageLiterals.knownLanguagePromptText');
 
-  const externalSourceLinkLabel = artsDataLink && isArtsdataUri(artsDataLink)
-    ? t('dashboard.events.createNew.search.linkText')
-    : t('dashboard.events.createNew.search.datafeed');
+  const externalSourceLinkLabel =
+    artsDataLink && isArtsdataUri(artsDataLink)
+      ? t('dashboard.events.createNew.search.linkText')
+      : t('dashboard.events.createNew.search.datafeed');
 
   const routinghandler = (e) => {
     const type = onClickHandle?.entityType;
