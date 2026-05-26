@@ -1,6 +1,6 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Dropdown, Space, Upload } from 'antd';
-import { DownloadOutlined, MoreOutlined } from '@ant-design/icons';
+import { DownloadOutlined, MoreOutlined, UserOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './profileImageUpload.css';
 import { beforeUpload } from '../../utils/beforeImageUpload';
@@ -10,7 +10,7 @@ import LoadingIndicator from '../LoadingIndicator';
 import ProfileImageCrop from './ProfileImageCrop';
 
 const ProfileImageUpload = forwardRef(function ProfileImageUpload(
-  { imageUrl, readOnly, onImageChange, onOriginalChange },
+  { imageUrl, readOnly, onImageChange, onOriginalChange, hideUploaderUI = false },
   ref,
 ) {
   const { t } = useTranslation();
@@ -29,6 +29,40 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
 
   const notifyOriginalChange = (hasOriginal) => {
     if (typeof onOriginalChange === 'function') onOriginalChange(hasOriginal);
+  };
+
+  useEffect(() => {
+    notifyOriginalChange(Boolean(displayUrl));
+  }, [displayUrl]);
+
+  const blobToBase64 = (blob) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => resolve(event?.target?.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+  const openCropper = async () => {
+    if (originalBase64) {
+      setCropOpen(true);
+      return;
+    }
+
+    if (!displayUrl) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(displayUrl);
+      const blob = await response.blob();
+      const resolvedBase64 = await blobToBase64(blob);
+      setOriginalBase64(resolvedBase64);
+      setCropOpen(true);
+    } catch (error) {
+      console.error('Profile image crop source resolution failed:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFileSelect = (file) => {
@@ -93,14 +127,12 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
 
   useImperativeHandle(ref, () => ({
     triggerUpload: () => hiddenFileInputRef.current?.click(),
-    triggerReCrop: () => {
-      if (originalBase64) setCropOpen(true);
-    },
+    triggerReCrop: openCropper,
     triggerDelete: handleDelete,
   }));
 
   const dropdownItems = [
-    ...(originalBase64
+    ...(displayUrl
       ? [
           {
             key: IMAGE_ACTIONS.CROP,
@@ -121,7 +153,7 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
   const handleMenuClick = ({ key }) => {
     switch (key) {
       case IMAGE_ACTIONS.CROP:
-        if (originalBase64) setCropOpen(true);
+        openCropper();
         break;
       case IMAGE_ACTIONS.DOWNLOAD:
         handleDownload();
@@ -135,15 +167,27 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
   };
 
   const uploadButton = (
-    <div style={{ padding: 8 }}>
+    <div style={{ padding: 8, minHeight: 151, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <span
         style={{
-          display: 'flex',
-          flexDirection: 'row-reverse',
+          display: 'inline-flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-end',
+          justifyContent: 'center',
           gap: '8px',
         }}>
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 4,
+            backgroundColor: '#E3E8FF',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <UserOutlined style={{ color: '#607EFC', fontSize: 28 }} />
+        </div>
         <Outlined size="large" label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
         <span className="upload-helper-text">
           {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
@@ -153,7 +197,23 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
   );
 
   if (readOnly) {
-    if (!displayUrl) return null;
+    if (!displayUrl) {
+      return (
+        <div
+          className="profile-image-upload"
+          style={{
+            width: 151,
+            height: 151,
+            borderRadius: 4,
+            backgroundColor: '#E3E8FF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <UserOutlined style={{ color: '#607EFC', fontSize: 44 }} />
+        </div>
+      );
+    }
     return (
       <div className="profile-image-upload">
         <img src={displayUrl} alt="profile" style={{ maxWidth: '423px', width: '100%' }} />
@@ -184,6 +244,23 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
     );
   }
 
+  if (hideUploaderUI) {
+    return (
+      <>
+        <input
+          ref={hiddenFileInputRef}
+          type="file"
+          accept="image/jpeg,image/png"
+          style={{ display: 'none' }}
+          onChange={handleHiddenInputChange}
+        />
+        {originalBase64 && cropOpen && (
+          <ProfileImageCrop image={originalBase64} open={cropOpen} setOpen={setCropOpen} onSave={handleCropSave} />
+        )}
+      </>
+    );
+  }
+
   return (
     <div className="profile-image-upload">
       <input
@@ -195,7 +272,7 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
       />
 
       <Upload.Dragger
-        accept='.png, .jpg, .jpeg"'
+        accept=".png,.jpg,.jpeg"
         className="upload-wrapper"
         multiple={false}
         showUploadList={false}

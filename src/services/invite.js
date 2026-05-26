@@ -26,6 +26,7 @@ export const inviteApi = createApi({
         language = 'FR',
         organizationIds = [],
         peopleIds = [],
+        placeIds = [],
       }) => {
         return {
           url: `invite`,
@@ -34,7 +35,7 @@ export const inviteApi = createApi({
             'calendar-id': calendarId,
             language: language,
           },
-          body: { firstName, lastName, email, role, organizationIds, peopleIds },
+          body: { firstName, lastName, email, role, organizationIds, peopleIds, placeIds },
         };
       },
       invalidatesTags: (result, error, arg) => [{ type: 'Users', id: arg._id }],

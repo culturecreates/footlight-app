@@ -4,7 +4,7 @@ import OutlinedButton from '../../..//components/Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Button, Card, Col, Form, Row } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined, UserOutlined } from '@ant-design/icons';
 import './userReadOnly.css';
 import { useGetUserByIdQuery, useGetCurrentUserQuery } from '../../../services/users';
 import StatusTag from '../../../components/Tags/UserStatus/StatusTag';
@@ -15,7 +15,6 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { PathName } from '../../../constants/pathName';
-import { userRoles } from '../../../constants/userRoles';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
@@ -73,24 +72,22 @@ const UserReadOnly = () => {
 
   useEffect(() => {
     if (userSuccess) {
-      const activeCalendars = userInfo?.roles.filter((r) => {
-        return r.status == userActivityStatus[0].key;
-      });
+      const visibleCalendarStatuses = [userActivityStatus[0].key, userActivityStatus[2].key];
+      const activeCalendars = userInfo?.roles?.filter((r) => visibleCalendarStatuses.includes(r.status)) ?? [];
 
-      const isViewingOtherUser = user?.id !== userInfo?.id;
-      if (isViewingOtherUser && !user?.isSuperAdmin) {
-        const viewerAdminCalendarIds =
-          user?.roles
-            ?.filter((r) => r.role === userRoles.ADMIN && r.status === userActivityStatus[0].key)
-            ?.map((r) => r.calendarId) ?? [];
-        setUserSubscribedCalenders(activeCalendars.filter((c) => viewerAdminCalendarIds.includes(c.calendarId)));
-      } else {
+      if (isCurrentUser) {
         setUserSubscribedCalenders(activeCalendars);
+      } else {
+        setUserSubscribedCalenders(activeCalendars.filter((calendar) => calendar.calendarId === calendarId));
       }
     }
-  }, [userLoading]);
+  }, [calendarId, isCurrentUser, userSuccess, userInfo]);
 
   const profileImageUrl = userInfo?.profileImage ?? null;
+  const calendarSpecificStatus = userInfo?.roles?.find((role) => role?.calendarId === calendarId)?.status;
+  const displayedStatus = calendarSpecificStatus || userInfo?.userStatus;
+  const fullName = [userInfo?.firstName, userInfo?.lastName].filter(Boolean).join(' ').trim();
+  const headerDisplayName = fullName || userInfo?.email || userInfo?.userName || '-';
 
   const createUserInfoRowItem = ({ isCopiableText, infoType, infoText, onClick }) => {
     return (
@@ -178,11 +175,11 @@ const UserReadOnly = () => {
                 <Row gutter={16}>
                   <Col>
                     <div className="read-only-user-heading">
-                      <h1 data-cy="heading-user-name">{userInfo?.firstName + ' ' + userInfo?.lastName}</h1>
+                      <h1 data-cy="heading-user-name">{headerDisplayName}</h1>
                     </div>
                   </Col>
                   <Col className="read-only-user-status-wrapper">
-                    <StatusTag activityStatus={userInfo?.userStatus} />
+                    <StatusTag activityStatus={displayedStatus} />
                   </Col>
                 </Row>
               </Col>
@@ -259,16 +256,30 @@ const UserReadOnly = () => {
                         })}
                     </Col>
 
-                    {profileImageUrl && (
-                      <Col style={{ paddingLeft: '24px' }}>
+                    <Col style={{ paddingLeft: '24px' }}>
+                      {profileImageUrl ? (
                         <img
                           src={profileImageUrl}
                           alt="profile"
                           style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
                           data-cy="image-user-profile-thumbnail"
                         />
-                      </Col>
-                    )}
+                      ) : (
+                        <div
+                          style={{
+                            width: '151px',
+                            height: '151px',
+                            borderRadius: '4px',
+                            backgroundColor: '#E3E8FF',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          data-cy="image-user-profile-thumbnail-placeholder">
+                          <UserOutlined style={{ color: '#607EFC', fontSize: '44px' }} />
+                        </div>
+                      )}
+                    </Col>
                   </Row>
                 </Card>
               </Col>

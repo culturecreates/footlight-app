@@ -3,9 +3,10 @@ import {
   LeftOutlined,
   CloseCircleOutlined,
   ExclamationCircleOutlined,
-  EditOutlined,
+  SyncOutlined,
   DeleteOutlined,
   ScissorOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Col, Form, message, notification, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
@@ -40,7 +41,6 @@ import { userActivityStatus } from '../../../constants/userActivityStatus';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
-import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import Select from '../../../components/Select';
 import Cookies from 'js-cookie';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
@@ -98,7 +98,6 @@ const AddUser = () => {
   const [isFirstNameDisabled, setIsFirstNameDisabled] = useState(false);
   const [isLastNameDisabled, setIsLastNameDisabled] = useState(false);
   const [profileImageState, setProfileImageState] = useState({ croppedBlobUrl: null, isDeleted: false });
-  const [profileHasOriginal, setProfileHasOriginal] = useState(false);
   const profileImageRef = useRef(null);
 
   const calendar = user?.roles?.filter((calendar) => {
@@ -132,50 +131,42 @@ const AddUser = () => {
     isCurrentUserFetching ||
     imageUploadLoading;
 
+  const buildCurrentCalendarSelection = ({ roleData, defaultRole = userRoles.GUEST, disabled = false }) => ({
+    ...(roleData ?? {}),
+    calendarId,
+    id: roleData?.id ?? calendarId,
+    role: roleData?.role ?? defaultRole,
+    name: roleData?.name ?? currentCalendarData?.name,
+    image: roleData?.image ?? currentCalendarData?.image,
+    organizations: roleData?.organizations ?? [],
+    people: roleData?.people ?? [],
+    places: roleData?.places ?? [],
+    disabled,
+  });
+
   useEffect(() => {
     setSelectedCalendars([]);
     setProfileImageState({ croppedBlobUrl: null, isDeleted: false });
-    setProfileHasOriginal(false);
+    setIsCurrentUser(userId === user?.id);
 
     if (userId !== user?.id) {
       !adminCheckHandler({ calendar, user }) &&
         dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
-    } else {
-      setIsCurrentUser(true);
     }
 
     if (userId && userId !== user?.id) {
       getUser({ userId, calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
-          const activeCalendars = response?.roles?.filter((r) => {
-            return r.status === userActivityStatus[0].key || r.status === userActivityStatus[2].key;
-          });
-          const viewerAdminCalendarIds =
-            user?.roles
-              ?.filter((r) => r.role === userRoles.ADMIN && r.status === userActivityStatus[0].key)
-              ?.map((r) => r.calendarId) ?? [];
-          const visibleCalendars = user?.isSuperAdmin
-            ? activeCalendars
-            : activeCalendars?.filter((c) => viewerAdminCalendarIds.includes(c.calendarId));
-          setSelectedCalendars(
-            visibleCalendars
-              ?.map((calendar) => ({
-                ...calendar,
-                disabled: calendarId === calendar?.calendarId ? false : true,
-              }))
-              .sort((a, b) => a.disabled - b.disabled),
-          );
-          const requiredRole = response?.roles.filter((r) => {
-            return r.calendarId === calendarId;
-          });
+          const requiredRole = response?.roles?.find((r) => r.calendarId === calendarId);
+          setSelectedCalendars([buildCurrentCalendarSelection({ roleData: requiredRole })]);
 
           setUserData({
             firstName: response?.firstName,
             lastName: response?.lastName,
             phoneNumber: response?.phoneNumber,
             email: response?.email,
-            userType: requiredRole[0]?.role,
+            userType: requiredRole?.role,
             languagePreference: response.interfaceLanguage,
             calendars: response.roles,
             ...response,
@@ -211,34 +202,11 @@ const AddUser = () => {
           });
         });
     } else if (!userId) {
-      if (user?.isSuperAdmin) {
-        setSelectedCalendars(
-          allCalendarsData
-            ?.map((calendar) => ({
-              ...calendar,
-              calendarId: calendar.id,
-              disabled: calendarId === calendar?.id ? false : true,
-              role: userRoles.GUEST,
-            }))
-            .sort((a, b) => a.disabled - b.disabled),
-        );
-      } else
-        getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-          .unwrap()
-          .then((response) => {
-            setSelectedCalendars(
-              response?.roles
-                .map((calendar) => ({
-                  ...calendar,
-                  disabled: calendarId === calendar?.calendarId ? false : true,
-                }))
-                .sort((a, b) => a.disabled - b.disabled),
-            );
-          });
+      setSelectedCalendars([buildCurrentCalendarSelection({ defaultRole: userRoles.GUEST })]);
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
     }
-  }, [userId, allCalendarsData]);
+  }, [userId, allCalendarsData, calendarId, currentCalendarData, user?.id]);
 
   useEffect(() => {
     if (userId) {
@@ -280,26 +248,8 @@ const AddUser = () => {
         getUser({ userId: foundUser._id, calendarId })
           .unwrap()
           .then((response) => {
-            let activeCalendars = response?.roles?.filter((r) => r.status === userActivityStatus[0].key) ?? [];
-            const viewerAdminCalendarIds =
-              user?.roles
-                ?.filter((r) => r.role === userRoles.ADMIN && r.status === userActivityStatus[0].key)
-                ?.map((r) => r.calendarId) ?? [];
-            activeCalendars = user?.isSuperAdmin
-              ? activeCalendars
-              : activeCalendars.filter((c) => viewerAdminCalendarIds.includes(c.calendarId));
-            const currentCalendarRole = {
-              calendarId: currentCalendarData?.id,
-              image: currentCalendarData?.image,
-              name: currentCalendarData?.name,
-              role: userRoles.GUEST,
-            };
-            activeCalendars = removeObjectArrayDuplicates([...activeCalendars, currentCalendarRole], 'calendarId');
-            setSelectedCalendars(
-              activeCalendars
-                .map((cal) => ({ ...cal, disabled: calendarId === cal?.calendarId ? false : true }))
-                .sort((a, b) => a.disabled - b.disabled),
-            );
+            const currentCalendarRole = response?.roles?.find((r) => r.calendarId === calendarId);
+            setSelectedCalendars([buildCurrentCalendarSelection({ roleData: currentCalendarRole })]);
             setUserData({
               firstName: response?.firstName,
               lastName: response?.lastName,
@@ -324,22 +274,22 @@ const AddUser = () => {
         .validateFields()
         .then((values) => {
           setIsFormDirty(false);
-          let organizations = values?.organizers[calendarId];
+          let organizations = values?.organizers?.[calendarId] ?? [];
           organizations = organizations?.map((organizer) => {
             return { entityId: organizer?.value };
           });
 
-          let people = values?.people[calendarId];
+          let people = values?.people?.[calendarId] ?? [];
           people = people?.map((organizer) => {
             return { entityId: organizer?.value };
           });
 
-          let places = values?.places?.[calendarId];
-          places = places?.map((place) => {
+          let placeIds = values?.places?.[calendarId] ?? [];
+          placeIds = placeIds?.map((place) => {
             return { entityId: place?.value };
           });
 
-          let userType = values?.userType[calendarId];
+          let userType = values?.userType?.[calendarId];
           const trimmedFirstName = values.firstName?.trim();
           const trimmedLastName = values.lastName?.trim();
           inviteUser({
@@ -351,7 +301,7 @@ const AddUser = () => {
             calendarId,
             organizationIds: organizations,
             peopleIds: people,
-            places,
+            placeIds,
           })
             .unwrap()
             .then((res) => {
@@ -412,7 +362,7 @@ const AddUser = () => {
           });
 
           let places = values?.places?.[calendarId] ?? [];
-          places = places.map((place) => {
+          places = places?.map((place) => {
             return { entityId: place?.value };
           });
 
@@ -898,27 +848,6 @@ const AddUser = () => {
                             </Row>
                           </Form.Item>
 
-                          {(userId || isExistingCmsUser) && (canEditPersonalInfo || profileDisplayUrl) && (
-                            <Form.Item
-                              data-cy="form-item-user-profile-picture-title"
-                              label={t('dashboard.settings.addUser.profilePicture')}>
-                              <Row>
-                                <Col flex={'423px'}>
-                                  <ProfileImageUpload
-                                    ref={profileImageRef}
-                                    imageUrl={profileDisplayUrl}
-                                    readOnly={userId ? !canEditPersonalInfo : true}
-                                    onImageChange={(state) => {
-                                      setProfileImageState(state);
-                                      setRouteBlockingFlag();
-                                    }}
-                                    onOriginalChange={setProfileHasOriginal}
-                                  />
-                                </Col>
-                              </Row>
-                            </Form.Item>
-                          )}
-
                           {userId && !isExistingCmsUser && (
                             <Form.Item
                               data-cy="form-item-user-language-title"
@@ -960,37 +889,64 @@ const AddUser = () => {
                           )}
                         </Col>
 
-                        {profileDisplayUrl && (userId || isExistingCmsUser) && (
+                        {(userId || isExistingCmsUser) && (
                           <Col style={{ paddingLeft: '24px' }}>
                             <div className="profile-thumbnail-wrapper">
-                              <img
-                                src={profileDisplayUrl}
-                                alt="profile"
-                                style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
-                                data-cy="image-user-profile-thumbnail-edit"
-                              />
+                              {profileDisplayUrl ? (
+                                <img
+                                  src={profileDisplayUrl}
+                                  alt="profile"
+                                  style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
+                                  data-cy="image-user-profile-thumbnail-edit"
+                                />
+                              ) : (
+                                <div className="profile-thumbnail-placeholder" data-cy="image-user-profile-placeholder">
+                                  <UserOutlined style={{ color: '#607EFC', fontSize: '44px' }} />
+                                </div>
+                              )}
                               {(userId ? canEditPersonalInfo : false) && (
                                 <div className="profile-thumbnail-overlay">
-                                  <EditOutlined
+                                  <button
+                                    type="button"
                                     className="profile-thumbnail-action-icon"
+                                    aria-label="Replace profile image"
                                     data-cy="icon-replace-profile-picture"
-                                    onClick={() => profileImageRef.current?.triggerUpload()}
-                                  />
-                                  {profileHasOriginal && (
-                                    <ScissorOutlined
-                                      className="profile-thumbnail-action-icon"
-                                      data-cy="icon-edit-profile-picture"
-                                      onClick={() => profileImageRef.current?.triggerReCrop()}
-                                    />
-                                  )}
-                                  <DeleteOutlined
+                                    onClick={() => profileImageRef.current?.triggerUpload()}>
+                                    <SyncOutlined />
+                                  </button>
+                                  <button
+                                    type="button"
                                     className="profile-thumbnail-action-icon"
+                                    aria-label="Crop profile image"
+                                    data-cy="icon-edit-profile-picture"
+                                    onClick={() => profileImageRef.current?.triggerReCrop()}
+                                    disabled={!profileDisplayUrl}>
+                                    <ScissorOutlined />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="profile-thumbnail-action-icon"
+                                    aria-label="Delete profile image"
                                     data-cy="icon-delete-profile-picture"
                                     onClick={() => profileImageRef.current?.triggerDelete()}
-                                  />
+                                    disabled={!profileDisplayUrl}>
+                                    <DeleteOutlined />
+                                  </button>
                                 </div>
                               )}
                             </div>
+                            {(userId ? canEditPersonalInfo : false) && (
+                              <ProfileImageUpload
+                                ref={profileImageRef}
+                                imageUrl={profileDisplayUrl}
+                                readOnly={false}
+                                hideUploaderUI={true}
+                                onImageChange={(state) => {
+                                  setProfileImageState(state);
+                                  setRouteBlockingFlag();
+                                }}
+                              />
+                            )}
                           </Col>
                         )}
                       </Row>
