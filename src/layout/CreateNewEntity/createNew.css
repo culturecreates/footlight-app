@@ -69,6 +69,13 @@
   }
 }
 
+@media screen and (max-width: 767px) {
+  .create-new-entity-page .button-container .ant-btn {
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
 @media (max-width: 480px) {
   .create-new-entity-page .sub-heading {
     font-size: 20px;
