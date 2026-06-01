@@ -4,6 +4,7 @@
   box-shadow: none;
   color: #0f0e98;
   font-weight: 600;
+  font-size: 16px;
   padding: 0;
 }
 
@@ -162,6 +163,11 @@
     padding-left: 16px;
     padding-right: 16px;
     padding-top: 32px;
+  }
+
+  .add-user-wrapper .breadcrumb .button-container .ant-btn {
+    font-size: 16px;
+    font-weight: 700;
   }
 }
 
