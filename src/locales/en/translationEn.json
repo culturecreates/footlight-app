@@ -987,6 +987,8 @@
         "lastName": "Last Name",
         "phoneNumber": "Phone number",
         "email": "Email",
+        "userName": "Username",
+        "profilePicture": "Profile picture",
         "userType": "User type",
         "placeHolder": {
           "firstName": "Enter first name",

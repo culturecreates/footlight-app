@@ -8,6 +8,9 @@ import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
 import Auth from '../../layout/Auth';
 import PasswordInput from '../../components/Input/Password';
+import AuthenticationInput from '../../components/Input/Common/AuthenticationInput';
+import Select from '../../components/Select';
+import { userLanguages } from '../../constants/userLanguages';
 import { useAcceptInviteMutation, useGetInviteDetailsQuery, useLazyGetInviteDetailsQuery } from '../../services/invite';
 import i18n from 'i18next';
 
@@ -39,6 +42,9 @@ function CreateAccount() {
     acceptInvite({
       id: invitationId,
       password: values.confirmNewPassword,
+      firstName: values.firstName?.trim(),
+      lastName: values.lastName?.trim(),
+      interfaceLanguage: values.languagePreference,
     })
       .unwrap()
       .then((response) => {
@@ -112,27 +118,10 @@ function CreateAccount() {
             className="create-account-form"
             layout="vertical"
             autoComplete="off"
-            requiredMark={false}
             scrollToFirstError={true}
             validateTrigger={'onBlur'}
             form={form}
             onFinish={onFinish}>
-            <Form.Item
-              className="create-account-form-item"
-              label={t('createAccount.firstName')}
-              labelAlign="left"
-              name="firstName"
-              initialValue={inviteUserData?.firstName}>
-              <p className="create-account-read-only-content">{inviteUserData?.firstName}</p>
-            </Form.Item>
-            <Form.Item
-              className="create-account-form-item"
-              label={t('createAccount.lastName')}
-              labelAlign="left"
-              name="lastName"
-              initialValue={inviteUserData?.secondName}>
-              <p className="create-account-read-only-content">{inviteUserData?.lastName}</p>
-            </Form.Item>
             <Form.Item
               className="create-account-form-item"
               label={t('createAccount.email')}
@@ -140,6 +129,51 @@ function CreateAccount() {
               name="email"
               initialValue={inviteUserData?.email}>
               <p className="create-account-read-only-content">{inviteUserData?.email}</p>
+            </Form.Item>
+            <Form.Item
+              className="create-account-form-item"
+              label={t('createAccount.firstName')}
+              labelAlign="left"
+              name="firstName"
+              required
+              rules={[
+                {
+                  required: true,
+                  message: t('dashboard.settings.addUser.validationTexts.firstName'),
+                },
+              ]}
+              initialValue={inviteUserData?.firstName}>
+              <AuthenticationInput placeholder={t('dashboard.settings.addUser.placeHolder.firstName')} />
+            </Form.Item>
+            <Form.Item
+              className="create-account-form-item"
+              label={t('createAccount.lastName')}
+              labelAlign="left"
+              name="lastName"
+              required
+              rules={[
+                {
+                  required: true,
+                  message: t('dashboard.settings.addUser.validationTexts.lastName'),
+                },
+              ]}
+              initialValue={inviteUserData?.lastName}>
+              <AuthenticationInput placeholder={t('dashboard.settings.addUser.placeHolder.lastName')} />
+            </Form.Item>
+            <Form.Item
+              className="create-account-form-item"
+              name="languagePreference"
+              label={t('dashboard.settings.addUser.languagePreference')}
+              labelAlign="left"
+              required
+              rules={[
+                {
+                  required: true,
+                  message: t('dashboard.settings.addUser.validationTexts.language'),
+                },
+              ]}
+              initialValue={inviteUserData?.interfaceLanguage}>
+              <Select options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))} />
             </Form.Item>
             <Form.Item
               className="create-account-form-item"

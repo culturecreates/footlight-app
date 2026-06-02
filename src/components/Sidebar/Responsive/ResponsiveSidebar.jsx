@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './responsiveSidebar.css';
 import { Drawer, List, Avatar, Menu, Button } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, UserOutlined } from '@ant-design/icons';
 import { DownOutlined } from '@ant-design/icons';
 import './index';
 import { userNameItems } from '../../../constants/userNameItems';
@@ -165,7 +165,14 @@ function ResponsiveSidebar(props) {
             <List.Item>
               <List.Item.Meta
                 className="user-details-responsive"
-                avatar={<Avatar className="dropdown-avatar" src={user.profileImage} size={32} />}
+                avatar={
+                  <Avatar
+                    className="dropdown-avatar"
+                    src={user?.profileImage || undefined}
+                    icon={!user?.profileImage && <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
+                    size={32}
+                  />
+                }
                 title={
                   <span className="username-responsive">
                     {user?.firstName?.charAt(0)}
