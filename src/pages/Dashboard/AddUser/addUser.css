@@ -4,6 +4,7 @@
   box-shadow: none;
   color: #0f0e98;
   font-weight: 600;
+  font-size: 16px;
   padding: 0;
 }
 
@@ -49,6 +50,26 @@
   border: 1px solid var(--content-neutral-stroke, #b6c1c9);
   background: var(--background-neutrals-ground, #fff);
   padding: 8px;
+}
+
+.add-user-wrapper .ant-input[disabled],
+.add-user-wrapper .ant-input[disabled]:hover {
+  background: var(--background-neutrals-underground, #f7f7f7);
+  color: var(--content-neutral-secondary, #646d7b);
+  border-color: var(--content-neutral-stroke, #b6c1c9);
+  cursor: default;
+}
+
+.add-user-wrapper .ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector,
+.add-user-wrapper .ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector:hover {
+  background: var(--background-neutrals-underground, #f7f7f7);
+  color: var(--content-neutral-secondary, #646d7b);
+  border-color: var(--content-neutral-stroke, #b6c1c9);
+  cursor: default;
+}
+
+.add-user-wrapper .ant-select-disabled .ant-select-selection-item {
+  color: var(--content-neutral-secondary, #646d7b);
 }
 
 .add-user-wrapper .ant-dropdown-trigger {
@@ -163,6 +184,66 @@
     padding-right: 16px;
     padding-top: 32px;
   }
+
+  .add-user-wrapper .breadcrumb .button-container .ant-btn {
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+.add-user-wrapper .profile-thumbnail-wrapper {
+  position: relative;
+  width: 151px;
+  height: 151px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #e3e8ff;
+}
+
+.add-user-wrapper .profile-thumbnail-placeholder {
+  width: 151px;
+  height: 151px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-user-wrapper .profile-thumbnail-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-radius: 4px;
+}
+
+.add-user-wrapper .profile-thumbnail-action-icon {
+  color: #fff;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.add-user-wrapper .profile-thumbnail-action-icon:hover {
+  color: #e3e8ff;
+}
+
+.add-user-wrapper .profile-thumbnail-action-icon:disabled {
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
 }
 
 @media screen and (max-width: 480px) {

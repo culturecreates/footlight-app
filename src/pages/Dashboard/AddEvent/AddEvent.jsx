@@ -217,7 +217,10 @@ function AddEvent() {
     performer: false,
     supporter: false,
   });
-  const [addedFields, setAddedFields] = useState([]);
+  const [requiredAddedFields, setRequiredAddedFields] = useState([]);
+  const [eventSeedAddedFields, setEventSeedAddedFields] = useState([]);
+  const [artsDataSeedAddedFields, setArtsDataSeedAddedFields] = useState([]);
+  const [userAddedFields, setUserAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [formValue, setFormValue] = useState();
@@ -246,6 +249,18 @@ function AddEvent() {
   );
   const showPlaceFootlightImportSection = addEventPlaceImportConfig.showFootlightImportSection;
   const showRelationshipFootlightImportSection = addEventRelationshipImportConfig.showFootlightImportSection;
+  const mergeUniqueFields = (...fieldGroups) => [
+    ...new Set(
+      fieldGroups
+        .flatMap((fields) => fields ?? [])
+        .filter((field) => field !== undefined && field !== null && field !== ''),
+    ),
+  ];
+
+  const addedFields = useMemo(
+    () => mergeUniqueFields(requiredAddedFields, eventSeedAddedFields, artsDataSeedAddedFields, userAddedFields),
+    [requiredAddedFields, eventSeedAddedFields, artsDataSeedAddedFields, userAddedFields],
+  );
 
   const isAnyLoading = useMemo(
     () =>
@@ -1809,10 +1824,9 @@ function AddEvent() {
   );
 
   const addFieldsHandler = (fieldNames) => {
-    let array = addedFields?.concat(fieldNames);
-    array = [...new Set(array)];
-    setAddedFields(array);
-    setScrollToSelectedField(array?.at(-1));
+    const fieldsToAdd = Array.isArray(fieldNames) ? fieldNames : [fieldNames];
+    setUserAddedFields((prev) => mergeUniqueFields(prev, fieldsToAdd));
+    setScrollToSelectedField(fieldsToAdd?.at(-1));
   };
 
   const handleDateTypeChange = (activeDateType) => {
@@ -2157,7 +2171,7 @@ function AddEvent() {
   };
 
   const getArtsDataEvent = () => {
-    let initialAddedFields = [...addedFields];
+    let initialAddedFields = [];
     let importFailures = {
       location: { failed: false, count: 0, total: 0 },
       organizers: { failed: false, count: 0, total: 0 },
@@ -2511,7 +2525,7 @@ function AddEvent() {
           }
 
           setArtsData(data);
-          setAddedFields(initialAddedFields);
+          setArtsDataSeedAddedFields(initialAddedFields);
           setFailedImports(importFailures);
           setArtsDataLoading(false);
         }
@@ -2625,7 +2639,7 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData && currentCalendarData) {
-      let initialAddedFields = [...addedFields],
+      let initialAddedFields = [],
         isRecurring = false;
 
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
@@ -2800,7 +2814,7 @@ function AddEvent() {
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         if (eventData?.inLanguage?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
-        setAddedFields(initialAddedFields);
+        setEventSeedAddedFields(initialAddedFields);
         if (eventData?.recurringEvent && eventData?.recurringEvent?.frequency != 'CUSTOM') {
           form.setFieldsValue({
             frequency: eventData?.recurringEvent?.frequency,
@@ -3081,9 +3095,21 @@ function AddEvent() {
       });
       publishValidateFields = [...new Set(publishValidateFields)];
       setValidateFields(publishValidateFields);
-      setAddedFields(initialAddedFields);
+      setRequiredAddedFields(initialAddedFields);
     }
   }, [currentCalendarData]);
+
+  useEffect(() => {
+    if (!eventId && !duplicateId) {
+      setEventSeedAddedFields([]);
+    }
+  }, [eventId, duplicateId]);
+
+  useEffect(() => {
+    if (!artsDataId) {
+      setArtsDataSeedAddedFields([]);
+    }
+  }, [artsDataId]);
 
   useEffect(() => {
     if (isReadOnly) {
@@ -3100,7 +3126,7 @@ function AddEvent() {
           ?.concept?.map((concept) => (concept?.isDefault === true ? concept?.id : null))
           ?.filter((id) => id)?.length > 0
       )
-        setAddedFields(addedFields.concat(otherInformationFieldNames?.inLanguage));
+        setUserAddedFields((prev) => mergeUniqueFields(prev, [otherInformationFieldNames?.inLanguage]));
     }
   }, [taxonomyLoading]);
 

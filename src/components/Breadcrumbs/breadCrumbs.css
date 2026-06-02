@@ -5,6 +5,13 @@
   font-size: 16px;
 }
 
+@media screen and (max-width: 767px) {
+  .breadcrumbs {
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
 .breadcrumbs .breadcrumb-item {
   color: #0f0e98;
 }

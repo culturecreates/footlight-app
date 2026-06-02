@@ -5,6 +5,7 @@
   background: transparent;
   padding: 0;
   font-weight: 600;
+  font-size: 16px;
 }
 
 .add-organization-wrapper .associated-with-section .associated-with-title {
@@ -40,6 +41,13 @@
     position: absolute;
     right: 0;
     margin-top: 16px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .add-organization-wrapper .button-container .ant-btn {
+    font-size: 16px;
+    font-weight: 700;
   }
 }
 

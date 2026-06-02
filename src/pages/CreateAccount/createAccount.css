@@ -84,6 +84,23 @@
 .create-account-reset-my-password .ant-row {
   width: 100%;
 }
+.create-account-form
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
+}
+.create-account-form
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  display: inline-block;
+  margin-left: 4px;
+  color: #f43131;
+  font-size: 14px;
+  font-family: 'Roboto';
+  line-height: 1;
+  content: '*';
+}
+
 .create-account-page-wrapper .create-account-read-only-content {
   font-family: 'Roboto';
   font-style: normal;
