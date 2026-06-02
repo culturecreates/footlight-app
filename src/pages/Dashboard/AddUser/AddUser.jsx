@@ -1,6 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LeftOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Form, Input, message, notification, Popover, Row } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  LeftOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  SyncOutlined,
+  DeleteOutlined,
+  ScissorOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Button, Card, Col, Form, message, notification, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -28,18 +36,17 @@ import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassw
 import { useInviteUserMutation } from '../../../services/invite';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
-import { useDebounce } from '../../../hooks/debounce';
-import { SEARCH_DELAY } from '../../../constants/search';
 import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
-import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import Select from '../../../components/Select';
 import Cookies from 'js-cookie';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
+import ProfileImageUpload from '../../../components/ProfileImageUpload/ProfileImageUpload';
+import { useAddImageMutation } from '../../../services/image';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -76,25 +83,34 @@ const AddUser = () => {
     organization: false,
     calendar: false,
     password: false,
-    searchUserFirstName: false,
   });
   const [selectedCalendars, setSelectedCalendars] = useState([]);
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
-    phoneNumber: '',
     email: '',
     userType: '',
     languagePreference: '',
   });
   const [isCurrentUser, setIsCurrentUser] = useState(false);
-  const [userSearchKeyword, setUserSearchKeyword] = useState('');
-  const [userSearchData, setUserSearchData] = useState([]);
+  const [isExistingCmsUser, setIsExistingCmsUser] = useState(false);
+  const [isFirstNameDisabled, setIsFirstNameDisabled] = useState(false);
+  const [isLastNameDisabled, setIsLastNameDisabled] = useState(false);
+  const [profileImageState, setProfileImageState] = useState({ croppedBlobUrl: null, isDeleted: false });
+  const profileImageRef = useRef(null);
 
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
+
+  const isViewingOtherUser = !!(userId && userId !== user?.id);
+  const canEditPersonalInfo = !isViewingOtherUser || user?.isSuperAdmin;
+  const canEditCalendarInfo = adminCheckHandler({ calendar, user });
+
+  const profileDisplayUrl = profileImageState.isDeleted
+    ? null
+    : profileImageState.croppedBlobUrl || userData?.profileImage || null;
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
@@ -106,42 +122,51 @@ const AddUser = () => {
     sessionId: timestampRef,
   });
   const [updateCurrentUser, { isLoading: updateCurrentUserLoading }] = useUpdateCurrentUserMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
   const isSaving =
-    inviteUserLoading || updateUserByIdLoading || updateCurrentUserLoading || isUserFetching || isCurrentUserFetching;
+    inviteUserLoading ||
+    updateUserByIdLoading ||
+    updateCurrentUserLoading ||
+    isUserFetching ||
+    isCurrentUserFetching ||
+    imageUploadLoading;
+
+  const buildCurrentCalendarSelection = ({ roleData, defaultRole = userRoles.GUEST, disabled = false }) => ({
+    ...(roleData ?? {}),
+    calendarId,
+    id: roleData?.id ?? calendarId,
+    role: roleData?.role ?? defaultRole,
+    name: roleData?.name ?? currentCalendarData?.name,
+    image: roleData?.image ?? currentCalendarData?.image,
+    organizations: roleData?.organizations ?? [],
+    people: roleData?.people ?? [],
+    places: roleData?.places ?? [],
+    disabled,
+  });
 
   useEffect(() => {
+    setSelectedCalendars([]);
+    setProfileImageState({ croppedBlobUrl: null, isDeleted: false });
+    setIsCurrentUser(userId === user?.id);
+
     if (userId !== user?.id) {
       !adminCheckHandler({ calendar, user }) &&
         dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
-    } else {
-      setIsCurrentUser(true);
     }
 
     if (userId && userId !== user?.id) {
       getUser({ userId, calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
-          const activeCalendars = response?.roles?.filter((r) => {
-            return r.status === userActivityStatus[0].key || r.status === userActivityStatus[2].key;
-          });
-          setSelectedCalendars(
-            activeCalendars
-              ?.map((calendar) => ({
-                ...calendar,
-                disabled: calendarId === calendar?.calendarId ? false : true,
-              }))
-              .sort((a, b) => a.disabled - b.disabled),
-          );
-          const requiredRole = response?.roles.filter((r) => {
-            return r.calendarId === calendarId;
-          });
+          const requiredRole = response?.roles?.find((r) => r.calendarId === calendarId);
+          setSelectedCalendars([buildCurrentCalendarSelection({ roleData: requiredRole })]);
 
           setUserData({
             firstName: response?.firstName,
             lastName: response?.lastName,
             phoneNumber: response?.phoneNumber,
             email: response?.email,
-            userType: requiredRole[0]?.role,
+            userType: requiredRole?.role,
             languagePreference: response.interfaceLanguage,
             calendars: response.roles,
             ...response,
@@ -177,34 +202,11 @@ const AddUser = () => {
           });
         });
     } else if (!userId) {
-      if (user?.isSuperAdmin) {
-        setSelectedCalendars(
-          allCalendarsData
-            ?.map((calendar) => ({
-              ...calendar,
-              calendarId: calendar.id,
-              disabled: calendarId === calendar?.id ? false : true,
-              role: userRoles.GUEST,
-            }))
-            .sort((a, b) => a.disabled - b.disabled),
-        );
-      } else
-        getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-          .unwrap()
-          .then((response) => {
-            setSelectedCalendars(
-              response?.roles
-                .map((calendar) => ({
-                  ...calendar,
-                  disabled: calendarId === calendar?.calendarId ? false : true,
-                }))
-                .sort((a, b) => a.disabled - b.disabled),
-            );
-          });
+      setSelectedCalendars([buildCurrentCalendarSelection({ defaultRole: userRoles.GUEST })]);
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
     }
-  }, [userId, allCalendarsData]);
+  }, [userId, allCalendarsData, calendarId, currentCalendarData, user?.id]);
 
   useEffect(() => {
     if (userId) {
@@ -228,42 +230,42 @@ const AddUser = () => {
     }
   };
 
-  const onSearchCardClick = (item) => {
-    setUserSearchKeyword(item?.firstName);
-    getUser({ userId: item?._id, calendarId })
+  const onEmailBlur = (e) => {
+    if (userId) return;
+    const email = e.target.value?.trim();
+    if (!email || !email.includes('@')) return;
+
+    getUserSearch({ includeCalenderFilter: false, calendarId, query: email, page: 1, limit: 10, filters: '' })
       .unwrap()
-      .then((response) => {
-        let activeCalendars = response?.roles.filter((r) => {
-          return r.status == userActivityStatus[0].key;
-        });
-        const currentCalendarRole = {
-          calendarId: currentCalendarData?.id,
-          image: currentCalendarData?.image,
-          name: currentCalendarData?.name,
-          role: userRoles.GUEST,
-        };
-        activeCalendars = [...activeCalendars, currentCalendarRole];
-        activeCalendars = removeObjectArrayDuplicates(activeCalendars, 'calendarId');
-
-        setSelectedCalendars(
-          activeCalendars
-            ?.map((calendar) => ({
-              ...calendar,
-              disabled: calendarId === calendar?.calendarId ? false : true,
-            }))
-            .sort((a, b) => a.disabled - b.disabled),
-        );
-
-        setUserData({
-          firstName: response?.firstName,
-          lastName: response?.lastName,
-          phoneNumber: response?.phoneNumber,
-          email: response?.email,
-          languagePreference: response.interfaceLanguage,
-          calendars: response.roles,
-          ...response,
-        });
-      });
+      .then((res) => {
+        const foundUser = res?.data?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+        if (!foundUser) {
+          setIsExistingCmsUser(false);
+          setIsFirstNameDisabled(false);
+          setIsLastNameDisabled(false);
+          return;
+        }
+        getUser({ userId: foundUser._id, calendarId })
+          .unwrap()
+          .then((response) => {
+            const currentCalendarRole = response?.roles?.find((r) => r.calendarId === calendarId);
+            setSelectedCalendars([buildCurrentCalendarSelection({ roleData: currentCalendarRole })]);
+            setUserData({
+              firstName: response?.firstName,
+              lastName: response?.lastName,
+              phoneNumber: response?.phoneNumber,
+              email: response?.email,
+              languagePreference: response?.interfaceLanguage,
+              calendars: response?.roles,
+              ...response,
+            });
+            setIsExistingCmsUser(true);
+            setIsFirstNameDisabled(!!response?.firstName);
+            setIsLastNameDisabled(!!response?.lastName);
+          })
+          .catch(() => setIsExistingCmsUser(false));
+      })
+      .catch(() => setIsExistingCmsUser(false));
   };
 
   const onSaveHandler = () => {
@@ -272,32 +274,34 @@ const AddUser = () => {
         .validateFields()
         .then((values) => {
           setIsFormDirty(false);
-          let organizations = values?.organizers[calendarId];
+          let organizations = values?.organizers?.[calendarId] ?? [];
           organizations = organizations?.map((organizer) => {
             return { entityId: organizer?.value };
           });
 
-          let people = values?.people[calendarId];
+          let people = values?.people?.[calendarId] ?? [];
           people = people?.map((organizer) => {
             return { entityId: organizer?.value };
           });
 
-          let places = values?.places?.[calendarId];
-          places = places?.map((place) => {
+          let placeIds = values?.places?.[calendarId] ?? [];
+          placeIds = placeIds?.map((place) => {
             return { entityId: place?.value };
           });
 
-          let userType = values?.userType[calendarId];
+          let userType = values?.userType?.[calendarId];
+          const trimmedFirstName = values.firstName?.trim();
+          const trimmedLastName = values.lastName?.trim();
           inviteUser({
-            firstName: values.firstName?.trim(),
-            lastName: values.lastName?.trim(),
+            ...(trimmedFirstName && { firstName: trimmedFirstName }),
+            ...(trimmedLastName && { lastName: trimmedLastName }),
             email: values.email,
             role: userType,
             language: values?.languagePreference,
             calendarId,
             organizationIds: organizations,
             peopleIds: people,
-            places,
+            placeIds,
           })
             .unwrap()
             .then((res) => {
@@ -327,8 +331,26 @@ const AddUser = () => {
     } else if (userId) {
       formInstance
         .validateFields()
-        .then((values) => {
+        .then(async (values) => {
           setIsFormDirty(false);
+
+          const buildProfileImagePayload = async () => {
+            if (profileImageState.croppedBlobUrl) {
+              const fetchResponse = await fetch(profileImageState.croppedBlobUrl);
+              const blob = await fetchResponse.blob();
+              const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+              const formdata = new FormData();
+              formdata.append('file', file);
+              const uploadResponse = await addImage({ data: formdata, calendarId }).unwrap();
+              return uploadResponse?.data?.original?.url?.uri ?? null;
+            } else if (profileImageState.isDeleted) {
+              return null;
+            }
+            return undefined;
+          };
+
+          const profileImageUrl = await buildProfileImagePayload();
+          const profilePatch = profileImageUrl !== undefined ? { profileImage: profileImageUrl } : {};
           let organizations = values?.organizers?.[calendarId] ?? [];
           organizations = organizations.map((organizer) => {
             return { entityId: organizer?.value };
@@ -340,12 +362,107 @@ const AddUser = () => {
           });
 
           let places = values?.places?.[calendarId] ?? [];
-          places = places.map((place) => {
+          places = places?.map((place) => {
             return { entityId: place?.value };
           });
 
           let userType = values?.userType?.[calendarId] ?? [];
-          if (isCurrentUser && adminCheckHandler({ calendar, user }) == false) {
+
+          const warningHandler = (error) => {
+            message.warning({
+              duration: 10,
+              maxCount: 1,
+              key: 'udpate-user-warning',
+              content: (
+                <>
+                  {error?.data?.message} &nbsp;
+                  <Button
+                    type="text"
+                    icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                    onClick={() => message.destroy('udpate-user-warning')}
+                  />
+                </>
+              ),
+              icon: <ExclamationCircleOutlined />,
+            });
+          };
+
+          const refreshCurrentUserState = (values) => {
+            i18n.changeLanguage(values?.languagePreference?.toLowerCase());
+            getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+              .unwrap()
+              .then((response) => {
+                const requiredRole = response?.roles.filter((r) => r.calendarId === calendarId);
+                setUserData({
+                  firstName: response?.firstName,
+                  lastName: response?.lastName,
+                  email: response?.email,
+                  userType: requiredRole[0]?.role,
+                  userName: response?.userName,
+                  languagePreference: response.interfaceLanguage,
+                  calendars: response.roles,
+                });
+                dispatch(
+                  setUser({
+                    accessToken,
+                    expiredTime,
+                    refreshToken,
+                    user: {
+                      id: response?.id,
+                      firstName: response?.firstName,
+                      lastName: response?.lastName,
+                      email: response?.email,
+                      profileImage: response?.profileImage ?? null,
+                      roles: response?.roles,
+                      isSuperAdmin: response?.isSuperAdmin ? true : false,
+                      userName: response?.userName,
+                      interfaceLanguage: response?.interfaceLanguage,
+                    },
+                  }),
+                );
+                Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
+              });
+          };
+
+          if (isCurrentUser && adminCheckHandler({ calendar, user })) {
+            // Admin editing own profile: personal info + role/access via updateUserById
+            updateUserById({
+              id: userId,
+              calendarId,
+              body: {
+                firstName: values?.firstName?.trim(),
+                lastName: values?.lastName?.trim(),
+                email: values?.email,
+                interfaceLanguage: values?.languagePreference,
+                ...profilePatch,
+                modifyRole: {
+                  userId: userId,
+                  role: userType,
+                  calendarId,
+                  organizations,
+                  people,
+                  places,
+                },
+              },
+            })
+              .unwrap()
+              .then(() => {
+                refreshCurrentUserState(values);
+                notification.success({
+                  description: t('dashboard.userProfile.notification.profileUpdate'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`);
+              })
+              .catch((error) => {
+                console.log(error);
+                warningHandler(error);
+              });
+          } else if (isCurrentUser) {
+            // Non-admin current user: personal info only via updateCurrentUser
             updateCurrentUser({
               calendarId,
               body: {
@@ -353,48 +470,13 @@ const AddUser = () => {
                 lastName: values?.lastName?.trim(),
                 email: values?.email,
                 interfaceLanguage: values?.languagePreference,
+                ...profilePatch,
               },
             })
               .unwrap()
               .then((response) => {
                 if (response?.statusCode == 202) {
-                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
-                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      const requiredRole = response?.roles.filter((r) => {
-                        return r.calendarId === calendarId;
-                      });
-
-                      setUserData({
-                        firstName: response?.firstName,
-                        lastName: response?.lastName,
-                        phoneNumber: response?.phoneNumber,
-                        email: response?.email,
-                        userType: requiredRole[0]?.role,
-                        userName: response?.userName,
-                        languagePreference: response.interfaceLanguage,
-                        calendars: response.roles,
-                      });
-                      let userDetails = {
-                        accessToken,
-                        expiredTime,
-                        refreshToken,
-                        user: {
-                          id: response?.id,
-                          firstName: response?.firstName,
-                          lastName: response?.lastName,
-                          email: response?.email,
-                          profileImage: response?.profileImage,
-                          roles: response?.roles,
-                          isSuperAdmin: response?.isSuperAdmin ? true : false,
-                          userName: response?.userName,
-                          interfaceLanguage: response?.interfaceLanguage,
-                        },
-                      };
-                      dispatch(setUser(userDetails));
-                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
-                    });
+                  refreshCurrentUserState(values);
                   notification.success({
                     description: t('dashboard.userProfile.notification.profileUpdate'),
                     placement: 'top',
@@ -402,29 +484,14 @@ const AddUser = () => {
                     maxCount: 1,
                     duration: 3,
                   });
-
-                  navigate(-1);
+                  navigate(
+                    `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`,
+                  );
                 }
               })
-              .catch((error) => {
-                message.warning({
-                  duration: 10,
-                  maxCount: 1,
-                  key: 'udpate-user-warning',
-                  content: (
-                    <>
-                      {error?.data?.message} &nbsp;
-                      <Button
-                        type="text"
-                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                        onClick={() => message.destroy('udpate-user-warning')}
-                      />
-                    </>
-                  ),
-                  icon: <ExclamationCircleOutlined />,
-                });
-              });
-          } else if (adminCheckHandler({ calendar, user })) {
+              .catch(warningHandler);
+          } else if (user?.isSuperAdmin) {
+            // Super admin editing another user: full update — personal info and role
             updateUserById({
               id: userId,
               calendarId,
@@ -433,6 +500,7 @@ const AddUser = () => {
                 lastName: values.lastName?.trim(),
                 email: values.email,
                 interfaceLanguage: values?.languagePreference,
+                ...profilePatch,
                 modifyRole: {
                   userId: userId,
                   role: userType,
@@ -445,83 +513,56 @@ const AddUser = () => {
             })
               .unwrap()
               .then((res) => {
-                if (isCurrentUser) {
-                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
-                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      const requiredRole = response?.roles.filter((r) => {
-                        return r.calendarId === calendarId;
-                      });
-                      setUserData({
-                        firstName: response?.firstName,
-                        lastName: response?.lastName,
-                        phoneNumber: response?.phoneNumber,
-                        email: response?.email,
-                        userType: requiredRole?.length > 0 && requiredRole[0]?.role,
-                        userName: response?.userName,
-                        languagePreference: response.interfaceLanguage,
-                        calendars: response.roles,
-                      });
-                      notification.success({
-                        description: t(`dashboard.settings.addUser.notification.updateUser`),
-                        key: res.message,
-                        placement: 'top',
-                        closeIcon: <></>,
-                        maxCount: 1,
-                        duration: 3,
-                      });
-                      let userDetails = {
-                        accessToken,
-                        expiredTime,
-                        refreshToken,
-                        user: {
-                          id: response?.id,
-                          firstName: response?.firstName,
-                          lastName: response?.lastName,
-                          email: response?.email,
-                          profileImage: response?.profileImage,
-                          roles: response?.roles,
-                          isSuperAdmin: response?.isSuperAdmin ? true : false,
-                          userName: response?.userName,
-                          interfaceLanguage: response?.interfaceLanguage,
-                        },
-                      };
-                      dispatch(setUser(userDetails));
-                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
-
-                      navigate(-2);
-                    });
-                } else {
-                  notification.success({
-                    description: t(`dashboard.settings.addUser.notification.updateUser`),
-                    key: res.message,
-                    placement: 'top',
-                    closeIcon: <></>,
-                    maxCount: 1,
-                    duration: 3,
-                  });
-                  navigate(-2);
-                }
+                notification.success({
+                  description: t(`dashboard.settings.addUser.notification.updateUser`),
+                  key: res.message,
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`);
               })
               .catch((error) => {
                 console.log(error);
-                message.warning({
-                  duration: 10,
+                warningHandler(error);
+              });
+          } else if (adminCheckHandler({ calendar, user })) {
+            // Regular admin editing another user: role/access only — personal info fields are disabled
+            updateUserById({
+              id: userId,
+              calendarId,
+              body: {
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                interfaceLanguage: userData.languagePreference,
+                ...profilePatch,
+                modifyRole: {
+                  userId: userId,
+                  role: userType,
+                  calendarId,
+                  organizations,
+                  people,
+                  places,
+                },
+              },
+            })
+              .unwrap()
+              .then((res) => {
+                notification.success({
+                  description: t(`dashboard.settings.addUser.notification.updateUser`),
+                  key: res.message,
+                  placement: 'top',
+                  closeIcon: <></>,
                   maxCount: 1,
-                  key: 'udpate-user-warning',
-                  content: (
-                    <>
-                      {error?.data?.message} &nbsp;
-                      <Button
-                        type="text"
-                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                        onClick={() => message.destroy('udpate-user-warning')}
-                      />
-                    </>
-                  ),
-                  icon: <ExclamationCircleOutlined />,
+                  duration: 3,
                 });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${userId}`);
+              })
+              .catch((error) => {
+                console.log(error);
+                warningHandler(error);
               });
           }
         })
@@ -534,18 +575,6 @@ const AddUser = () => {
   const setFormItemValues = ({ value, fieldType }) => {
     setUserData({ ...userData, [fieldType]: value });
   };
-
-  const searchHandlerUserSearch = (value) => {
-    value != ''
-      ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
-          .unwrap()
-          .then((res) => {
-            setUserSearchData(res);
-          })
-      : setUserSearchData([]);
-  };
-
-  const debounceSearch = useCallback(useDebounce(searchHandlerUserSearch, SEARCH_DELAY), []);
 
   const removeCalendarHandler = ({ item, index }) => {
     if (isCurrentUser) {
@@ -627,10 +656,6 @@ const AddUser = () => {
             value: userData.lastName,
           },
           {
-            name: ['phoneNumber'],
-            value: userData.phoneNumber,
-          },
-          {
             name: ['email'],
             value: userData.email,
           },
@@ -692,214 +717,239 @@ const AddUser = () => {
                           : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
                       </div>
                     </Col>
-                    <Col flex={'423px'}>
-                      <Form.Item
-                        data-cy="form-item-user-first-name-title"
-                        name="firstName"
-                        required
-                        label={t('dashboard.settings.addUser.firstName')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.firstName')),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            {userId ? (
-                              <AuthenticationInput
-                                size="small"
-                                placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                                onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
-                                value={userData.firstName}
-                              />
-                            ) : (
-                              <>
-                                <div className="search-bar-organization">
-                                  <Popover
-                                    open={
-                                      userSearchData?.data?.length > 0 &&
-                                      isPopoverOpen?.searchUserFirstName &&
-                                      userSearchKeyword != ''
+                    <Col span={24}>
+                      <Row wrap={false} align="top" justify="space-between">
+                        <Col flex={'423px'}>
+                          <Form.Item
+                            data-cy="form-item-user-email-title"
+                            name="email"
+                            required
+                            label={t('dashboard.settings.addUser.email')}
+                            rules={[
+                              {
+                                validator: (_, value) =>
+                                  validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
+                              },
+                              {
+                                type: 'email',
+                                message: t('login.validations.invalidEmail'),
+                              },
+                            ]}>
+                            <Row>
+                              <Col flex={'423px'}>
+                                <AuthenticationInput
+                                  size="small"
+                                  placeholder={t('dashboard.settings.addUser.placeHolder.email')}
+                                  onChange={(e) => {
+                                    setFormItemValues({ value: e.target.value, fieldType: 'email' });
+                                    if (isExistingCmsUser) {
+                                      setIsExistingCmsUser(false);
+                                      setIsFirstNameDisabled(false);
+                                      setIsLastNameDisabled(false);
+                                      if (!userId) setProfileImageState({ croppedBlobUrl: null, isDeleted: false });
                                     }
-                                    arrow={false}
-                                    overlayClassName="entity-popover"
-                                    placement="bottom"
-                                    onOpenChange={(open) => {
-                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
-                                      if (userSearchKeyword != '') {
-                                        debounceSearch(userSearchKeyword);
-                                      }
-                                    }}
-                                    autoAdjustOverflow={false}
-                                    getPopupContainer={(trigger) => trigger.parentNode}
-                                    trigger={['focus']}
-                                    content={
-                                      <div>
-                                        <div className="search-scrollable-content">
-                                          {userSearchData?.data?.map((item, index) => (
-                                            <div
-                                              key={index}
-                                              className="search-popover-options"
-                                              onClick={() => {
-                                                setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                                onSearchCardClick(item);
-                                              }}>
-                                              <p>{item?.firstName + ' ' + item?.lastName}</p>
-                                              <p>{item?.email}</p>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    }>
-                                    <Input
-                                      style={{ borderRadius: '4px' }}
-                                      placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                                      value={userSearchKeyword}
-                                      onPressEnter={(e) => {
-                                        e.preventDefault();
-                                        setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
-                                        e.target.blur();
-                                      }}
-                                      onFocus={(e) => {
-                                        if (e.target.value != '') {
-                                          if (userSearchData?.data?.length > 0) {
-                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-                                            debounceSearch(e.target.value);
-                                          }
-                                        }
-                                      }}
-                                      onClick={(e) => {
-                                        if (e.target.value != '') {
-                                          if (userSearchData?.data?.length > 0) {
-                                            setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-                                          }
-                                          debounceSearch(e.target.value);
-                                        }
-                                      }}
-                                      onChange={(e) => {
-                                        setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
-                                        setUserSearchKeyword(e.target.value);
+                                  }}
+                                  onBlur={onEmailBlur}
+                                  value={userData.email}
+                                  disabled={userId && !canEditPersonalInfo}
+                                />
+                              </Col>
+                            </Row>
+                          </Form.Item>
 
-                                        if (e.target.value == '') {
-                                          setUserSearchData([]);
-                                        } else {
-                                          debounceSearch(e.target.value);
-                                        }
-                                      }}
-                                      className="events-search"
-                                    />
-                                  </Popover>
+                          {userId && (
+                            <Form.Item
+                              data-cy="form-item-user-username-title"
+                              required
+                              label={t('dashboard.settings.addUser.userName')}>
+                              <Row>
+                                <Col flex={'423px'}>
+                                  <AuthenticationInput size="small" disabled value={userData.userName} />
+                                </Col>
+                              </Row>
+                            </Form.Item>
+                          )}
+
+                          <Form.Item
+                            data-cy="form-item-user-first-name-title"
+                            name="firstName"
+                            required={!!userId}
+                            label={t('dashboard.settings.addUser.firstName')}
+                            rules={
+                              userId
+                                ? [
+                                    {
+                                      validator: (_, value) =>
+                                        validateNotEmpty(
+                                          _,
+                                          value,
+                                          t('dashboard.settings.addUser.validationTexts.firstName'),
+                                        ),
+                                    },
+                                  ]
+                                : []
+                            }>
+                            <Row>
+                              <Col flex={'423px'}>
+                                {userId ? (
+                                  <AuthenticationInput
+                                    size="small"
+                                    placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                    onChange={(e) =>
+                                      setFormItemValues({ value: e.target.value, fieldType: 'firstName' })
+                                    }
+                                    value={userData.firstName}
+                                    disabled={!canEditPersonalInfo}
+                                  />
+                                ) : (
+                                  <AuthenticationInput
+                                    size="small"
+                                    placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                    onChange={(e) =>
+                                      setFormItemValues({ value: e.target.value, fieldType: 'firstName' })
+                                    }
+                                    value={userData.firstName}
+                                    disabled={isFirstNameDisabled}
+                                  />
+                                )}
+                              </Col>
+                            </Row>
+                          </Form.Item>
+
+                          <Form.Item
+                            data-cy="form-item-user-last-name-title"
+                            name="lastName"
+                            required={!!userId}
+                            label={t('dashboard.settings.addUser.lastName')}
+                            rules={
+                              userId
+                                ? [
+                                    {
+                                      validator: (_, value) =>
+                                        validateNotEmpty(
+                                          _,
+                                          value,
+                                          t('dashboard.settings.addUser.validationTexts.lastName'),
+                                        ),
+                                    },
+                                  ]
+                                : []
+                            }>
+                            <Row>
+                              <Col flex={'423px'}>
+                                <AuthenticationInput
+                                  size="small"
+                                  placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
+                                  onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
+                                  value={userData.lastName}
+                                  disabled={(userId && !canEditPersonalInfo) || isLastNameDisabled}
+                                />
+                              </Col>
+                            </Row>
+                          </Form.Item>
+
+                          {userId && !isExistingCmsUser && (
+                            <Form.Item
+                              data-cy="form-item-user-language-title"
+                              name="languagePreference"
+                              required
+                              label={t('dashboard.settings.addUser.languagePreference')}
+                              rules={[
+                                {
+                                  validator: (_, value) =>
+                                    validateNotEmpty(
+                                      _,
+                                      value,
+                                      t('dashboard.settings.addUser.validationTexts.language'),
+                                    ),
+                                },
+                              ]}>
+                              <Select
+                                options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
+                                onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
+                                data-cy="select-user-language"
+                                disabled={userId && !canEditPersonalInfo}
+                              />
+                            </Form.Item>
+                          )}
+
+                          {isCurrentUser && (
+                            <div className="password-modal">
+                              <div className="button-container">
+                                <OutlinedButton
+                                  data-cy="button-changepassword"
+                                  label={t('dashboard.settings.addUser.passwordModal.btnText')}
+                                  size="large"
+                                  style={{ height: '40px' }}
+                                  onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
+                                />
+                              </div>
+                              <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
+                            </div>
+                          )}
+                        </Col>
+
+                        {(userId || isExistingCmsUser) && (
+                          <Col style={{ paddingLeft: '24px' }}>
+                            <div className="profile-thumbnail-wrapper">
+                              {profileDisplayUrl ? (
+                                <img
+                                  src={profileDisplayUrl}
+                                  alt="profile"
+                                  style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
+                                  data-cy="image-user-profile-thumbnail-edit"
+                                />
+                              ) : (
+                                <div className="profile-thumbnail-placeholder" data-cy="image-user-profile-placeholder">
+                                  <UserOutlined style={{ color: '#607EFC', fontSize: '44px' }} />
                                 </div>
-                              </>
+                              )}
+                              {(userId ? canEditPersonalInfo : false) && (
+                                <div className="profile-thumbnail-overlay">
+                                  <button
+                                    type="button"
+                                    className="profile-thumbnail-action-icon"
+                                    aria-label="Replace profile image"
+                                    data-cy="icon-replace-profile-picture"
+                                    onClick={() => profileImageRef.current?.triggerUpload()}>
+                                    <SyncOutlined />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="profile-thumbnail-action-icon"
+                                    aria-label="Crop profile image"
+                                    data-cy="icon-edit-profile-picture"
+                                    onClick={() => profileImageRef.current?.triggerReCrop()}
+                                    disabled={!profileDisplayUrl}>
+                                    <ScissorOutlined />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="profile-thumbnail-action-icon"
+                                    aria-label="Delete profile image"
+                                    data-cy="icon-delete-profile-picture"
+                                    onClick={() => profileImageRef.current?.triggerDelete()}
+                                    disabled={!profileDisplayUrl}>
+                                    <DeleteOutlined />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                            {(userId ? canEditPersonalInfo : false) && (
+                              <ProfileImageUpload
+                                ref={profileImageRef}
+                                imageUrl={profileDisplayUrl}
+                                readOnly={false}
+                                hideUploaderUI={true}
+                                onImageChange={(state) => {
+                                  setProfileImageState(state);
+                                  setRouteBlockingFlag();
+                                }}
+                              />
                             )}
                           </Col>
-                        </Row>
-                      </Form.Item>
-
-                      <Form.Item
-                        data-cy="form-item-user-last-name-title"
-                        name="lastName"
-                        required
-                        label={t('dashboard.settings.addUser.lastName')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.lastName')),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
-                              value={userData.lastName}
-                            />
-                          </Col>
-                        </Row>
-                      </Form.Item>
-                      <Form.Item
-                        data-cy="form-item-user-phonenumber-title"
-                        name="phoneNumber"
-                        label={t('dashboard.settings.addUser.phoneNumber')}
-                        rules={[
-                          {
-                            pattern: /^\d+$/,
-                            message: 'Phone number must be a number!',
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.phoneNumber')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'phoneNumber' })}
-                              value={userData.phoneNumber}
-                            />
-                          </Col>
-                        </Row>
-                      </Form.Item>
-
-                      <Form.Item
-                        data-cy="form-item-user-email-title"
-                        name="email"
-                        required
-                        label={t('dashboard.settings.addUser.email')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
-                          },
-                          {
-                            type: 'email',
-                            message: t('login.validations.invalidEmail'),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <AuthenticationInput
-                              size="small"
-                              placeholder={t('dashboard.settings.addUser.placeHolder.email')}
-                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
-                              value={userData.email}
-                            />
-                          </Col>
-                        </Row>
-                      </Form.Item>
-
-                      <Form.Item
-                        data-cy="form-item-user-language-title"
-                        name="languagePreference"
-                        required
-                        label={t('dashboard.settings.addUser.languagePreference')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
-                          },
-                        ]}>
-                        <Select
-                          options={userLanguages.filter(({ value }) => ['EN', 'FR'].includes(value))}
-                          onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
-                          data-cy="select-user-language"
-                        />
-                      </Form.Item>
-
-                      {isCurrentUser && (
-                        <div className="password-modal">
-                          <div className="button-container">
-                            <OutlinedButton
-                              data-cy="button-changepassword"
-                              label={t('dashboard.settings.addUser.passwordModal.btnText')}
-                              size="large"
-                              style={{ height: '40px' }}
-                              onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
-                            />
-                          </div>
-                          <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
-                        </div>
-                      )}
+                        )}
+                      </Row>
                     </Col>
                   </Row>
                 </Card>
@@ -924,8 +974,9 @@ const AddUser = () => {
                                       <CalendarAccordion
                                         form={formInstance}
                                         data-cy="accordion-selected-calendars"
-                                        key={index}
+                                        key={selectedCalendar?.calendarId}
                                         setRouteBlockingFlag={setRouteBlockingFlag}
+                                        required={selectedCalendar?.calendarId === calendarId}
                                         selectedCalendarId={selectedCalendar?.calendarId}
                                         name={contentLanguageBilingual({
                                           data: selectedCalendar?.name,
@@ -935,7 +986,7 @@ const AddUser = () => {
                                               ?.contentLanguage ?? calendarContentLanguage,
                                         })}
                                         role={selectedCalendar?.role}
-                                        readOnly={adminCheckHandler({ calendar, user }) ? false : true}
+                                        readOnly={!canEditCalendarInfo}
                                         disabled={selectedCalendar?.disabled}
                                         organizationIds={selectedCalendar?.organizations}
                                         peopleIds={selectedCalendar?.people}
@@ -944,17 +995,6 @@ const AddUser = () => {
                                         removeCalendarHandler={() => {
                                           removeCalendarHandler({ item: selectedCalendar, index });
                                         }}
-                                        onChange={(e) => {
-                                          setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
-                                          setUserSearchKeyword(e.target.value);
-
-                                          if (e.target.value == '') {
-                                            setUserSearchData([]);
-                                          } else {
-                                            debounceSearch(e.target.value);
-                                          }
-                                        }}
-                                        className="events-search"
                                       />
                                     ))}
                                   </div>

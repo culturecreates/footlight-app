@@ -32,7 +32,14 @@ function ImageUpload(props) {
     setFailedImports,
     resetAddImage,
     setShowDialog,
+    hideMetadataOptions,
+    onImageChange,
   } = props;
+
+  const handleSetImageUrl = (url) => {
+    setImageUrl(url);
+    if (typeof onImageChange === 'function') onImageChange(url || null);
+  };
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
@@ -172,7 +179,7 @@ function ImageUpload(props) {
 
       getBase64(file, (url) => {
         setLoading(false);
-        setImageUrl(url);
+        handleSetImageUrl(url);
         setOriginalImage(url);
         if (isCrop) setImageCropOpen(true);
       });
@@ -192,7 +199,7 @@ function ImageUpload(props) {
     form.setFieldsValue({
       mainImageOptions: null,
     });
-    setImageUrl(false);
+    handleSetImageUrl(null);
   };
 
   const uploadButton = (
@@ -286,11 +293,21 @@ function ImageUpload(props) {
                       <Dropdown
                         overlayStyle={{ width: '200px' }}
                         menu={{
-                          items: mainImageUploadOptions({
-                            credits: imageOptions.credit,
-                            altText: imageOptions.altText,
-                            caption: imageOptions.caption,
-                          }),
+                          items: (() => {
+                            const allItems = mainImageUploadOptions({
+                              credits: imageOptions.credit,
+                              altText: imageOptions.altText,
+                              caption: imageOptions.caption,
+                            });
+                            return hideMetadataOptions
+                              ? allItems.filter(
+                                  ({ key }) =>
+                                    ![IMAGE_ACTIONS.CREDIT, IMAGE_ACTIONS.ALT_TEXT, IMAGE_ACTIONS.CAPTION].includes(
+                                      key,
+                                    ),
+                                )
+                              : allItems;
+                          })(),
                           onClick: ({ key }) => {
                             if ([IMAGE_ACTIONS.CREDIT, IMAGE_ACTIONS.ALT_TEXT, IMAGE_ACTIONS.CAPTION].includes(key)) {
                               setImageOptionsModalOpen(true);
@@ -380,7 +397,7 @@ function ImageUpload(props) {
           form={form}
           cropValues={cropValues}
           setCropValues={setCropValues}
-          setImage={setImageUrl}
+          setImage={handleSetImageUrl}
           largeAspectRatio={largeAspectRatio}
           thumbnailAspectRatio={thumbnailAspectRatio}
           setShowDialog={setShowDialog}

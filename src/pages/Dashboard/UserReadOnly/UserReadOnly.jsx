@@ -4,11 +4,10 @@ import OutlinedButton from '../../..//components/Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Button, Card, Col, Form, Row } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined, UserOutlined } from '@ant-design/icons';
 import './userReadOnly.css';
-import { useGetUserByIdQuery } from '../../../services/users';
+import { useGetUserByIdQuery, useGetCurrentUserQuery } from '../../../services/users';
 import StatusTag from '../../../components/Tags/UserStatus/StatusTag';
-import { roleHandler } from '../../../utils/roleHandler';
 import { copyText } from '../../../utils/copyText';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
@@ -19,6 +18,7 @@ import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import ProfileImageUpload from '../../../components/ProfileImageUpload/ProfileImageUpload';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ const UserReadOnly = () => {
     _getCalendar,
     setContentBackgroundColor,
   ] = useOutletContext();
-  const { user } = useSelector(getUserDetails);
+  const { user, accessToken } = useSelector(getUserDetails);
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');
@@ -43,11 +43,23 @@ const UserReadOnly = () => {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  const isCurrentUser = userId === user?.id;
+
   const {
-    data: userInfo,
-    isSuccess: userSuccess,
-    isLoading: userLoading,
-  } = useGetUserByIdQuery({ userId, calendarId, sessionId: timestampRef }, { skip: userId ? false : true });
+    data: userByIdData,
+    isSuccess: userByIdSuccess,
+    isLoading: userByIdLoading,
+  } = useGetUserByIdQuery({ userId, calendarId, sessionId: timestampRef }, { skip: isCurrentUser || !userId });
+
+  const {
+    data: currentUserData,
+    isSuccess: currentUserSuccess,
+    isLoading: currentUserLoading,
+  } = useGetCurrentUserQuery({ accessToken, calendarId }, { skip: !isCurrentUser });
+
+  const userInfo = isCurrentUser ? currentUserData : userByIdData;
+  const userSuccess = isCurrentUser ? currentUserSuccess : userByIdSuccess;
+  const userLoading = isCurrentUser ? currentUserLoading : userByIdLoading;
 
   useLayoutEffect(() => {
     if (stickyHeaderRef.current) {
@@ -60,12 +72,22 @@ const UserReadOnly = () => {
 
   useEffect(() => {
     if (userSuccess) {
-      const activeCalendars = userInfo?.roles.filter((r) => {
-        return r.status == userActivityStatus[0].key;
-      });
-      setUserSubscribedCalenders(activeCalendars);
+      const visibleCalendarStatuses = [userActivityStatus[0].key, userActivityStatus[2].key];
+      const activeCalendars = userInfo?.roles?.filter((r) => visibleCalendarStatuses.includes(r.status)) ?? [];
+
+      if (isCurrentUser) {
+        setUserSubscribedCalenders(activeCalendars);
+      } else {
+        setUserSubscribedCalenders(activeCalendars.filter((calendar) => calendar.calendarId === calendarId));
+      }
     }
-  }, [userLoading]);
+  }, [calendarId, isCurrentUser, userSuccess, userInfo]);
+
+  const profileImageUrl = userInfo?.profileImage ?? null;
+  const calendarSpecificStatus = userInfo?.roles?.find((role) => role?.calendarId === calendarId)?.status;
+  const displayedStatus = calendarSpecificStatus || userInfo?.userStatus;
+  const fullName = [userInfo?.firstName, userInfo?.lastName].filter(Boolean).join(' ').trim();
+  const headerDisplayName = fullName || userInfo?.email || userInfo?.userName || '-';
 
   const createUserInfoRowItem = ({ isCopiableText, infoType, infoText, onClick }) => {
     return (
@@ -112,7 +134,7 @@ const UserReadOnly = () => {
                   </Col>
                   {(!userInfo?.isSuperAdmin || user?.id === userInfo?.id) && (
                     <Col flex="60px">
-                      <ReadOnlyProtectedComponent>
+                      {isCurrentUser ? (
                         <div className="button-container">
                           <OutlinedButton
                             data-cy="button-user-edit"
@@ -127,7 +149,24 @@ const UserReadOnly = () => {
                             }
                           />
                         </div>
-                      </ReadOnlyProtectedComponent>
+                      ) : (
+                        <ReadOnlyProtectedComponent>
+                          <div className="button-container">
+                            <OutlinedButton
+                              data-cy="button-user-edit"
+                              label={t('dashboard.settings.userReadOnly.editBtn')}
+                              size="middle"
+                              style={{ height: '40px' }}
+                              onClick={() =>
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${userInfo?.id}`,
+                                  { state: { data: userInfo } },
+                                )
+                              }
+                            />
+                          </div>
+                        </ReadOnlyProtectedComponent>
+                      )}
                     </Col>
                   )}
                 </Row>
@@ -136,11 +175,11 @@ const UserReadOnly = () => {
                 <Row gutter={16}>
                   <Col>
                     <div className="read-only-user-heading">
-                      <h1 data-cy="heading-user-name">{userInfo?.firstName + ' ' + userInfo?.lastName}</h1>
+                      <h1 data-cy="heading-user-name">{headerDisplayName}</h1>
                     </div>
                   </Col>
                   <Col className="read-only-user-status-wrapper">
-                    <StatusTag activityStatus={userInfo?.userStatus} />
+                    <StatusTag activityStatus={displayedStatus} />
                   </Col>
                 </Row>
               </Col>
@@ -150,67 +189,98 @@ const UserReadOnly = () => {
             <Row>
               <Col flex={'780px'}>
                 <Card className="user-read-only-card" style={{ border: 'none' }}>
-                  <Row gutter={[0, 4]}>
-                    <Col>
-                      <h2 className="user-info-details-card-heading" data-cy="heading-user-details-title">
-                        {t('dashboard.settings.userReadOnly.details')}
-                      </h2>
+                  <Row wrap={false} align="top">
+                    <Col flex={'423px'} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                      <Row gutter={[0, 4]}>
+                        <Col>
+                          <h2 className="user-info-details-card-heading" data-cy="heading-user-details-title">
+                            {t('dashboard.settings.userReadOnly.details')}
+                          </h2>
+                        </Col>
+                      </Row>
+                      {userInfo?.email &&
+                        createUserInfoRowItem({
+                          isCopiableText: true,
+                          infoType: 'email',
+                          infoText: userInfo.email,
+                          onClick: (e) => {
+                            copyText({
+                              textToCopy: e.target.textContent,
+                              message: t(`common.copied`),
+                            });
+                          },
+                        })}
+
+                      {userInfo?.userName &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'userName',
+                          infoText: userInfo?.userName,
+                        })}
+
+                      {userInfo?.firstName &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'firstName',
+                          infoText: userInfo.firstName,
+                        })}
+
+                      {userInfo?.lastName &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'lastName',
+                          infoText: userInfo.lastName,
+                        })}
+
+                      {profileImageUrl && (
+                        <div>
+                          <div className="user-read-only-info-label">
+                            {t('dashboard.settings.addUser.profilePicture')}
+                          </div>
+                          <div style={{ marginTop: '4px' }}>
+                            <ProfileImageUpload
+                              imageUrl={profileImageUrl}
+                              readOnly={true}
+                              data-cy="image-user-profile-readonly"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {userInfo?.interfaceLanguage &&
+                        createUserInfoRowItem({
+                          isCopiableText: false,
+                          infoType: 'languagePreference',
+                          infoText:
+                            userInfo?.interfaceLanguage === 'EN' ? t('common.tabEnglish') : t('common.tabFrench'),
+                        })}
+                    </Col>
+
+                    <Col style={{ paddingLeft: '24px' }}>
+                      {profileImageUrl ? (
+                        <img
+                          src={profileImageUrl}
+                          alt="profile"
+                          style={{ width: '151px', height: '151px', objectFit: 'cover', borderRadius: '4px' }}
+                          data-cy="image-user-profile-thumbnail"
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: '151px',
+                            height: '151px',
+                            borderRadius: '4px',
+                            backgroundColor: '#E3E8FF',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          data-cy="image-user-profile-thumbnail-placeholder">
+                          <UserOutlined style={{ color: '#607EFC', fontSize: '44px' }} />
+                        </div>
+                      )}
                     </Col>
                   </Row>
-                  {userInfo?.userName &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'userName',
-                      infoText: userInfo?.userName,
-                    })}
-
-                  {userInfo?.firstName &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'firstName',
-                      infoText: userInfo.firstName,
-                    })}
-
-                  {userInfo?.lastName &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'lastName',
-                      infoText: userInfo.lastName,
-                    })}
-
-                  {userInfo?.phoneNumber &&
-                    createUserInfoRowItem({
-                      isCopiableText: true,
-                      infoType: 'phoneNumber',
-                      infoText: userInfo.phoneNumber,
-                    })}
-
-                  {userInfo?.email &&
-                    createUserInfoRowItem({
-                      isCopiableText: true,
-                      infoType: 'email',
-                      infoText: userInfo.email,
-                      onClick: (e) => {
-                        copyText({
-                          textToCopy: e.target.textContent,
-                          message: t(`common.copied`),
-                        });
-                      },
-                    })}
-
-                  {(userInfo?.roles || userInfo?.isSuperAdmin) &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'userType',
-                      infoText: roleHandler({ roles: userInfo.roles, calendarId, isSuperAdmin: userInfo.isSuperAdmin }),
-                    })}
-
-                  {userInfo?.interfaceLanguage &&
-                    createUserInfoRowItem({
-                      isCopiableText: false,
-                      infoType: 'languagePreference',
-                      infoText: userInfo?.interfaceLanguage === 'EN' ? t('common.tabEnglish') : t('common.tabFrench'),
-                    })}
                 </Card>
               </Col>
             </Row>
@@ -233,12 +303,12 @@ const UserReadOnly = () => {
                           <Col>
                             <Form layout="vertical">
                               <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-                                {userSubscribedCalenders?.map((calendar, index) => {
+                                {userSubscribedCalenders?.map((calendar) => {
                                   return (
                                     <CalendarAccordion
                                       readOnly={true}
                                       data-cy="accordion-selected-calendars"
-                                      key={index}
+                                      key={calendar?.calendarId}
                                       selectedCalendarId={calendar?.calendarId}
                                       name={contentLanguageBilingual({
                                         data: calendar?.name,

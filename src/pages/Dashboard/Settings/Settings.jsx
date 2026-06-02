@@ -13,11 +13,13 @@ import CalendarSettings from './CalendarSettings';
 import MandatoryFields from './MandatoryFields';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
+import { PathName } from '../../../constants/pathName';
 
 const Settings = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [tabKey, setTabKey] = useState();
   const [isFormDirty, setIsFormDirty] = useState(false);
   const { user } = useSelector(getUserDetails);
@@ -96,7 +98,7 @@ const Settings = () => {
       key: '1',
       children: <UserManagement tabKey={tabKey} />,
       disabled: false,
-      adminOnly: false,
+      adminOnly: true,
     },
     {
       label: <span data-cy="tab-widget-settings">{t('dashboard.settings.tab2')}</span>,
@@ -125,6 +127,22 @@ const Settings = () => {
     if (item.adminOnly) return adminCheckHandler({ calendar, user });
     else return true;
   });
+
+  useEffect(() => {
+    if (!tabKey) return;
+    const isTabAllowed = tabItems.some((item) => item.key === tabKey);
+    if (!isTabAllowed) {
+      const firstTab = tabItems[0];
+      if (firstTab) {
+        sessionStorage.setItem('tabKey', firstTab.key);
+        setSearchParams({ tab: firstTab.key });
+        setTabKey(firstTab.key);
+      } else {
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${user?.id}`);
+      }
+    }
+  }, [tabKey]);
+
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       <RouteLeavingGuard isBlocking={isFormDirty} />
