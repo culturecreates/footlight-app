@@ -19,7 +19,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
-import { externalSourceOptions } from '../../../constants/sourceOptions';
+import { getExternalSourcesQuery, importProviderContexts } from '../../../constants/importProviders';
 import { loadArtsDataEventEntity } from '../../../services/artsData';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 import { CalendarOutlined } from '@ant-design/icons';
@@ -78,8 +78,7 @@ function SearchEvents() {
     includeArtsdata: true,
   });
 
-  let sourceQuery = new URLSearchParams();
-  sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+  const sourceQuery = getExternalSourcesQuery(importProviderContexts.SEARCH_EVENTS);
 
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
@@ -146,7 +145,7 @@ function SearchEvents() {
     const promise = getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
+      sources: sourceQuery,
       calendarId,
       excludeExistingCMS: false,
     });
