@@ -617,6 +617,40 @@ function AddEvent() {
             let fallbackStatus = activeFallbackFieldsInfo;
             var values = form.getFieldsValue(true);
 
+            const isDraftType = type === eventPublishState.DRAFT || type === 'DRAFT';
+            const extractLocationUri = (locationValue) => {
+              if (typeof locationValue === 'string') return locationValue;
+              if (!locationValue || typeof locationValue !== 'object') return undefined;
+              if (typeof locationValue?.uri === 'string') return locationValue.uri;
+              if (typeof locationValue?.locationPlace === 'string') return locationValue.locationPlace;
+              if (typeof locationValue?.locationPlace?.uri === 'string') return locationValue.locationPlace.uri;
+              return undefined;
+            };
+
+            const normalizeDraftLocationPayload = (payload) => {
+              if (!isDraftType) return payload;
+              if (!payload?.locationId?.place || typeof payload?.locationId?.place !== 'object') return payload;
+              if (!Object.prototype.hasOwnProperty.call(payload.locationId.place, 'uri')) return payload;
+
+              const normalizedUri =
+                extractLocationUri(payload?.locationId?.place?.uri) ||
+                extractLocationUri(values?.locationPlace) ||
+                extractLocationUri(locationPlace);
+
+              if (!normalizedUri) return payload;
+
+              return {
+                ...payload,
+                locationId: {
+                  ...payload.locationId,
+                  place: {
+                    ...payload.locationId.place,
+                    uri: normalizedUri,
+                  },
+                },
+              };
+            };
+
             if (type === eventPublishState.PUBLISHED || type === 'PUBLISH') {
               const { isValid, firstInvalidField } = validateNestedEntities({ ...values, locationPlace }, form);
 
@@ -1230,7 +1264,8 @@ function AddEvent() {
                     if (values.multipleImagesCrop?.length > 0)
                       await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                     eventObj['image'] = imageCrop;
-                    addUpdateEventApiHandler(eventObj, toggle, sameAs)
+                    const normalizedEventObj = normalizeDraftLocationPayload(eventObj);
+                    addUpdateEventApiHandler(normalizedEventObj, toggle, sameAs)
                       .then((id) => resolve(id))
                       .catch((error) => {
                         reject(error);
@@ -1255,7 +1290,8 @@ function AddEvent() {
                 eventObj['image'] = [];
               } else eventObj['image'] = imageCrop;
 
-              addUpdateEventApiHandler(eventObj, toggle, sameAs)
+              const normalizedEventObj = normalizeDraftLocationPayload(eventObj);
+              addUpdateEventApiHandler(normalizedEventObj, toggle, sameAs)
                 .then((id) => resolve(id))
                 .catch((error) => {
                   reject(error);
