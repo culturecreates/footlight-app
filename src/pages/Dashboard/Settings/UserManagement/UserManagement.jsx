@@ -11,7 +11,7 @@ import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
-import { MoreOutlined } from '@ant-design/icons';
+import { MoreOutlined, UserOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import './userManagement.css';
 import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
@@ -214,8 +214,8 @@ const UserManagement = (props) => {
   const handleListCardStyles = (item) => {
     const listCardStyles =
       calendar[0]?.role === userRoles.GUEST && item._id != user.id
-        ? { style: { cursor: 'initial', padding: '24px' } }
-        : { style: { padding: '24px' } };
+        ? { style: { cursor: 'initial', padding: '24px 0px 24px 0px' } }
+        : { style: { padding: '24px 0px 24px 0px' } };
     return listCardStyles;
   };
 
@@ -301,8 +301,10 @@ const UserManagement = (props) => {
     if (event.target.value === '') setUserSearchQuery('');
   };
 
-  const cancelInvitationHandler = (userInvitationId) => {
-    withdrawInvitation({ id: userInvitationId[0]?.invitationId, calendarId })
+  const cancelInvitationHandler = (invitationId) => {
+    if (!invitationId) return;
+
+    withdrawInvitation({ id: invitationId, calendarId })
       .unwrap()
       .then((res) => {
         if (res?.statusCode == 202) {
@@ -330,10 +332,36 @@ const UserManagement = (props) => {
       });
   };
 
-  const createTitleHandler = (firstName, lastName, userName) => {
+  const createTitleHandler = (firstName, lastName, userName, email) => {
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
+
+    if (!fullName && !userName) {
+      return (
+        <div className="title-wrapper">
+          <span className="name">{email || '-'}</span>
+        </div>
+      );
+    }
+
+    if (!fullName && userName) {
+      return (
+        <div className="title-wrapper">
+          <Username userName={userName} />
+        </div>
+      );
+    }
+
+    if (fullName && !userName) {
+      return (
+        <div className="title-wrapper">
+          <span className="name">{fullName}</span>
+        </div>
+      );
+    }
+
     return (
       <div className="title-wrapper">
-        <span className="name">{firstName + ' ' + lastName}</span>
+        <span className="name">{fullName}</span>
         <img src={bulletIcon} />
         <Username userName={userName} />
       </div>
@@ -342,26 +370,15 @@ const UserManagement = (props) => {
 
   const tooltipItemClickHandler = ({ key, item }) => {
     let invitationLink;
-    const userRole = item?.roles.filter((i) => {
-      if (i.calendarId === calendarId) {
-        return i.role;
-      }
-    });
+    const currentCalendarRole = item?.roles?.find((role) => role.calendarId === calendarId) ?? {};
+    const userStatus = currentCalendarRole?.status;
+    const userInvitationId = currentCalendarRole?.invitationId;
 
-    const userStatus = item?.roles.filter((i) => {
-      if (i.calendarId === calendarId) {
-        return i.role;
-      }
-    });
-
-    const userInvitationId = item?.roles.filter((i) => {
-      if (i.calendarId === calendarId) {
-        return i?.invitationId;
-      }
-    });
-
-    const isUserInactiveInThisCalendar =
-      userStatus[0]?.status === userActivityStatus[1].key || userActivityStatus[3].key || userActivityStatus[4].key;
+    const isUserInactiveInThisCalendar = [
+      userActivityStatus[1].key,
+      userActivityStatus[3].key,
+      userActivityStatus[4].key,
+    ].includes(userStatus);
 
     switch (key) {
       case 'editUser':
@@ -375,9 +392,12 @@ const UserManagement = (props) => {
           firstName: item.firstName,
           lastName: item.lastName,
           email: item.email,
-          role: userRole[0]?.role,
+          role: currentCalendarRole?.role,
           language: user?.interfaceLanguage,
           calendarId,
+          organizationIds: currentCalendarRole?.organizations ?? [],
+          peopleIds: currentCalendarRole?.people ?? [],
+          placeIds: currentCalendarRole?.places ?? [],
         })
           .unwrap()
           .then((res) => {
@@ -417,7 +437,7 @@ const UserManagement = (props) => {
         break;
 
       case 'activateOrDeactivate':
-        if (userStatus[0]?.status === userActivityStatus[0].key) {
+        if (userStatus === userActivityStatus[0].key) {
           deActivateUser({ id: item._id, calendarId: calendarId })
             .unwrap()
             .then(() => {
@@ -706,6 +726,7 @@ const UserManagement = (props) => {
                         return i;
                       }
                     });
+                    const thumbnailUrl = item?.profileImage ?? null;
                     return (
                       <ListCard
                         data-cy="list-card-user"
@@ -714,7 +735,35 @@ const UserManagement = (props) => {
                         listItemHandler={() => {
                           return listItemHandler(item?._id);
                         }}
-                        title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
+                        avatar={
+                          thumbnailUrl ? (
+                            <div style={{ height: '40px', width: '40px' }}>
+                              <img
+                                src={thumbnailUrl}
+                                alt="profile"
+                                style={{ height: '40px', width: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                                data-cy="image-user-list-thumbnail"
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                height: '40px',
+                                width: '40px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '4px',
+                                backgroundColor: '#E3E8FF',
+                              }}>
+                              <UserOutlined
+                                style={{ color: '#607EFC', fontSize: '18px' }}
+                                data-cy="icon-user-list-fallback"
+                              />
+                            </div>
+                          )
+                        }
+                        title={createTitleHandler(item?.firstName, item?.lastName, item?.userName, item?.email)}
                         description={roleHandler({ roles: item?.roles, calendarId, isSuperAdmin: item?.isSuperAdmin })}
                         activityStatus={currentCalendarUserStatus(item)}
                         styles={handleListCardStyles(item)}

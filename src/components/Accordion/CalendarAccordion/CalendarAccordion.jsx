@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import './calendarAccordion.css';
 import { Button, Collapse, Form } from 'antd';
 import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
@@ -43,6 +43,7 @@ function CalendarAccordion(props) {
     removeCalendarHandler,
     isCurrentUser,
     setRouteBlockingFlag,
+    required = false,
   } = props;
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
@@ -62,7 +63,6 @@ function CalendarAccordion(props) {
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
-    sessionId: timestampRef,
   });
 
   let queryPerson = new URLSearchParams();
@@ -72,7 +72,6 @@ function CalendarAccordion(props) {
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(queryPerson.toString()),
-    sessionId: timestampRef,
   });
 
   let queryPlace = new URLSearchParams();
@@ -81,7 +80,6 @@ function CalendarAccordion(props) {
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(queryPlace.toString()),
-    sessionId: timestampRef,
   });
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
@@ -100,6 +98,10 @@ function CalendarAccordion(props) {
   const [isPlacesPopoverOpen, setIsPlacesPopoverOpen] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
+  const orgIdsKey = useMemo(() => organizationIds?.map((o) => o.entityId).join(',') ?? '', [organizationIds]);
+  const placeIdsKey = useMemo(() => placeIds?.map((p) => p.entityId).join(',') ?? '', [placeIds]);
+  const peopleIdsKey = useMemo(() => peopleIds?.map((p) => p.entityId).join(',') ?? '', [peopleIds]);
 
   const processEntities = (entities) => {
     if (!entities) return [];
@@ -198,7 +200,7 @@ function CalendarAccordion(props) {
         })
         .catch((error) => console.log(error));
     } else setSelectedOrganizers([]);
-  }, [organizationIds]);
+  }, [orgIdsKey]);
 
   useEffect(() => {
     if (selectedPlaces && !readOnly) form.setFieldValue(['places', selectedCalendarId], selectedPlaces);
@@ -234,7 +236,7 @@ function CalendarAccordion(props) {
         })
         .catch((error) => console.log(error));
     } else setSelectedPlaces([]);
-  }, [placeIds]);
+  }, [placeIdsKey]);
 
   useEffect(() => {
     if (peopleIds?.length > 0) {
@@ -269,7 +271,7 @@ function CalendarAccordion(props) {
         })
         .catch((error) => console.log(error));
     } else setSelectedPeople([]);
-  }, [peopleIds]);
+  }, [peopleIdsKey]);
 
   return (
     <Collapse
@@ -297,6 +299,7 @@ function CalendarAccordion(props) {
         <Form.Item
           name={['userType', selectedCalendarId]}
           label={t('dashboard.settings.addUser.userType')}
+          required={required}
           initialValue={role ?? userRoles.GUEST}
           data-cy="form-item-user-type-label">
           {!readOnly ? (

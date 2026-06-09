@@ -5,12 +5,14 @@ import StatusTag from '../../Tags/UserStatus/StatusTag';
 import './listCard.css';
 
 const ListCard = (props) => {
-  const { id, actions, listItemHandler, title, description, activityStatus, invitedBy, styles, invitedDate } = props;
+  const { id, actions, listItemHandler, title, description, activityStatus, invitedBy, styles, invitedDate, avatar } =
+    props;
   const { t } = useTranslation();
   return (
     <List.Item className="users-list-item-wrapper" key={id} extra={actions} {...styles}>
       <List.Item.Meta
         className="user-item-meta"
+        avatar={avatar}
         title={title}
         description={description}
         onClick={listItemHandler}

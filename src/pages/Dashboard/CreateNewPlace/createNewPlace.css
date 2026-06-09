@@ -4,6 +4,7 @@
   box-shadow: none;
   color: #0f0e98;
   font-weight: 600;
+  font-size: 16px;
   padding: 0;
 }
 
@@ -36,6 +37,13 @@
     position: absolute;
     right: 0;
     margin-top: 16px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .create-new-place-wrapper .button-container .ant-btn {
+    font-size: 16px;
+    font-weight: 700;
   }
 }
 
