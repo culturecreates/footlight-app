@@ -6,8 +6,10 @@ import Cookies from 'js-cookie';
 import { Mutex } from 'async-mutex';
 import { setErrorStates } from '../redux/reducer/ErrorSlice';
 import { ErrorMessages, ErrorStatus } from '../constants/errors';
+import { PathName } from '../constants/pathName';
 
 const mutex = new Mutex();
+const SESSION_EXPIRED_STORAGE_KEY = 'sessionExpired';
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_APP_API_URL,
   prepareHeaders: (headers, { getState }) => {
@@ -24,6 +26,18 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
   const skipGlobalErrorHandling = extraOptions?.skipGlobalErrorHandling;
+  const isRetryRequest = extraOptions?._isRetryRequest;
+
+  const clearSessionAndRedirectToLogin = () => {
+    api.dispatch(clearUser());
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(SESSION_EXPIRED_STORAGE_KEY, 'true');
+    }
+    if (typeof window !== 'undefined' && window.location.pathname !== PathName.Login) {
+      window.location.assign(PathName.Login);
+    }
+  };
+
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
@@ -76,7 +90,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       description: result.error?.data?.error,
     });
   }
-  if (result.error && result.error.status === 401) {
+  if (!isRetryRequest && result.error && result.error.status === 401) {
     // HTTP 401 Unauthorized response status code
     // indicates that the client request has not been completed because it lacks valid authentication credentials for the requested resource.
     if (!mutex.isLocked()) {
@@ -87,6 +101,10 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
         token = Cookies.get('refreshToken');
       }
       try {
+        if (!token) {
+          clearSessionAndRedirectToLogin();
+          return result;
+        }
         const fetchResponse = await fetch(`${import.meta.env.VITE_APP_API_URL}/refresh-token`, {
           method: 'POST',
           headers: {
@@ -110,18 +128,18 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
           Cookies.set('refreshToken', refreshResult?.refreshToken?.token);
 
           api.dispatch(setUser(user));
-          result = await baseQuery(args, api, extraOptions);
+          result = await baseQuery(args, api, { ...extraOptions, _isRetryRequest: true });
         } else {
-          api.dispatch(clearUser());
+          clearSessionAndRedirectToLogin();
         }
       } catch (error) {
-        api.dispatch(clearUser());
+        clearSessionAndRedirectToLogin();
       } finally {
         release();
       }
     } else {
       await mutex.waitForUnlock();
-      result = await baseQuery(args, api, extraOptions);
+      result = await baseQuery(args, api, { ...extraOptions, _isRetryRequest: true });
     }
   }
 

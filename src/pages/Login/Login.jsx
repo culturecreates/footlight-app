@@ -1,4 +1,4 @@
-import { Checkbox, Form, Button } from 'antd';
+import { Checkbox, Form, Button, notification } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import React, { useEffect } from 'react';
 import './login.css';
@@ -38,6 +38,17 @@ const Login = () => {
   useEffect(() => {
     const savedAccessToken = Cookies.get('accessToken');
     const calenderId = sessionStorage.getItem('calendarId');
+    const isSessionExpired = sessionStorage.getItem('sessionExpired') === 'true';
+
+    if (isSessionExpired) {
+      sessionStorage.removeItem('sessionExpired');
+      notification.info({
+        key: 'session-expired',
+        message: t('common.server.status.sessionExpired.message'),
+        placement: 'top',
+      });
+    }
+
     if (location?.state?.previousPath === 'logout') {
       dispatch(clearUser());
     }

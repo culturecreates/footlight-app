@@ -1470,6 +1470,9 @@
         },
         "500": {
           "message": "Something went wrong."
+        },
+        "sessionExpired": {
+          "message": "Session expired. Please log in again."
         }
       }
     }

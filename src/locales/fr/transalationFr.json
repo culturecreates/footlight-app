@@ -1468,6 +1468,9 @@
         },
         "500": {
           "message": "Un problème applicatif s'est produit."
+        },
+        "sessionExpired": {
+          "message": "Session expirée. Veuillez vous reconnecter."
         }
       }
     }
