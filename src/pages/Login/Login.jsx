@@ -16,8 +16,7 @@ import PasswordInput from '../../components/Input/Password';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
 import Cookies from 'js-cookie';
-
-const SESSION_EXPIRED_STORAGE_KEY = 'sessionExpired';
+import { SESSION_EXPIRED_STORAGE_KEY } from '../../constants/sessionStorageKeys';
 
 const Login = () => {
   const { t } = useTranslation();

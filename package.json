@@ -52,7 +52,8 @@
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "prepare": "husky install",
-    "validate-branch": "npx branch-name-lint branch-name-lint.json"
+    "validate-branch": "npx branch-name-lint branch-name-lint.json",
+    "test": "vitest run"
   },
   "engines": {
     "node": ">=22.15.0"
@@ -91,6 +92,7 @@
     "vite": "^7.2.2",
     "vite-plugin-environment": "^1.1.3",
     "vite-plugin-eslint": "^1.8.1",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "vitest": "^4.1.8"
   }
 }

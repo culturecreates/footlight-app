@@ -7,9 +7,9 @@ import { Mutex } from 'async-mutex';
 import { setErrorStates } from '../redux/reducer/ErrorSlice';
 import { ErrorMessages, ErrorStatus } from '../constants/errors';
 import { PathName } from '../constants/pathName';
+import { SESSION_EXPIRED_STORAGE_KEY } from '../constants/sessionStorageKeys';
 
 const mutex = new Mutex();
-const SESSION_EXPIRED_STORAGE_KEY = 'sessionExpired';
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_APP_API_URL,
   prepareHeaders: (headers, { getState }) => {

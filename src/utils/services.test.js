@@ -147,27 +147,29 @@ describe('baseQueryWithReauth', () => {
       return { data: { requestCount } };
     });
 
+    let resolveRefreshRequest;
     globalThis.fetch.mockImplementation(
       () =>
-        new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                ok: true,
-                json: async () => ({
-                  accessToken: { token: 'new-access-token', ttl: 3600 },
-                  refreshToken: { token: 'new-refresh-token' },
-                }),
-              }),
-            25,
-          ),
-        ),
+        new Promise((resolve) => {
+          resolveRefreshRequest = resolve;
+        }),
     );
 
-    const [firstResult, secondResult] = await Promise.all([
+    const resultsPromise = Promise.all([
       baseQueryWithReauth({ url: 'events-a' }, api, {}),
       baseQueryWithReauth({ url: 'events-b' }, api, {}),
     ]);
+    while (!resolveRefreshRequest) {
+      await Promise.resolve();
+    }
+    resolveRefreshRequest({
+      ok: true,
+      json: async () => ({
+        accessToken: { token: 'new-access-token', ttl: 3600 },
+        refreshToken: { token: 'new-refresh-token' },
+      }),
+    });
+    const [firstResult, secondResult] = await resultsPromise;
 
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
     expect(firstResult).toEqual(expect.objectContaining({ data: expect.any(Object) }));
