@@ -44,6 +44,9 @@ import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInject
 import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import '../../../components/NoContent/noContent.css';
+import { isReadOnlyValueEmpty, createReadOnlyFieldRenderers } from '../../../utils/readOnlyValueHelpers';
+import { entitiesClass } from '../../../constants/entitiesClass';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -113,7 +116,7 @@ function PersonReadOnly() {
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
   const imageGalleryData = personData?.image?.filter((image) => image && !image?.isMain) || [];
 
-  const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === 'Organization')[0];
+  const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person)[0];
   let mandatoryStandardFields = [];
   let mandatoryDynamicFields = [];
   formConstants?.formFieldProperties?.mandatoryFields?.standardFields?.forEach((field) => {
@@ -128,20 +131,12 @@ function PersonReadOnly() {
     }
   });
 
-  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard', adminOnly = false) => {
-    if (typeof data === 'string' && data !== '') return true;
-    if (adminOnly && !adminCheckHandler({ calendar, user })) return false;
-
-    if (Array.isArray(data) && data.length > 0 && data.every((item) => item !== null && item !== undefined))
-      return true;
-    if (data !== null && isDataValid(data)) return true;
-
-    if (type === 'standard') {
-      return mandatoryStandardFields.includes(field);
-    } else {
-      return mandatoryDynamicFields.includes(field);
-    }
-  };
+  const { checkIfFieldIsToBeDisplayed, renderMissingValueMessage } = createReadOnlyFieldRenderers({
+    mandatoryStandardFields,
+    mandatoryDynamicFields,
+    canViewAdminOnly: adminCheckHandler({ calendar, user }),
+    t,
+  });
 
   const getArtsData = (id) => {
     setArtsDataLoading(true);
@@ -318,13 +313,20 @@ function PersonReadOnly() {
                                   data-cy="para-person-name-title">
                                   {t('dashboard.people.readOnly.name')}
                                 </p>
-                                {Object.keys(personData?.name ?? {})?.length > 0 && (
+                                {!isReadOnlyValueEmpty(personData?.name) ? (
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="name"
                                     data={personData?.name}
                                     languageKey={activeTabKey}>
                                     {(processedData) => renderData(processedData, 'para-person-name-french')}
                                   </FallbackInjectorForReadOnlyPages>
+                                ) : (
+                                  renderMissingValueMessage(
+                                    personFormFieldNames.NAME,
+                                    t('dashboard.people.readOnly.name'),
+                                    personData?.name,
+                                    'div-person-name-missing-message',
+                                  )
                                 )}
                               </Col>
                             )}
@@ -335,7 +337,7 @@ function PersonReadOnly() {
                                   data-cy="para-person-occupation-title">
                                   {taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
                                 </p>
-                                {personData?.occupation?.length > 0 && (
+                                {!isReadOnlyValueEmpty(personData?.occupation) ? (
                                   <TreeSelectOption
                                     data-cy="treeselect-person-occupation"
                                     style={{ marginBottom: '1rem' }}
@@ -357,66 +359,86 @@ function PersonReadOnly() {
                                       return <Tags data-cy={`tag-person-occupation-${label}`}>{label}</Tags>;
                                     }}
                                   />
+                                ) : (
+                                  renderMissingValueMessage(
+                                    personFormFieldNames.OCCUPATION,
+                                    taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false),
+                                    personData?.occupation,
+                                    'div-person-occupation-missing-message',
+                                  )
                                 )}
                               </div>
                             )}
-                            {personData?.dynamicFields?.length > 0 && (
-                              <Col span={24}>
-                                {allTaxonomyData?.data?.map((taxonomy, index) => {
-                                  if (taxonomy?.isDynamicField) {
-                                    let initialValues,
-                                      initialTaxonomy = [];
-                                    personData?.dynamicFields?.forEach((dynamicField) => {
-                                      if (taxonomy?.id === dynamicField?.taxonomyId) {
-                                        initialValues = dynamicField?.conceptIds;
-                                        initialTaxonomy.push(taxonomy?.id);
-                                      }
-                                    });
-                                    if (
-                                      checkIfFieldIsToBeDisplayed(
-                                        taxonomy?.id,
-                                        initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
-                                        'dynamic',
-                                        taxonomy?.isAdminOnly,
-                                      ) &&
-                                      initialValues?.length > 0
-                                    )
-                                      return (
-                                        <div key={index}>
-                                          <p className="read-only-event-content-sub-title-primary">
-                                            {bilingual({
-                                              data: taxonomy?.name,
-                                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                            })}
-                                          </p>
-                                          {initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0 && (
-                                            <TreeSelectOption
-                                              data-cy={`treeselect-person-dynamic-field-${index}`}
-                                              key={index}
-                                              style={{ marginBottom: '1rem' }}
-                                              bordered={false}
-                                              open={false}
-                                              disabled
-                                              defaultValue={initialValues}
-                                              treeData={treeDynamicTaxonomyOptions(
-                                                taxonomy?.concept,
-                                                user,
-                                                calendarContentLanguage,
-                                              )}
-                                              tagRender={(props) => {
-                                                const { label } = props;
-                                                return (
-                                                  <Tags data-cy={`tag-person-dynamic-field-${label}`}>{label}</Tags>
-                                                );
-                                              }}
-                                            />
-                                          )}
-                                        </div>
-                                      );
+                            <Col span={24}>
+                              {allTaxonomyData?.data?.map((taxonomy, index) => {
+                                if (!taxonomy?.isDynamicField) {
+                                  return null;
+                                }
+
+                                let initialValues,
+                                  initialTaxonomy = [];
+                                personData?.dynamicFields?.forEach((dynamicField) => {
+                                  if (taxonomy?.id === dynamicField?.taxonomyId) {
+                                    initialValues = dynamicField?.conceptIds;
+                                    initialTaxonomy.push(taxonomy?.id);
                                   }
-                                })}
-                              </Col>
-                            )}
+                                });
+
+                                const dynamicValue = initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : initialValues;
+                                const shouldDisplayDynamicField = checkIfFieldIsToBeDisplayed(
+                                  taxonomy?.id,
+                                  dynamicValue,
+                                  'dynamic',
+                                  taxonomy?.isAdminOnly,
+                                );
+
+                                if (!shouldDisplayDynamicField) {
+                                  return null;
+                                }
+
+                                return (
+                                  <div key={index}>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {bilingual({
+                                        data: taxonomy?.name,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      })}
+                                    </p>
+                                    {!isReadOnlyValueEmpty(initialValues) ? (
+                                      <TreeSelectOption
+                                        data-cy={`treeselect-person-dynamic-field-${index}`}
+                                        key={index}
+                                        style={{ marginBottom: '1rem' }}
+                                        bordered={false}
+                                        open={false}
+                                        disabled
+                                        defaultValue={initialValues}
+                                        treeData={treeDynamicTaxonomyOptions(
+                                          taxonomy?.concept,
+                                          user,
+                                          calendarContentLanguage,
+                                        )}
+                                        tagRender={(props) => {
+                                          const { label } = props;
+                                          return <Tags data-cy={`tag-person-dynamic-field-${label}`}>{label}</Tags>;
+                                        }}
+                                      />
+                                    ) : (
+                                      renderMissingValueMessage(
+                                        taxonomy?.id,
+                                        bilingual({
+                                          data: taxonomy?.name,
+                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        }),
+                                        initialValues,
+                                        `div-person-dynamic-field-missing-${index}`,
+                                        'dynamic',
+                                      )
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </Col>
                             {checkIfFieldIsToBeDisplayed(
                               personFormFieldNames.DISAMBIGUATING_DESCRIPTION,
                               personData?.disambiguatingDescription,
@@ -427,7 +449,7 @@ function PersonReadOnly() {
                                   data-cy="para-person-disambiguating-description-title">
                                   {t('dashboard.people.readOnly.disambiguatingDescription')}
                                 </p>
-                                {Object.keys(personData?.disambiguatingDescription ?? {})?.length > 0 && (
+                                {!isReadOnlyValueEmpty(personData?.disambiguatingDescription) ? (
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="disambiguatingDescription"
                                     data={personData?.disambiguatingDescription}
@@ -436,6 +458,13 @@ function PersonReadOnly() {
                                       renderData(processedData, 'para-person-disambiguating-description-french')
                                     }
                                   </FallbackInjectorForReadOnlyPages>
+                                ) : (
+                                  renderMissingValueMessage(
+                                    personFormFieldNames.DISAMBIGUATING_DESCRIPTION,
+                                    t('dashboard.people.readOnly.disambiguatingDescription'),
+                                    personData?.disambiguatingDescription,
+                                    'div-person-disambiguating-description-missing-message',
+                                  )
                                 )}
                               </Col>
                             )}
@@ -447,7 +476,7 @@ function PersonReadOnly() {
                                   data-cy="para-person-description-title">
                                   {t('dashboard.people.readOnly.description')}
                                 </p>
-                                {Object.keys(personData?.description ?? {})?.length > 0 && (
+                                {!isReadOnlyValueEmpty(personData?.description) ? (
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="description"
                                     data={personData?.description}
@@ -470,6 +499,13 @@ function PersonReadOnly() {
                                       );
                                     }}
                                   </FallbackInjectorForReadOnlyPages>
+                                ) : (
+                                  renderMissingValueMessage(
+                                    personFormFieldNames.DESCRIPTION,
+                                    t('dashboard.people.readOnly.description'),
+                                    personData?.description,
+                                    'div-person-description-missing-message',
+                                  )
                                 )}
                               </Col>
                             )}
@@ -480,7 +516,7 @@ function PersonReadOnly() {
                                   data-cy="para-person-website-title">
                                   {t('dashboard.people.readOnly.website')}
                                 </p>
-                                {personData?.url?.uri && (
+                                {!isReadOnlyValueEmpty(personData?.url?.uri) ? (
                                   <p>
                                     <a
                                       href={urlProtocolCheck(personData?.url?.uri)}
@@ -491,6 +527,13 @@ function PersonReadOnly() {
                                       {personData?.url?.uri}
                                     </a>
                                   </p>
+                                ) : (
+                                  renderMissingValueMessage(
+                                    personFormFieldNames.WEBSITE,
+                                    t('dashboard.people.readOnly.website'),
+                                    personData?.url?.uri,
+                                    'div-person-website-missing-message',
+                                  )
                                 )}
                               </Col>
                             )}
@@ -502,19 +545,25 @@ function PersonReadOnly() {
                                 <p className="read-only-event-content-sub-title-primary">
                                   {t('dashboard.people.readOnly.socialMediaLinks')}
                                 </p>
-                                {personData?.socialMediaLinks?.length > 0 &&
-                                  personData?.socialMediaLinks?.map((link, index) => (
-                                    <p key={index}>
-                                      <a
-                                        href={urlProtocolCheck(link)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="url-links"
-                                        data-cy="anchor-person-social-media-links">
-                                        {link}
-                                      </a>
-                                    </p>
-                                  ))}
+                                {!isReadOnlyValueEmpty(personData?.socialMediaLinks)
+                                  ? personData?.socialMediaLinks?.map((link, index) => (
+                                      <p key={index}>
+                                        <a
+                                          href={urlProtocolCheck(link)}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="url-links"
+                                          data-cy="anchor-person-social-media-links">
+                                          {link}
+                                        </a>
+                                      </p>
+                                    ))
+                                  : renderMissingValueMessage(
+                                      personFormFieldNames.SOCIAL_MEDIA,
+                                      t('dashboard.people.readOnly.socialMediaLinks'),
+                                      personData?.socialMediaLinks,
+                                      'div-person-social-media-missing-message',
+                                    )}
                               </Col>
                             )}
                             {checkIfFieldIsToBeDisplayed(
@@ -525,52 +574,66 @@ function PersonReadOnly() {
                                 <p className="read-only-event-content-sub-title-primary">
                                   {t('dashboard.people.readOnly.additionalLinks')}
                                 </p>
-                                {personData?.additionalLinks?.length > 0 &&
-                                  personData?.additionalLinks?.map((link, index) => (
-                                    <div key={index}>
-                                      {Object.keys(link?.name ?? {})?.length > 0 && (
-                                        <FallbackInjectorForReadOnlyPages
-                                          fieldName="additionalLinkName"
-                                          data={link?.name}
-                                          languageKey={activeTabKey}>
-                                          {(processedData) =>
-                                            renderData(processedData, 'para-person-additionalLinks-', {
-                                              marginBottom: '0px',
-                                            })
-                                          }
-                                        </FallbackInjectorForReadOnlyPages>
-                                      )}
+                                {!isReadOnlyValueEmpty(personData?.additionalLinks)
+                                  ? personData?.additionalLinks?.map((link, index) => (
+                                      <div key={index}>
+                                        {Object.keys(link?.name ?? {})?.length > 0 && (
+                                          <FallbackInjectorForReadOnlyPages
+                                            fieldName="additionalLinkName"
+                                            data={link?.name}
+                                            languageKey={activeTabKey}>
+                                            {(processedData) =>
+                                              renderData(processedData, 'para-person-additionalLinks-', {
+                                                marginBottom: '0px',
+                                              })
+                                            }
+                                          </FallbackInjectorForReadOnlyPages>
+                                        )}
 
-                                      {(link.uri || link.email) && (
-                                        <p>
-                                          <a
-                                            href={link.email ? `mailto:${link.email}` : urlProtocolCheck(link.uri)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="url-links"
-                                            data-cy="anchor-person-social-media-links">
-                                            {link.uri || link.email}
-                                          </a>
-                                        </p>
-                                      )}
-                                    </div>
-                                  ))}
+                                        {(link.uri || link.email) && (
+                                          <p>
+                                            <a
+                                              href={link.email ? `mailto:${link.email}` : urlProtocolCheck(link.uri)}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="url-links"
+                                              data-cy="anchor-person-social-media-links">
+                                              {link.uri || link.email}
+                                            </a>
+                                          </p>
+                                        )}
+                                      </div>
+                                    ))
+                                  : renderMissingValueMessage(
+                                      personFormFieldNames.ADDITIONAL_LINKS,
+                                      t('dashboard.people.readOnly.additionalLinks'),
+                                      personData?.additionalLinks,
+                                      'div-person-additional-links-missing-message',
+                                    )}
                               </Col>
                             )}
-                            {checkIfFieldIsToBeDisplayed(personFormFieldNames.IMAGE, mainImageData) &&
-                              mainImageData?.large?.uri && (
-                                <div>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.organization.readOnly.image.mainImage')}
-                                  </p>
+                            {checkIfFieldIsToBeDisplayed(personFormFieldNames.IMAGE, mainImageData) && (
+                              <div>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.organization.readOnly.image.mainImage')}
+                                </p>
+                                {!isReadOnlyValueEmpty(mainImageData?.large?.uri) ? (
                                   <ImageUpload
                                     imageUrl={mainImageData?.large?.uri}
                                     imageReadOnly={true}
                                     preview={true}
                                     eventImageData={mainImageData}
                                   />
-                                </div>
-                              )}
+                                ) : (
+                                  renderMissingValueMessage(
+                                    personFormFieldNames.IMAGE,
+                                    t('dashboard.organization.readOnly.image.mainImage'),
+                                    mainImageData,
+                                    'div-person-main-image-missing-message',
+                                  )
+                                )}
+                              </div>
+                            )}
                             {imageConfig.enableGallery && imageGalleryData?.length > 0 && (
                               <Col span={24}>
                                 <p className="read-only-event-content-sub-title-primary">
@@ -597,7 +660,7 @@ function PersonReadOnly() {
                                 <p className="read-only-event-content-sub-title-primary">
                                   {t('dashboard.organization.readOnly.videoLink')}
                                 </p>
-                                {personData?.videoUrl?.uri && (
+                                {!isReadOnlyValueEmpty(personData?.videoUrl?.uri) ? (
                                   <p>
                                     <a
                                       href={urlProtocolCheck(personData?.videoUrl?.uri)}
@@ -607,6 +670,13 @@ function PersonReadOnly() {
                                       {personData?.videoUrl?.uri}
                                     </a>
                                   </p>
+                                ) : (
+                                  renderMissingValueMessage(
+                                    personFormFieldNames.VIDEO_URL,
+                                    t('dashboard.organization.readOnly.videoLink'),
+                                    personData?.videoUrl?.uri,
+                                    'div-person-video-link-missing-message',
+                                  )
                                 )}
                               </Col>
                             )}

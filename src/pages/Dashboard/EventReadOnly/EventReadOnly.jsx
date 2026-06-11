@@ -59,6 +59,8 @@ import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInject
 import { getLabelByTimezoneValue } from '../../../utils/handleTimeZones';
 import { Translation } from 'react-i18next';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import '../../../components/NoContent/noContent.css';
+import { isReadOnlyValueEmpty, createReadOnlyFieldRenderers } from '../../../utils/readOnlyValueHelpers';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -164,20 +166,12 @@ function EventReadOnly() {
     }
   });
 
-  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard', adminOnly = false) => {
-    if (typeof data === 'string' && data !== '') return true;
-    if (adminOnly && !adminCheckHandler({ calendar, user })) return false;
-
-    if (Array.isArray(data) && data.length > 0 && data.every((item) => item !== null && item !== undefined))
-      return true;
-    if (data !== null && isDataValid(data)) return true;
-
-    if (type === 'standard') {
-      return mandatoryStandardFields.includes(field);
-    } else {
-      return mandatoryDynamicFields.includes(field);
-    }
-  };
+  const { checkIfFieldIsToBeDisplayed, renderMissingValueMessage } = createReadOnlyFieldRenderers({
+    mandatoryStandardFields,
+    mandatoryDynamicFields,
+    canViewAdminOnly: adminCheckHandler({ calendar, user }),
+    t,
+  });
 
   const checkOfferConfigValid = (offerConfig) => {
     if (!offerConfig?.category) return false;
@@ -462,12 +456,22 @@ function EventReadOnly() {
                                 {t('dashboard.events.addEditEvent.language.title')}
                               </p>
                             )}
-                            <FallbackInjectorForReadOnlyPages
-                              fieldName="name"
-                              data={eventData?.name}
-                              languageKey={activeTabKey}>
-                              {(processedData) => renderData(processedData)}
-                            </FallbackInjectorForReadOnlyPages>
+                            {checkIfFieldIsToBeDisplayed(eventFormRequiredFieldNames?.NAME, eventData?.name) &&
+                              (!isReadOnlyValueEmpty(eventData?.name) ? (
+                                <FallbackInjectorForReadOnlyPages
+                                  fieldName="name"
+                                  data={eventData?.name}
+                                  languageKey={activeTabKey}>
+                                  {(processedData) => renderData(processedData)}
+                                </FallbackInjectorForReadOnlyPages>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.NAME,
+                                  t('dashboard.events.addEditEvent.language.title'),
+                                  eventData?.name,
+                                  'div-event-name-missing-message',
+                                )
+                              ))}
                           </div>
                           {checkIfFieldIsToBeDisplayed(
                             eventFormRequiredFieldNames?.EVENT_TYPE,
@@ -485,7 +489,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
                               </p>
-                              {eventData?.additionalType.length > 0 && (
+                              {!isReadOnlyValueEmpty(eventData?.additionalType) ? (
                                 <TreeSelectOption
                                   style={{ marginBottom: '1rem' }}
                                   bordered={false}
@@ -507,6 +511,13 @@ function EventReadOnly() {
                                     return <Tags>{label}</Tags>;
                                   }}
                                 />
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.EVENT_TYPE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false),
+                                  eventData?.additionalType,
+                                  'div-event-type-missing-message',
+                                )
                               )}
                             </div>
                           )}
@@ -522,7 +533,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
                               </p>
-                              {eventData?.audience.length > 0 && (
+                              {!isReadOnlyValueEmpty(eventData?.audience) ? (
                                 <TreeSelectOption
                                   style={{ marginBottom: '1rem' }}
                                   bordered={false}
@@ -544,6 +555,13 @@ function EventReadOnly() {
                                     return <Tags>{label}</Tags>;
                                   }}
                                 />
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.AUDIENCE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false),
+                                  eventData?.audience,
+                                  'div-event-audience-missing-message',
+                                )
                               )}
                             </div>
                           )}
@@ -565,7 +583,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
                               </p>
-                              {eventData?.discipline?.length > 0 && (
+                              {!isReadOnlyValueEmpty(eventData?.discipline) ? (
                                 <TreeSelectOption
                                   style={{ marginBottom: '1rem' }}
                                   bordered={false}
@@ -585,6 +603,13 @@ function EventReadOnly() {
                                     return <Tags>{label}</Tags>;
                                   }}
                                 />
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.EVENT_DISCIPLINE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false),
+                                  eventData?.discipline,
+                                  'div-event-discipline-missing-message',
+                                )
                               )}
                             </div>
                           )}
@@ -599,14 +624,15 @@ function EventReadOnly() {
                                 }
                               });
 
+                              const dynamicValue = initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : initialValues;
+
                               if (
                                 checkIfFieldIsToBeDisplayed(
                                   taxonomy?.id,
-                                  initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
+                                  dynamicValue,
                                   'dynamic',
                                   taxonomy?.isAdminOnly,
-                                ) &&
-                                initialValues?.length > 0
+                                )
                               )
                                 return (
                                   <div
@@ -624,7 +650,7 @@ function EventReadOnly() {
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       })}
                                     </p>
-                                    {initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0 && (
+                                    {!isReadOnlyValueEmpty(initialValues) ? (
                                       <TreeSelectOption
                                         key={index}
                                         style={{ marginBottom: '1rem' }}
@@ -643,6 +669,17 @@ function EventReadOnly() {
                                           return <Tags>{label}</Tags>;
                                         }}
                                       />
+                                    ) : (
+                                      renderMissingValueMessage(
+                                        taxonomy?.id,
+                                        bilingual({
+                                          data: taxonomy?.name,
+                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        }),
+                                        initialValues,
+                                        `div-event-dynamic-field-missing-${index}`,
+                                        'dynamic',
+                                      )
                                     )}
                                   </div>
                                 );
@@ -820,7 +857,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.dates.status')}
                               </p>
-                              {eventData?.eventStatus && (
+                              {!isReadOnlyValueEmpty(eventData?.eventStatus) ? (
                                 <p className="read-only-event-content">
                                   {eventStatusOptions?.map((status) => {
                                     if (status?.value === eventData?.eventStatus)
@@ -828,6 +865,13 @@ function EventReadOnly() {
                                     return null;
                                   })}
                                 </p>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.EVENT_STATUS,
+                                  t('dashboard.events.addEditEvent.dates.status'),
+                                  eventData?.eventStatus,
+                                  'div-event-status-missing-message',
+                                )
                               )}
                             </>
                           )}
@@ -862,7 +906,7 @@ function EventReadOnly() {
                                   {t('dashboard.events.addEditEvent.location.title')}
                                 </p>
 
-                                {locationPlace && initialPlace && initialPlace?.length > 0 && (
+                                {!isReadOnlyValueEmpty(locationPlace) && initialPlace && initialPlace?.length > 0 ? (
                                   <SelectionItem
                                     icon={locationPlace?.label?.props?.icon}
                                     name={locationPlace?.name}
@@ -880,6 +924,13 @@ function EventReadOnly() {
                                       entityId: locationPlace?.key,
                                     }}
                                   />
+                                ) : (
+                                  renderMissingValueMessage(
+                                    eventFormRequiredFieldNames?.LOCATION,
+                                    t('dashboard.events.addEditEvent.location.title'),
+                                    eventData?.locations,
+                                    'div-event-location-missing-message',
+                                  )
                                 )}
                               </div>
                             )}
@@ -939,26 +990,33 @@ function EventReadOnly() {
                               eventData?.description,
                             ) && (
                               <>
-                                {eventData?.description && (
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.otherInformation.description.title')}
-                                  </p>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.description.title')}
+                                </p>
+                                {!isReadOnlyValueEmpty(eventData?.description) ? (
+                                  <FallbackInjectorForReadOnlyPages
+                                    fieldName="description"
+                                    data={eventData?.description}
+                                    languageKey={activeTabKey}>
+                                    {(processedData) =>
+                                      processedData && (
+                                        <div
+                                          className="read-only-event-description"
+                                          dangerouslySetInnerHTML={{
+                                            __html: processedData,
+                                          }}
+                                        />
+                                      )
+                                    }
+                                  </FallbackInjectorForReadOnlyPages>
+                                ) : (
+                                  renderMissingValueMessage(
+                                    eventFormRequiredFieldNames?.DESCRIPTION,
+                                    t('dashboard.events.addEditEvent.otherInformation.description.title'),
+                                    eventData?.description,
+                                    'div-event-description-missing-message',
+                                  )
                                 )}
-                                <FallbackInjectorForReadOnlyPages
-                                  fieldName="description"
-                                  data={eventData?.description}
-                                  languageKey={activeTabKey}>
-                                  {(processedData) =>
-                                    processedData && (
-                                      <div
-                                        className="read-only-event-description"
-                                        dangerouslySetInnerHTML={{
-                                          __html: processedData,
-                                        }}
-                                      />
-                                    )
-                                  }
-                                </FallbackInjectorForReadOnlyPages>
                               </>
                             )}
                           </div>
@@ -975,13 +1033,20 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
                               </p>
-                              {eventData?.image?.length > 0 && mainImageData?.original?.uri && (
+                              {!isReadOnlyValueEmpty(eventData?.image) && mainImageData?.original?.uri ? (
                                 <ImageUpload
                                   imageUrl={mainImageData?.large?.uri}
                                   imageReadOnly={true}
                                   preview={true}
                                   eventImageData={mainImageData}
                                 />
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.IMAGE,
+                                  t('dashboard.events.addEditEvent.otherInformation.image.mainImage'),
+                                  eventData?.image,
+                                  'div-event-main-image-missing-message',
+                                )
                               )}
                             </div>
                           )}
@@ -1019,27 +1084,33 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
                               </p>
-                              {eventData?.organizer?.length > 0 &&
-                                selectedOrganizers?.map((organizer, index) => {
-                                  return (
-                                    <SelectionItem
-                                      key={index}
-                                      icon={organizer?.label?.props?.icon}
-                                      name={organizer?.name}
-                                      description={organizer?.description}
-                                      calendarContentLanguage={calendarContentLanguage}
-                                      bordered
-                                      closable={false}
-                                      itemWidth="100%"
-                                      onClickHandle={{
-                                        navigationFlag: true,
-                                        entityType: organizer?.type,
-                                        entityId: organizer?.value,
-                                      }}
-                                      isTransparent={organizer?.isTransparent ?? false}
-                                    />
-                                  );
-                                })}
+                              {!isReadOnlyValueEmpty(eventData?.organizer)
+                                ? selectedOrganizers?.map((organizer, index) => {
+                                    return (
+                                      <SelectionItem
+                                        key={index}
+                                        icon={organizer?.label?.props?.icon}
+                                        name={organizer?.name}
+                                        description={organizer?.description}
+                                        calendarContentLanguage={calendarContentLanguage}
+                                        bordered
+                                        closable={false}
+                                        itemWidth="100%"
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: organizer?.type,
+                                          entityId: organizer?.value,
+                                        }}
+                                        isTransparent={organizer?.isTransparent ?? false}
+                                      />
+                                    );
+                                  })
+                                : renderMissingValueMessage(
+                                    eventFormRequiredFieldNames?.ORGANIZERS,
+                                    t('dashboard.events.addEditEvent.otherInformation.organizer.title'),
+                                    eventData?.organizer,
+                                    'div-event-organizers-missing-message',
+                                  )}
                             </>
                           )}
                           {checkIfFieldIsToBeDisplayed(
@@ -1050,13 +1121,20 @@ function EventReadOnly() {
                               {t('dashboard.events.addEditEvent.otherInformation.contact.title')}
                             </p>
                           )}
-                          {eventData?.contactPoint && (
+                          {!isReadOnlyValueEmpty(eventData?.contactPoint?.name) ? (
                             <FallbackInjectorForReadOnlyPages
                               fieldName="contactPoint"
                               data={eventData?.contactPoint?.name}
                               languageKey={activeTabKey}>
                               {(processedData) => renderData(processedData)}
                             </FallbackInjectorForReadOnlyPages>
+                          ) : (
+                            renderMissingValueMessage(
+                              eventFormRequiredFieldNames?.CONTACT_TITLE,
+                              t('dashboard.events.addEditEvent.otherInformation.contact.title'),
+                              eventData?.contactPoint,
+                              'div-event-contact-missing-message',
+                            )
                           )}
                           {eventData?.contactPoint?.url?.uri && (
                             <>
@@ -1103,27 +1181,33 @@ function EventReadOnly() {
                                 {t('dashboard.events.addEditEvent.otherInformation.performer.title')}
                               </p>
 
-                              {eventData?.performer?.length > 0 &&
-                                selectedPerformers?.map((performer, index) => {
-                                  return (
-                                    <SelectionItem
-                                      key={index}
-                                      icon={performer?.label?.props?.icon}
-                                      name={performer?.name}
-                                      description={performer?.description}
-                                      calendarContentLanguage={calendarContentLanguage}
-                                      bordered
-                                      closable={false}
-                                      onClickHandle={{
-                                        navigationFlag: true,
-                                        entityType: performer?.type,
-                                        entityId: performer?.value,
-                                      }}
-                                      itemWidth="100%"
-                                      isTransparent={performer?.isTransparent ?? false}
-                                    />
-                                  );
-                                })}
+                              {!isReadOnlyValueEmpty(eventData?.performer)
+                                ? selectedPerformers?.map((performer, index) => {
+                                    return (
+                                      <SelectionItem
+                                        key={index}
+                                        icon={performer?.label?.props?.icon}
+                                        name={performer?.name}
+                                        description={performer?.description}
+                                        calendarContentLanguage={calendarContentLanguage}
+                                        bordered
+                                        closable={false}
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: performer?.type,
+                                          entityId: performer?.value,
+                                        }}
+                                        itemWidth="100%"
+                                        isTransparent={performer?.isTransparent ?? false}
+                                      />
+                                    );
+                                  })
+                                : renderMissingValueMessage(
+                                    eventFormRequiredFieldNames?.PERFORMER,
+                                    t('dashboard.events.addEditEvent.otherInformation.performer.title'),
+                                    eventData?.performer,
+                                    'div-event-performer-missing-message',
+                                  )}
                             </>
                           )}
                           {checkIfFieldIsToBeDisplayed(
@@ -1134,27 +1218,33 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
                               </p>
-                              {eventData?.collaborators?.length > 0 &&
-                                selectedSupporters?.map((supporter, index) => {
-                                  return (
-                                    <SelectionItem
-                                      key={index}
-                                      icon={supporter?.label?.props?.icon}
-                                      name={supporter?.name}
-                                      description={supporter?.description}
-                                      calendarContentLanguage={calendarContentLanguage}
-                                      bordered
-                                      itemWidth="100%"
-                                      closable={false}
-                                      onClickHandle={{
-                                        navigationFlag: true,
-                                        entityType: supporter?.type,
-                                        entityId: supporter?.value,
-                                      }}
-                                      isTransparent={supporter?.isTransparent ?? false}
-                                    />
-                                  );
-                                })}
+                              {!isReadOnlyValueEmpty(eventData?.collaborators)
+                                ? selectedSupporters?.map((supporter, index) => {
+                                    return (
+                                      <SelectionItem
+                                        key={index}
+                                        icon={supporter?.label?.props?.icon}
+                                        name={supporter?.name}
+                                        description={supporter?.description}
+                                        calendarContentLanguage={calendarContentLanguage}
+                                        bordered
+                                        itemWidth="100%"
+                                        closable={false}
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: supporter?.type,
+                                          entityId: supporter?.value,
+                                        }}
+                                        isTransparent={supporter?.isTransparent ?? false}
+                                      />
+                                    );
+                                  })
+                                : renderMissingValueMessage(
+                                    eventFormRequiredFieldNames?.COLLABORATOR,
+                                    t('dashboard.events.addEditEvent.otherInformation.supporter.title'),
+                                    eventData?.collaborators,
+                                    'div-event-collaborator-missing-message',
+                                  )}
                             </>
                           )}
                           {checkIfFieldIsToBeDisplayed(eventFormRequiredFieldNames?.EVENT_LINK, eventData?.url) && (
@@ -1162,7 +1252,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
                               </p>
-                              {eventData?.url && eventData?.url?.uri && (
+                              {!isReadOnlyValueEmpty(eventData?.url?.uri) ? (
                                 <p>
                                   <a
                                     href={urlProtocolCheck(eventData?.url?.uri)}
@@ -1172,6 +1262,13 @@ function EventReadOnly() {
                                     {eventData?.url?.uri}
                                   </a>
                                 </p>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.EVENT_LINK,
+                                  t('dashboard.events.addEditEvent.otherInformation.eventLink'),
+                                  eventData?.url?.uri,
+                                  'div-event-link-missing-message',
+                                )
                               )}
                             </>
                           )}
@@ -1183,7 +1280,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                               </p>
-                              {eventData?.videoUrl?.uri && (
+                              {!isReadOnlyValueEmpty(eventData?.videoUrl?.uri) ? (
                                 <p>
                                   <a
                                     href={urlProtocolCheck(eventData?.videoUrl?.uri)}
@@ -1193,6 +1290,13 @@ function EventReadOnly() {
                                     {eventData?.videoUrl?.uri}
                                   </a>
                                 </p>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.VIDEO_URL,
+                                  t('dashboard.events.addEditEvent.otherInformation.videoLink'),
+                                  eventData?.videoUrl?.uri,
+                                  'div-event-video-link-missing-message',
+                                )
                               )}
                             </>
                           )}
@@ -1217,7 +1321,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
                               </p>
-                              {eventData?.facebookUrl && (
+                              {!isReadOnlyValueEmpty(eventData?.facebookUrl) ? (
                                 <div style={{ width: '420px' }}>
                                   <p>
                                     <a
@@ -1229,6 +1333,13 @@ function EventReadOnly() {
                                     </a>
                                   </p>
                                 </div>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.FACEBOOK_URL,
+                                  t('dashboard.events.addEditEvent.otherInformation.facebookLink'),
+                                  eventData?.facebookUrl,
+                                  'div-event-facebook-link-missing-message',
+                                )
                               )}
                             </>
                           )}
@@ -1237,7 +1348,7 @@ function EventReadOnly() {
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.keywords')}
                               </p>
-                              {eventData?.keywords.length > 0 && (
+                              {!isReadOnlyValueEmpty(eventData?.keywords) ? (
                                 <SelectOption
                                   mode="tags"
                                   bordered={false}
@@ -1249,35 +1360,54 @@ function EventReadOnly() {
                                     return <Tags>{label}</Tags>;
                                   }}
                                 />
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.KEYWORDS,
+                                  t('dashboard.events.addEditEvent.otherInformation.keywords'),
+                                  eventData?.keywords,
+                                  'div-event-keywords-missing-message',
+                                )
                               )}
                             </>
                           )}
-                          {eventData?.inLanguage.length > 0 && (
+                          {checkIfFieldIsToBeDisplayed(
+                            eventFormRequiredFieldNames?.IN_LANGUAGE,
+                            eventData?.inLanguage,
+                          ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
                                 {taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
                               </p>
-                              <TreeSelectOption
-                                style={{ marginBottom: '1rem' }}
-                                bordered={false}
-                                open={false}
-                                showArrow={false}
-                                disabled
-                                treeData={treeTaxonomyOptions(
-                                  allTaxonomyData,
-                                  user,
-                                  'inLanguage',
-                                  false,
-                                  calendarContentLanguage,
-                                )}
-                                defaultValue={eventData?.inLanguage?.map((inLanguage) => {
-                                  return inLanguage?.entityId;
-                                })}
-                                tagRender={(props) => {
-                                  const { label } = props;
-                                  return <Tags>{label}</Tags>;
-                                }}
-                              />
+                              {!isReadOnlyValueEmpty(eventData?.inLanguage) ? (
+                                <TreeSelectOption
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  open={false}
+                                  showArrow={false}
+                                  disabled
+                                  treeData={treeTaxonomyOptions(
+                                    allTaxonomyData,
+                                    user,
+                                    'inLanguage',
+                                    false,
+                                    calendarContentLanguage,
+                                  )}
+                                  defaultValue={eventData?.inLanguage?.map((inLanguage) => {
+                                    return inLanguage?.entityId;
+                                  })}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags>{label}</Tags>;
+                                  }}
+                                />
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.IN_LANGUAGE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false),
+                                  eventData?.inLanguage,
+                                  'div-event-in-language-missing-message',
+                                )
+                              )}
                             </>
                           )}
                         </div>
@@ -1302,32 +1432,44 @@ function EventReadOnly() {
                             <p className="read-only-event-content-title">
                               {t('dashboard.events.addEditEvent.eventAccessibility.title')}
                             </p>
-                            {eventData?.accessibility.length > 0 && (
+                            {checkIfFieldIsToBeDisplayed(
+                              eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY,
+                              eventData?.accessibility,
+                            ) && (
                               <>
                                 <p className="read-only-event-content-sub-title-primary">
                                   {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
                                 </p>
-                                <TreeSelectOption
-                                  style={{ marginBottom: '1rem' }}
-                                  bordered={false}
-                                  open={false}
-                                  showArrow={false}
-                                  disabled
-                                  treeData={treeTaxonomyOptions(
-                                    allTaxonomyData,
-                                    user,
-                                    'EventAccessibility',
-                                    false,
-                                    calendarContentLanguage,
-                                  )}
-                                  defaultValue={eventData?.accessibility?.map((accessibility) => {
-                                    return accessibility?.entityId;
-                                  })}
-                                  tagRender={(props) => {
-                                    const { label } = props;
-                                    return <Tags>{label}</Tags>;
-                                  }}
-                                />
+                                {!isReadOnlyValueEmpty(eventData?.accessibility) ? (
+                                  <TreeSelectOption
+                                    style={{ marginBottom: '1rem' }}
+                                    bordered={false}
+                                    open={false}
+                                    showArrow={false}
+                                    disabled
+                                    treeData={treeTaxonomyOptions(
+                                      allTaxonomyData,
+                                      user,
+                                      'EventAccessibility',
+                                      false,
+                                      calendarContentLanguage,
+                                    )}
+                                    defaultValue={eventData?.accessibility?.map((accessibility) => {
+                                      return accessibility?.entityId;
+                                    })}
+                                    tagRender={(props) => {
+                                      const { label } = props;
+                                      return <Tags>{label}</Tags>;
+                                    }}
+                                  />
+                                ) : (
+                                  renderMissingValueMessage(
+                                    eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY,
+                                    taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false),
+                                    eventData?.accessibility,
+                                    'div-event-accessibility-missing-message',
+                                  )
+                                )}
                               </>
                             )}
 
@@ -1355,121 +1497,132 @@ function EventReadOnly() {
                   {checkIfFieldIsToBeDisplayed(
                     eventFormRequiredFieldNames?.TICKET_INFO,
                     eventData?.offerConfiguration,
-                  ) &&
-                    checkOfferConfigValid(eventData?.offerConfiguration) && (
-                      <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                          <Col flex={'423px'}>
-                            <div
-                              className="read-only-event-section-wrapper"
-                              style={{
-                                display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
-                                  ? adminCheckHandler({ calendar, user })
-                                    ? ''
-                                    : 'none'
-                                  : '',
-                              }}>
-                              <p className="read-only-event-content-title">
-                                {t('dashboard.events.addEditEvent.tickets.title')}
-                              </p>
-                              {eventData?.offerConfiguration?.category && (
-                                <>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.tickets.description')}
-                                  </p>
-                                  <p className="read-only-event-content">
-                                    {eventData.offerConfiguration.category === offerTypes.FREE &&
-                                      t('dashboard.events.addEditEvent.tickets.free')}
-                                    {eventData.offerConfiguration.category === offerTypes.PAYING &&
-                                      t('dashboard.events.addEditEvent.tickets.paid')}
-                                    {eventData.offerConfiguration.category === offerTypes.REGISTER &&
-                                      t('dashboard.events.addEditEvent.tickets.registration')}
-                                  </p>
-                                </>
-                              )}
-                              {(eventData?.offerConfiguration?.url?.uri || eventData?.offerConfiguration?.email) && (
-                                <>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {eventData?.offerConfiguration?.category === offerTypes.PAYING
-                                      ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
-                                      : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
-                                        t('dashboard.events.addEditEvent.tickets.registerLink')}
-                                  </p>
-                                  <p>
-                                    <a
-                                      href={
-                                        eventData?.offerConfiguration?.url?.uri
-                                          ? urlProtocolCheck(eventData?.offerConfiguration?.url?.uri)
-                                          : eventData?.offerConfiguration?.email
-                                      }
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="url-links">
-                                      {eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
-                                    </a>
-                                  </p>
-                                </>
-                              )}
-                              {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
-                                eventData?.offerConfiguration?.prices?.length > 0 && (
-                                  <table className="ticket-price-table">
-                                    <tr>
-                                      <th>
-                                        <p className="read-only-event-content-sub-title-primary">
-                                          {t('dashboard.events.addEditEvent.tickets.price')}
-                                        </p>
-                                      </th>
-                                      <th>
-                                        <p className="read-only-event-content-sub-title-primary">
-                                          {t('dashboard.events.addEditEvent.tickets.description')}
-                                        </p>
-                                      </th>
-                                    </tr>
-
-                                    {eventData?.offerConfiguration?.prices?.map((offer, key) => {
-                                      return (
-                                        <tr key={key}>
-                                          <td>
-                                            <p className="read-only-event-content">
-                                              {offer?.price}&nbsp;
-                                              <span style={{ fontWeight: '400' }}>
-                                                {t('dashboard.events.addEditEvent.tickets.CAD')}
-                                              </span>
-                                            </p>
-                                          </td>
-                                          <td>
-                                            <FallbackInjectorForReadOnlyPages
-                                              fieldName="offerName"
-                                              data={offer?.name}
-                                              languageKey={activeTabKey}>
-                                              {(processedData) => renderData(processedData)}
-                                            </FallbackInjectorForReadOnlyPages>
-                                          </td>
-                                        </tr>
-                                      );
-                                    })}
-                                  </table>
+                  ) && (
+                    <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                        <Col flex={'423px'}>
+                          <div
+                            className="read-only-event-section-wrapper"
+                            style={{
+                              display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
+                                ? adminCheckHandler({ calendar, user })
+                                  ? ''
+                                  : 'none'
+                                : '',
+                            }}>
+                            <p className="read-only-event-content-title">
+                              {t('dashboard.events.addEditEvent.tickets.title')}
+                            </p>
+                            {!checkOfferConfigValid(eventData?.offerConfiguration) ? (
+                              renderMissingValueMessage(
+                                eventFormRequiredFieldNames?.TICKET_INFO,
+                                t('dashboard.events.addEditEvent.tickets.title'),
+                                eventData?.offerConfiguration,
+                                'div-event-ticket-info-missing-message',
+                              )
+                            ) : (
+                              <>
+                                {eventData?.offerConfiguration?.category && (
+                                  <>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {t('dashboard.events.addEditEvent.tickets.description')}
+                                    </p>
+                                    <p className="read-only-event-content">
+                                      {eventData.offerConfiguration.category === offerTypes.FREE &&
+                                        t('dashboard.events.addEditEvent.tickets.free')}
+                                      {eventData.offerConfiguration.category === offerTypes.PAYING &&
+                                        t('dashboard.events.addEditEvent.tickets.paid')}
+                                      {eventData.offerConfiguration.category === offerTypes.REGISTER &&
+                                        t('dashboard.events.addEditEvent.tickets.registration')}
+                                    </p>
+                                  </>
                                 )}
-                              {eventData?.offerConfiguration?.name && (
-                                <>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.tickets.note')}
-                                  </p>
-                                  <FallbackInjectorForReadOnlyPages
-                                    fieldName="offerConfiguration"
-                                    data={eventData?.offerConfiguration?.name}>
-                                    {(processedData) => renderData(processedData)}
-                                  </FallbackInjectorForReadOnlyPages>
-                                </>
-                              )}
-                            </div>
-                          </Col>
-                          <Col flex="233px">
-                            <div style={{ width: '100%' }}></div>
-                          </Col>
-                        </Row>
-                      </Col>
-                    )}
+                                {(eventData?.offerConfiguration?.url?.uri || eventData?.offerConfiguration?.email) && (
+                                  <>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {eventData?.offerConfiguration?.category === offerTypes.PAYING
+                                        ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
+                                        : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
+                                          t('dashboard.events.addEditEvent.tickets.registerLink')}
+                                    </p>
+                                    <p>
+                                      <a
+                                        href={
+                                          eventData?.offerConfiguration?.url?.uri
+                                            ? urlProtocolCheck(eventData?.offerConfiguration?.url?.uri)
+                                            : eventData?.offerConfiguration?.email
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="url-links">
+                                        {eventData?.offerConfiguration?.url?.uri ??
+                                          eventData?.offerConfiguration?.email}
+                                      </a>
+                                    </p>
+                                  </>
+                                )}
+                                {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
+                                  eventData?.offerConfiguration?.prices?.length > 0 && (
+                                    <table className="ticket-price-table">
+                                      <tr>
+                                        <th>
+                                          <p className="read-only-event-content-sub-title-primary">
+                                            {t('dashboard.events.addEditEvent.tickets.price')}
+                                          </p>
+                                        </th>
+                                        <th>
+                                          <p className="read-only-event-content-sub-title-primary">
+                                            {t('dashboard.events.addEditEvent.tickets.description')}
+                                          </p>
+                                        </th>
+                                      </tr>
+
+                                      {eventData?.offerConfiguration?.prices?.map((offer, key) => {
+                                        return (
+                                          <tr key={key}>
+                                            <td>
+                                              <p className="read-only-event-content">
+                                                {offer?.price}&nbsp;
+                                                <span style={{ fontWeight: '400' }}>
+                                                  {t('dashboard.events.addEditEvent.tickets.CAD')}
+                                                </span>
+                                              </p>
+                                            </td>
+                                            <td>
+                                              <FallbackInjectorForReadOnlyPages
+                                                fieldName="offerName"
+                                                data={offer?.name}
+                                                languageKey={activeTabKey}>
+                                                {(processedData) => renderData(processedData)}
+                                              </FallbackInjectorForReadOnlyPages>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </table>
+                                  )}
+                                {eventData?.offerConfiguration?.name && (
+                                  <>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {t('dashboard.events.addEditEvent.tickets.note')}
+                                    </p>
+                                    <FallbackInjectorForReadOnlyPages
+                                      fieldName="offerConfiguration"
+                                      data={eventData?.offerConfiguration?.name}>
+                                      {(processedData) => renderData(processedData)}
+                                    </FallbackInjectorForReadOnlyPages>
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </Col>
+                        <Col flex="233px">
+                          <div style={{ width: '100%' }}></div>
+                        </Col>
+                      </Row>
+                    </Col>
+                  )}
                 </Row>
               </Col>
             </ReadOnlyPageTabLayout>

@@ -1382,6 +1382,9 @@
     "tabKorean": "Korean",
     "tabChinese": "Chinese",
     "noneFound": "None Found",
+    "readOnly": {
+      "emptyValue": "The {{fieldName}} is missing. Click Edit to add it now."
+    },
     "tabFrench": "French",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
     "keepEditing": "Keep editing",
