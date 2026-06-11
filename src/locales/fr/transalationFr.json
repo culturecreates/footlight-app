@@ -1380,6 +1380,9 @@
     "tabKorean": "Coréen",
     "tabChinese": "Chinois",
     "noneFound": "Non trouvé",
+    "readOnly": {
+      "emptyValue": "Le {{fieldName}} est manquant. Cliquez sur Modifier pour l'ajouter dès maintenant."
+    },
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",
     "discard": "Ignorer",

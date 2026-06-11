@@ -45,6 +45,8 @@ import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLi
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import '../../../components/NoContent/noContent.css';
+import { isReadOnlyValueEmpty, createReadOnlyFieldRenderers } from '../../../utils/readOnlyValueHelpers';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -134,19 +136,12 @@ function OrganizationsReadOnly() {
     }
   });
 
-  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard', adminOnly = false) => {
-    if (typeof data === 'string' && data !== '') return true;
-    if (adminOnly && !adminCheckHandler({ calendar, user })) return false;
-    if (Array.isArray(data) && data.length > 0 && data.every((item) => item !== null && item !== undefined))
-      return true;
-    if (data !== null && isDataValid(data)) return true;
-
-    if (type === 'standard') {
-      return mandatoryStandardFields.includes(field);
-    } else {
-      return mandatoryDynamicFields.includes(field);
-    }
-  };
+  const { checkIfFieldIsToBeDisplayed, renderMissingValueMessage } = createReadOnlyFieldRenderers({
+    mandatoryStandardFields,
+    mandatoryDynamicFields,
+    canViewAdminOnly: adminCheckHandler({ calendar, user }),
+    t,
+  });
 
   const getArtsData = (id) => {
     setArtsDataLoading(true);
@@ -359,13 +354,20 @@ function OrganizationsReadOnly() {
                             <p className="read-only-event-content-sub-title-primary" data-cy="para-organization-name">
                               {t('dashboard.organization.readOnly.name')}
                             </p>
-                            {Object.keys(organizationData?.name ?? {})?.length > 0 && (
+                            {!isReadOnlyValueEmpty(organizationData?.name) ? (
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="name"
                                 data={organizationData?.name}
                                 languageKey={activeTabKey}>
                                 {(processedData) => renderData(processedData, 'para-organization-name-french')}
                               </FallbackInjectorForReadOnlyPages>
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.NAME,
+                                t('dashboard.organization.readOnly.name'),
+                                organizationData?.name,
+                                'div-organization-name-missing-message',
+                              )
                             )}
                           </Col>
                         )}
@@ -379,7 +381,7 @@ function OrganizationsReadOnly() {
                               data-cy="para-organization-type-title">
                               {taxonomyDetails(allTaxonomyData?.data, user, 'OrganizationType', 'name', false)}
                             </p>
-                            {organizationData?.additionalType?.length > 0 && (
+                            {!isReadOnlyValueEmpty(organizationData?.additionalType) ? (
                               <TreeSelectOption
                                 data-cy="treeselect-organization-type"
                                 style={{ marginBottom: '1rem' }}
@@ -401,6 +403,13 @@ function OrganizationsReadOnly() {
                                   return <Tags data-cy={`tag-organization-type-${label}`}>{label}</Tags>;
                                 }}
                               />
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.ORGANIZATION_TYPE,
+                                taxonomyDetails(allTaxonomyData?.data, user, 'OrganizationType', 'name', false),
+                                organizationData?.additionalType,
+                                'div-organization-type-missing-message',
+                              )
                             )}
                           </div>
                         )}
@@ -412,13 +421,20 @@ function OrganizationsReadOnly() {
                             <p className="read-only-event-content-sub-title-primary" data-cy="para-disambiguating-desc">
                               {t('dashboard.organization.readOnly.disambiguatingDescription')}
                             </p>
-                            {Object.keys(organizationData?.disambiguatingDescription ?? {})?.length > 0 && (
+                            {!isReadOnlyValueEmpty(organizationData?.disambiguatingDescription) ? (
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="disambiguatingDescription"
                                 data={organizationData?.disambiguatingDescription}
                                 languageKey={activeTabKey}>
                                 {(processedData) => renderData(processedData, 'para-disambiguating-desc-french')}
                               </FallbackInjectorForReadOnlyPages>
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.DISAMBIGUATING_DESCRIPTION,
+                                t('dashboard.organization.readOnly.disambiguatingDescription'),
+                                organizationData?.disambiguatingDescription,
+                                'div-organization-disambiguating-description-missing-message',
+                              )
                             )}
                           </Col>
                         )}
@@ -432,7 +448,7 @@ function OrganizationsReadOnly() {
                               data-cy="para-organization-description-title">
                               {t('dashboard.organization.readOnly.description')}
                             </p>
-                            {Object.keys(organizationData?.description ?? {})?.length > 0 && (
+                            {!isReadOnlyValueEmpty(organizationData?.description) ? (
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="description"
                                 data={organizationData?.description}
@@ -451,6 +467,13 @@ function OrganizationsReadOnly() {
                                   );
                                 }}
                               </FallbackInjectorForReadOnlyPages>
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.DESCRIPTION,
+                                t('dashboard.organization.readOnly.description'),
+                                organizationData?.description,
+                                'div-organization-description-missing-message',
+                              )
                             )}
                           </Col>
                         )}
@@ -461,7 +484,7 @@ function OrganizationsReadOnly() {
                               data-cy="para-organization-website-title">
                               {t('dashboard.organization.readOnly.website')}
                             </p>
-                            {organizationData?.url?.uri && (
+                            {!isReadOnlyValueEmpty(organizationData?.url?.uri) ? (
                               <p>
                                 <a
                                   href={urlProtocolCheck(organizationData?.url?.uri)}
@@ -472,6 +495,13 @@ function OrganizationsReadOnly() {
                                   {organizationData?.url?.uri}
                                 </a>
                               </p>
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.WEBSITE,
+                                t('dashboard.organization.readOnly.website'),
+                                organizationData?.url?.uri,
+                                'div-organization-website-missing-message',
+                              )
                             )}
                           </Col>
                         )}
@@ -485,19 +515,25 @@ function OrganizationsReadOnly() {
                               data-cy="para-organization-social-media-title">
                               {t('dashboard.organization.readOnly.socialMediaLinks')}
                             </p>
-                            {organizationData?.socialMediaLinks?.length > 0 &&
-                              organizationData?.socialMediaLinks?.map((link, index) => (
-                                <p key={index}>
-                                  <a
-                                    href={urlProtocolCheck(link)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="url-links"
-                                    data-cy={`anchor-organization-social-media-${index}`}>
-                                    {link}
-                                  </a>
-                                </p>
-                              ))}
+                            {!isReadOnlyValueEmpty(organizationData?.socialMediaLinks)
+                              ? organizationData?.socialMediaLinks?.map((link, index) => (
+                                  <p key={index}>
+                                    <a
+                                      href={urlProtocolCheck(link)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="url-links"
+                                      data-cy={`anchor-organization-social-media-${index}`}>
+                                      {link}
+                                    </a>
+                                  </p>
+                                ))
+                              : renderMissingValueMessage(
+                                  organizationFormFieldNames.SOCIAL_MEDIA,
+                                  t('dashboard.organization.readOnly.socialMediaLinks'),
+                                  organizationData?.socialMediaLinks,
+                                  'div-organization-social-media-missing-message',
+                                )}
                           </Col>
                         )}
                         {checkIfFieldIsToBeDisplayed(
@@ -508,44 +544,50 @@ function OrganizationsReadOnly() {
                             <p className="read-only-event-content-sub-title-primary">
                               {t('dashboard.people.readOnly.additionalLinks')}
                             </p>
-                            {organizationData?.additionalLinks?.length > 0 &&
-                              organizationData?.additionalLinks?.map((link, index) => (
-                                <div key={index}>
-                                  {Object.keys(link?.name ?? {})?.length > 0 && (
-                                    <FallbackInjectorForReadOnlyPages
-                                      fieldName="additionalLinkName"
-                                      data={link?.name}
-                                      languageKey={activeTabKey}>
-                                      {(processedData) =>
-                                        renderData(processedData, 'para-person-additionalLinks-', {
-                                          marginBottom: '0px',
-                                        })
-                                      }
-                                    </FallbackInjectorForReadOnlyPages>
-                                  )}
+                            {!isReadOnlyValueEmpty(organizationData?.additionalLinks)
+                              ? organizationData?.additionalLinks?.map((link, index) => (
+                                  <div key={index}>
+                                    {Object.keys(link?.name ?? {})?.length > 0 && (
+                                      <FallbackInjectorForReadOnlyPages
+                                        fieldName="additionalLinkName"
+                                        data={link?.name}
+                                        languageKey={activeTabKey}>
+                                        {(processedData) =>
+                                          renderData(processedData, 'para-person-additionalLinks-', {
+                                            marginBottom: '0px',
+                                          })
+                                        }
+                                      </FallbackInjectorForReadOnlyPages>
+                                    )}
 
-                                  {(link.uri || link.email) && (
-                                    <p>
-                                      <a
-                                        href={link.email ? `mailto:${link.email}` : urlProtocolCheck(link.uri)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="url-links"
-                                        data-cy="anchor-person-social-media-links">
-                                        {link.uri || link.email}
-                                      </a>
-                                    </p>
-                                  )}
-                                </div>
-                              ))}
+                                    {(link.uri || link.email) && (
+                                      <p>
+                                        <a
+                                          href={link.email ? `mailto:${link.email}` : urlProtocolCheck(link.uri)}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="url-links"
+                                          data-cy="anchor-person-social-media-links">
+                                          {link.uri || link.email}
+                                        </a>
+                                      </p>
+                                    )}
+                                  </div>
+                                ))
+                              : renderMissingValueMessage(
+                                  organizationFormFieldNames.ADDITIONAL_LINKS,
+                                  t('dashboard.people.readOnly.additionalLinks'),
+                                  organizationData?.additionalLinks,
+                                  'div-organization-additional-links-missing-message',
+                                )}
                           </Col>
                         )}
-                        {checkIfFieldIsToBeDisplayed(organizationFormFieldNames.LOGO, organizationData?.logo) &&
-                          organizationData?.logo?.large?.uri && (
-                            <div>
-                              <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.organization.readOnly.logo')}
-                              </p>
+                        {checkIfFieldIsToBeDisplayed(organizationFormFieldNames.LOGO, organizationData?.logo) && (
+                          <div>
+                            <p className="read-only-event-content-sub-title-primary">
+                              {t('dashboard.organization.readOnly.logo')}
+                            </p>
+                            {!isReadOnlyValueEmpty(organizationData?.logo?.large?.uri) ? (
                               <ImageUpload
                                 imageUrl={organizationData?.logo?.large?.uri}
                                 imageReadOnly={true}
@@ -553,25 +595,43 @@ function OrganizationsReadOnly() {
                                 eventImageData={organizationData?.logo}
                                 isTransparent={organizationData?.logo?.isTransparent ?? false}
                               />
-                            </div>
-                          )}
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.LOGO,
+                                t('dashboard.organization.readOnly.logo'),
+                                organizationData?.logo,
+                                'div-organization-logo-missing-message',
+                              )
+                            )}
+                          </div>
+                        )}
                         {checkIfFieldIsToBeDisplayed(
                           organizationFormFieldNames.IMAGE,
                           organizationData?.image?.find((image) => image?.isMain),
-                        ) &&
-                          organizationData?.image?.find((image) => image?.isMain)?.large?.uri && (
-                            <div>
-                              <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.organization.readOnly.image.mainImage')}
-                              </p>
+                        ) && (
+                          <div>
+                            <p className="read-only-event-content-sub-title-primary">
+                              {t('dashboard.organization.readOnly.image.mainImage')}
+                            </p>
+                            {!isReadOnlyValueEmpty(
+                              organizationData?.image?.find((image) => image?.isMain)?.large?.uri,
+                            ) ? (
                               <ImageUpload
                                 imageUrl={organizationData?.image?.find((image) => image?.isMain)?.large?.uri}
                                 imageReadOnly={true}
                                 preview={true}
                                 eventImageData={organizationData?.image?.find((image) => image?.isMain)}
                               />
-                            </div>
-                          )}
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.IMAGE,
+                                t('dashboard.organization.readOnly.image.mainImage'),
+                                organizationData?.image?.find((image) => image?.isMain),
+                                'div-organization-main-image-missing-message',
+                              )
+                            )}
+                          </div>
+                        )}
                         {checkIfFieldIsToBeDisplayed(
                           organizationFormFieldNames.IMAGE,
                           imageConfig.enableGallery ? imageGalleryData : [],
@@ -580,7 +640,7 @@ function OrganizationsReadOnly() {
                             <p className="read-only-event-content-sub-title-primary">
                               {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                             </p>
-                            {imageGalleryData?.length > 0 && imageConfig.enableGallery && (
+                            {!isReadOnlyValueEmpty(imageConfig.enableGallery ? imageGalleryData : []) ? (
                               <>
                                 <MultipleImageUpload
                                   imageReadOnly={true}
@@ -597,6 +657,13 @@ function OrganizationsReadOnly() {
                                   eventImageData={imageGalleryData}
                                 />
                               </>
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.IMAGE,
+                                t('dashboard.events.addEditEvent.otherInformation.image.additionalImages'),
+                                imageGalleryData,
+                                'div-organization-gallery-image-missing-message',
+                              )
                             )}
                           </div>
                         )}
@@ -610,13 +677,20 @@ function OrganizationsReadOnly() {
                               data-cy="para-organization-contact-title">
                               {t('dashboard.organization.readOnly.contact')}
                             </p>
-                            {Object.keys(organizationData?.contactPoint ?? {})?.length > 0 && (
+                            {!isReadOnlyValueEmpty(organizationData?.contactPoint?.name) ? (
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="contactPoint"
                                 data={organizationData?.contactPoint?.name}
                                 languageKey={activeTabKey}>
                                 {(processedData) => renderData(processedData, 'para-organization-contact-french')}
                               </FallbackInjectorForReadOnlyPages>
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.CONTACT_TITLE,
+                                t('dashboard.organization.readOnly.contact'),
+                                organizationData?.contactPoint,
+                                'div-organization-contact-missing-message',
+                              )
                             )}
                             {organizationData?.contactPoint?.url?.uri && (
                               <>
@@ -663,65 +737,74 @@ function OrganizationsReadOnly() {
                             )}
                           </Col>
                         )}
-                        {organizationData?.dynamicFields?.length > 0 && (
-                          <Col span={24}>
-                            {allTaxonomyData?.data?.map((taxonomy, index) => {
-                              if (taxonomy?.isDynamicField) {
-                                let initialValues,
-                                  initialTaxonomy = [];
-                                organizationData?.dynamicFields?.forEach((dynamicField) => {
-                                  if (taxonomy?.id === dynamicField?.taxonomyId) {
-                                    initialValues = dynamicField?.conceptIds;
-                                    initialTaxonomy.push(taxonomy?.id);
-                                  }
-                                });
-                                if (
-                                  checkIfFieldIsToBeDisplayed(
-                                    taxonomy?.id,
-                                    initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
-                                    'dynamic',
-                                    taxonomy?.isAdminOnly,
-                                  ) &&
-                                  initialValues?.length > 0
-                                )
-                                  return (
-                                    <div key={index}>
-                                      <p
-                                        className="read-only-event-content-sub-title-primary"
-                                        data-cy={`para-organization-dynamic-taxonomy-name-${index}`}>
-                                        {bilingual({
-                                          data: taxonomy?.name,
-                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        })}
-                                      </p>
-                                      {initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0 && (
-                                        <TreeSelectOption
-                                          key={index}
-                                          style={{ marginBottom: '1rem' }}
-                                          bordered={false}
-                                          open={false}
-                                          disabled
-                                          defaultValue={initialValues}
-                                          treeData={treeDynamicTaxonomyOptions(
-                                            taxonomy?.concept,
-                                            user,
-                                            calendarContentLanguage,
-                                          )}
-                                          tagRender={(props) => {
-                                            const { label } = props;
-                                            return (
-                                              <Tags data-cy={`tag-organization-dynamic-field-${label}`}>{label}</Tags>
-                                            );
-                                          }}
-                                          data-cy="treeselect-organization-dynamic-field"
-                                        />
-                                      )}
-                                    </div>
-                                  );
+                        <Col span={24}>
+                          {allTaxonomyData?.data?.map((taxonomy, index) => {
+                            if (!taxonomy?.isDynamicField) {
+                              return null;
+                            }
+
+                            let initialValues,
+                              initialTaxonomy = [];
+                            organizationData?.dynamicFields?.forEach((dynamicField) => {
+                              if (taxonomy?.id === dynamicField?.taxonomyId) {
+                                initialValues = dynamicField?.conceptIds;
+                                initialTaxonomy.push(taxonomy?.id);
                               }
-                            })}
-                          </Col>
-                        )}
+                            });
+
+                            const dynamicValue = initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : initialValues;
+
+                            if (
+                              !checkIfFieldIsToBeDisplayed(taxonomy?.id, dynamicValue, 'dynamic', taxonomy?.isAdminOnly)
+                            ) {
+                              return null;
+                            }
+
+                            return (
+                              <div key={index}>
+                                <p
+                                  className="read-only-event-content-sub-title-primary"
+                                  data-cy={`para-organization-dynamic-taxonomy-name-${index}`}>
+                                  {bilingual({
+                                    data: taxonomy?.name,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  })}
+                                </p>
+                                {!isReadOnlyValueEmpty(initialValues) ? (
+                                  <TreeSelectOption
+                                    key={index}
+                                    style={{ marginBottom: '1rem' }}
+                                    bordered={false}
+                                    open={false}
+                                    disabled
+                                    defaultValue={initialValues}
+                                    treeData={treeDynamicTaxonomyOptions(
+                                      taxonomy?.concept,
+                                      user,
+                                      calendarContentLanguage,
+                                    )}
+                                    tagRender={(props) => {
+                                      const { label } = props;
+                                      return <Tags data-cy={`tag-organization-dynamic-field-${label}`}>{label}</Tags>;
+                                    }}
+                                    data-cy="treeselect-organization-dynamic-field"
+                                  />
+                                ) : (
+                                  renderMissingValueMessage(
+                                    taxonomy?.id,
+                                    bilingual({
+                                      data: taxonomy?.name,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    }),
+                                    initialValues,
+                                    `div-organization-dynamic-field-missing-${index}`,
+                                    'dynamic',
+                                  )
+                                )}
+                              </div>
+                            );
+                          })}
+                        </Col>
                         {checkIfFieldIsToBeDisplayed(organizationFormFieldNames.LOCATION, locationPlace) && (
                           <Col span={24}>
                             <p
@@ -729,7 +812,7 @@ function OrganizationsReadOnly() {
                               data-cy="para-organization-place-title">
                               {t('dashboard.organization.readOnly.location')}
                             </p>
-                            {locationPlace && (
+                            {!isReadOnlyValueEmpty(locationPlace) ? (
                               <SelectionItem
                                 icon={locationPlace?.label?.props?.icon}
                                 name={locationPlace?.name}
@@ -746,6 +829,13 @@ function OrganizationsReadOnly() {
                                   entityId: locationPlace?.value,
                                 }}
                               />
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.LOCATION,
+                                t('dashboard.organization.readOnly.location'),
+                                locationPlace,
+                                'div-organization-location-missing-message',
+                              )
                             )}
                           </Col>
                         )}
@@ -757,7 +847,7 @@ function OrganizationsReadOnly() {
                             <p className="read-only-event-content-sub-title-primary">
                               {t('dashboard.organization.readOnly.videoLink')}
                             </p>
-                            {organizationData?.videoUrl?.uri && (
+                            {!isReadOnlyValueEmpty(organizationData?.videoUrl?.uri) ? (
                               <p>
                                 <a
                                   href={urlProtocolCheck(organizationData?.videoUrl?.uri)}
@@ -767,6 +857,13 @@ function OrganizationsReadOnly() {
                                   {organizationData?.videoUrl?.uri}
                                 </a>
                               </p>
+                            ) : (
+                              renderMissingValueMessage(
+                                organizationFormFieldNames.VIDEO_URL,
+                                t('dashboard.organization.readOnly.videoLink'),
+                                organizationData?.videoUrl?.uri,
+                                'div-organization-video-link-missing-message',
+                              )
                             )}
                           </Col>
                         )}
