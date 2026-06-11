@@ -41,4 +41,9 @@ export default defineConfig({
     port: 3000,
     allowedHosts: ['test.footlight.app'],
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.js',
+  },
 });

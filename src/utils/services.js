@@ -102,7 +102,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       }
       try {
         if (!token) {
-          clearSessionAndRedirectToLogin();
+          clearSessionAndRedirectToLogin({ setSessionExpired: true });
           return result;
         }
         const fetchResponse = await fetch(`${import.meta.env.VITE_APP_API_URL}/refresh-token`, {

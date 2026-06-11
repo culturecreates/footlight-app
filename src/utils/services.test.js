@@ -113,7 +113,7 @@ describe('baseQueryWithReauth', () => {
     expect(locationAssignMock).toHaveBeenCalledWith('/');
   });
 
-  it('does not mark session as expired when no refresh token exists', async () => {
+  it('marks session as expired when no refresh token exists', async () => {
     state.user.refreshToken = undefined;
     cookieGetMock.mockReturnValue(undefined);
     baseQueryMock.mockResolvedValueOnce({ error: { status: 401 } });
@@ -123,7 +123,7 @@ describe('baseQueryWithReauth', () => {
     expect(result).toEqual({ error: { status: 401 } });
     expect(globalThis.fetch).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
-    expect(sessionStorage.getItem('sessionExpired')).toBeNull();
+    expect(sessionStorage.getItem('sessionExpired')).toBe('true');
     expect(locationAssignMock).toHaveBeenCalledWith('/');
   });
 
