@@ -82,6 +82,7 @@ describe('baseQueryWithReauth', () => {
     baseQueryMock.mockResolvedValueOnce({ error: { status: 401 } }).mockResolvedValueOnce({ data: { ok: true } });
 
     globalThis.fetch.mockResolvedValue({
+      ok: true,
       json: async () => ({
         accessToken: { token: 'new-access-token', ttl: 3600 },
         refreshToken: { token: 'new-refresh-token' },
@@ -100,6 +101,7 @@ describe('baseQueryWithReauth', () => {
   it('clears session and redirects to login when refresh fails', async () => {
     baseQueryMock.mockResolvedValueOnce({ error: { status: 401 } });
     globalThis.fetch.mockResolvedValue({
+      ok: true,
       json: async () => ({}),
     });
 
@@ -108,6 +110,20 @@ describe('baseQueryWithReauth', () => {
     expect(result).toEqual({ error: { status: 401 } });
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
     expect(sessionStorage.getItem('sessionExpired')).toBe('true');
+    expect(locationAssignMock).toHaveBeenCalledWith('/');
+  });
+
+  it('does not mark session as expired when no refresh token exists', async () => {
+    state.user.refreshToken = undefined;
+    cookieGetMock.mockReturnValue(undefined);
+    baseQueryMock.mockResolvedValueOnce({ error: { status: 401 } });
+
+    const result = await baseQueryWithReauth({ url: 'events' }, api, {});
+
+    expect(result).toEqual({ error: { status: 401 } });
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
+    expect(sessionStorage.getItem('sessionExpired')).toBeNull();
     expect(locationAssignMock).toHaveBeenCalledWith('/');
   });
 
@@ -137,6 +153,7 @@ describe('baseQueryWithReauth', () => {
           setTimeout(
             () =>
               resolve({
+                ok: true,
                 json: async () => ({
                   accessToken: { token: 'new-access-token', ttl: 3600 },
                   refreshToken: { token: 'new-refresh-token' },

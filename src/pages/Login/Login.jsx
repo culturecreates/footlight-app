@@ -17,6 +17,8 @@ import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice
 import i18n from 'i18next';
 import Cookies from 'js-cookie';
 
+const SESSION_EXPIRED_STORAGE_KEY = 'sessionExpired';
+
 const Login = () => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -38,10 +40,10 @@ const Login = () => {
   useEffect(() => {
     const savedAccessToken = Cookies.get('accessToken');
     const calenderId = sessionStorage.getItem('calendarId');
-    const isSessionExpired = sessionStorage.getItem('sessionExpired') === 'true';
+    const isSessionExpired = sessionStorage.getItem(SESSION_EXPIRED_STORAGE_KEY) === 'true';
 
     if (isSessionExpired) {
-      sessionStorage.removeItem('sessionExpired');
+      sessionStorage.removeItem(SESSION_EXPIRED_STORAGE_KEY);
       notification.info({
         key: 'session-expired',
         message: t('common.server.status.sessionExpired.message'),

@@ -28,9 +28,9 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   const skipGlobalErrorHandling = extraOptions?.skipGlobalErrorHandling;
   const isRetryRequest = extraOptions?._isRetryRequest;
 
-  const clearSessionAndRedirectToLogin = () => {
+  const clearSessionAndRedirectToLogin = ({ setSessionExpired = false } = {}) => {
     api.dispatch(clearUser());
-    if (typeof sessionStorage !== 'undefined') {
+    if (setSessionExpired && typeof sessionStorage !== 'undefined') {
       sessionStorage.setItem(SESSION_EXPIRED_STORAGE_KEY, 'true');
     }
     if (typeof window !== 'undefined' && window.location.pathname !== PathName.Login) {
@@ -116,7 +116,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
           }),
         });
         refreshResult = await fetchResponse.json();
-        if (refreshResult && refreshResult?.accessToken && refreshResult?.refreshToken) {
+        if (fetchResponse.ok && refreshResult?.accessToken?.token && refreshResult?.refreshToken?.token) {
           let user = api.getState().user.user;
           user = {
             accessToken: refreshResult?.accessToken?.token,
@@ -130,10 +130,10 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
           api.dispatch(setUser(user));
           result = await baseQuery(args, api, { ...extraOptions, _isRetryRequest: true });
         } else {
-          clearSessionAndRedirectToLogin();
+          clearSessionAndRedirectToLogin({ setSessionExpired: true });
         }
       } catch (error) {
-        clearSessionAndRedirectToLogin();
+        clearSessionAndRedirectToLogin({ setSessionExpired: true });
       } finally {
         release();
       }
