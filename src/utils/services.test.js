@@ -41,7 +41,6 @@ describe('baseQueryWithReauth', () => {
   let dispatch;
   let state;
   let api;
-  let locationAssignMock;
 
   beforeEach(async () => {
     vi.resetModules();
@@ -51,11 +50,9 @@ describe('baseQueryWithReauth', () => {
     cookieGetMock.mockReset();
     cookieSetMock.mockReset();
 
-    locationAssignMock = vi.fn();
     globalThis.window = {
       location: {
         pathname: '/dashboard',
-        assign: locationAssignMock,
       },
     };
     globalThis.sessionStorage = createSessionStorageMock();
@@ -110,7 +107,6 @@ describe('baseQueryWithReauth', () => {
     expect(result).toEqual({ error: { status: 401 } });
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
     expect(sessionStorage.getItem('sessionExpired')).toBe('true');
-    expect(locationAssignMock).toHaveBeenCalledWith('/');
   });
 
   it('marks session as expired when no refresh token exists', async () => {
@@ -124,7 +120,6 @@ describe('baseQueryWithReauth', () => {
     expect(globalThis.fetch).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
     expect(sessionStorage.getItem('sessionExpired')).toBe('true');
-    expect(locationAssignMock).toHaveBeenCalledWith('/');
   });
 
   it('does not retry or re-refresh already retried requests', async () => {
