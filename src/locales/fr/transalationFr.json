@@ -1451,6 +1451,7 @@
       }
     },
     "server": {
+      "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
       "status": {
         "503": {
           "message": "Service temporairement indisponible",
