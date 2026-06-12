@@ -7,6 +7,7 @@ import { Mutex } from 'async-mutex';
 import { setErrorStates } from '../redux/reducer/ErrorSlice';
 import { ErrorMessages, ErrorStatus } from '../constants/errors';
 import { SESSION_EXPIRED_STORAGE_KEY } from '../constants/sessionStorageKeys';
+import { PathName } from '../constants/pathName';
 
 const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
@@ -31,6 +32,9 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     api.dispatch(clearUser());
     if (setSessionExpired && typeof sessionStorage !== 'undefined') {
       sessionStorage.setItem(SESSION_EXPIRED_STORAGE_KEY, 'true');
+    }
+    if (typeof window !== 'undefined' && window.location?.pathname !== PathName.Login) {
+      window.location.assign(PathName.Login);
     }
   };
 

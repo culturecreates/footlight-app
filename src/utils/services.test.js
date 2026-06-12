@@ -53,6 +53,7 @@ describe('baseQueryWithReauth', () => {
     globalThis.window = {
       location: {
         pathname: '/dashboard',
+        assign: vi.fn(),
       },
     };
     globalThis.sessionStorage = createSessionStorageMock();
@@ -107,6 +108,7 @@ describe('baseQueryWithReauth', () => {
     expect(result).toEqual({ error: { status: 401 } });
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
     expect(sessionStorage.getItem('sessionExpired')).toBe('true');
+    expect(window.location.assign).toHaveBeenCalledWith('/');
   });
 
   it('marks session as expired when no refresh token exists', async () => {
