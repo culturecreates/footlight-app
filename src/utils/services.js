@@ -29,16 +29,13 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   const isRetryRequest = extraOptions?._isRetryRequest;
 
   const clearSessionAndRedirectToLogin = ({ setSessionExpired = false } = {}) => {
-    const loginRedirectPath = setSessionExpired
-      ? `${PathName.Login}?${SESSION_EXPIRED_STORAGE_KEY}=true`
-      : PathName.Login;
+    const loginRedirectPath = PathName.Login;
     api.dispatch(clearUser());
     if (setSessionExpired && typeof sessionStorage !== 'undefined') {
       sessionStorage.setItem(SESSION_EXPIRED_STORAGE_KEY, 'true');
     }
     if (typeof window !== 'undefined') {
-      const currentPathWithSearch = `${window.location.pathname}${window.location.search}`;
-      if (currentPathWithSearch !== loginRedirectPath) {
+      if (window.location.pathname !== loginRedirectPath) {
         window.location.assign(loginRedirectPath);
       }
     }
