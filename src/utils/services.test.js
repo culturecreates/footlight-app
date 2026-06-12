@@ -110,7 +110,7 @@ describe('baseQueryWithReauth', () => {
     expect(result).toEqual({ error: { status: 401 } });
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
     expect(sessionStorage.getItem('sessionExpired')).toBe('true');
-    expect(locationAssignMock).toHaveBeenCalledWith('/');
+    expect(locationAssignMock).toHaveBeenCalledWith('/?sessionExpired=true');
   });
 
   it('marks session as expired when no refresh token exists', async () => {
@@ -124,7 +124,7 @@ describe('baseQueryWithReauth', () => {
     expect(globalThis.fetch).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'user/clearUser' }));
     expect(sessionStorage.getItem('sessionExpired')).toBe('true');
-    expect(locationAssignMock).toHaveBeenCalledWith('/');
+    expect(locationAssignMock).toHaveBeenCalledWith('/?sessionExpired=true');
   });
 
   it('does not retry or re-refresh already retried requests', async () => {

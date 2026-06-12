@@ -40,14 +40,19 @@ const Login = () => {
     const savedAccessToken = Cookies.get('accessToken');
     const calenderId = sessionStorage.getItem('calendarId');
     const isSessionExpired = sessionStorage.getItem(SESSION_EXPIRED_STORAGE_KEY) === 'true';
+    const isSessionExpiredFromQueryParam =
+      new URLSearchParams(location?.search).get(SESSION_EXPIRED_STORAGE_KEY) === 'true';
 
-    if (isSessionExpired) {
+    if (isSessionExpired || isSessionExpiredFromQueryParam) {
       sessionStorage.removeItem(SESSION_EXPIRED_STORAGE_KEY);
       notification.info({
         key: 'session-expired',
         message: t('common.server.status.sessionExpired.message'),
         placement: 'top',
       });
+      if (isSessionExpiredFromQueryParam) {
+        navigate(PathName.Login, { replace: true });
+      }
     }
 
     if (location?.state?.previousPath === 'logout') {
