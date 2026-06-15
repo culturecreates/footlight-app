@@ -2,14 +2,17 @@ import React from 'react';
 import './loginNavigationBar.css';
 import OutlinedButton from '../../Button/Outlined';
 import i18n from 'i18next';
+import Cookies from 'js-cookie';
 import { useTranslation } from 'react-i18next';
 import footlightLogo from '../../../assets/images/footlight-logo-small.png';
 function NavigationBar() {
   const { t } = useTranslation();
   const changeLanguageHandler = (lang) => {
     if (lang == 'en') {
+      Cookies.set('interfaceLanguage', 'fr');
       i18n.changeLanguage('fr');
     } else {
+      Cookies.set('interfaceLanguage', 'en');
       i18n.changeLanguage('en');
     }
   };

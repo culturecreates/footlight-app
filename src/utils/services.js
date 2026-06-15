@@ -6,8 +6,120 @@ import Cookies from 'js-cookie';
 import { Mutex } from 'async-mutex';
 import { setErrorStates } from '../redux/reducer/ErrorSlice';
 import { ErrorMessages, ErrorStatus } from '../constants/errors';
+import { PathName } from '../constants/pathName';
+import i18n from 'i18next';
 
 const mutex = new Mutex();
+const REAUTH_RETRY_FLAG = '__reauthRetry';
+const SESSION_EXPIRED_STORAGE_KEY = 'authSessionExpiredMessage';
+const SESSION_EXPIRED_QUERY_PARAM = 'sessionExpired=1';
+const SESSION_EXPIRED_LANG_QUERY_KEY = 'lang';
+const NON_REFRESHABLE_ENDPOINTS = ['login', 'refresh-token'];
+let lastRefreshSucceeded = null;
+
+const getRequestUrl = (args) => {
+  if (typeof args === 'string') return args;
+  if (typeof args === 'object' && args?.url) return args.url;
+  return '';
+};
+
+const isRefreshableRequest = (args) => {
+  const requestUrl = getRequestUrl(args);
+  if (!requestUrl) return true;
+
+  return !NON_REFRESHABLE_ENDPOINTS.some((endpoint) => requestUrl.includes(endpoint));
+};
+
+const hasRefreshToken = (api) => {
+  const stateToken = api.getState().user?.refreshToken?.token;
+  return Boolean(stateToken || Cookies.get('refreshToken'));
+};
+
+const markSessionExpired = () => {
+  if (typeof window === 'undefined') return;
+
+  if (sessionStorage.getItem(SESSION_EXPIRED_STORAGE_KEY) !== '1') {
+    sessionStorage.setItem(SESSION_EXPIRED_STORAGE_KEY, '1');
+  }
+};
+
+const getResolvedInterfaceLanguage = (api) => {
+  const stateLanguage = api.getState().interfaceLanguage?.language?.toLowerCase();
+  const userLanguage = api.getState().user?.user?.interfaceLanguage?.toLowerCase();
+  const cookieLanguage = Cookies.get('interfaceLanguage')?.toLowerCase();
+  const currentLanguage = i18n.language?.toLowerCase();
+
+  const resolvedLanguage = stateLanguage || userLanguage || cookieLanguage || currentLanguage;
+  return resolvedLanguage === 'fr' ? 'fr' : 'en';
+};
+
+const handleSessionExpired = (api) => {
+  const resolvedInterfaceLanguage = getResolvedInterfaceLanguage(api);
+  Cookies.set('interfaceLanguage', resolvedInterfaceLanguage);
+  api.dispatch(clearUser());
+  markSessionExpired();
+
+  // Prevent login page auto-redirects caused by stale calendar context.
+  sessionStorage.removeItem('calendarId');
+
+  if (typeof window === 'undefined') return;
+  if (window.location.pathname === PathName.Login) return;
+
+  window.location.replace(
+    `${PathName.Login}?${SESSION_EXPIRED_QUERY_PARAM}&${SESSION_EXPIRED_LANG_QUERY_KEY}=${resolvedInterfaceLanguage}`,
+  );
+};
+
+const refreshAccessToken = async (api) => {
+  let token = api.getState().user?.refreshToken?.token;
+  if (!token) {
+    token = Cookies.get('refreshToken');
+  }
+
+  if (!token) return false;
+
+  const fetchResponse = await fetch(`${import.meta.env.VITE_APP_API_URL}/refresh-token`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      refreshToken: token,
+    }),
+  });
+
+  if (!fetchResponse.ok) {
+    return false;
+  }
+
+  const refreshResult = await fetchResponse.json();
+  if (!refreshResult?.accessToken?.token || !refreshResult?.refreshToken?.token) {
+    return false;
+  }
+
+  let user = api.getState().user.user;
+  user = {
+    accessToken: refreshResult.accessToken.token,
+    expiredTime: refreshResult.accessToken.ttl,
+    refreshToken: refreshResult.refreshToken,
+    ...user,
+  };
+
+  Cookies.set('accessToken', refreshResult.accessToken.token);
+  Cookies.set('refreshToken', refreshResult.refreshToken.token);
+  api.dispatch(setUser(user));
+
+  return true;
+};
+
+const getSessionExpiredError = (result) => ({
+  error: {
+    ...result.error,
+    silent: true,
+    handled: true,
+  },
+});
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_APP_API_URL,
   prepareHeaders: (headers, { getState }) => {
@@ -24,6 +136,10 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
   const skipGlobalErrorHandling = extraOptions?.skipGlobalErrorHandling;
+  const hasAlreadyRetried = Boolean(extraOptions?.[REAUTH_RETRY_FLAG]);
+  const isRefreshableAuthRequest = isRefreshableRequest(args);
+  const shouldAttemptRefresh = isRefreshableAuthRequest && !hasAlreadyRetried && hasRefreshToken(api);
+
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
@@ -76,52 +192,54 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       description: result.error?.data?.error,
     });
   }
-  if (result.error && result.error.status === 401) {
+
+  if (
+    result.error &&
+    result.error.status === 401 &&
+    isRefreshableAuthRequest &&
+    !hasAlreadyRetried &&
+    !hasRefreshToken(api)
+  ) {
+    handleSessionExpired(api);
+    return getSessionExpiredError(result);
+  }
+
+  if (result.error && result.error.status === 401 && shouldAttemptRefresh) {
     // HTTP 401 Unauthorized response status code
     // indicates that the client request has not been completed because it lacks valid authentication credentials for the requested resource.
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
-      let refreshResult;
-      let token = api.getState().user?.refreshToken?.token;
-      if (!token) {
-        token = Cookies.get('refreshToken');
-      }
       try {
-        const fetchResponse = await fetch(`${import.meta.env.VITE_APP_API_URL}/refresh-token`, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            refreshToken: token,
-          }),
-        });
-        refreshResult = await fetchResponse.json();
-        if (refreshResult && refreshResult?.accessToken && refreshResult?.refreshToken) {
-          let user = api.getState().user.user;
-          user = {
-            accessToken: refreshResult?.accessToken?.token,
-            expiredTime: refreshResult?.accessToken?.ttl,
-            refreshToken: refreshResult?.refreshToken,
-            ...user,
-          };
-          Cookies.set('accessToken', refreshResult?.accessToken?.token);
-          Cookies.set('refreshToken', refreshResult?.refreshToken?.token);
+        const didRefreshSucceed = await refreshAccessToken(api);
+        lastRefreshSucceeded = didRefreshSucceed;
 
-          api.dispatch(setUser(user));
-          result = await baseQuery(args, api, extraOptions);
+        if (didRefreshSucceed) {
+          result = await baseQuery(args, api, {
+            ...extraOptions,
+            [REAUTH_RETRY_FLAG]: true,
+          });
         } else {
-          api.dispatch(clearUser());
+          handleSessionExpired(api);
+          return getSessionExpiredError(result);
         }
       } catch (error) {
-        api.dispatch(clearUser());
+        lastRefreshSucceeded = false;
+        handleSessionExpired(api);
+        return getSessionExpiredError(result);
       } finally {
         release();
       }
     } else {
       await mutex.waitForUnlock();
-      result = await baseQuery(args, api, extraOptions);
+      result = await baseQuery(args, api, {
+        ...extraOptions,
+        [REAUTH_RETRY_FLAG]: true,
+      });
+
+      if (lastRefreshSucceeded === false && result.error && result.error.status === 401) {
+        handleSessionExpired(api);
+        return getSessionExpiredError(result);
+      }
     }
   }
 
