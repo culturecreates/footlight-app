@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Col, Row, Skeleton } from 'antd';
-import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined } from '@ant-design/icons';
+import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined, WarningOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -25,6 +25,7 @@ import { useGetPlaceQuery, useLazyGetPlaceQuery } from '../../../services/places
 import ArtsDataLink from '../../../components/Tags/ArtsDataLink/ArtsDataLink';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import SelectionItem from '../../../components/List/SelectionItem/SelectionItem';
+import Alert from '../../../components/Alert';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
@@ -47,7 +48,12 @@ import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLi
 import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import '../../../components/NoContent/noContent.css';
-import { isReadOnlyValueEmpty, createReadOnlyFieldRenderers } from '../../../utils/readOnlyValueHelpers';
+import {
+  isReadOnlyValueEmpty,
+  createReadOnlyFieldRenderers,
+  getMissingMandatoryFieldKeys,
+  shouldShowMandatoryMissingMessage,
+} from '../../../utils/readOnlyValueHelpers';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -146,6 +152,55 @@ function PlaceReadOnly() {
     canViewAdminOnly: adminCheckHandler({ calendar, user }),
     t,
   });
+
+  const missingRequiredFieldKeys = useMemo(() => {
+    const standardFieldValueMap = {
+      [placeFormRequiredFieldNames.NAME]: placeData?.name,
+      [placeFormRequiredFieldNames.PLACE_TYPE]: placeData?.additionalType,
+      [placeFormRequiredFieldNames.STREET_ADDRESS]: placeData?.address?.streetAddress,
+      [placeFormRequiredFieldNames.DISAMBIGUATING_DESCRIPTION]: placeData?.disambiguatingDescription,
+      [placeFormRequiredFieldNames.DESCRIPTION]: placeData?.description,
+      [placeFormRequiredFieldNames.IMAGE]: placeData?.image,
+      [placeFormRequiredFieldNames.CITY]: placeData?.address?.addressLocality,
+      [placeFormRequiredFieldNames.POSTAL_CODE]: placeData?.address?.postalCode,
+      [placeFormRequiredFieldNames.PROVINCE]: placeData?.address?.addressRegion,
+      [placeFormRequiredFieldNames.COUNTRY]: placeData?.address?.addressCountry,
+      [placeFormRequiredFieldNames.COORDINATES]: placeData?.geo,
+      [placeFormRequiredFieldNames.OPENING_HOURS]: placeData?.openingHours,
+      [placeFormRequiredFieldNames.CONTAINS_PLACE]: placeData?.containsPlace,
+      [placeFormRequiredFieldNames.CONTAINED_IN_PLACE]: placeData?.containedInPlace,
+      [placeFormRequiredFieldNames.PLACE_ACCESSIBILITY]: placeData?.accessibility,
+      [placeFormRequiredFieldNames.REGION]: placeData?.regions,
+    };
+
+    return getMissingMandatoryFieldKeys({
+      mandatoryFieldKeys: mandatoryStandardFields,
+      fieldValueMap: standardFieldValueMap,
+    });
+  }, [mandatoryStandardFields, placeData]);
+
+  const hasMissingRequiredFields = missingRequiredFieldKeys.length > 0;
+
+  const renderLabelWithWarning = (fieldKey, label, value, type = 'standard') => {
+    const mandatoryFieldKeys = type === 'standard' ? mandatoryStandardFields : mandatoryDynamicFields;
+    const showWarning = shouldShowMandatoryMissingMessage({
+      fieldKey,
+      value,
+      mandatoryFieldKeys,
+    });
+
+    return (
+      <span className="read-only-missing-label-wrapper">
+        {label}
+        {showWarning && (
+          <WarningOutlined
+            className="read-only-missing-label-icon"
+            aria-label={t('common.readOnly.emptyValue', { fieldName: label })}
+          />
+        )}
+      </span>
+    );
+  };
 
   const getArtsDataPlace = (id) => {
     setArtsDataLoading(true);
@@ -350,6 +405,21 @@ function PlaceReadOnly() {
               </Row>
             </Col>
           )}
+
+          {hasMissingRequiredFields && (
+            <Col span={24} className="artsdata-link-wrapper top-level-column">
+              <Row>
+                <Col flex={'750px'}>
+                  <Alert
+                    message={t('common.readOnly.missingRequiredBanner')}
+                    type="warning"
+                    showIcon
+                    additionalClassName="alert-warning"
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
         </div>
 
         <Col span={24} flex={'780px'}>
@@ -367,7 +437,11 @@ function PlaceReadOnly() {
                                 <p
                                   className="read-only-event-content-sub-title-primary"
                                   data-cy="para-place-name-title">
-                                  {t('dashboard.places.readOnly.placeName')}
+                                  {renderLabelWithWarning(
+                                    placeFormRequiredFieldNames.NAME,
+                                    t('dashboard.places.readOnly.placeName'),
+                                    placeData?.name,
+                                  )}
                                 </p>
                                 {!isReadOnlyValueEmpty(placeData?.name) ? (
                                   <FallbackInjectorForReadOnlyPages
@@ -393,7 +467,11 @@ function PlaceReadOnly() {
                           ) && (
                             <div>
                               <p className="read-only-event-content-sub-title-primary" data-cy="para-">
-                                {taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
+                                {renderLabelWithWarning(
+                                  placeFormRequiredFieldNames.PLACE_TYPE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false),
+                                  placeData?.additionalType,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(placeData?.additionalType) ? (
                                 <TreeSelectOption
@@ -534,7 +612,11 @@ function PlaceReadOnly() {
                               <p
                                 className="read-only-event-content-sub-title-primary"
                                 data-cy="para-place-description-title">
-                                {t('dashboard.places.readOnly.description')}
+                                {renderLabelWithWarning(
+                                  placeFormRequiredFieldNames.DESCRIPTION,
+                                  t('dashboard.places.readOnly.description'),
+                                  placeData?.description,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(placeData?.description) ? (
                                 <FallbackInjectorForReadOnlyPages

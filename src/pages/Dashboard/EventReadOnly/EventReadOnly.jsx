@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { Row, Col, Button, Skeleton } from 'antd';
-import { CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { CalendarOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +60,12 @@ import { getLabelByTimezoneValue } from '../../../utils/handleTimeZones';
 import { Translation } from 'react-i18next';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import '../../../components/NoContent/noContent.css';
-import { isReadOnlyValueEmpty, createReadOnlyFieldRenderers } from '../../../utils/readOnlyValueHelpers';
+import {
+  isReadOnlyValueEmpty,
+  createReadOnlyFieldRenderers,
+  getMissingMandatoryFieldKeys,
+  shouldShowMandatoryMissingMessage,
+} from '../../../utils/readOnlyValueHelpers';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -172,6 +177,64 @@ function EventReadOnly() {
     canViewAdminOnly: adminCheckHandler({ calendar, user }),
     t,
   });
+
+  const missingRequiredFieldKeys = useMemo(() => {
+    const standardFieldValueMap = {
+      [eventFormRequiredFieldNames?.NAME]: eventData?.name,
+      [eventFormRequiredFieldNames?.DESCRIPTION]: eventData?.description,
+      [eventFormRequiredFieldNames?.START_DATE]: eventData?.startDateTime ?? eventData?.startDate,
+      [eventFormRequiredFieldNames?.TICKET_INFO]: eventData?.offerConfiguration,
+      [eventFormRequiredFieldNames?.EVENT_TYPE]: eventData?.additionalType,
+      [eventFormRequiredFieldNames?.EVENT_DISCIPLINE]: eventData?.discipline,
+      [eventFormRequiredFieldNames?.AUDIENCE]: eventData?.audience,
+      [eventFormRequiredFieldNames?.LOCATION]: eventData?.locations,
+      [eventFormRequiredFieldNames?.IMAGE]: eventData?.image,
+      [eventFormRequiredFieldNames?.FEATURED]: eventData?.featured,
+      [eventFormRequiredFieldNames?.ORGANIZERS]: eventData?.organizer,
+      [eventFormRequiredFieldNames?.EVENT_STATUS]: eventData?.eventStatus,
+      [eventFormRequiredFieldNames?.VIRTUAL_LOCATION]: initialVirtualLocation,
+      [eventFormRequiredFieldNames?.CONTACT_TITLE]: eventData?.contactPoint?.name,
+      [eventFormRequiredFieldNames?.CONTACT_WEBSITE]: eventData?.contactPoint?.url?.uri,
+      [eventFormRequiredFieldNames?.PHONE_NUMBER]: eventData?.contactPoint?.telephone,
+      [eventFormRequiredFieldNames?.EMAIL]: eventData?.contactPoint?.email,
+      [eventFormRequiredFieldNames?.PERFORMER]: eventData?.performer,
+      [eventFormRequiredFieldNames?.COLLABORATOR]: eventData?.collaborators,
+      [eventFormRequiredFieldNames?.EVENT_LINK]: eventData?.url?.uri,
+      [eventFormRequiredFieldNames?.VIDEO_URL]: eventData?.videoUrl?.uri,
+      [eventFormRequiredFieldNames?.FACEBOOK_URL]: eventData?.facebookUrl,
+      [eventFormRequiredFieldNames?.KEYWORDS]: eventData?.keywords,
+      [eventFormRequiredFieldNames?.IN_LANGUAGE]: eventData?.inLanguage,
+      [eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY]: eventData?.accessibility,
+    };
+
+    return getMissingMandatoryFieldKeys({
+      mandatoryFieldKeys: mandatoryStandardFields,
+      fieldValueMap: standardFieldValueMap,
+    });
+  }, [eventData, initialVirtualLocation, mandatoryStandardFields]);
+
+  const hasMissingRequiredFields = missingRequiredFieldKeys.length > 0;
+
+  const renderLabelWithWarning = (fieldKey, label, value, type = 'standard') => {
+    const mandatoryFieldKeys = type === 'standard' ? mandatoryStandardFields : mandatoryDynamicFields;
+    const showWarning = shouldShowMandatoryMissingMessage({
+      fieldKey,
+      value,
+      mandatoryFieldKeys,
+    });
+
+    return (
+      <span className="read-only-missing-label-wrapper">
+        {label}
+        {showWarning && (
+          <WarningOutlined
+            className="read-only-missing-label-icon"
+            aria-label={t('common.readOnly.emptyValue', { fieldName: label })}
+          />
+        )}
+      </span>
+    );
+  };
 
   const checkOfferConfigValid = (offerConfig) => {
     if (!offerConfig?.category) return false;
@@ -432,6 +495,21 @@ function EventReadOnly() {
               </Row>
             </Col>
           )}
+
+          {hasMissingRequiredFields && (
+            <Col span={24} className="events-readonly-artsdata-link-wrapper top-level-column">
+              <Row>
+                <Col flex={'723px'}>
+                  <Alert
+                    message={t('common.readOnly.missingRequiredBanner')}
+                    type="warning"
+                    showIcon
+                    additionalClassName="alert-warning"
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
         </div>
 
         <Col span={24} flex={'723px'} style={{ padding: '0px' }}>
@@ -453,7 +531,11 @@ function EventReadOnly() {
                             }}>
                             {checkIfFieldIsToBeDisplayed(eventFormRequiredFieldNames?.NAME, eventData?.name) && (
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.language.title')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.NAME,
+                                  t('dashboard.events.addEditEvent.language.title'),
+                                  eventData?.name,
+                                )}
                               </p>
                             )}
                             {checkIfFieldIsToBeDisplayed(eventFormRequiredFieldNames?.NAME, eventData?.name) &&
@@ -487,7 +569,11 @@ function EventReadOnly() {
                               }}>
                               <br />
                               <p className="read-only-event-content-sub-title-primary">
-                                {taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.EVENT_TYPE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false),
+                                  eventData?.additionalType,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.additionalType) ? (
                                 <TreeSelectOption
@@ -531,7 +617,11 @@ function EventReadOnly() {
                                   : 'initial',
                               }}>
                               <p className="read-only-event-content-sub-title-primary">
-                                {taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.AUDIENCE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false),
+                                  eventData?.audience,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.audience) ? (
                                 <TreeSelectOption
@@ -581,7 +671,11 @@ function EventReadOnly() {
                               }}>
                               <br />
                               <p className="read-only-event-content-sub-title-primary">
-                                {taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.EVENT_DISCIPLINE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false),
+                                  eventData?.discipline,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.discipline) ? (
                                 <TreeSelectOption
@@ -645,10 +739,15 @@ function EventReadOnly() {
                                         : 'initial',
                                     }}>
                                     <p className="read-only-event-content-sub-title-primary">
-                                      {bilingual({
-                                        data: taxonomy?.name,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                      })}
+                                      {renderLabelWithWarning(
+                                        taxonomy?.id,
+                                        bilingual({
+                                          data: taxonomy?.name,
+                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        }),
+                                        initialValues,
+                                        'dynamic',
+                                      )}
                                     </p>
                                     {!isReadOnlyValueEmpty(initialValues) ? (
                                       <TreeSelectOption
@@ -855,7 +954,11 @@ function EventReadOnly() {
                           ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.dates.status')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.EVENT_STATUS,
+                                  t('dashboard.events.addEditEvent.dates.status'),
+                                  eventData?.eventStatus,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.eventStatus) ? (
                                 <p className="read-only-event-content">
@@ -903,7 +1006,11 @@ function EventReadOnly() {
                                     : 'initial',
                                 }}>
                                 <p className="read-only-event-content-sub-title-primary">
-                                  {t('dashboard.events.addEditEvent.location.title')}
+                                  {renderLabelWithWarning(
+                                    eventFormRequiredFieldNames?.LOCATION,
+                                    t('dashboard.events.addEditEvent.location.title'),
+                                    eventData?.locations,
+                                  )}
                                 </p>
 
                                 {!isReadOnlyValueEmpty(locationPlace) && initialPlace && initialPlace?.length > 0 ? (
@@ -991,7 +1098,11 @@ function EventReadOnly() {
                             ) && (
                               <>
                                 <p className="read-only-event-content-sub-title-primary">
-                                  {t('dashboard.events.addEditEvent.otherInformation.description.title')}
+                                  {renderLabelWithWarning(
+                                    eventFormRequiredFieldNames?.DESCRIPTION,
+                                    t('dashboard.events.addEditEvent.otherInformation.description.title'),
+                                    eventData?.description,
+                                  )}
                                 </p>
                                 {!isReadOnlyValueEmpty(eventData?.description) ? (
                                   <FallbackInjectorForReadOnlyPages
@@ -1031,7 +1142,11 @@ function EventReadOnly() {
                                   : 'initial',
                               }}>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.IMAGE,
+                                  t('dashboard.events.addEditEvent.otherInformation.image.mainImage'),
+                                  eventData?.image,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.image) && mainImageData?.original?.uri ? (
                                 <ImageUpload
@@ -1082,7 +1197,11 @@ function EventReadOnly() {
                           ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.ORGANIZERS,
+                                  t('dashboard.events.addEditEvent.otherInformation.organizer.title'),
+                                  eventData?.organizer,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.organizer)
                                 ? selectedOrganizers?.map((organizer, index) => {
@@ -1118,7 +1237,11 @@ function EventReadOnly() {
                             eventData?.contactPoint,
                           ) && (
                             <p className="read-only-event-content-sub-title-primary">
-                              {t('dashboard.events.addEditEvent.otherInformation.contact.title')}
+                              {renderLabelWithWarning(
+                                eventFormRequiredFieldNames?.CONTACT_TITLE,
+                                t('dashboard.events.addEditEvent.otherInformation.contact.title'),
+                                eventData?.contactPoint,
+                              )}
                             </p>
                           )}
                           {!isReadOnlyValueEmpty(eventData?.contactPoint?.name) ? (
@@ -1136,40 +1259,88 @@ function EventReadOnly() {
                               'div-event-contact-missing-message',
                             )
                           )}
-                          {eventData?.contactPoint?.url?.uri && (
+                          {checkIfFieldIsToBeDisplayed(
+                            eventFormRequiredFieldNames?.CONTACT_WEBSITE,
+                            eventData?.contactPoint?.url?.uri,
+                          ) && (
                             <>
                               <p className="read-only-event-content-sub-title-secondary">
-                                {t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.CONTACT_WEBSITE,
+                                  t('dashboard.events.addEditEvent.otherInformation.contact.website'),
+                                  eventData?.contactPoint?.url?.uri,
+                                )}
                               </p>
-                              <p>
-                                <a
-                                  href={urlProtocolCheck(eventData?.contactPoint?.url?.uri)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="url-links">
-                                  {eventData?.contactPoint?.url?.uri}
-                                </a>
-                              </p>
+                              {!isReadOnlyValueEmpty(eventData?.contactPoint?.url?.uri) ? (
+                                <p>
+                                  <a
+                                    href={urlProtocolCheck(eventData?.contactPoint?.url?.uri)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="url-links">
+                                    {eventData?.contactPoint?.url?.uri}
+                                  </a>
+                                </p>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.CONTACT_WEBSITE,
+                                  t('dashboard.events.addEditEvent.otherInformation.contact.website'),
+                                  eventData?.contactPoint?.url?.uri,
+                                  'div-event-contact-website-missing-message',
+                                )
+                              )}
                             </>
                           )}
-                          {eventData?.contactPoint?.telephone && (
+                          {checkIfFieldIsToBeDisplayed(
+                            eventFormRequiredFieldNames?.PHONE_NUMBER,
+                            eventData?.contactPoint?.telephone,
+                          ) && (
                             <>
                               <p className="read-only-event-content-sub-title-secondary">
-                                {t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.PHONE_NUMBER,
+                                  t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber'),
+                                  eventData?.contactPoint?.telephone,
+                                )}
                               </p>
-                              <p>
-                                <p className="url-links">{eventData?.contactPoint?.telephone}</p>
-                              </p>
+                              {!isReadOnlyValueEmpty(eventData?.contactPoint?.telephone) ? (
+                                <p>
+                                  <p className="url-links">{eventData?.contactPoint?.telephone}</p>
+                                </p>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.PHONE_NUMBER,
+                                  t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber'),
+                                  eventData?.contactPoint?.telephone,
+                                  'div-event-contact-phone-missing-message',
+                                )
+                              )}
                             </>
                           )}
-                          {eventData?.contactPoint?.email && (
+                          {checkIfFieldIsToBeDisplayed(
+                            eventFormRequiredFieldNames?.EMAIL,
+                            eventData?.contactPoint?.email,
+                          ) && (
                             <>
                               <p className="read-only-event-content-sub-title-secondary">
-                                {t('dashboard.events.addEditEvent.otherInformation.contact.email')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.EMAIL,
+                                  t('dashboard.events.addEditEvent.otherInformation.contact.email'),
+                                  eventData?.contactPoint?.email,
+                                )}
                               </p>
-                              <p>
-                                <p className="url-links">{eventData?.contactPoint?.email}</p>
-                              </p>
+                              {!isReadOnlyValueEmpty(eventData?.contactPoint?.email) ? (
+                                <p>
+                                  <p className="url-links">{eventData?.contactPoint?.email}</p>
+                                </p>
+                              ) : (
+                                renderMissingValueMessage(
+                                  eventFormRequiredFieldNames?.EMAIL,
+                                  t('dashboard.events.addEditEvent.otherInformation.contact.email'),
+                                  eventData?.contactPoint?.email,
+                                  'div-event-contact-email-missing-message',
+                                )
+                              )}
                             </>
                           )}
                           {checkIfFieldIsToBeDisplayed(
@@ -1178,7 +1349,11 @@ function EventReadOnly() {
                           ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.performer.title')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.PERFORMER,
+                                  t('dashboard.events.addEditEvent.otherInformation.performer.title'),
+                                  eventData?.performer,
+                                )}
                               </p>
 
                               {!isReadOnlyValueEmpty(eventData?.performer)
@@ -1216,7 +1391,11 @@ function EventReadOnly() {
                           ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.COLLABORATOR,
+                                  t('dashboard.events.addEditEvent.otherInformation.supporter.title'),
+                                  eventData?.collaborators,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.collaborators)
                                 ? selectedSupporters?.map((supporter, index) => {
@@ -1250,7 +1429,11 @@ function EventReadOnly() {
                           {checkIfFieldIsToBeDisplayed(eventFormRequiredFieldNames?.EVENT_LINK, eventData?.url) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.EVENT_LINK,
+                                  t('dashboard.events.addEditEvent.otherInformation.eventLink'),
+                                  eventData?.url?.uri,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.url?.uri) ? (
                                 <p>
@@ -1278,7 +1461,11 @@ function EventReadOnly() {
                           ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.VIDEO_URL,
+                                  t('dashboard.events.addEditEvent.otherInformation.videoLink'),
+                                  eventData?.videoUrl?.uri,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.videoUrl?.uri) ? (
                                 <p>
@@ -1319,7 +1506,11 @@ function EventReadOnly() {
                           ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.FACEBOOK_URL,
+                                  t('dashboard.events.addEditEvent.otherInformation.facebookLink'),
+                                  eventData?.facebookUrl,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.facebookUrl) ? (
                                 <div style={{ width: '420px' }}>
@@ -1346,7 +1537,11 @@ function EventReadOnly() {
                           {checkIfFieldIsToBeDisplayed(eventFormRequiredFieldNames?.KEYWORDS, eventData?.keywords) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {t('dashboard.events.addEditEvent.otherInformation.keywords')}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.KEYWORDS,
+                                  t('dashboard.events.addEditEvent.otherInformation.keywords'),
+                                  eventData?.keywords,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.keywords) ? (
                                 <SelectOption
@@ -1376,7 +1571,11 @@ function EventReadOnly() {
                           ) && (
                             <>
                               <p className="read-only-event-content-sub-title-primary">
-                                {taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
+                                {renderLabelWithWarning(
+                                  eventFormRequiredFieldNames?.IN_LANGUAGE,
+                                  taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false),
+                                  eventData?.inLanguage,
+                                )}
                               </p>
                               {!isReadOnlyValueEmpty(eventData?.inLanguage) ? (
                                 <TreeSelectOption
@@ -1438,7 +1637,11 @@ function EventReadOnly() {
                             ) && (
                               <>
                                 <p className="read-only-event-content-sub-title-primary">
-                                  {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
+                                  {renderLabelWithWarning(
+                                    eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY,
+                                    taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false),
+                                    eventData?.accessibility,
+                                  )}
                                 </p>
                                 {!isReadOnlyValueEmpty(eventData?.accessibility) ? (
                                   <TreeSelectOption
@@ -1511,7 +1714,11 @@ function EventReadOnly() {
                                 : '',
                             }}>
                             <p className="read-only-event-content-title">
-                              {t('dashboard.events.addEditEvent.tickets.title')}
+                              {renderLabelWithWarning(
+                                eventFormRequiredFieldNames?.TICKET_INFO,
+                                t('dashboard.events.addEditEvent.tickets.title'),
+                                eventData?.offerConfiguration,
+                              )}
                             </p>
                             {!checkOfferConfigValid(eventData?.offerConfiguration) ? (
                               renderMissingValueMessage(

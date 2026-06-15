@@ -1,3 +1,5 @@
+import { WarningOutlined } from '@ant-design/icons';
+
 const hasEntityId = (value) => {
   if (!value || typeof value !== 'object') return false;
 
@@ -60,6 +62,10 @@ export const shouldShowMandatoryMissingMessage = ({ fieldKey, value, mandatoryFi
   return mandatoryFieldKeys.includes(fieldKey) && isReadOnlyValueEmpty(value);
 };
 
+export const getMissingMandatoryFieldKeys = ({ mandatoryFieldKeys = [], fieldValueMap = {} }) => {
+  return mandatoryFieldKeys.filter((fieldKey) => isReadOnlyValueEmpty(fieldValueMap[fieldKey]));
+};
+
 const getMandatoryFieldKeysByType = ({ type, mandatoryStandardFields, mandatoryDynamicFields }) =>
   type === 'standard' ? mandatoryStandardFields : mandatoryDynamicFields;
 
@@ -97,10 +103,13 @@ export const createReadOnlyFieldRenderers = ({
     }
 
     return (
-      <p className="no-content-text" data-cy={dataCy}>
-        {t('common.readOnly.emptyValue', {
-          fieldName: fieldLabel,
-        })}
+      <p className="no-content-text no-content-text-warning" data-cy={dataCy}>
+        <WarningOutlined aria-hidden="true" />
+        <span>
+          {t('common.readOnly.emptyValue', {
+            fieldName: fieldLabel,
+          })}
+        </span>
       </p>
     );
   };

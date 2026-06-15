@@ -1383,7 +1383,8 @@
     "tabChinese": "Chinese",
     "noneFound": "None Found",
     "readOnly": {
-      "emptyValue": "The {{fieldName}} is missing. Click Edit to add it now."
+      "emptyValue": "The {{fieldName}} is missing.",
+      "missingRequiredBanner": "Some required information is missing. Review the highlighted sections below before publishing."
     },
     "tabFrench": "French",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
