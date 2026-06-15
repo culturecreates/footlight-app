@@ -411,7 +411,7 @@ function PlaceReadOnly() {
               <Row>
                 <Col flex={'750px'}>
                   <Alert
-                    message={t('common.readOnly.missingRequiredBanner')}
+                    message={t('common.readOnly.missingRequiredBannerGeneric')}
                     type="warning"
                     showIcon
                     additionalClassName="alert-warning"

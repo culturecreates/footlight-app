@@ -1382,7 +1382,8 @@
     "noneFound": "Non trouvé",
     "readOnly": {
       "emptyValue": "Le {{fieldName}} est manquant.",
-      "missingRequiredBanner": "Certaines informations requises sont manquantes. Consultez les sections mises en évidence ci-dessous avant de publier."
+      "missingRequiredBanner": "Certaines informations requises sont manquantes. Consultez les sections mises en évidence ci-dessous avant de publier.",
+      "missingRequiredBannerGeneric": "Certaines informations requises sont manquantes. Consultez les sections mises en évidence ci-dessous."
     },
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",
