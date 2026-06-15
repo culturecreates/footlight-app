@@ -17,20 +17,12 @@ Use these instructions as the default system context when generating or editing 
 
 ## Language and File-Type Profile
 
-Based on tracked files in git:
-
-- JavaScript: 243 .js files
-- JSX: 146 .jsx files
-- CSS: 119 .css files
-- SVG assets: 13 files
-- JSON: 9 files
-- YAML workflow/config files: 6 files
+This repository is primarily JavaScript/JSX (React) with CSS styling, plus a small amount of SVG/JSON/YAML configuration.
 
 Guidance:
 
 - Prefer JavaScript/JSX (do not introduce TypeScript unless explicitly requested).
 - Match existing style and patterns in nearby files.
-
 ## Top-Level Structure
 
 - src/: application source code
@@ -108,8 +100,7 @@ Guidance:
 
 ## Environment and Runtime Notes
 
-- Environment files exist for develop/staging/production modes.
-- Expected frontend env vars include:
+- Environment files exist for staging/production modes (.env.staging, .env.production), plus .env.example as a template for local development.
   - VITE_APP_API_URL
   - VITE_APP_DEEPL_URL
   - VITE_APP_HELP_EN_URL
