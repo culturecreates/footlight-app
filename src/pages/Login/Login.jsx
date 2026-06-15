@@ -1,4 +1,4 @@
-import { Checkbox, Form, Button } from 'antd';
+import { Checkbox, Form, Button, notification } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import React, { useEffect } from 'react';
 import './login.css';
@@ -16,6 +16,8 @@ import PasswordInput from '../../components/Input/Password';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
 import Cookies from 'js-cookie';
+
+const SESSION_EXPIRED_STORAGE_KEY = 'authSessionExpiredMessage';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -36,6 +38,47 @@ const Login = () => {
       });
   };
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const languageFromQuery = searchParams.get('lang')?.toLowerCase();
+    const preferredLanguage = Cookies.get('interfaceLanguage')?.toLowerCase();
+    let effectiveLanguage = i18n.language;
+
+    if (languageFromQuery === 'en' || languageFromQuery === 'fr') {
+      effectiveLanguage = languageFromQuery;
+    } else if (preferredLanguage === 'en' || preferredLanguage === 'fr') {
+      effectiveLanguage = preferredLanguage;
+    }
+
+    Cookies.set('interfaceLanguage', effectiveLanguage);
+
+    if (effectiveLanguage !== i18n.language) {
+      i18n.changeLanguage(effectiveLanguage);
+    }
+
+    const translate = i18n.getFixedT(effectiveLanguage);
+
+    const isSessionExpiredFromStorage = sessionStorage.getItem(SESSION_EXPIRED_STORAGE_KEY) === '1';
+    const isSessionExpiredFromQuery = searchParams.get('sessionExpired') === '1';
+    const isSessionExpired = isSessionExpiredFromStorage || isSessionExpiredFromQuery;
+
+    if (isSessionExpired) {
+      sessionStorage.removeItem(SESSION_EXPIRED_STORAGE_KEY);
+      sessionStorage.removeItem('calendarId');
+      dispatch(clearUser());
+
+      notification.info({
+        key: 'session-expired',
+        message: translate('common.server.sessionExpired'),
+        placement: 'top',
+      });
+
+      if (isSessionExpiredFromQuery) {
+        navigate(PathName.Login, { replace: true });
+      }
+
+      return;
+    }
+
     const savedAccessToken = Cookies.get('accessToken');
     const calenderId = sessionStorage.getItem('calendarId');
     if (location?.state?.previousPath === 'logout') {
