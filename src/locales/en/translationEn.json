@@ -1383,7 +1383,7 @@
     "tabChinese": "Chinese",
     "noneFound": "None Found",
     "readOnly": {
-      "emptyValue": "The {{fieldName}} is missing.",
+      "emptyValue": "Information is required.",
       "missingRequiredBanner": "Some required information is missing. See highlighted sections below.",
       "missingRequiredBannerGeneric": "Some required information is missing. See highlighted sections below."
     },
