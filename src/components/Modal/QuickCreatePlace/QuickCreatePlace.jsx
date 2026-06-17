@@ -1494,7 +1494,7 @@ function QuickCreatePlace(props) {
                         setIsPopoverOpen({ ...isPopoverOpen, containsPlace: open });
                       }}
                       overlayClassName="event-popover"
-                      placement="bottom "
+                      placement="bottom"
                       autoAdjustOverflow={false}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
