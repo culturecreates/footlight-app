@@ -1382,6 +1382,11 @@
     "tabKorean": "Korean",
     "tabChinese": "Chinese",
     "noneFound": "None Found",
+    "readOnly": {
+      "emptyValue": "Information is required.",
+      "missingRequiredBanner": "Some required information is missing. See highlighted sections below.",
+      "missingRequiredBannerGeneric": "Some required information is missing. See highlighted sections below."
+    },
     "tabFrench": "French",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
     "keepEditing": "Keep editing",
