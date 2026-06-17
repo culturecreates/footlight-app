@@ -1,4 +1,5 @@
 const baseUrl = import.meta.env.VITE_APP_ARTS_DATA_URI;
+const normalizedBaseUrl = baseUrl?.replace(/\/+$/, '');
 const publicUrl = import.meta.env.VITE_APP_API_URL;
 
 export async function fetchData(url) {
@@ -14,7 +15,7 @@ export async function getArtsDataEntities({ searchKeyword, entityType }) {
     query: searchKeyword,
     type: `schema:${entityType}`,
   });
-  const url = `${baseUrl}/recon?${params.toString()}`;
+  const url = `${normalizedBaseUrl}/recon?${params.toString()}`;
   return fetchData(url);
 }
 
@@ -26,7 +27,7 @@ function buildArtsDataEntityQuery({ entityId, frameQuery, sparqlQuery }) {
     sparql: sparqlQuery,
   });
 
-  return `${baseUrl}/query?${params.toString()}`;
+  return `${normalizedBaseUrl}/query?${params.toString()}`;
 }
 
 export async function loadArtsDataEntity({ entityId }) {
