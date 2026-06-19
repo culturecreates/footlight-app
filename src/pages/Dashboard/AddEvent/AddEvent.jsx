@@ -83,6 +83,11 @@ import QuickCreatePlace from '../../../components/Modal/QuickCreatePlace';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
+import {
+  getExternalSourcesQuery,
+  getImportProviderConfig,
+  importProviderContexts,
+} from '../../../constants/importProviders';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
@@ -90,6 +95,7 @@ import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/K
 import CustomPopover from '../../../components/Popover/Popover';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import EntityPopoverSection from '../../../components/EntityImport/EntityPopoverSection';
 import { getEmbedUrl, validateVideoLink } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import {
@@ -233,6 +239,16 @@ function AddEvent() {
   const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [dynamicFields, setDynamicFields] = useState([]);
 
+  const addEventPlaceImportConfig = getImportProviderConfig(importProviderContexts.ADD_EVENT_PLACE);
+  const addEventRelationshipImportConfig = getImportProviderConfig(
+    importProviderContexts.ADD_EVENT_ORGANIZER_PERFORMER_SUPPORTER,
+  );
+  const addEventPlaceSourcesQuery = getExternalSourcesQuery(importProviderContexts.ADD_EVENT_PLACE);
+  const addEventRelationshipSourcesQuery = getExternalSourcesQuery(
+    importProviderContexts.ADD_EVENT_ORGANIZER_PERFORMER_SUPPORTER,
+  );
+  const showPlaceFootlightImportSection = addEventPlaceImportConfig.showFootlightImportSection;
+  const showRelationshipFootlightImportSection = addEventRelationshipImportConfig.showFootlightImportSection;
   const mergeUniqueFields = (...fieldGroups) => [
     ...new Set(
       fieldGroups
@@ -1659,14 +1675,10 @@ function AddEvent() {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
 
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-
     const promise = getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
+      sources: addEventPlaceSourcesQuery,
       calendarId,
       excludeExistingCMS: true,
     });
@@ -1678,15 +1690,19 @@ function AddEvent() {
       setAllPlacesArtsdataList(
         placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA, currentCalendarData),
       );
-      setAllPlacesImportsFootlightList(
-        placesOptions(
-          response?.footlight,
-          user,
-          calendarContentLanguage,
-          externalSourceOptions.FOOTLIGHT,
-          currentCalendarData,
-        ),
-      );
+      if (showPlaceFootlightImportSection) {
+        setAllPlacesImportsFootlightList(
+          placesOptions(
+            response?.footlight,
+            user,
+            calendarContentLanguage,
+            externalSourceOptions.FOOTLIGHT,
+            currentCalendarData,
+          ),
+        );
+      } else {
+        setAllPlacesImportsFootlightList([]);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -1701,14 +1717,11 @@ function AddEvent() {
     query.append('classes', entitiesClass.organization);
     query.append('classes', entitiesClass.person);
 
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     const promise = getExternalSource(
       {
         searchKey: value,
         classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
+        sources: addEventRelationshipSourcesQuery,
         calendarId,
         excludeExistingCMS: true,
       },
@@ -1729,15 +1742,19 @@ function AddEvent() {
             currentCalendarData,
           ),
         );
-        setOrganizersImportsFootlightList(
-          treeEntitiesOption(
-            response?.footlight,
-            user,
-            calendarContentLanguage,
-            externalSourceOptions.FOOTLIGHT,
-            currentCalendarData,
-          ),
-        );
+        if (showRelationshipFootlightImportSection) {
+          setOrganizersImportsFootlightList(
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
+          );
+        } else {
+          setOrganizersImportsFootlightList([]);
+        }
       } else if (type == 'performers') {
         setPerformerArtsdataList(
           treeEntitiesOption(
@@ -1748,15 +1765,19 @@ function AddEvent() {
             currentCalendarData,
           ),
         );
-        setPerformerImportsFootlightList(
-          treeEntitiesOption(
-            response?.footlight,
-            user,
-            calendarContentLanguage,
-            externalSourceOptions.FOOTLIGHT,
-            currentCalendarData,
-          ),
-        );
+        if (showRelationshipFootlightImportSection) {
+          setPerformerImportsFootlightList(
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
+          );
+        } else {
+          setPerformerImportsFootlightList([]);
+        }
       } else if (type == 'supporters') {
         setSupporterArtsdataList(
           treeEntitiesOption(
@@ -1767,15 +1788,19 @@ function AddEvent() {
             currentCalendarData,
           ),
         );
-        setSupporterImportsFootlightList(
-          treeEntitiesOption(
-            response?.footlight,
-            user,
-            calendarContentLanguage,
-            externalSourceOptions.FOOTLIGHT,
-            currentCalendarData,
-          ),
-        );
+        if (showRelationshipFootlightImportSection) {
+          setSupporterImportsFootlightList(
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
+          );
+        } else {
+          setSupporterImportsFootlightList([]);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -1785,10 +1810,6 @@ function AddEvent() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities(
       {
         searchKey: inputValue,
@@ -1810,10 +1831,6 @@ function AddEvent() {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
     query.append('classes', entitiesClass.person);
-
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId }, true)
       .unwrap()
       .then((response) => {
@@ -4187,129 +4204,66 @@ function AddEvent() {
                     content={
                       <div>
                         <div>
-                          <>
-                            <div className="popover-section-header" data-cy="div-place-footlight-title">
-                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                            </div>
-                            <div className="search-scrollable-content">
-                              {isEntitiesFetching && (
-                                <div
-                                  style={{
-                                    height: '200px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                  }}>
-                                  <LoadingIndicator />
-                                </div>
-                              )}
-                              {!isEntitiesFetching &&
-                                (allPlacesList?.length > 0 ? (
-                                  allPlacesList?.map((place, index) => (
-                                    <div
-                                      key={index}
-                                      className="event-popover-options"
-                                      onClick={() => {
-                                        setLocationPlace(place);
-                                        form.setFieldValue('locationPlace', place?.value);
-                                        if (!showDialog) setShowDialog(true);
-                                        setIsPopoverOpen({
-                                          ...isPopoverOpen,
-                                          locationPlace: false,
-                                        });
-                                      }}
-                                      data-cy={`div-select-place-${index}`}>
-                                      {place?.label}
-                                    </div>
-                                  ))
-                                ) : (
-                                  <NoContent />
-                                ))}
-                            </div>
-                          </>
-                          {quickCreateKeyword !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (allPlacesImportsFootlightList?.length > 0 ? (
-                                    allPlacesImportsFootlightList?.map((place, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options event-popover-options-arts-data"
-                                        onClick={() => {
-                                          setLocationPlace(place);
-                                          form.setFieldValue('locationPlace', place?.value);
-                                          if (!showDialog) setShowDialog(true);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            locationPlace: false,
-                                          });
-                                        }}
-                                        data-cy={`div-select-import-footlight-data-place-${index}`}>
-                                        {place?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                          <EntityPopoverSection
+                            title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            headerDataCy="div-place-footlight-title"
+                            isLoading={isEntitiesFetching}
+                            hasError={false}
+                            items={allPlacesList}
+                            itemDataCy={(index) => `div-select-place-${index}`}
+                            itemClassName="event-popover-options"
+                            onSelect={(place) => {
+                              setLocationPlace(place);
+                              form.setFieldValue('locationPlace', place?.value);
+                              if (!showDialog) setShowDialog(true);
+                              setIsPopoverOpen({
+                                ...isPopoverOpen,
+                                locationPlace: false,
+                              });
+                            }}
+                            renderItem={(place) => place?.label}
+                          />
+                          {showPlaceFootlightImportSection && quickCreateKeyword !== '' && (
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.importsFromFootlight')}
+                              headerDataCy="div-place-artsdata-title"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={allPlacesImportsFootlightList}
+                              itemDataCy={(index) => `div-select-import-footlight-data-place-${index}`}
+                              itemClassName="event-popover-options event-popover-options-arts-data"
+                              onSelect={(place) => {
+                                setLocationPlace(place);
+                                form.setFieldValue('locationPlace', place?.value);
+                                if (!showDialog) setShowDialog(true);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  locationPlace: false,
+                                });
+                              }}
+                              renderItem={(place) => place?.label}
+                            />
                           )}
                           {quickCreateKeyword !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (allPlacesArtsdataList?.length > 0 ? (
-                                    allPlacesArtsdataList?.map((place, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options event-popover-options-arts-data"
-                                        onClick={() => {
-                                          setLocationPlace(place);
-                                          form.setFieldValue('locationPlace', place?.uri);
-                                          if (!showDialog) setShowDialog(true);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            locationPlace: false,
-                                          });
-                                        }}
-                                        data-cy={`div-select-arts-data-place-${index}`}>
-                                        {place?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              headerDataCy="div-place-artsdata-title"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={allPlacesArtsdataList}
+                              itemDataCy={(index) => `div-select-arts-data-place-${index}`}
+                              itemClassName="event-popover-options event-popover-options-arts-data"
+                              onSelect={(place) => {
+                                setLocationPlace(place);
+                                form.setFieldValue('locationPlace', place?.uri);
+                                if (!showDialog) setShowDialog(true);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  locationPlace: false,
+                                });
+                              }}
+                              renderItem={(place) => place?.label}
+                            />
                           )}
                         </div>
                         <FeatureFlag isFeatureEnabled={featureFlags.quickCreatePersonPlace}>
@@ -4571,130 +4525,63 @@ function AddEvent() {
                       content={
                         <div>
                           <div>
-                            <>
-                              <div className="popover-section-header" data-cy="div-organizers-footlight-entity-heading">
-                                {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isEntitiesFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isEntitiesFetching &&
-                                  (organizersList?.length > 0 ? (
-                                    organizersList?.map((organizer, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            organizer: false,
-                                          });
-                                          if (!showDialog) setShowDialog(true);
-                                        }}
-                                        data-cy={`div-select-organizer-${index}`}>
-                                        {organizer?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
-                            {quickCreateKeyword !== '' && (
-                              <>
-                                <div
-                                  className="popover-section-header"
-                                  data-cy="div-organizers-artsdata-entity-heading">
-                                  {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                                </div>
-                                <div className="search-scrollable-content">
-                                  {isExternalSourceFetching && (
-                                    <div
-                                      style={{
-                                        height: '200px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                      }}>
-                                      <LoadingIndicator />
-                                    </div>
-                                  )}
-                                  {!isExternalSourceFetching &&
-                                    (organizersImportsFootlightList?.length > 0 ? (
-                                      organizersImportsFootlightList?.map((organizer, index) => (
-                                        <div
-                                          key={index}
-                                          className="event-popover-options"
-                                          onClick={() => {
-                                            setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                            setIsPopoverOpen({
-                                              ...isPopoverOpen,
-                                              organizer: false,
-                                            });
-                                            if (!showDialog) setShowDialog(true);
-                                          }}
-                                          data-cy={`div-select-import-footlight-organizer-${index}`}>
-                                          {organizer?.label}
-                                        </div>
-                                      ))
-                                    ) : (
-                                      <NoContent />
-                                    ))}
-                                </div>
-                              </>
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                              headerDataCy="div-organizers-footlight-entity-heading"
+                              isLoading={isEntitiesFetching}
+                              hasError={false}
+                              items={organizersList}
+                              itemDataCy={(index) => `div-select-organizer-${index}`}
+                              itemClassName="event-popover-options"
+                              onSelect={(organizer) => {
+                                setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  organizer: false,
+                                });
+                                if (!showDialog) setShowDialog(true);
+                              }}
+                              renderItem={(organizer) => organizer?.label}
+                            />
+                            {showRelationshipFootlightImportSection && quickCreateKeyword !== '' && (
+                              <EntityPopoverSection
+                                title={t('dashboard.organization.createNew.search.importsFromFootlight')}
+                                headerDataCy="div-organizers-artsdata-entity-heading"
+                                isLoading={isExternalSourceFetching}
+                                hasError={false}
+                                items={organizersImportsFootlightList}
+                                itemDataCy={(index) => `div-select-import-footlight-organizer-${index}`}
+                                itemClassName="event-popover-options"
+                                onSelect={(organizer) => {
+                                  setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    organizer: false,
+                                  });
+                                  if (!showDialog) setShowDialog(true);
+                                }}
+                                renderItem={(organizer) => organizer?.label}
+                              />
                             )}
                             {quickCreateKeyword !== '' && (
-                              <>
-                                <div
-                                  className="popover-section-header"
-                                  data-cy="div-organizers-artsdata-entity-heading">
-                                  {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                                </div>
-                                <div className="search-scrollable-content">
-                                  {isExternalSourceFetching && (
-                                    <div
-                                      style={{
-                                        height: '200px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                      }}>
-                                      <LoadingIndicator />
-                                    </div>
-                                  )}
-                                  {!isExternalSourceFetching &&
-                                    (organizersArtsdataList?.length > 0 ? (
-                                      organizersArtsdataList?.map((organizer, index) => (
-                                        <div
-                                          key={index}
-                                          className="event-popover-options"
-                                          onClick={() => {
-                                            setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                            setIsPopoverOpen({
-                                              ...isPopoverOpen,
-                                              organizer: false,
-                                            });
-                                            if (!showDialog) setShowDialog(true);
-                                          }}
-                                          data-cy={`div-select-artsdata-organizer-${index}`}>
-                                          {organizer?.label}
-                                        </div>
-                                      ))
-                                    ) : (
-                                      <NoContent />
-                                    ))}
-                                </div>
-                              </>
+                              <EntityPopoverSection
+                                title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                                headerDataCy="div-organizers-artsdata-entity-heading"
+                                isLoading={isExternalSourceFetching}
+                                hasError={false}
+                                items={organizersArtsdataList}
+                                itemDataCy={(index) => `div-select-artsdata-organizer-${index}`}
+                                itemClassName="event-popover-options"
+                                onSelect={(organizer) => {
+                                  setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    organizer: false,
+                                  });
+                                  if (!showDialog) setShowDialog(true);
+                                }}
+                                renderItem={(organizer) => organizer?.label}
+                              />
                             )}
                           </div>
                           <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
@@ -5102,126 +4989,63 @@ function AddEvent() {
                       data-cy="popover-performer"
                       content={
                         <div>
-                          <>
-                            <div className="popover-section-header" data-cy="performer-footlight-entity-heading">
-                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                            </div>
-                            <div className="search-scrollable-content">
-                              {isEntitiesFetching && (
-                                <div
-                                  style={{
-                                    height: '200px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                  }}>
-                                  <LoadingIndicator />
-                                </div>
-                              )}
-                              {!isEntitiesFetching &&
-                                (performerList?.length > 0 ? (
-                                  performerList?.map((performer, index) => (
-                                    <div
-                                      key={index}
-                                      className="event-popover-options"
-                                      onClick={() => {
-                                        setSelectedPerformers([...selectedPerformers, performer]);
-                                        setIsPopoverOpen({
-                                          ...isPopoverOpen,
-                                          performer: false,
-                                        });
-                                        if (!showDialog) setShowDialog(true);
-                                      }}
-                                      data-cy={`div-select-performer-${index}`}>
-                                      {performer?.label}
-                                    </div>
-                                  ))
-                                ) : (
-                                  <NoContent />
-                                ))}
-                            </div>
-                          </>
-                          {quickCreateKeyword !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="performer-artsdata-entity-heading">
-                                {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (performerImportsFootlightList?.length > 0 ? (
-                                    performerImportsFootlightList?.map((performer, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setSelectedPerformers([...selectedPerformers, performer]);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            performer: false,
-                                          });
-                                          if (!showDialog) setShowDialog(true);
-                                        }}
-                                        data-cy={`div-select-import-footlight-performer-${index}`}>
-                                        {performer?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                          <EntityPopoverSection
+                            title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            headerDataCy="performer-footlight-entity-heading"
+                            isLoading={isEntitiesFetching}
+                            hasError={false}
+                            items={performerList}
+                            itemDataCy={(index) => `div-select-performer-${index}`}
+                            itemClassName="event-popover-options"
+                            onSelect={(performer) => {
+                              setSelectedPerformers([...selectedPerformers, performer]);
+                              setIsPopoverOpen({
+                                ...isPopoverOpen,
+                                performer: false,
+                              });
+                              if (!showDialog) setShowDialog(true);
+                            }}
+                            renderItem={(performer) => performer?.label}
+                          />
+                          {showRelationshipFootlightImportSection && quickCreateKeyword !== '' && (
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.importsFromFootlight')}
+                              headerDataCy="performer-artsdata-entity-heading"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={performerImportsFootlightList}
+                              itemDataCy={(index) => `div-select-import-footlight-performer-${index}`}
+                              itemClassName="event-popover-options"
+                              onSelect={(performer) => {
+                                setSelectedPerformers([...selectedPerformers, performer]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  performer: false,
+                                });
+                                if (!showDialog) setShowDialog(true);
+                              }}
+                              renderItem={(performer) => performer?.label}
+                            />
                           )}
                           {quickCreateKeyword !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="performer-artsdata-entity-heading">
-                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (performerArtsdataList?.length > 0 ? (
-                                    performerArtsdataList?.map((performer, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setSelectedPerformers([...selectedPerformers, performer]);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            performer: false,
-                                          });
-                                          if (!showDialog) setShowDialog(true);
-                                        }}
-                                        data-cy={`div-select-artsdata-performer-${index}`}>
-                                        {performer?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              headerDataCy="performer-artsdata-entity-heading"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={performerArtsdataList}
+                              itemDataCy={(index) => `div-select-artsdata-performer-${index}`}
+                              itemClassName="event-popover-options"
+                              onSelect={(performer) => {
+                                setSelectedPerformers([...selectedPerformers, performer]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  performer: false,
+                                });
+                                if (!showDialog) setShowDialog(true);
+                              }}
+                              renderItem={(performer) => performer?.label}
+                            />
                           )}
 
                           <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
@@ -5349,126 +5173,63 @@ function AddEvent() {
                       content={
                         <div>
                           <div>
-                            <>
-                              <div className="popover-section-header" data-cy="supporter-footlight-entity-heading">
-                                {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isEntitiesFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isEntitiesFetching &&
-                                  (supporterList?.length > 0 ? (
-                                    supporterList?.map((supporter, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setSelectedSupporters([...selectedSupporters, supporter]);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            supporter: false,
-                                          });
-                                          if (!showDialog) setShowDialog(true);
-                                        }}
-                                        data-cy={`div-select-supporter-${index}`}>
-                                        {supporter?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
-                            {quickCreateKeyword !== '' && (
-                              <>
-                                <div className="popover-section-header" data-cy="supporter-artsdata-entity-heading">
-                                  {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                                </div>
-                                <div className="search-scrollable-content">
-                                  {isExternalSourceFetching && (
-                                    <div
-                                      style={{
-                                        height: '200px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                      }}>
-                                      <LoadingIndicator />
-                                    </div>
-                                  )}
-                                  {!isExternalSourceFetching &&
-                                    (supporterImportsFootlightList?.length > 0 ? (
-                                      supporterImportsFootlightList?.map((supporter, index) => (
-                                        <div
-                                          key={index}
-                                          className="event-popover-options"
-                                          onClick={() => {
-                                            setSelectedSupporters([...selectedSupporters, supporter]);
-                                            setIsPopoverOpen({
-                                              ...isPopoverOpen,
-                                              supporter: false,
-                                            });
-                                            if (!showDialog) setShowDialog(true);
-                                          }}
-                                          data-cy={`div-select-import-footlight-supporter-${index}`}>
-                                          {supporter?.label}
-                                        </div>
-                                      ))
-                                    ) : (
-                                      <NoContent />
-                                    ))}
-                                </div>
-                              </>
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                              headerDataCy="supporter-footlight-entity-heading"
+                              isLoading={isEntitiesFetching}
+                              hasError={false}
+                              items={supporterList}
+                              itemDataCy={(index) => `div-select-supporter-${index}`}
+                              itemClassName="event-popover-options"
+                              onSelect={(supporter) => {
+                                setSelectedSupporters([...selectedSupporters, supporter]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  supporter: false,
+                                });
+                                if (!showDialog) setShowDialog(true);
+                              }}
+                              renderItem={(supporter) => supporter?.label}
+                            />
+                            {showRelationshipFootlightImportSection && quickCreateKeyword !== '' && (
+                              <EntityPopoverSection
+                                title={t('dashboard.organization.createNew.search.importsFromFootlight')}
+                                headerDataCy="supporter-artsdata-entity-heading"
+                                isLoading={isExternalSourceFetching}
+                                hasError={false}
+                                items={supporterImportsFootlightList}
+                                itemDataCy={(index) => `div-select-import-footlight-supporter-${index}`}
+                                itemClassName="event-popover-options"
+                                onSelect={(supporter) => {
+                                  setSelectedSupporters([...selectedSupporters, supporter]);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    supporter: false,
+                                  });
+                                  if (!showDialog) setShowDialog(true);
+                                }}
+                                renderItem={(supporter) => supporter?.label}
+                              />
                             )}
                             {quickCreateKeyword !== '' && (
-                              <>
-                                <div className="popover-section-header" data-cy="supporter-artsdata-entity-heading">
-                                  {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                                </div>
-                                <div className="search-scrollable-content">
-                                  {isExternalSourceFetching && (
-                                    <div
-                                      style={{
-                                        height: '200px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                      }}>
-                                      <LoadingIndicator />
-                                    </div>
-                                  )}
-                                  {!isExternalSourceFetching &&
-                                    (supporterArtsdataList?.length > 0 ? (
-                                      supporterArtsdataList?.map((supporter, index) => (
-                                        <div
-                                          key={index}
-                                          className="event-popover-options"
-                                          onClick={() => {
-                                            setSelectedSupporters([...selectedSupporters, supporter]);
-                                            setIsPopoverOpen({
-                                              ...isPopoverOpen,
-                                              supporter: false,
-                                            });
-                                            if (!showDialog) setShowDialog(true);
-                                          }}
-                                          data-cy={`div-select-artsdata-supporter-${index}`}>
-                                          {supporter?.label}
-                                        </div>
-                                      ))
-                                    ) : (
-                                      <NoContent />
-                                    ))}
-                                </div>
-                              </>
+                              <EntityPopoverSection
+                                title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                                headerDataCy="supporter-artsdata-entity-heading"
+                                isLoading={isExternalSourceFetching}
+                                hasError={false}
+                                items={supporterArtsdataList}
+                                itemDataCy={(index) => `div-select-artsdata-supporter-${index}`}
+                                itemClassName="event-popover-options"
+                                onSelect={(supporter) => {
+                                  setSelectedSupporters([...selectedSupporters, supporter]);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    supporter: false,
+                                  });
+                                  if (!showDialog) setShowDialog(true);
+                                }}
+                                renderItem={(supporter) => supporter?.label}
+                              />
                             )}
                           </div>
                           <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>

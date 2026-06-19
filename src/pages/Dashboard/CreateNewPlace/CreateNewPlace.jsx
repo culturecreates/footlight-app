@@ -74,6 +74,11 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import {
+  getExternalSourcesQuery,
+  getImportProviderConfig,
+  importProviderContexts,
+} from '../../../constants/importProviders';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import moment from 'moment';
@@ -98,6 +103,7 @@ import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTre
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 import i18next from 'i18next';
 import { setInitialValueForStandardTaxonomyFieldsForPlaceForm } from '../../../utils/setFieldvalueForTaxonomies';
+import EntityPopoverSection from '../../../components/EntityImport/EntityPopoverSection';
 
 const { TextArea } = Input;
 
@@ -285,6 +291,10 @@ function CreateNewPlace() {
   });
   const [geocoder, setGeocoder] = useState(null);
   const [dynamicFields, setDynamicFields] = useState([]);
+
+  const placeRelationsImportConfig = getImportProviderConfig(importProviderContexts.CREATE_PLACE_RELATIONS);
+  const externalSourcesQuery = getExternalSourcesQuery(importProviderContexts.CREATE_PLACE_RELATIONS);
+  const showFootlightImportSection = placeRelationsImportConfig.showFootlightImportSection;
 
   const placesAutocomplete = usePlacesAutocomplete({
     includedRegionCodes: ['CA', 'JP'],
@@ -860,9 +870,6 @@ function CreateNewPlace() {
   const placesSearch = (inputValue = '', field) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities(
       {
         searchKey: inputValue,
@@ -887,7 +894,7 @@ function CreateNewPlace() {
         {
           searchKey: inputValue,
           classes: decodeURIComponent(query.toString()),
-          sources: decodeURIComponent(sourceQuery.toString()),
+          sources: externalSourcesQuery,
           calendarId,
           excludeExistingCMS: true,
         },
@@ -900,10 +907,22 @@ function CreateNewPlace() {
             [field]: placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
           }));
 
-          setAllPlacesImportsFootlight((prev) => ({
-            ...prev,
-            [field]: placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-          }));
+          if (showFootlightImportSection) {
+            setAllPlacesImportsFootlight((prev) => ({
+              ...prev,
+              [field]: placesOptions(
+                response?.footlight,
+                user,
+                calendarContentLanguage,
+                externalSourceOptions.FOOTLIGHT,
+              ),
+            }));
+          } else {
+            setAllPlacesImportsFootlight((prev) => ({
+              ...prev,
+              [field]: [],
+            }));
+          }
         })
         .catch((error) => console.log(error));
     }
@@ -2504,123 +2523,60 @@ function CreateNewPlace() {
                     content={
                       <div>
                         <div>
-                          <>
-                            <div className="popover-section-header" data-cy="div-place-footlight-title">
-                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                            </div>
-                            <div className="search-scrollable-content">
-                              {isEntitiesFetching && (
-                                <div
-                                  style={{
-                                    height: '200px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                  }}>
-                                  <LoadingIndicator />
-                                </div>
-                              )}
-                              {!isEntitiesFetching &&
-                                (allPlacesList?.containsPlace?.length > 0 ? (
-                                  allPlacesList?.containsPlace?.map((place, index) => (
-                                    <div
-                                      key={index}
-                                      className={`event-popover-options`}
-                                      onClick={() => {
-                                        setSelectedContainsPlaces([...selectedContainsPlaces, place]);
-                                        setIsPopoverOpen({
-                                          ...isPopoverOpen,
-                                          containsPlace: false,
-                                        });
-                                      }}
-                                      data-cy="div-place-footlight">
-                                      {place?.label}
-                                    </div>
-                                  ))
-                                ) : (
-                                  <NoContent />
-                                ))}
-                            </div>
-                          </>
-                          {quickCreateKeyword.containsPlace !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (allPlacesImportsFootlight?.containsPlace?.length > 0 ? (
-                                    allPlacesImportsFootlight?.containsPlace?.map((place, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setSelectedContainsPlaces([...selectedContainsPlaces, place]);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            containsPlace: false,
-                                          });
-                                        }}
-                                        data-cy="div-place-footlight-import">
-                                        {place?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                          <EntityPopoverSection
+                            title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            headerDataCy="div-place-footlight-title"
+                            isLoading={isEntitiesFetching}
+                            hasError={false}
+                            items={allPlacesList?.containsPlace}
+                            itemDataCy={() => 'div-place-footlight'}
+                            itemClassName="event-popover-options"
+                            onSelect={(place) => {
+                              setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                              setIsPopoverOpen({
+                                ...isPopoverOpen,
+                                containsPlace: false,
+                              });
+                            }}
+                            renderItem={(place) => place?.label}
+                          />
+                          {showFootlightImportSection && quickCreateKeyword.containsPlace !== '' && (
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.importsFromFootlight')}
+                              headerDataCy="div-place-artsdata-title"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={allPlacesImportsFootlight?.containsPlace}
+                              itemDataCy={() => 'div-place-footlight-import'}
+                              itemClassName="event-popover-options"
+                              onSelect={(place) => {
+                                setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  containsPlace: false,
+                                });
+                              }}
+                              renderItem={(place) => place?.label}
+                            />
                           )}
                           {quickCreateKeyword.containsPlace !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (allPlacesArtsdataList?.containsPlace?.length > 0 ? (
-                                    allPlacesArtsdataList?.containsPlace?.map((place, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setSelectedContainsPlaces([...selectedContainsPlaces, place]);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            containsPlace: false,
-                                          });
-                                        }}
-                                        data-cy="div-place-artsdata">
-                                        {place?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              headerDataCy="div-place-artsdata-title"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={allPlacesArtsdataList?.containsPlace}
+                              itemDataCy={() => 'div-place-artsdata'}
+                              itemClassName="event-popover-options"
+                              onSelect={(place) => {
+                                setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  containsPlace: false,
+                                });
+                              }}
+                              renderItem={(place) => place?.label}
+                            />
                           )}
                         </div>
                       </div>
@@ -2709,128 +2665,67 @@ function CreateNewPlace() {
                     content={
                       <div>
                         <div>
-                          <>
-                            <div className="popover-section-header" data-cy="div-contained-in-place-footlight-title">
-                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                            </div>
-                            <div className="search-scrollable-content">
-                              {isEntitiesFetching && (
-                                <div
-                                  style={{
-                                    height: '200px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                  }}>
-                                  <LoadingIndicator />
-                                </div>
-                              )}
-                              {!isEntitiesFetching &&
-                                (allPlacesList?.containedInPlace?.length > 0 ? (
-                                  allPlacesList?.containedInPlace?.map((place, index) => (
-                                    <div
-                                      data-cy={`div-contained-in-place-footlight-${index}`}
-                                      key={index}
-                                      className={`event-popover-options ${
-                                        containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
-                                      }`}
-                                      onClick={() => {
-                                        setContainedInPlace(place);
-                                        form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
-                                        setIsPopoverOpen({
-                                          ...isPopoverOpen,
-                                          containedInPlace: false,
-                                        });
-                                      }}>
-                                      {place?.label}
-                                    </div>
-                                  ))
-                                ) : (
-                                  <NoContent />
-                                ))}
-                            </div>
-                          </>
-                          {quickCreateKeyword.containedInPlace !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (allPlacesImportsFootlight?.containedInPlace?.length > 0 ? (
-                                    allPlacesImportsFootlight?.containedInPlace?.map((place, index) => (
-                                      <div
-                                        data-cy={`div-contained-in-place-artsdata-${index}`}
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setContainedInPlace(place);
-                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            containedInPlace: false,
-                                          });
-                                        }}>
-                                        {place?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                          <EntityPopoverSection
+                            title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            headerDataCy="div-contained-in-place-footlight-title"
+                            isLoading={isEntitiesFetching}
+                            hasError={false}
+                            items={allPlacesList?.containedInPlace}
+                            itemDataCy={(index) => `div-contained-in-place-footlight-${index}`}
+                            itemClassName={(place) =>
+                              `event-popover-options ${
+                                containedInPlace?.value == place?.value ? 'event-popover-options-active' : ''
+                              }`
+                            }
+                            onSelect={(place) => {
+                              setContainedInPlace(place);
+                              form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
+                              setIsPopoverOpen({
+                                ...isPopoverOpen,
+                                containedInPlace: false,
+                              });
+                            }}
+                            renderItem={(place) => place?.label}
+                          />
+                          {showFootlightImportSection && quickCreateKeyword.containedInPlace !== '' && (
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.importsFromFootlight')}
+                              headerDataCy="div-contained-in-place-artsdata-title"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={allPlacesImportsFootlight?.containedInPlace}
+                              itemDataCy={(index) => `div-contained-in-place-artsdata-${index}`}
+                              itemClassName="event-popover-options"
+                              onSelect={(place) => {
+                                setContainedInPlace(place);
+                                form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  containedInPlace: false,
+                                });
+                              }}
+                              renderItem={(place) => place?.label}
+                            />
                           )}
                           {quickCreateKeyword.containedInPlace !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (allPlacesArtsdataList?.containedInPlace?.length > 0 ? (
-                                    allPlacesArtsdataList?.containedInPlace?.map((place, index) => (
-                                      <div
-                                        data-cy={`div-contained-in-place-artsdata-${index}`}
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setContainedInPlace(place);
-                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            containedInPlace: false,
-                                          });
-                                        }}>
-                                        {place?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
+                            <EntityPopoverSection
+                              title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              headerDataCy="div-contained-in-place-artsdata-title"
+                              isLoading={isExternalSourceFetching}
+                              hasError={false}
+                              items={allPlacesArtsdataList?.containedInPlace}
+                              itemDataCy={(index) => `div-contained-in-place-artsdata-${index}`}
+                              itemClassName="event-popover-options"
+                              onSelect={(place) => {
+                                setContainedInPlace(place);
+                                form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  containedInPlace: false,
+                                });
+                              }}
+                              renderItem={(place) => place?.label}
+                            />
                           )}
                         </div>
                       </div>

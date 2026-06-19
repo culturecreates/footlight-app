@@ -58,6 +58,11 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import {
+  getExternalSourcesQuery,
+  getImportProviderConfig,
+  importProviderContexts,
+} from '../../../constants/importProviders';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import SelectionItem from '../../../components/List/SelectionItem';
 import moment from 'moment';
@@ -161,6 +166,10 @@ function CreateNewOrganization() {
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [showDialog, setShowDialog] = useState(false);
   const [dynamicFields, setDynamicFields] = useState([]);
+
+  const organizationPlaceImportConfig = getImportProviderConfig(importProviderContexts.CREATE_ORGANIZATION_PLACE);
+  const externalSourcesQuery = getExternalSourcesQuery(importProviderContexts.CREATE_ORGANIZATION_PLACE);
+  const showFootlightImportSection = organizationPlaceImportConfig.showFootlightImportSection;
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
@@ -743,9 +752,6 @@ function CreateNewOrganization() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
@@ -760,7 +766,7 @@ function CreateNewOrganization() {
       getExternalSource({
         searchKey: inputValue,
         classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
+        sources: externalSourcesQuery,
         calendarId,
         excludeExistingCMS: true,
       })
@@ -769,9 +775,13 @@ function CreateNewOrganization() {
           setAllPlacesArtsdataList(
             placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
           );
-          setAllPlacesImportsFootlight(
-            placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-          );
+          if (showFootlightImportSection) {
+            setAllPlacesImportsFootlight(
+              placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            );
+          } else {
+            setAllPlacesImportsFootlight([]);
+          }
         })
         .catch((error) => console.log(error));
     }
@@ -1404,6 +1414,7 @@ function CreateNewOrganization() {
                               allPlacesList,
                               allPlacesArtsdataList,
                               allPlacesImportsFootlight,
+                              showFootlightImportSection,
                               locationPlace,
                               setLocationPlace,
                               setIsPopoverOpen,
