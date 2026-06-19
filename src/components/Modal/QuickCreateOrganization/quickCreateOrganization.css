@@ -36,6 +36,7 @@
 }
 .quick-create-organization-modal-wrapper .event-popover .ant-popover-inner-content {
   padding: 0px;
+  width: 100%;
 }
 .quick-create-organization-modal-wrapper .ant-popover-inner-content .search-scrollable-content {
   max-height: 350px;

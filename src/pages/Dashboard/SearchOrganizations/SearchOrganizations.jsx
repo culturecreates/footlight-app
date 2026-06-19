@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import EntityCard from '../../../components/Card/Common/EntityCard';
-import NoContent from '../../../components/NoContent/NoContent';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { entitiesClass } from '../../../constants/entitiesClass';
@@ -21,7 +20,12 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
-import { externalSourceOptions } from '../../../constants/sourceOptions';
+import EntityPopoverSection from '../../../components/EntityImport/EntityPopoverSection';
+import {
+  getExternalSourcesQuery,
+  getImportProviderConfig,
+  importProviderContexts,
+} from '../../../constants/importProviders';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 import { CustomModal } from '../../../components/Modal/HookModal/Modal';
 
@@ -76,9 +80,9 @@ function SearchOrganizations() {
     sessionId: timestampRef,
   });
 
-  let sourceQuery = new URLSearchParams();
-  sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-  sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
+  const importProviderConfig = getImportProviderConfig(importProviderContexts.SEARCH_ORGANIZATIONS);
+  const sourceQuery = getExternalSourcesQuery(importProviderContexts.SEARCH_ORGANIZATIONS);
+  const showFootlightImportSection = importProviderConfig.showFootlightImportSection;
 
   // effects
 
@@ -129,7 +133,7 @@ function SearchOrganizations() {
     const promise = getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
+      sources: sourceQuery,
       calendarId,
       excludeExistingCMS: false,
     });
@@ -173,6 +177,47 @@ function SearchOrganizations() {
     getExternalSource,
   ]);
 
+  const localSearchErrorNode = (
+    <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
+      {t('dashboard.events.createNew.search.footlightTemporarilyUnavailable', {
+        defaultValue: 'Footlight search is temporarily unavailable',
+      })}
+    </div>
+  );
+
+  const externalSearchErrorNode = (
+    <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div style={{ color: '#ff4d4f' }}>{t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}</div>
+      {organizationList?.length > 0 && (
+        <div style={{ fontSize: '12px', marginTop: '4px' }}>
+          {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderOrganizationCard = ({ organizer, description, onClick, index }) => (
+    <EntityCard
+      title={contentLanguageBilingual({
+        data: organizer?.name,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
+      })}
+      description={description}
+      artsDataLink={createArtsDataLink(organizer?.uri)}
+      isTransparent={organizer?.logo?.isTransparent ?? false}
+      Logo={
+        organizer.logo ? <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} /> : <Logo />
+      }
+      linkText={
+        isArtsdataUri(organizer?.uri)
+          ? t('dashboard.events.createNew.search.linkText')
+          : t('dashboard.events.createNew.search.datafeed')
+      }
+      onClick={onClick}
+    />
+  );
+
   return !initialOrganizersLoading || isInitialOrganizersError ? (
     <NewEntityLayout
       heading={t('dashboard.organization.createNew.search.title')}
@@ -194,202 +239,93 @@ function SearchOrganizations() {
           trigger={['click']}
           content={
             <div>
-              <div className="popover-section-header" data-cy="footlight-entity-title">
-                {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-              </div>
-              <div className="search-scrollable-content">
-                {isEntitiesFetching && (
-                  <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <LoadingIndicator />
-                  </div>
-                )}
-                {!isEntitiesFetching &&
-                  (entitiesError ? (
-                    <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
-                      {t('dashboard.events.createNew.search.footlightTemporarilyUnavailable', {
-                        defaultValue: 'Footlight search is temporarily unavailable',
-                      })}
-                    </div>
-                  ) : organizationList?.length > 0 ? (
-                    organizationList?.map((organizer, index) => (
-                      <div
-                        key={index}
-                        className="search-popover-options"
-                        onClick={() => {
-                          setIsPopoverOpen(false);
-                        }}
-                        data-cy={`div-organization-footlight-${index}`}>
-                        <EntityCard
-                          title={contentLanguageBilingual({
-                            data: organizer?.name,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          description={contentLanguageBilingual({
-                            data: organizer?.disambiguatingDescription,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          artsDataLink={createArtsDataLink(organizer?.uri)}
-                          isTransparent={organizer?.logo?.isTransparent ?? false}
-                          Logo={
-                            organizer.logo ? (
-                              <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />
-                            ) : (
-                              <Logo />
-                            )
-                          }
-                          linkText={
-                            isArtsdataUri(organizer?.uri)
-                              ? t('dashboard.events.createNew.search.linkText')
-                              : t('dashboard.events.createNew.search.datafeed')
-                          }
-                          onClick={() => {
-                            if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
-                              navigate(
-                                `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
-                              );
-                            } else
-                              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizer?.id}`);
-                          }}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <NoContent />
-                  ))}
-              </div>
+              <EntityPopoverSection
+                title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                headerDataCy="footlight-entity-title"
+                isLoading={isEntitiesFetching}
+                hasError={entitiesError}
+                errorNode={localSearchErrorNode}
+                items={organizationList}
+                itemDataCy={(index) => `div-organization-footlight-${index}`}
+                onSelect={() => {
+                  setIsPopoverOpen(false);
+                }}
+                renderItem={(organizer, index) =>
+                  renderOrganizationCard({
+                    organizer,
+                    description: contentLanguageBilingual({
+                      data: organizer?.disambiguatingDescription,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    }),
+                    onClick: () => {
+                      if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
+                        navigate(
+                          `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
+                        );
+                      } else {
+                        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizer?.id}`);
+                      }
+                    },
+                    index,
+                  })
+                }
+              />
 
-              {quickCreateKeyword !== '' && (
-                <>
-                  <div className="popover-section-header" data-cy="organization-artsdata-heading">
-                    {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                  </div>
-                  <div className="search-scrollable-content">
-                    {isExternalSourceFetching && (
-                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <LoadingIndicator />
-                      </div>
-                    )}
-                    {!isExternalSourceFetching &&
-                      (externalSourceError ? (
-                        <div style={{ padding: '20px', textAlign: 'center' }}>
-                          <div style={{ color: '#ff4d4f' }}>
-                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
-                          </div>
-                          {organizationList?.length > 0 && (
-                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
-                            </div>
-                          )}
-                        </div>
-                      ) : organizationListExternalSource?.footlight?.length > 0 ? (
-                        organizationListExternalSource?.footlight?.map((organizer, index) => (
-                          <div
-                            key={index}
-                            className="search-popover-options"
-                            onClick={() => {
-                              setIsPopoverOpen(false);
-                            }}
-                            data-cy={`div-organization-footlight-${index}`}>
-                            <EntityCard
-                              title={contentLanguageBilingual({
-                                data: organizer?.name,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              })}
-                              description={contentLanguageBilingual({
-                                data: organizer?.disambiguatingDescription,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              })}
-                              isTransparent={organizer?.logo?.isTransparent ?? false}
-                              artsDataLink={createArtsDataLink(organizer?.uri)}
-                              Logo={
-                                organizer.logo ? (
-                                  <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />
-                                ) : (
-                                  <Logo />
-                                )
-                              }
-                              linkText={
-                                isArtsdataUri(organizer?.uri)
-                                  ? t('dashboard.events.createNew.search.linkText')
-                                  : t('dashboard.events.createNew.search.datafeed')
-                              }
-                              onClick={() => {
-                                const fn = () => {
-                                  navigate(
-                                    `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?entityId=${organizer?.id}`,
-                                    { state: { data: { footlightId: organizer?.footlightId } } },
-                                  );
-                                };
-                                confirmPopupHandler(fn, organizer);
-                              }}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
-                      ))}
-                  </div>
-                </>
+              {showFootlightImportSection && quickCreateKeyword !== '' && (
+                <EntityPopoverSection
+                  title={t('dashboard.organization.createNew.search.importsFromFootlight')}
+                  headerDataCy="organization-artsdata-heading"
+                  isLoading={isExternalSourceFetching}
+                  hasError={externalSourceError}
+                  errorNode={externalSearchErrorNode}
+                  items={organizationListExternalSource?.footlight}
+                  itemDataCy={(index) => `div-organization-footlight-${index}`}
+                  onSelect={() => {
+                    setIsPopoverOpen(false);
+                  }}
+                  renderItem={(organizer, index) =>
+                    renderOrganizationCard({
+                      organizer,
+                      description: contentLanguageBilingual({
+                        data: organizer?.disambiguatingDescription,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      }),
+                      onClick: () => {
+                        const fn = () => {
+                          navigate(
+                            `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?entityId=${organizer?.id}`,
+                            { state: { data: { footlightId: organizer?.footlightId } } },
+                          );
+                        };
+                        confirmPopupHandler(fn, organizer);
+                      },
+                      index,
+                    })
+                  }
+                />
               )}
               {quickCreateKeyword !== '' && (
-                <>
-                  <div className="popover-section-header" data-cy="organization-artsdata-heading">
-                    {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                  </div>
-                  <div className="search-scrollable-content">
-                    {isExternalSourceFetching && (
-                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <LoadingIndicator />
-                      </div>
-                    )}
-                    {!isExternalSourceFetching &&
-                      (externalSourceError ? (
-                        <div style={{ padding: '20px', textAlign: 'center' }}>
-                          <div style={{ color: '#ff4d4f' }}>
-                            {t('dashboard.events.createNew.search.artsdataTemporarilyUnavailable')}
-                          </div>
-                          {organizationList?.length > 0 && (
-                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                              {t('dashboard.events.createNew.search.footlightResultsStillAvailable')}
-                            </div>
-                          )}
-                        </div>
-                      ) : organizationListExternalSource?.artsdata?.length > 0 ? (
-                        organizationListExternalSource?.artsdata?.map((organizer, index) => (
-                          <div
-                            key={index}
-                            className="search-popover-options"
-                            data-cy={`div-orgnanization--artsdata-entity-${index}`}
-                            onClick={() => {
-                              setIsPopoverOpen(false);
-                            }}>
-                            <EntityCard
-                              title={contentLanguageBilingual({
-                                data: organizer?.name,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              })}
-                              description={organizer?.description}
-                              artsDataLink={createArtsDataLink(organizer?.uri)}
-                              Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
-                              linkText={
-                                isArtsdataUri(organizer?.uri)
-                                  ? t('dashboard.events.createNew.search.linkText')
-                                  : t('dashboard.events.createNew.search.datafeed')
-                              }
-                              onClick={() => artsDataClickHandler(organizer)}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
-                      ))}
-                  </div>
-                </>
+                <EntityPopoverSection
+                  title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                  headerDataCy="organization-artsdata-heading"
+                  isLoading={isExternalSourceFetching}
+                  hasError={externalSourceError}
+                  errorNode={externalSearchErrorNode}
+                  items={organizationListExternalSource?.artsdata}
+                  itemDataCy={(index) => `div-orgnanization--artsdata-entity-${index}`}
+                  onSelect={() => {
+                    setIsPopoverOpen(false);
+                  }}
+                  renderItem={(organizer) =>
+                    renderOrganizationCard({
+                      organizer,
+                      description: organizer?.description,
+                      onClick: () => artsDataClickHandler(organizer),
+                    })
+                  }
+                />
               )}
 
               {quickCreateKeyword?.length > 0 && (

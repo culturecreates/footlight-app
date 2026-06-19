@@ -1380,6 +1380,11 @@
     "tabKorean": "Coréen",
     "tabChinese": "Chinois",
     "noneFound": "Non trouvé",
+    "readOnly": {
+      "emptyValue": "Des informations sont requises.",
+      "missingRequiredBanner": "Certaines informations requises sont manquantes. Consultez les sections surlignées ci-dessous.",
+      "missingRequiredBannerGeneric": "Certaines informations requises sont manquantes. Consultez les sections surlignées ci-dessous."
+    },
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",
     "discard": "Ignorer",
