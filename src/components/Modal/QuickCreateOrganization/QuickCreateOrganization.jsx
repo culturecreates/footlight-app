@@ -41,6 +41,11 @@ import { useLazyGetEntitiesQuery } from '../../../services/entities';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { placesOptions } from '../../Select/selectOption.settings';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import {
+  getExternalSourcesQuery,
+  getImportProviderConfig,
+  importProviderContexts,
+} from '../../../constants/importProviders';
 
 function QuickCreateOrganization(props) {
   const {
@@ -103,6 +108,12 @@ function QuickCreateOrganization(props) {
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  const quickCreateOrganizationImportConfig = getImportProviderConfig(
+    importProviderContexts.QUICK_CREATE_ORGANIZATION_PLACE,
+  );
+  const externalSourcesQuery = getExternalSourcesQuery(importProviderContexts.QUICK_CREATE_ORGANIZATION_PLACE);
+  const showFootlightImportSection = quickCreateOrganizationImportConfig.showFootlightImportSection;
 
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
@@ -191,9 +202,6 @@ function QuickCreateOrganization(props) {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
@@ -208,7 +216,7 @@ function QuickCreateOrganization(props) {
       getExternalSource({
         searchKey: inputValue,
         classes: decodeURIComponent(query.toString()),
-        sources: decodeURIComponent(sourceQuery.toString()),
+        sources: externalSourcesQuery,
         calendarId,
         excludeExistingCMS: true,
       })
@@ -217,9 +225,13 @@ function QuickCreateOrganization(props) {
           setAllPlacesArtsdataList(
             placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
           );
-          setAllPlacesImportsFootlight(
-            placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-          );
+          if (showFootlightImportSection) {
+            setAllPlacesImportsFootlight(
+              placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            );
+          } else {
+            setAllPlacesImportsFootlight([]);
+          }
         })
         .catch((error) => console.log(error));
     }
@@ -508,6 +520,7 @@ function QuickCreateOrganization(props) {
                                     allPlacesList,
                                     allPlacesArtsdataList,
                                     allPlacesImportsFootlight,
+                                    showFootlightImportSection,
                                     locationPlace,
                                     setLocationPlace,
                                     setIsPopoverOpen,
