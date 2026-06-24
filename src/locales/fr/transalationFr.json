@@ -348,6 +348,7 @@
           "placeHolderKeywords": "Indiquer des mots-clés supplémentaires",
           "contact": {
             "title": "Contact",
+            "subHeading": "Ajoutez les détails de contact pour l'événement.",
             "contactTitle": "Titre du contact",
             "englishcontactTitle": "Titre du contact en français",
             "frenchContactTitle": "Titre du contact en anglais",
