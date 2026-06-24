@@ -4712,9 +4712,13 @@ function AddEvent() {
                   display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
                 }}
                 data-cy="form-item-event-contact-label">
-                <p className="add-event-date-heading" data-cy="para-contact-subheading">
-                  {t('dashboard.events.addEditEvent.otherInformation.contact.subHeading')}
-                </p>
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading" data-cy="para-contact-subheading">
+                      {t('dashboard.events.addEditEvent.otherInformation.contact.subHeading')}
+                    </p>
+                  </Col>
+                </Row>
                 {selectedOrganizers?.length > 0 && selectedOrganizers[0]?.contact && (
                   <Outlined
                     icon={<SnippetsOutlined style={{ color: '#1B3DE6', fontSize: '20px' }} />}
