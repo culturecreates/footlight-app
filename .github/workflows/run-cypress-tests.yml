@@ -114,7 +114,7 @@ jobs:
           if [ "${{ inputs.environment }}" == "production" ]; then
             echo "SERVER_URL=https://api.cms.footlight.io/" >> .env
           elif [ "${{ inputs.environment }}" == "staging" ]; then
-            echo "SERVER_URL=https://staging.api.cms.footlight.io/" >> .env
+            echo "SERVER_URL=https://staging-api-cms.footlight.io/" >> .env
           fi          
 
       - name: Pull and Run CMS Backend Docker Image
