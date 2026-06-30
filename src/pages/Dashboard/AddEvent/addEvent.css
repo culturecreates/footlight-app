@@ -194,6 +194,10 @@
   width: 100% !important;
 }
 
+.event-form-wrapper .name .eventType {
+  margin-top: 24px;
+}
+
 .event-form-wrapper .responsive-view-control-class .aside-content-wrapper {
   padding: 0px;
 }

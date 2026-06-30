@@ -12,6 +12,7 @@
 export const scrollToFirstError = (error, form, options = {}) => {
   if (!error?.errorFields?.length) return;
 
+  const firstField = error.errorFields[0]?.name;
   const { getElement } = options;
   let topmostEl = null;
   let topmostTop = Infinity;
@@ -31,8 +32,10 @@ export const scrollToFirstError = (error, form, options = {}) => {
 
   if (topmostEl) {
     topmostEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-  } else {
-    const firstField = error.errorFields[0]?.name;
-    if (firstField) form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  if (firstField && typeof form?.scrollToField === 'function') {
+    form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
   }
 };
