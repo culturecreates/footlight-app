@@ -348,6 +348,7 @@
           "placeHolderKeywords": "Enter additional keywords",
           "contact": {
             "title": "Contact",
+            "subHeading": "Add contact information for your event.",
             "contactTitle": "Contact title",
             "englishcontactTitle": "English contact title",
             "frenchContactTitle": "French contact title",
