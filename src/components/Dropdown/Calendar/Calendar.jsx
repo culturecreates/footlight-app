@@ -10,10 +10,11 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
+import LoadingIndicator from '../../LoadingIndicator';
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
-function Calendar({ children, allCalendarsData, setPageNumber }) {
+function Calendar({ children, setPageNumber }) {
   const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
   const calendarIdInCookies = sessionStorage.getItem('calendarId');
@@ -22,35 +23,41 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [serverCalendars, setServerCalendars] = useState([]);
-  const [serverCount, setServerCount] = useState(0);
+  const [calendars, setCalendars] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const listRef = useRef(null);
+  const loadingRef = useRef(false);
 
-  const allCalendars = allCalendarsData?.data ?? [];
-  const isSearching = searchQuery !== '';
-
-  const displayCalendars = isSearching ? serverCalendars : allCalendars;
-  const hasMore = isSearching ? currentPage * ITEMS_PER_PAGE < serverCount : false;
+  const hasMore = currentPage * ITEMS_PER_PAGE < totalCount;
 
   const loadPage = useCallback(
     async (page, search, append = false) => {
+      if (loadingRef.current) return;
+      loadingRef.current = true;
       try {
         const result = await getAllCalendars({
           page,
           limit: ITEMS_PER_PAGE,
+          sort: 'asc(name)',
           ...(search && { search }),
         }).unwrap();
         const newData = result?.data ?? [];
         if (append) {
-          setServerCalendars((prev) => [...prev, ...newData]);
+          setCalendars((prev) => {
+            const existingIds = new Set(prev.map((c) => c.id));
+            const uniqueNew = newData.filter((c) => !existingIds.has(c.id));
+            return [...prev, ...uniqueNew];
+          });
         } else {
-          setServerCalendars(newData);
+          setCalendars(newData);
         }
-        setServerCount(result?.count ?? 0);
+        setTotalCount(result?.count ?? 0);
         setCurrentPage(page);
       } catch {
-        if (!append) setServerCalendars([]);
+        if (!append) setCalendars([]);
+      } finally {
+        loadingRef.current = false;
       }
     },
     [getAllCalendars],
@@ -59,26 +66,22 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
   const debouncedSearch = useCallback(
     useDebounce((value) => {
       setSearchQuery(value);
-      if (value) {
-        loadPage(1, value, false);
-      } else {
-        setServerCalendars([]);
-        setServerCount(0);
-        setCurrentPage(1);
-      }
+      loadPage(1, value, false);
     }, SEARCH_DELAY),
     [loadPage],
   );
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      loadPage(1, '', false);
+    } else {
       setSearchInput('');
       setSearchQuery('');
-      setServerCalendars([]);
-      setServerCount(0);
+      setCalendars([]);
+      setTotalCount(0);
       setCurrentPage(1);
     }
-  }, [open]);
+  }, [open, loadPage]);
 
   const handleSearchChange = (e) => {
     setSearchInput(e.target.value);
@@ -99,7 +102,7 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
   };
 
   const handleOpenChange = (flag) => {
-    if (allCalendars.length > 1) setOpen(flag);
+    setOpen(flag);
   };
 
   const handleScroll = useCallback(() => {
@@ -124,7 +127,7 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
         />
       </div>
       <div className="calendar-list-wrapper" ref={listRef} onScroll={handleScroll}>
-        {displayCalendars.map((item) => {
+        {calendars.map((item) => {
           const name = contentLanguageBilingual({
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
             calendarContentLanguage: item?.contentLanguage,
@@ -137,8 +140,12 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
             </div>
           );
         })}
-        {isFetching && <div className="calendar-load-more-indicator">Loading...</div>}
-        {!displayCalendars.length && !isFetching && <div className="calendar-empty-state">No calendars found</div>}
+        {isFetching && (
+          <div className="calendar-load-more-indicator">
+            <LoadingIndicator />
+          </div>
+        )}
+        {!calendars.length && !isFetching && <div className="calendar-empty-state">No calendars found</div>}
       </div>
     </div>
   );

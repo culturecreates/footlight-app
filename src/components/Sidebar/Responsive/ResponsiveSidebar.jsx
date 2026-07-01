@@ -20,7 +20,7 @@ import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function ResponsiveSidebar(props) {
-  const { allCalendarsData, currentCalendarData, onClose, open, pageNumber, setPageNumber } = props;
+  const { currentCalendarData, onClose, open, pageNumber, setPageNumber } = props;
   const { t } = useTranslation();
   let { calendarId } = useParams();
   const navigate = useNavigate();
@@ -138,7 +138,7 @@ function ResponsiveSidebar(props) {
       className="sidebar-navigation-menu-responsive-drawer"
       title={
         <div className="sidebar-calendar-menu-responsive">
-          <CalendarList pageNumber={pageNumber} setPageNumber={setPageNumber} allCalendarsData={allCalendarsData}>
+          <CalendarList pageNumber={pageNumber} setPageNumber={setPageNumber}>
             <Menu
               defaultSelectedKeys={['1']}
               style={{

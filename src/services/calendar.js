@@ -7,11 +7,12 @@ export const calendarApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllCalendars: builder.query({
-      query: ({ page, limit, search } = {}) => {
+      query: ({ page, limit, search, sort } = {}) => {
         const params = new URLSearchParams();
         if (page) params.append('page', page);
         if (limit) params.append('limit', limit);
         if (search) params.append('search', search);
+        if (sort) params.append('sort', sort);
         const queryString = params.toString();
         return `calendars${queryString ? `?${queryString}` : ''}`;
       },
