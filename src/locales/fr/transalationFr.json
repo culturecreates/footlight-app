@@ -69,6 +69,7 @@
   },
   "dashboard": {
     "calendar": {
+      "searchPlaceholder": "Rechercher des calendriers",
       "readOnlyMode": {
         "readOnlyMode": "Mode lecture seule",
         "heading": "Calendrier en mode lecture seule",

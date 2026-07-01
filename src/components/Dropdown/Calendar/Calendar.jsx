@@ -7,14 +7,18 @@ import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlic
 import { PathName } from '../../../constants/pathName';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { useTranslation } from 'react-i18next';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
 import LoadingIndicator from '../../LoadingIndicator';
 
 const ITEMS_PER_PAGE = 8;
+const CACHE_DURATION = 5 * 60 * 1000;
+let cachedData = null;
 
-function Calendar({ children, setPageNumber }) {
+function Calendar({ children, setPageNumber, allCalendarsData }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
   const calendarIdInCookies = sessionStorage.getItem('calendarId');
@@ -43,6 +47,7 @@ function Calendar({ children, setPageNumber }) {
           ...(search && { search }),
         }).unwrap();
         const newData = result?.data ?? [];
+        const newTotalCount = result?.count ?? 0;
         if (append) {
           setCalendars((prev) => {
             const existingIds = new Set(prev.map((c) => c.id));
@@ -51,8 +56,16 @@ function Calendar({ children, setPageNumber }) {
           });
         } else {
           setCalendars(newData);
+          if (!search) {
+            cachedData = {
+              data: newData,
+              totalCount: newTotalCount,
+              currentPage: page,
+              timestamp: Date.now(),
+            };
+          }
         }
-        setTotalCount(result?.count ?? 0);
+        setTotalCount(newTotalCount);
         setCurrentPage(page);
       } catch {
         if (!append) setCalendars([]);
@@ -73,8 +86,32 @@ function Calendar({ children, setPageNumber }) {
 
   useEffect(() => {
     if (open) {
-      loadPage(1, '', false);
+      if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
+        setCalendars(cachedData.data);
+        setTotalCount(cachedData.totalCount);
+        setCurrentPage(cachedData.currentPage);
+      } else if (allCalendarsData?.data) {
+        setCalendars(allCalendarsData.data);
+        setTotalCount(allCalendarsData.count ?? allCalendarsData.data.length);
+        setCurrentPage(1);
+        cachedData = {
+          data: allCalendarsData.data,
+          totalCount: allCalendarsData.count ?? allCalendarsData.data.length,
+          currentPage: 1,
+          timestamp: Date.now(),
+        };
+      } else {
+        loadPage(1, '', false);
+      }
     } else {
+      if (calendars.length && !searchQuery) {
+        cachedData = {
+          data: calendars,
+          totalCount,
+          currentPage,
+          timestamp: Date.now(),
+        };
+      }
       setSearchInput('');
       setSearchQuery('');
       setCalendars([]);
@@ -119,7 +156,7 @@ function Calendar({ children, setPageNumber }) {
         <Input
           className="calendar-search-input"
           prefix={<SearchOutlined className="calendar-search-icon" />}
-          placeholder="Search calendars"
+          placeholder={t('dashboard.calendar.searchPlaceholder')}
           bordered={false}
           value={searchInput}
           onChange={handleSearchChange}

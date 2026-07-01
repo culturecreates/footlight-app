@@ -30,6 +30,7 @@
   background: #ffffff;
   border-radius: 8px;
   min-width: 280px;
+  max-width: 360px;
   overflow: hidden;
 }
 
@@ -88,9 +89,9 @@
   font-size: 16px;
   font-weight: 700;
   color: #222732;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.3;
 }
 
 .calendar-load-more-indicator {

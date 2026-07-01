@@ -53,7 +53,7 @@ function Dashboard() {
     isSuccess,
     refetch,
   } = useGetAllCalendarsQuery(
-    { sessionId: timestampRef },
+    { page: 1, limit: 8, sort: 'asc(name)' },
     { skip: checkToken(accessToken, Cookies.get('accessToken')) ? false : true },
   );
 
@@ -109,15 +109,11 @@ function Dashboard() {
 
     if (!isSuccess) return;
 
-    const checkedCalendarId = findActiveCalendar();
-    if (checkedCalendarId != null) {
-      sessionStorage.setItem('calendarId', checkedCalendarId);
-    }
-
     if (calendarId && accessToken) {
       getCalendar({ id: calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
+          sessionStorage.setItem('calendarId', calendarId);
           if (response?.mode === calendarModes.READ_ONLY) {
             setIsReadOnly(true);
             setIsModalVisible(true);
@@ -125,7 +121,11 @@ function Dashboard() {
         })
         .catch((error) => {
           if (error.status === 404) {
-            navigate(PathName.NotFound);
+            const fallbackId = allCalendarsData?.data?.[0]?.id;
+            if (fallbackId) {
+              sessionStorage.setItem('calendarId', fallbackId);
+              navigate(`${PathName.Dashboard}/${fallbackId}${PathName.Events}`);
+            }
           }
         });
       dispatch(setSelectedCalendar(String(calendarId)));
@@ -159,18 +159,6 @@ function Dashboard() {
     dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
     i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
   }, [user?.interfaceLanguage]);
-
-  const findActiveCalendar = () => {
-    const currentCalendar = allCalendarsData?.data?.filter((item) => {
-      if (item.id === calendarId) {
-        return item;
-      }
-    });
-    if (currentCalendar.length < 1) {
-      return allCalendarsData?.data[0].id;
-    }
-    return null;
-  };
 
   return (
     <ErrorLayout asycErrorDetails={asycErrorDetails}>
