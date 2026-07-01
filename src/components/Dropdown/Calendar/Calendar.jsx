@@ -12,7 +12,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
 import LoadingIndicator from '../../LoadingIndicator';
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 8;
 
 function Calendar({ children, setPageNumber }) {
   const dispatch = useDispatch();
