@@ -119,7 +119,7 @@ function Calendar({ children, setPageNumber }) {
         <Input
           className="calendar-search-input"
           prefix={<SearchOutlined className="calendar-search-icon" />}
-          placeholder="Search calendars..."
+          placeholder="Search calendars"
           bordered={false}
           value={searchInput}
           onChange={handleSearchChange}
