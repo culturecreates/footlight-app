@@ -1991,19 +1991,28 @@ function AddEvent() {
         if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${id}`, {
             state: {
-              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+              data: {
+                isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
+                shouldValidateOnOpen: true,
+              },
             },
           });
         else if (type?.toUpperCase() == taxonomyClass.PERSON)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${id}`, {
             state: {
-              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+              data: {
+                isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
+                shouldValidateOnOpen: true,
+              },
             },
           });
         else if (type?.toUpperCase() == taxonomyClass.PLACE)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
             state: {
-              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+              data: {
+                isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
+                shouldValidateOnOpen: true,
+              },
             },
           });
       })
