@@ -114,21 +114,17 @@ function Dashboard() {
         .unwrap()
         .then((response) => {
           sessionStorage.setItem('calendarId', calendarId);
+          dispatch(setSelectedCalendar(String(calendarId)));
           if (response?.mode === calendarModes.READ_ONLY) {
             setIsReadOnly(true);
             setIsModalVisible(true);
           } else setIsReadOnly(false);
         })
         .catch((error) => {
-          if (error.status === 404) {
-            const fallbackId = allCalendarsData?.data?.[0]?.id;
-            if (fallbackId) {
-              sessionStorage.setItem('calendarId', fallbackId);
-              navigate(`${PathName.Dashboard}/${fallbackId}${PathName.Events}`);
-            }
+          if (error?.status === 400 || error?.status === 404) {
+            navigate(PathName.NotFound);
           }
         });
-      dispatch(setSelectedCalendar(String(calendarId)));
     } else {
       let activeCalendarId = sessionStorage.getItem('calendarId');
       if (activeCalendarId && accessToken) {

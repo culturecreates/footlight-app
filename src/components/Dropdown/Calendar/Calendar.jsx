@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import './calendar.css';
 import { Dropdown, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import Cookies from 'js-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlice';
 import { PathName } from '../../../constants/pathName';
@@ -13,9 +14,32 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
 import LoadingIndicator from '../../LoadingIndicator';
 
+const hashString = (value = '') => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return String(hash >>> 0);
+};
+
+const getUserIdentity = (user) => {
+  if (!user) return 'anonymous';
+
+  return (
+    user?.id || user?._id || user?.userId || user?.email || user?.userName || user?.preferredUsername || 'unknown-user'
+  );
+};
+
+const getCalendarCacheKey = ({ user, accessToken }) => {
+  const identity = getUserIdentity(user);
+  const tokenHash = hashString(accessToken || 'no-token');
+
+  return `calendar:${identity}:${tokenHash}`;
+};
+
 const ITEMS_PER_PAGE = 8;
 const CACHE_DURATION = 5 * 60 * 1000;
-let cachedData = null;
 
 function Calendar({ children, setPageNumber, allCalendarsData }) {
   const { t } = useTranslation();
@@ -31,21 +55,66 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const listRef = useRef(null);
-  const loadingRef = useRef(false);
+  const loadingMoreRef = useRef(false);
+  const activeRequestRef = useRef(null);
+  const latestRequestIdRef = useRef(0);
+  const cacheRef = useRef(new Map());
+  const latestStateRef = useRef({
+    calendars: [],
+    totalCount: 0,
+    currentPage: 1,
+    searchQuery: '',
+  });
+
+  const cacheKey = getCalendarCacheKey({
+    user,
+    accessToken: Cookies.get('accessToken'),
+  });
 
   const hasMore = currentPage * ITEMS_PER_PAGE < totalCount;
 
+  useEffect(() => {
+    // Keep only the active identity's cache to avoid stale cross-user data in memory.
+    cacheRef.current.forEach((_, key) => {
+      if (key !== cacheKey) {
+        cacheRef.current.delete(key);
+      }
+    });
+  }, [cacheKey]);
+
+  useEffect(() => {
+    latestStateRef.current = {
+      calendars,
+      totalCount,
+      currentPage,
+      searchQuery,
+    };
+  }, [calendars, totalCount, currentPage, searchQuery]);
+
   const loadPage = useCallback(
     async (page, search, append = false) => {
-      if (loadingRef.current) return;
-      loadingRef.current = true;
+      if (append && loadingMoreRef.current) return;
+      if (!append && activeRequestRef.current?.abort) {
+        activeRequestRef.current.abort();
+      }
+
+      const requestId = ++latestRequestIdRef.current;
+      if (append) {
+        loadingMoreRef.current = true;
+      }
+
+      const request = getAllCalendars({
+        page,
+        limit: ITEMS_PER_PAGE,
+        sort: 'asc(name)',
+        ...(search && { search }),
+      });
+      activeRequestRef.current = request;
+
       try {
-        const result = await getAllCalendars({
-          page,
-          limit: ITEMS_PER_PAGE,
-          sort: 'asc(name)',
-          ...(search && { search }),
-        }).unwrap();
+        const result = await request.unwrap();
+        if (requestId !== latestRequestIdRef.current) return;
+
         const newData = result?.data ?? [];
         const newTotalCount = result?.count ?? 0;
         if (append) {
@@ -57,24 +126,39 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
         } else {
           setCalendars(newData);
           if (!search) {
-            cachedData = {
+            cacheRef.current.set(cacheKey, {
               data: newData,
               totalCount: newTotalCount,
               currentPage: page,
               timestamp: Date.now(),
-            };
+            });
           }
         }
         setTotalCount(newTotalCount);
         setCurrentPage(page);
-      } catch {
+      } catch (error) {
+        const isAbort = error?.name === 'AbortError' || error?.message === 'Aborted';
+        if (isAbort || requestId !== latestRequestIdRef.current) return;
         if (!append) setCalendars([]);
       } finally {
-        loadingRef.current = false;
+        if (append) {
+          loadingMoreRef.current = false;
+        }
+        if (activeRequestRef.current === request) {
+          activeRequestRef.current = null;
+        }
       }
     },
-    [getAllCalendars],
+    [cacheKey, getAllCalendars],
   );
+
+  useEffect(() => {
+    return () => {
+      if (activeRequestRef.current?.abort) {
+        activeRequestRef.current.abort();
+      }
+    };
+  }, []);
 
   const debouncedSearch = useCallback(
     useDebounce((value) => {
@@ -85,6 +169,8 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   );
 
   useEffect(() => {
+    const cachedData = cacheRef.current.get(cacheKey);
+
     if (open) {
       if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
         setCalendars(cachedData.data);
@@ -94,23 +180,29 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
         setCalendars(allCalendarsData.data);
         setTotalCount(allCalendarsData.count ?? allCalendarsData.data.length);
         setCurrentPage(1);
-        cachedData = {
+        cacheRef.current.set(cacheKey, {
           data: allCalendarsData.data,
           totalCount: allCalendarsData.count ?? allCalendarsData.data.length,
           currentPage: 1,
           timestamp: Date.now(),
-        };
+        });
       } else {
         loadPage(1, '', false);
       }
     } else {
-      if (calendars.length && !searchQuery) {
-        cachedData = {
-          data: calendars,
-          totalCount,
-          currentPage,
+      latestRequestIdRef.current += 1;
+      if (activeRequestRef.current?.abort) {
+        activeRequestRef.current.abort();
+      }
+
+      const latestState = latestStateRef.current;
+      if (latestState.calendars.length && !latestState.searchQuery) {
+        cacheRef.current.set(cacheKey, {
+          data: latestState.calendars,
+          totalCount: latestState.totalCount,
+          currentPage: latestState.currentPage,
           timestamp: Date.now(),
-        };
+        });
       }
       setSearchInput('');
       setSearchQuery('');
@@ -118,7 +210,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       setTotalCount(0);
       setCurrentPage(1);
     }
-  }, [open, loadPage]);
+  }, [allCalendarsData, cacheKey, loadPage, open]);
 
   const handleSearchChange = (e) => {
     setSearchInput(e.target.value);
