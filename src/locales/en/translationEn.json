@@ -69,6 +69,7 @@
   },
   "dashboard": {
     "calendar": {
+      "searchPlaceholder": "Search calendars",
       "readOnlyMode": {
         "readOnlyMode": "Read-only mode",
         "heading": "Calendar in read only mode",
