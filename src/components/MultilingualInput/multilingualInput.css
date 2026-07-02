@@ -69,6 +69,7 @@
 
 .bilingual-child-wrapper .ant-form-item {
   width: 100%;
+  margin-bottom: 0;
 }
 
 .bilingual-child-with-badge .ant-input-lg {

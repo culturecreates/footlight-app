@@ -696,7 +696,12 @@ export const renderFormFields = ({
         required={required}
         hidden={hidden}
         style={style}
-        className={mappedField ?? fieldName?.toLowerCase()}
+        className={[
+          mappedField ?? fieldName?.toLowerCase(),
+          position === 'bottom' && userTips ? 'form-item-with-bottom-helper' : undefined,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         validateTrigger={datatype === dataTypes.URI_STRING ? ['onBlur'] : undefined}
         rules={rules
           ?.map((rule) => {
@@ -713,11 +718,10 @@ export const renderFormFields = ({
           ])
           ?.flat()
           ?.filter((rule) => rule !== undefined)}
-        help={
+        extra={
           position === 'bottom' && userTips ? (
             <p
               className="add-event-date-heading"
-              style={{ marginTop: '-15px' }}
               data-cy={`form-item-helper-text-${mappedField ?? fieldName?.toLowerCase()}`}>
               {userTips}
             </p>

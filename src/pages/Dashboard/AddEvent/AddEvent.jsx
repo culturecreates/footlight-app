@@ -4721,6 +4721,13 @@ function AddEvent() {
                   display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
                 }}
                 data-cy="form-item-event-contact-label">
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading" data-cy="para-contact-subheading">
+                      {t('dashboard.events.addEditEvent.otherInformation.contact.subHeading')}
+                    </p>
+                  </Col>
+                </Row>
                 {selectedOrganizers?.length > 0 && selectedOrganizers[0]?.contact && (
                   <Outlined
                     icon={<SnippetsOutlined style={{ color: '#1B3DE6', fontSize: '20px' }} />}
@@ -4730,111 +4737,114 @@ function AddEvent() {
                     data-cy="button-copy-organizer-contact"
                   />
                 )}
-                <Form.Item
-                  label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
-                  className="subheading-wrap contactTitle"
-                  data-cy="form-item-event-contact-title"
-                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
-                  <CreateMultiLingualFormItems
-                    entityId={eventId}
-                    calendarContentLanguage={calendarContentLanguage}
-                    form={form}
-                    name={'contactTitle'}
-                    data={eventData?.contactPoint?.name}
-                    required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}
-                    validations={t('common.validations.informationRequired')}
-                    dataCy="input-contact-title-"
-                    placeholder={placeHolderCollectionCreator({
-                      calendarContentLanguage,
-                      placeholderBase: 'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitle',
-                      t,
-                    })}>
-                    <TextArea
-                      autoSize
-                      autoComplete="off"
-                      style={{
-                        borderRadius: '4px',
-                        border: '1px solid #B6C1C9',
-                        width: '423px',
-                      }}
-                      size="large"
-                    />
-                  </CreateMultiLingualFormItems>
-                </Form.Item>
+                <div className="contact-fields-box" data-cy="event-contact-fields-box">
+                  <Form.Item
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
+                    className="subheading-wrap contactTitle"
+                    data-cy="form-item-event-contact-title"
+                    required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
+                    <CreateMultiLingualFormItems
+                      entityId={eventId}
+                      calendarContentLanguage={calendarContentLanguage}
+                      form={form}
+                      name={'contactTitle'}
+                      data={eventData?.contactPoint?.name}
+                      required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}
+                      validations={t('common.validations.informationRequired')}
+                      dataCy="input-contact-title-"
+                      placeholder={placeHolderCollectionCreator({
+                        calendarContentLanguage,
+                        placeholderBase:
+                          'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitle',
+                        t,
+                      })}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        style={{
+                          borderRadius: '4px',
+                          border: '1px solid #B6C1C9',
+                          width: '423px',
+                        }}
+                        size="large"
+                      />
+                    </CreateMultiLingualFormItems>
+                  </Form.Item>
 
-                <Form.Item
-                  name="contactWebsiteUrl"
-                  className="subheading-wrap"
-                  label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
-                  initialValue={eventData?.contactPoint?.url?.uri}
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        if (!value || value === '') return Promise.resolve();
-                        return urlValidator(value)
-                          ? Promise.resolve()
-                          : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                  <Form.Item
+                    name="contactWebsiteUrl"
+                    className="subheading-wrap"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                    initialValue={eventData?.contactPoint?.url?.uri}
+                    rules={[
+                      {
+                        validator: (_, value) => {
+                          if (!value || value === '') return Promise.resolve();
+                          return urlValidator(value)
+                            ? Promise.resolve()
+                            : Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.url')));
+                        },
                       },
-                    },
-                    {
-                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_WEBSITE),
-                      message: t('common.validations.informationRequired'),
-                    },
-                  ]}
-                  validateTrigger={['onBlur']}
-                  data-cy="form-item-event-contact-website-label">
-                  <StyledInput
-                    addonBefore="URL"
-                    autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
-                    data-cy="input-contact-website"
-                    onBlur={(e) => {
-                      const normalized = urlProtocolCheck(e.target.value);
-                      if (normalized !== e.target.value) {
-                        form.setFieldValue('contactWebsiteUrl', normalized);
-                        form.validateFields(['contactWebsiteUrl']);
-                      }
-                    }}
-                  />
-                </Form.Item>
-                <Form.Item
-                  name="contactPhoneNumber"
-                  className="subheading-wrap"
-                  label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
-                  initialValue={eventData?.contactPoint?.telephone}
-                  rules={[
-                    {
-                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.PHONE_NUMBER),
-                      message: t('common.validations.informationRequired'),
-                    },
-                  ]}
-                  data-cy="form-item-event-contact-phone-number-label">
-                  <StyledInput
-                    placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
-                    data-cy="input-contact-phonenumber"
-                  />
-                </Form.Item>
-                <Form.Item
-                  name="contactEmail"
-                  className="subheading-wrap"
-                  label={t('dashboard.events.addEditEvent.otherInformation.contact.email')}
-                  initialValue={eventData?.contactPoint?.email}
-                  rules={[
-                    {
-                      type: 'email',
-                      message: t('login.validations.invalidEmail'),
-                    },
-                    {
-                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EMAIL),
-                      message: t('common.validations.informationRequired'),
-                    },
-                  ]}
-                  data-cy="form-item-event-contact-email-label">
-                  <StyledInput
-                    placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
-                    data-cy="input-contact-email"
-                  />
-                </Form.Item>
+                      {
+                        required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_WEBSITE),
+                        message: t('common.validations.informationRequired'),
+                      },
+                    ]}
+                    validateTrigger={['onBlur']}
+                    data-cy="form-item-event-contact-website-label">
+                    <StyledInput
+                      addonBefore="URL"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                      data-cy="input-contact-website"
+                      onBlur={(e) => {
+                        const normalized = urlProtocolCheck(e.target.value);
+                        if (normalized !== e.target.value) {
+                          form.setFieldValue('contactWebsiteUrl', normalized);
+                          form.validateFields(['contactWebsiteUrl']);
+                        }
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="contactPhoneNumber"
+                    className="subheading-wrap"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
+                    initialValue={eventData?.contactPoint?.telephone}
+                    rules={[
+                      {
+                        required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.PHONE_NUMBER),
+                        message: t('common.validations.informationRequired'),
+                      },
+                    ]}
+                    data-cy="form-item-event-contact-phone-number-label">
+                    <StyledInput
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
+                      data-cy="input-contact-phonenumber"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="contactEmail"
+                    className="subheading-wrap"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.email')}
+                    initialValue={eventData?.contactPoint?.email}
+                    rules={[
+                      {
+                        type: 'email',
+                        message: t('login.validations.invalidEmail'),
+                      },
+                      {
+                        required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EMAIL),
+                        message: t('common.validations.informationRequired'),
+                      },
+                    ]}
+                    data-cy="form-item-event-contact-email-label">
+                    <StyledInput
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
+                      data-cy="input-contact-email"
+                    />
+                  </Form.Item>
+                </div>
               </Form.Item>
 
               <Form.Item

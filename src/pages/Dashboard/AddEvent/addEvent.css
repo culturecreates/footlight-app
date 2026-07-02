@@ -91,6 +91,18 @@
   font-size: 12px;
 }
 
+.add-edit-wrapper .contact-fields-box {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid #d5dce2;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.add-edit-wrapper .contact-fields-box .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
 .add-edit-wrapper .ant-popover-inner {
   filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
 }
@@ -194,6 +206,10 @@
   width: 100% !important;
 }
 
+.event-form-wrapper .name .eventType {
+  margin-top: 24px;
+}
+
 .event-form-wrapper .responsive-view-control-class .aside-content-wrapper {
   padding: 0px;
 }
@@ -248,6 +264,10 @@
   .event-form-wrapper .add-edit-event-heading h4,
   .event-form-wrapper .add-event-button-wrap > * {
     margin-bottom: 8px;
+  }
+
+  .add-edit-wrapper .contact-fields-box {
+    padding: 12px;
   }
 }
 
