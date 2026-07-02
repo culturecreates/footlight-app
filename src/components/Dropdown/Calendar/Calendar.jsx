@@ -264,7 +264,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
           });
           return (
             <div key={item.id} className="calendar-dropdown-item" onClick={() => handleItemClick(item.id)}>
-              <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt="" />
+              <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt={name} />
               <span className="calendar-item-name">{name}</span>
             </div>
           );
