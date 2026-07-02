@@ -45,7 +45,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
-  const calendarIdInCookies = sessionStorage.getItem('calendarId');
+  const calendarIdInSessionStorage = sessionStorage.getItem('calendarId');
   const [getAllCalendars, { isFetching }] = useLazyGetAllCalendarsQuery();
 
   const [open, setOpen] = useState(false);
@@ -218,7 +218,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   };
 
   const handleItemClick = (key) => {
-    if (calendarIdInCookies !== key) {
+    if (calendarIdInSessionStorage !== key) {
       dispatch(setSelectedCalendar(String(key)));
       sessionStorage.setItem('calendarId', key);
       setPageNumber(1);
@@ -227,6 +227,13 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       const origin = window.location.origin;
       const newUrl = `${origin}${PathName.Dashboard}/${key}${PathName.Events}`;
       window.location.href = newUrl;
+    }
+  };
+
+  const handleItemKeyDown = (e, key) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleItemClick(key);
     }
   };
 
@@ -263,7 +270,13 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             data: item?.name,
           });
           return (
-            <div key={item.id} className="calendar-dropdown-item" onClick={() => handleItemClick(item.id)}>
+            <div
+              key={item.id}
+              className="calendar-dropdown-item"
+              onClick={() => handleItemClick(item.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => handleItemKeyDown(e, item.id)}>
               <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt={name} />
               <span className="calendar-item-name">{name}</span>
             </div>
@@ -274,7 +287,9 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             <LoadingIndicator />
           </div>
         )}
-        {!calendars.length && !isFetching && <div className="calendar-empty-state">No calendars found</div>}
+        {!calendars.length && !isFetching && (
+          <div className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
+        )}
       </div>
     </div>
   );

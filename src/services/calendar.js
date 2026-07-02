@@ -12,7 +12,7 @@ export const calendarApi = createApi({
         if (page) params.append('page', page);
         if (limit) params.append('limit', limit);
         if (search) params.append('search', search);
-        if (sort) params.append('sort', sort);
+        if (sort) params.append('sort', sort.startsWith('sort=') ? sort.slice(5) : sort);
         const queryString = params.toString();
         return `calendars${queryString ? `?${queryString}` : ''}`;
       },
