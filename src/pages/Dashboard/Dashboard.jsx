@@ -53,7 +53,7 @@ function Dashboard() {
     isSuccess,
     refetch,
   } = useGetAllCalendarsQuery(
-    { sort: 'asc(name)' },
+    { page: 1, limit: 8, sort: 'asc(name)' },
     { skip: checkToken(accessToken, Cookies.get('accessToken')) ? false : true },
   );
 

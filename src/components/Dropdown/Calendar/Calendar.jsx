@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import './calendar.css';
 import { Dropdown, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -41,11 +41,18 @@ const getCalendarCacheKey = ({ user, accessToken }) => {
 const ITEMS_PER_PAGE = 8;
 const CACHE_DURATION = 5 * 60 * 1000;
 
+const normalizeForSearch = (value = '') =>
+  String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
 function Calendar({ children, setPageNumber, allCalendarsData }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
-  const calendarIdInSessionStorage = sessionStorage.getItem('calendarId');
+  const calendarIdInCookies = sessionStorage.getItem('calendarId');
   const [getAllCalendars, { isFetching }] = useLazyGetAllCalendarsQuery();
 
   const [open, setOpen] = useState(false);
@@ -57,6 +64,8 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const listRef = useRef(null);
   const loadingMoreRef = useRef(false);
   const activeRequestRef = useRef(null);
+  const inFlightPageKeysRef = useRef(new Set());
+  const loadedPageKeysRef = useRef(new Set());
   const latestRequestIdRef = useRef(0);
   const cacheRef = useRef(new Map());
   const latestStateRef = useRef({
@@ -72,6 +81,21 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   });
 
   const hasMore = currentPage * ITEMS_PER_PAGE < totalCount;
+
+  const filteredCalendars = useMemo(() => {
+    const normalizedSearch = normalizeForSearch(searchQuery);
+    if (!normalizedSearch) return calendars;
+
+    return calendars.filter((item) => {
+      const name = contentLanguageBilingual({
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: item?.contentLanguage,
+        data: item?.name,
+      });
+
+      return normalizeForSearch(name).includes(normalizedSearch);
+    });
+  }, [calendars, searchQuery, user?.interfaceLanguage]);
 
   useEffect(() => {
     // Keep only the active identity's cache to avoid stale cross-user data in memory.
@@ -93,6 +117,13 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
 
   const loadPage = useCallback(
     async (page, search, append = false) => {
+      const pageSearch = search || '';
+      const pageKey = `${pageSearch}:${page}`;
+
+      if (append && (inFlightPageKeysRef.current.has(pageKey) || loadedPageKeysRef.current.has(pageKey))) {
+        return;
+      }
+
       if (append && loadingMoreRef.current) return;
       if (!append && activeRequestRef.current?.abort) {
         activeRequestRef.current.abort();
@@ -102,12 +133,13 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       if (append) {
         loadingMoreRef.current = true;
       }
+      inFlightPageKeysRef.current.add(pageKey);
 
       const request = getAllCalendars({
         page,
         limit: ITEMS_PER_PAGE,
         sort: 'asc(name)',
-        ...(search && { search }),
+        ...(pageSearch && { search: pageSearch }),
       });
       activeRequestRef.current = request;
 
@@ -136,11 +168,13 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
         }
         setTotalCount(newTotalCount);
         setCurrentPage(page);
+        loadedPageKeysRef.current.add(pageKey);
       } catch (error) {
         const isAbort = error?.name === 'AbortError' || error?.message === 'Aborted';
         if (isAbort || requestId !== latestRequestIdRef.current) return;
         if (!append) setCalendars([]);
       } finally {
+        inFlightPageKeysRef.current.delete(pageKey);
         if (append) {
           loadingMoreRef.current = false;
         }
@@ -163,10 +197,16 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const debouncedSearch = useCallback(
     useDebounce((value) => {
       setSearchQuery(value);
-      loadPage(1, value, false);
     }, SEARCH_DELAY),
-    [loadPage],
+    [],
   );
+
+  useEffect(() => {
+    if (!open || !searchQuery || isFetching || !hasMore || loadingMoreRef.current) return;
+    if (!filteredCalendars.length) {
+      loadPage(currentPage + 1, '', true);
+    }
+  }, [open, searchQuery, isFetching, hasMore, filteredCalendars.length, loadPage, currentPage]);
 
   useEffect(() => {
     const cachedData = cacheRef.current.get(cacheKey);
@@ -206,6 +246,8 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       }
       setSearchInput('');
       setSearchQuery('');
+      inFlightPageKeysRef.current.clear();
+      loadedPageKeysRef.current.clear();
       setCalendars([]);
       setTotalCount(0);
       setCurrentPage(1);
@@ -218,7 +260,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   };
 
   const handleItemClick = (key) => {
-    if (calendarIdInSessionStorage !== key) {
+    if (calendarIdInCookies !== key) {
       dispatch(setSelectedCalendar(String(key)));
       sessionStorage.setItem('calendarId', key);
       setPageNumber(1);
@@ -227,13 +269,6 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       const origin = window.location.origin;
       const newUrl = `${origin}${PathName.Dashboard}/${key}${PathName.Events}`;
       window.location.href = newUrl;
-    }
-  };
-
-  const handleItemKeyDown = (e, key) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleItemClick(key);
     }
   };
 
@@ -263,21 +298,15 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
         />
       </div>
       <div className="calendar-list-wrapper" ref={listRef} onScroll={handleScroll}>
-        {calendars.map((item) => {
+        {filteredCalendars.map((item) => {
           const name = contentLanguageBilingual({
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
             calendarContentLanguage: item?.contentLanguage,
             data: item?.name,
           });
           return (
-            <div
-              key={item.id}
-              className="calendar-dropdown-item"
-              onClick={() => handleItemClick(item.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => handleItemKeyDown(e, item.id)}>
-              <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt={name} />
+            <div key={item.id} className="calendar-dropdown-item" onClick={() => handleItemClick(item.id)}>
+              <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt="" />
               <span className="calendar-item-name">{name}</span>
             </div>
           );
@@ -287,9 +316,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             <LoadingIndicator />
           </div>
         )}
-        {!calendars.length && !isFetching && (
-          <div className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
-        )}
+        {!filteredCalendars.length && !isFetching && <div className="calendar-empty-state">No calendars found</div>}
       </div>
     </div>
   );
