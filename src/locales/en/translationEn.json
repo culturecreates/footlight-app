@@ -70,6 +70,7 @@
   "dashboard": {
     "calendar": {
       "searchPlaceholder": "Search calendars",
+      "emptyState": "No calendars found",
       "readOnlyMode": {
         "readOnlyMode": "Read-only mode",
         "heading": "Calendar in read only mode",

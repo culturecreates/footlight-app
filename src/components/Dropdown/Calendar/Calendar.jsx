@@ -264,7 +264,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
           });
           return (
             <div key={item.id} className="calendar-dropdown-item" onClick={() => handleItemClick(item.id)}>
-              <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt="" />
+              <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt={name || ''} />
               <span className="calendar-item-name">{name}</span>
             </div>
           );
@@ -274,7 +274,9 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             <LoadingIndicator />
           </div>
         )}
-        {!calendars.length && !isFetching && <div className="calendar-empty-state">No calendars found</div>}
+        {!calendars.length && !isFetching && (
+          <div className="calendar-empty-state">{t('dashboard.calendar.emptyState')}</div>
+        )}
       </div>
     </div>
   );

@@ -508,7 +508,6 @@ function CreateNewPlace() {
   const handleValidationError = useCallback(
     (error, options = {}) => {
       const { scrollBlock = 'center' } = options;
-      console.log(error);
       scrollToFirstError(error, form, {
         scrollBlock,
         getElement: (fieldNamePath, fieldName) =>
