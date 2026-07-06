@@ -204,7 +204,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   useEffect(() => {
     if (!open || !searchQuery || isFetching || !hasMore || loadingMoreRef.current) return;
     if (!filteredCalendars.length) {
-      loadPage(currentPage + 1, '', true);
+      loadPage(currentPage + 1, searchQuery, true);
     }
   }, [open, searchQuery, isFetching, hasMore, filteredCalendars.length, loadPage, currentPage]);
 
@@ -272,6 +272,13 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
     }
   };
 
+  const handleItemKeyDown = (event, key) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleItemClick(key);
+    }
+  };
+
   const handleOpenChange = (flag) => {
     setOpen(flag);
   };
@@ -305,7 +312,13 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             data: item?.name,
           });
           return (
-            <div key={item.id} className="calendar-dropdown-item" onClick={() => handleItemClick(item.id)}>
+            <div
+              key={item.id}
+              className="calendar-dropdown-item"
+              role="button"
+              tabIndex={0}
+              onClick={() => handleItemClick(item.id)}
+              onKeyDown={(event) => handleItemKeyDown(event, item.id)}>
               <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt="" />
               <span className="calendar-item-name">{name}</span>
             </div>
@@ -316,7 +329,9 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             <LoadingIndicator />
           </div>
         )}
-        {!filteredCalendars.length && !isFetching && <div className="calendar-empty-state">No calendars found</div>}
+        {!filteredCalendars.length && !isFetching && (
+          <div className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
+        )}
       </div>
     </div>
   );
