@@ -508,6 +508,7 @@ function CreateNewPlace() {
   const handleValidationError = useCallback(
     (error, options = {}) => {
       const { scrollBlock = 'center' } = options;
+      console.log(error);
       scrollToFirstError(error, form, {
         scrollBlock,
         getElement: (fieldNamePath, fieldName) =>
@@ -1511,7 +1512,9 @@ function CreateNewPlace() {
   }, []);
 
   useEffect(() => {
-    if (!shouldValidateOnOpen || !isRoutingToEventPage || hasValidatedOnOpenRef.current || debouncedLoading) {
+    const shouldAutoValidateOnOpen = shouldValidateOnOpen && (isRoutingToEventPage || isRoutingToOrganization);
+
+    if (!shouldAutoValidateOnOpen || hasValidatedOnOpenRef.current || debouncedLoading) {
       return;
     }
 
@@ -1527,6 +1530,7 @@ function CreateNewPlace() {
   }, [
     shouldValidateOnOpen,
     isRoutingToEventPage,
+    isRoutingToOrganization,
     debouncedLoading,
     publishValidateFields,
     form,
