@@ -369,7 +369,6 @@ const UserManagement = (props) => {
   };
 
   const tooltipItemClickHandler = ({ key, item }) => {
-    let invitationLink;
     const currentCalendarRole = item?.roles?.find((role) => role.calendarId === calendarId) ?? {};
     const userStatus = currentCalendarRole?.status;
     const userInvitationId = currentCalendarRole?.invitationId;
@@ -426,15 +425,33 @@ const UserManagement = (props) => {
           });
         break;
 
-      case 'copyInvitationLink':
-        if (item?.userStatus === 'ACTIVE') invitationLink = import.meta.env.VITE_APP_ACCEPT_URL + item?.invitationId;
-        else if (item?.userStatus === 'INVITED')
-          invitationLink = import.meta.env.VITE_APP_INVITE_URL + item?.invitationId;
+      case 'copyInvitationLink': {
+        console.groupCollapsed('[UserManagement] copyInvitationLink field debug');
+        console.log('calendarId (route):', calendarId);
+        console.log('top-level item.userStatus:', item?.userStatus);
+        console.log('top-level item.invitationId:', item?.invitationId);
+        console.log('calendar-scoped currentCalendarRole:', currentCalendarRole);
+        console.log('calendar-scoped status (userStatus):', userStatus);
+        console.log('calendar-scoped invitationId (userInvitationId):', userInvitationId);
+        console.log('all roles on item:', item?.roles);
+        console.groupEnd();
+
+        const invitationBaseUrl =
+          userStatus === userActivityStatus[0].key
+            ? import.meta.env.VITE_APP_ACCEPT_URL
+            : userStatus === userActivityStatus[2].key
+            ? import.meta.env.VITE_APP_INVITE_URL
+            : null;
+
+        const invitationLink =
+          invitationBaseUrl && userInvitationId ? `${invitationBaseUrl}${userInvitationId}` : undefined;
+
         copyText({
           textToCopy: invitationLink,
           message: t('dashboard.settings.userManagement.tooltip.modal.copyText'),
         });
         break;
+      }
 
       case 'activateOrDeactivate':
         if (userStatus === userActivityStatus[0].key) {
