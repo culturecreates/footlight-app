@@ -426,16 +426,6 @@ const UserManagement = (props) => {
         break;
 
       case 'copyInvitationLink': {
-        console.groupCollapsed('[UserManagement] copyInvitationLink field debug');
-        console.log('calendarId (route):', calendarId);
-        console.log('top-level item.userStatus:', item?.userStatus);
-        console.log('top-level item.invitationId:', item?.invitationId);
-        console.log('calendar-scoped currentCalendarRole:', currentCalendarRole);
-        console.log('calendar-scoped status (userStatus):', userStatus);
-        console.log('calendar-scoped invitationId (userInvitationId):', userInvitationId);
-        console.log('all roles on item:', item?.roles);
-        console.groupEnd();
-
         const invitationBaseUrl =
           userStatus === userActivityStatus[0].key
             ? import.meta.env.VITE_APP_ACCEPT_URL
