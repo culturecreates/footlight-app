@@ -849,8 +849,6 @@ function CreateNewOrganization() {
   };
 
   const placeNavigationHandler = (id, type, event) => {
-    const shouldValidateOnOpen = true;
-
     onSaveHandler(event, true, { skipLinkedPlaceValidation: true })
       .then((savedOrganizationId) => {
         if (type?.toUpperCase() == taxonomyClass.PLACE)
@@ -861,7 +859,7 @@ function CreateNewOrganization() {
                   ? `${location.pathname}?id=${organizationId}`
                   : `${location.pathname}?id=${savedOrganizationId}`,
                 isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
-                shouldValidateOnOpen,
+                shouldValidateOnOpen: true,
               },
             },
           });

@@ -263,7 +263,18 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             data: item?.name,
           });
           return (
-            <div key={item.id} className="calendar-dropdown-item" onClick={() => handleItemClick(item.id)}>
+            <div
+              key={item.id}
+              className="calendar-dropdown-item"
+              role="menuitem"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleItemClick(item.id);
+                }
+              }}
+              onClick={() => handleItemClick(item.id)}>
               <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt={name || ''} />
               <span className="calendar-item-name">{name}</span>
             </div>
