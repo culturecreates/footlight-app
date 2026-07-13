@@ -20,7 +20,13 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import Card from '../../../components/Card/Common/Event';
-import { dataTypes, formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
+import {
+  dataTypes,
+  formCategory,
+  formFieldValue,
+  formNames,
+  returnFormDataWithFields,
+} from '../../../constants/formFields';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -372,7 +378,8 @@ function CreateNewOrganization() {
     [form, t],
   );
 
-  const onSaveHandler = (event, toggle = false) => {
+  const onSaveHandler = (event, toggle = false, options = {}) => {
+    const { skipLinkedPlaceValidation = false } = options;
     event?.preventDefault();
     const validateFieldList = getValidateFieldList();
     let fallbackStatus = activeFallbackFieldsInfo;
@@ -381,6 +388,24 @@ function CreateNewOrganization() {
       form
         .validateFields(validateFieldList)
         .then(async () => {
+          const isInvalidLinkedPlace = locationPlace?.validationReport?.hasAllMandatoryFields === false;
+
+          if (isInvalidLinkedPlace && !skipLinkedPlaceValidation) {
+            const locationFieldName =
+              formFields?.find((field) => field?.name === formNames.ORGANIZATION.LOCATION)?.mappedField || 'place';
+            form.setFields([
+              {
+                name: [locationFieldName],
+                errors: [t('common.validations.informationRequired')],
+                value: locationPlace,
+              },
+            ]);
+
+            const validationError = new Error('Linked place is missing mandatory fields');
+            validationError.errorFields = [{ name: [locationFieldName] }];
+            throw validationError;
+          }
+
           setShowDialog(false);
           var values = form.getFieldsValue(true);
           let organizationPayload = {};
@@ -757,7 +782,10 @@ function CreateNewOrganization() {
               });
           }
         })
-        .catch((error) => handleValidationError(error));
+        .catch((error) => {
+          handleValidationError(error);
+          reject(error);
+        });
     });
 
     return promise;
@@ -773,7 +801,9 @@ function CreateNewOrganization() {
     })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesList(
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
+        );
       })
       .catch((error) => console.log(error));
     if (inputValue && inputValue !== '') {
@@ -821,7 +851,7 @@ function CreateNewOrganization() {
   const placeNavigationHandler = (id, type, event) => {
     const shouldValidateOnOpen = true;
 
-    onSaveHandler(event, true)
+    onSaveHandler(event, true, { skipLinkedPlaceValidation: true })
       .then((savedOrganizationId) => {
         if (type?.toUpperCase() == taxonomyClass.PLACE)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {

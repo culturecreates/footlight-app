@@ -610,6 +610,7 @@ export const formFieldValue = [
               accessibility={locationPlace?.accessibility}
               openingHours={locationPlace?.openingHours}
               calendarContentLanguage={calendarContentLanguage}
+              {...(locationPlace?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
               bordered
               closable
               onClose={() => {
