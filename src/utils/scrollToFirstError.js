@@ -83,10 +83,12 @@ export const scrollToFirstError = (error, form, options = {}) => {
   } else {
     const firstField = error.errorFields[0]?.name;
     if (firstField) {
-      if (useAbsoluteScroll) {
-        form.scrollToField(firstField, { behavior: 'auto', block: 'start' });
-      } else {
-        form.scrollToField(firstField, { behavior: 'smooth', block: scrollBlock });
+      if (typeof form?.scrollToField === 'function') {
+        if (useAbsoluteScroll) {
+          form.scrollToField(firstField, { behavior: 'auto', block: 'start' });
+        } else {
+          form.scrollToField(firstField, { behavior: 'smooth', block: scrollBlock });
+        }
       }
 
       if (useAbsoluteScroll) {
