@@ -138,7 +138,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       const request = getAllCalendars({
         page,
         limit: ITEMS_PER_PAGE,
-        sort: 'asc(name)',
+        sort: 'asc(name.en)',
         ...(pageSearch && { search: pageSearch }),
       });
       activeRequestRef.current = request;
