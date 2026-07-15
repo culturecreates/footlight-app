@@ -41,6 +41,49 @@ export const entitiesApi = createApi({
       }),
       transformResponse: (response) => response,
     }),
+    getEntityReverseLinksReport: builder.query({
+      query: ({ ids = [], calendarId }) => {
+        const defaultMessage = 'Failed to download impacted entities report.';
+        const idsArray = Array.isArray(ids) ? ids : [ids];
+        const searchParams = new URLSearchParams();
+
+        idsArray.forEach((entityId) => {
+          if (entityId) {
+            searchParams.append('entity-ids', entityId);
+          }
+        });
+
+        return {
+          url: `entities/reverse-links/report?${searchParams.toString()}`,
+          method: 'GET',
+          headers: {
+            'calendar-id': calendarId,
+          },
+          responseHandler: async (response) => {
+            const blob = await response.blob();
+
+            if (!response.ok) {
+              const errorText = await blob.text();
+              throw new Error(errorText || response.statusText || defaultMessage);
+            }
+
+            return {
+              blob,
+              contentDisposition: response.headers.get('content-disposition'),
+            };
+          },
+        };
+      },
+      transformResponse: (response) => response,
+      transformErrorResponse: (response) => {
+        const defaultMessage = 'Failed to download impacted entities report.';
+
+        return {
+          ...response,
+          data: typeof response?.error === 'string' ? response.error : response?.data || defaultMessage,
+        };
+      },
+    }),
     getEntitiesById: builder.query({
       query: ({ ids, calendarId }) => ({
         url: `entities/ids?${ids}`,
@@ -64,4 +107,5 @@ export const {
   useGetEntitiesByIdQuery,
   useLazyGetEntityDependencyCountQuery,
   useLazyGetEntityDependencyDetailsQuery,
+  useLazyGetEntityReverseLinksReportQuery,
 } = entitiesApi;

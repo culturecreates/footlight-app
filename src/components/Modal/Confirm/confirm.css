@@ -87,7 +87,8 @@
   line-height: 24px; /* 150% */
 }
 
-.global-delete-modal-container .ant-modal-confirm-btns button:first-child {
+.global-delete-modal-container .ant-modal-confirm-btns button:first-child,
+.global-delete-modal-container .confirm-footer-secondary-btn {
   border-radius: 4px;
   background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
   border: none;
@@ -97,4 +98,58 @@
   font-style: normal;
   font-weight: 600;
   line-height: 24px; /* 150% */
+}
+
+.taxonomy-delete-modal-container .taxonomy-delete-modal-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.taxonomy-delete-modal-container .taxonomy-delete-modal-bottom-actions {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 2;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.taxonomy-delete-modal-container .taxonomy-delete-modal-bottom-actions .outlined-button.ant-btn {
+  height: 40px;
+  padding: 8px 16px;
+  margin: 0;
+  align-items: center;
+}
+
+.taxonomy-delete-modal-container .taxonomy-delete-modal-bottom-actions .outlined-label {
+  color: var(--content-action-default, #1b3de6) !important;
+}
+
+.taxonomy-delete-modal-container .ant-modal-content {
+  position: relative;
+}
+
+@media only screen and (max-width: 575px) {
+  .taxonomy-delete-modal-container .ant-modal-confirm-btns {
+    height: auto;
+    min-height: 120px;
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .taxonomy-delete-modal-container .taxonomy-delete-modal-bottom-actions {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    height: auto;
+    margin-top: 0;
+  }
+
+  .taxonomy-delete-modal-container .taxonomy-delete-modal-bottom-actions .outlined-button.ant-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

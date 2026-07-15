@@ -1255,7 +1255,10 @@
             "published": "{{number}} published",
             "inReview": "{{number}} pending review",
             "draft": "{{number}} draft",
-            "success": "Success! The taxonomy has been deleted."
+            "success": "Success! The taxonomy has been deleted.",
+            "seeImpactedEntities": "See impacted entities",
+            "noImpactedEntitiesFound": "No impacted entities found.",
+            "reportDownloadError": "Unable to download impacted entities report."
           }
         }
       },
