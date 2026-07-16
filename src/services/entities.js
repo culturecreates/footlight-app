@@ -53,8 +53,10 @@ export const entitiesApi = createApi({
           }
         });
 
+        const queryString = searchParams.toString();
+
         return {
-          url: `entities/reverse-links/report?${searchParams.toString()}`,
+          url: `entities/reverse-links/report${queryString ? `?${queryString}` : ''}`,
           method: 'GET',
           headers: {
             'calendar-id': calendarId,

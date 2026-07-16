@@ -21,7 +21,7 @@ export const Confirm = ({ title, content, onCancel, onAction, okText, cancelText
     content: (
       <div style={{ padding: '24px' }}>
         <ExclamationCircleOutlined size="18px" />
-        {isStringContent ? <span style={{ fontSize: '16px' }}>{content}</span> : content}
+        {isStringContent ? <span>{content}</span> : content}
       </div>
     ),
     icon: null,

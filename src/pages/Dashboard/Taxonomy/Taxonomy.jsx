@@ -75,14 +75,6 @@ const downloadBlob = ({ blob, filename }) => {
   window.URL.revokeObjectURL(objectUrl);
 };
 
-const readBlobAsText = async (blob) => {
-  if (!blob || blob.size === 0) {
-    return '';
-  }
-
-  return blob.text();
-};
-
 const Taxonomy = () => {
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -108,7 +100,6 @@ const Taxonomy = () => {
   const [deleteTaxonomy, { isLoading: deleteTaxonomyLoading }] = useDeleteTaxonomyMutation();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
   const [getEntityReverseLinksReport] = useLazyGetEntityReverseLinksReportQuery();
-  const [impactReportDownloadingId, setImpactReportDownloadingId] = useState(null);
 
   const sortByParam = searchParams.get('sortBy');
 
@@ -265,30 +256,53 @@ const Taxonomy = () => {
     getDependencyDetails({ ids: id, calendarId })
       .unwrap()
       .then((res) => {
+        let isDownloadingReport = false;
+        let confirmInstance;
+
+        const getDeleteConfirmContent = () => (
+          <div className="taxonomy-delete-modal-content-wrapper">
+            <p style={{ marginBottom: 0 }}>
+              {`${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
+                'dashboard.taxonomy.listing.modal.contentDelete.impact',
+              )} ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
+                number: `${res?.events?.publishedEventCount}`,
+              })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
+                number: `${res?.events?.draftEventCount}`,
+              })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
+                number: `${res?.events?.pendingEventCount}`,
+              })}.`}
+            </p>
+            <div className="taxonomy-delete-modal-bottom-actions">
+              <Outlined
+                label={t('dashboard.taxonomy.listing.modal.contentDelete.seeImpactedEntities')}
+                onClick={handleImpactedEntitiesDownload}
+                loading={isDownloadingReport}
+                disabled={isDownloadingReport}
+                data-cy="taxonomy-impacted-entities-download-btn"
+              />
+            </div>
+          </div>
+        );
+
+        const updateConfirmContent = () => {
+          confirmInstance?.update({
+            content: getDeleteConfirmContent(),
+          });
+        };
+
         const handleImpactedEntitiesDownload = async () => {
-          if (impactReportDownloadingId === id) {
+          if (isDownloadingReport) {
             return;
           }
 
-          setImpactReportDownloadingId(id);
+          isDownloadingReport = true;
+          updateConfirmContent();
 
           try {
             const response = await getEntityReverseLinksReport({ ids: [id], calendarId }).unwrap();
             const reportBlob = response?.blob;
 
             if (!reportBlob || reportBlob.size === 0) {
-              notification.info({
-                description: t('dashboard.taxonomy.listing.modal.contentDelete.noImpactedEntitiesFound'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              return;
-            }
-
-            const reportText = await readBlobAsText(reportBlob);
-            if (!reportText.trim()) {
               notification.info({
                 description: t('dashboard.taxonomy.listing.modal.contentDelete.noImpactedEntitiesFound'),
                 placement: 'top',
@@ -306,21 +320,19 @@ const Taxonomy = () => {
             downloadBlob({ blob: reportBlob, filename });
           } catch (error) {
             notification.error({
-              description:
-                error?.data ||
-                error?.message ||
-                t('dashboard.taxonomy.listing.modal.contentDelete.reportDownloadError'),
+              description: error?.data || t('dashboard.taxonomy.listing.modal.contentDelete.reportDownloadError'),
               placement: 'top',
               closeIcon: <></>,
               maxCount: 1,
               duration: 3,
             });
           } finally {
-            setImpactReportDownloadingId(null);
+            isDownloadingReport = false;
+            updateConfirmContent();
           }
         };
 
-        Confirm({
+        confirmInstance = Confirm({
           title: t('dashboard.taxonomy.listing.modal.titleDelete'),
           onAction: () => {
             deleteTaxonomy({ id: id, calendarId: calendarId })
@@ -343,31 +355,7 @@ const Taxonomy = () => {
           },
           okText: t('dashboard.settings.addUser.delete'),
           cancelText: t('dashboard.settings.addUser.cancel'),
-          className: 'taxonomy-delete-modal-container',
-          content: (
-            <div className="taxonomy-delete-modal-content-wrapper">
-              <p style={{ marginBottom: 0 }}>
-                {`${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
-                  'dashboard.taxonomy.listing.modal.contentDelete.impact',
-                )} ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
-                  number: `${res?.events?.publishedEventCount}`,
-                })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
-                  number: `${res?.events?.draftEventCount}`,
-                })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
-                  number: `${res?.events?.pendingEventCount}`,
-                })}.`}
-              </p>
-              <div className="taxonomy-delete-modal-bottom-actions">
-                <Outlined
-                  label={t('dashboard.taxonomy.listing.modal.contentDelete.seeImpactedEntities')}
-                  onClick={handleImpactedEntitiesDownload}
-                  loading={impactReportDownloadingId === id}
-                  disabled={impactReportDownloadingId === id}
-                  data-cy="taxonomy-impacted-entities-download-btn"
-                />
-              </div>
-            </div>
-          ),
+          content: getDeleteConfirmContent(),
         });
       });
   };
