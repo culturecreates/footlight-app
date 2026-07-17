@@ -69,6 +69,8 @@
   },
   "dashboard": {
     "calendar": {
+      "searchPlaceholder": "Search calendars",
+      "noCalendarsFound": "No calendars found",
       "readOnlyMode": {
         "readOnlyMode": "Read-only mode",
         "heading": "Calendar in read only mode",

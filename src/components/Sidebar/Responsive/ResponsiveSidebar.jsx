@@ -138,7 +138,7 @@ function ResponsiveSidebar(props) {
       className="sidebar-navigation-menu-responsive-drawer"
       title={
         <div className="sidebar-calendar-menu-responsive">
-          <CalendarList pageNumber={pageNumber} setPageNumber={setPageNumber} allCalendarsData={allCalendarsData}>
+          <CalendarList allCalendarsData={allCalendarsData} pageNumber={pageNumber} setPageNumber={setPageNumber}>
             <Menu
               defaultSelectedKeys={['1']}
               style={{
