@@ -58,6 +58,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [calendars, setCalendars] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -192,6 +193,21 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   );
 
   useEffect(() => {
+    if (!open) return;
+    if (activeSearchTerm === searchQuery) return;
+
+    inFlightPageKeysRef.current.clear();
+    loadedPageKeysRef.current.clear();
+    loadingMoreRef.current = false;
+    setCalendars([]);
+    setTotalCount(0);
+    setCurrentPage(1);
+    setActiveSearchTerm(searchQuery);
+
+    loadPage(1, searchQuery, false);
+  }, [activeSearchTerm, loadPage, open, searchQuery]);
+
+  useEffect(() => {
     return () => {
       if (activeRequestRef.current?.abort) {
         activeRequestRef.current.abort();
@@ -208,13 +224,6 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   );
 
   useEffect(() => {
-    if (!open || !searchQuery || isFetching || !hasMore || loadingMoreRef.current) return;
-    if (!filteredCalendars.length) {
-      loadPage(currentPage + 1, searchQuery, true);
-    }
-  }, [open, searchQuery, isFetching, hasMore, filteredCalendars.length, loadPage, currentPage]);
-
-  useEffect(() => {
     const cachedData = cacheRef.current.get(cacheKey);
 
     if (open) {
@@ -222,10 +231,12 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
         setCalendars(cachedData.data);
         setTotalCount(cachedData.totalCount);
         setCurrentPage(cachedData.currentPage);
+        setActiveSearchTerm('');
       } else if (allCalendarsData?.data) {
         setCalendars(allCalendarsData.data);
         setTotalCount(allCalendarsData.count ?? allCalendarsData.data.length);
         setCurrentPage(1);
+        setActiveSearchTerm('');
         cacheRef.current.set(cacheKey, {
           data: allCalendarsData.data,
           totalCount: allCalendarsData.count ?? allCalendarsData.data.length,
@@ -233,6 +244,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
           timestamp: Date.now(),
         });
       } else {
+        setActiveSearchTerm('');
         loadPage(1, '', false);
       }
     } else {
@@ -252,6 +264,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       }
       setSearchInput('');
       setSearchQuery('');
+      setActiveSearchTerm('');
       inFlightPageKeysRef.current.clear();
       loadedPageKeysRef.current.clear();
       setCalendars([]);
