@@ -1351,9 +1351,11 @@ function CreateNewPlace() {
           }
         }
 
-        if (externalCalendarEntityData[0]?.place?.entityId) {
+        const externalContainedInPlaceId = externalCalendarEntityData[0]?.containedInPlace?.entityId;
+
+        if (externalContainedInPlaceId) {
           let placeIdsQuery = new URLSearchParams();
-          placeIdsQuery.append('ids', externalCalendarEntityData[0]?.place?.entityId);
+          placeIdsQuery.append('ids', externalContainedInPlaceId);
           getEntitiesById({ ids: placeIdsQuery, calendarId })
             .unwrap()
             .then((response) => {
@@ -1370,10 +1372,7 @@ function CreateNewPlace() {
               }
             })
             .catch((error) => console.log(error));
-          form.setFieldValue(
-            formFieldNames.CONTAINED_IN_PLACE,
-            externalCalendarEntityData[0]?.containedInPlace?.entityId,
-          );
+          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, externalContainedInPlaceId);
         }
 
         if (externalCalendarEntityData[0]?.containsPlace?.length > 0) {
@@ -2674,13 +2673,15 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)}
                   rules={[
-                    () => ({
-                      validator() {
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
                         if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)) {
-                          if (containedInPlace) {
+                          const containedInPlaceValue = value ?? getFieldValue(formFieldNames.CONTAINED_IN_PLACE);
+                          if (containedInPlaceValue) {
                             return Promise.resolve();
                           } else return Promise.reject(new Error(t('common.validations.informationRequired')));
                         }
+                        return Promise.resolve();
                       },
                     }),
                   ]}>
