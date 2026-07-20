@@ -164,6 +164,7 @@ function CreateNewPlace() {
   const artsDataId = location?.state?.data?.uri ?? null;
   const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
+  const shouldValidateOnOpen = location?.state?.data?.shouldValidateOnOpen === true;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.place);
@@ -291,6 +292,7 @@ function CreateNewPlace() {
   });
   const [geocoder, setGeocoder] = useState(null);
   const [dynamicFields, setDynamicFields] = useState([]);
+  const hasValidatedOnOpenRef = useRef(false);
 
   const placeRelationsImportConfig = getImportProviderConfig(importProviderContexts.CREATE_PLACE_RELATIONS);
   const externalSourcesQuery = getExternalSourcesQuery(importProviderContexts.CREATE_PLACE_RELATIONS);
@@ -502,6 +504,35 @@ function CreateNewPlace() {
     });
     return promise;
   };
+
+  const handleValidationError = useCallback(
+    (error, options = {}) => {
+      const { scrollBlock = 'center' } = options;
+      scrollToFirstError(error, form, {
+        scrollBlock,
+        getElement: (fieldNamePath, fieldName) =>
+          document.getElementsByClassName(fieldName)?.[0] ?? document.getElementById(fieldName),
+      });
+      message.warning({
+        duration: 10,
+        maxCount: 1,
+        key: 'place-save-as-warning',
+        content: (
+          <>
+            {t('dashboard.places.createNew.addPlace.notification.saveError')} &nbsp;
+            <Button
+              data-cy="button-place-save-as-warning"
+              type="text"
+              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+              onClick={() => message.destroy('place-save-as-warning')}
+            />
+          </>
+        ),
+        icon: <ExclamationCircleOutlined />,
+      });
+    },
+    [form, t],
+  );
 
   const onSaveHandler = (event) => {
     event?.preventDefault();
@@ -776,30 +807,7 @@ function CreateNewPlace() {
               });
           }
         })
-        .catch((error) => {
-          console.log(error);
-          scrollToFirstError(error, form, {
-            getElement: (fieldNamePath, fieldName) =>
-              document.getElementsByClassName(fieldName)?.[0] ?? document.getElementById(fieldName),
-          });
-          message.warning({
-            duration: 10,
-            maxCount: 1,
-            key: 'place-save-as-warning',
-            content: (
-              <>
-                {t('dashboard.places.createNew.addPlace.notification.saveError')} &nbsp;
-                <Button
-                  data-cy="button-place-save-as-warning"
-                  type="text"
-                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                  onClick={() => message.destroy('place-save-as-warning')}
-                />
-              </>
-            ),
-            icon: <ExclamationCircleOutlined />,
-          });
-        });
+        .catch((error) => handleValidationError(error));
     });
 
     return promise;
@@ -1343,9 +1351,11 @@ function CreateNewPlace() {
           }
         }
 
-        if (externalCalendarEntityData[0]?.place?.entityId) {
+        const externalContainedInPlaceId = externalCalendarEntityData[0]?.containedInPlace?.entityId;
+
+        if (externalContainedInPlaceId) {
           let placeIdsQuery = new URLSearchParams();
-          placeIdsQuery.append('ids', externalCalendarEntityData[0]?.place?.entityId);
+          placeIdsQuery.append('ids', externalContainedInPlaceId);
           getEntitiesById({ ids: placeIdsQuery, calendarId })
             .unwrap()
             .then((response) => {
@@ -1362,10 +1372,7 @@ function CreateNewPlace() {
               }
             })
             .catch((error) => console.log(error));
-          form.setFieldValue(
-            formFieldNames.CONTAINED_IN_PLACE,
-            externalCalendarEntityData[0]?.containedInPlace?.entityId,
-          );
+          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, externalContainedInPlaceId);
         }
 
         if (externalCalendarEntityData[0]?.containsPlace?.length > 0) {
@@ -1501,6 +1508,32 @@ function CreateNewPlace() {
     placesSearch('', 'containedInPlace');
     placesSearch('', 'containsPlace');
   }, []);
+
+  useEffect(() => {
+    const shouldAutoValidateOnOpen = shouldValidateOnOpen && (isRoutingToEventPage || isRoutingToOrganization);
+
+    if (!shouldAutoValidateOnOpen || hasValidatedOnOpenRef.current || debouncedLoading) {
+      return;
+    }
+
+    if (!publishValidateFields?.length) return;
+
+    const timer = setTimeout(() => {
+      if (hasValidatedOnOpenRef.current) return;
+      hasValidatedOnOpenRef.current = true;
+      form.validateFields(publishValidateFields).catch((error) => handleValidationError(error));
+    }, 180);
+
+    return () => clearTimeout(timer);
+  }, [
+    shouldValidateOnOpen,
+    isRoutingToEventPage,
+    isRoutingToOrganization,
+    debouncedLoading,
+    publishValidateFields,
+    form,
+    handleValidationError,
+  ]);
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
@@ -2640,13 +2673,15 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)}
                   rules={[
-                    () => ({
-                      validator() {
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
                         if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)) {
-                          if (containedInPlace) {
+                          const containedInPlaceValue = value ?? getFieldValue(formFieldNames.CONTAINED_IN_PLACE);
+                          if (containedInPlaceValue) {
                             return Promise.resolve();
                           } else return Promise.reject(new Error(t('common.validations.informationRequired')));
                         }
+                        return Promise.resolve();
                       },
                     }),
                   ]}>
