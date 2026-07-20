@@ -68,6 +68,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const loadedPageKeysRef = useRef(new Set());
   const latestRequestIdRef = useRef(0);
   const cacheRef = useRef(new Map());
+  const openRef = useRef(open);
   const latestStateRef = useRef({
     calendars: [],
     totalCount: 0,
@@ -105,6 +106,10 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       }
     });
   }, [cacheKey]);
+
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   useEffect(() => {
     latestStateRef.current = {
@@ -196,6 +201,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
 
   const debouncedSearch = useCallback(
     useDebounce((value) => {
+      if (!openRef.current) return;
       setSearchQuery(value);
     }, SEARCH_DELAY),
     [],

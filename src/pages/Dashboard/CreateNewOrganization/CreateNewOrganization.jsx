@@ -20,7 +20,13 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import Card from '../../../components/Card/Common/Event';
-import { dataTypes, formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
+import {
+  dataTypes,
+  formCategory,
+  formFieldValue,
+  formNames,
+  returnFormDataWithFields,
+} from '../../../constants/formFields';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -116,6 +122,7 @@ function CreateNewOrganization() {
   const artsDataId = location?.state?.data?.uri ?? null;
   const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
+  const shouldValidateOnOpen = location?.state?.data?.shouldValidateOnOpen === true;
 
   const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
     { id: organizationId, calendarId, sessionId: timestampRef },
@@ -166,6 +173,7 @@ function CreateNewOrganization() {
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [showDialog, setShowDialog] = useState(false);
   const [dynamicFields, setDynamicFields] = useState([]);
+  const hasValidatedOnOpenRef = useRef(false);
 
   const organizationPlaceImportConfig = getImportProviderConfig(importProviderContexts.CREATE_ORGANIZATION_PLACE);
   const externalSourcesQuery = getExternalSourcesQuery(importProviderContexts.CREATE_ORGANIZATION_PLACE);
@@ -316,10 +324,8 @@ function CreateNewOrganization() {
     return promise;
   };
 
-  const onSaveHandler = (event, toggle = false) => {
-    event?.preventDefault();
+  const getValidateFieldList = useCallback(() => {
     let validateFieldList = [];
-    let fallbackStatus = activeFallbackFieldsInfo;
 
     validateFieldList = validateFieldList?.concat(
       formFields
@@ -338,10 +344,68 @@ function CreateNewOrganization() {
       formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
 
+    return validateFieldList;
+  }, [formFields, formFieldProperties, calendarContentLanguage]);
+
+  const handleValidationError = useCallback(
+    (error, options = {}) => {
+      const { scrollBlock = 'center' } = options;
+      scrollToFirstError(error, form, {
+        scrollBlock,
+        getElement: (fieldNamePath, fieldName) => {
+          const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
+          const className = isDynamic ? String(fieldNamePath[1]) : fieldName;
+          return document.getElementsByClassName(className)?.[0];
+        },
+      });
+      message.warning({
+        duration: 10,
+        maxCount: 1,
+        key: 'organization-save-as-warning',
+        content: (
+          <>
+            {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
+            <Button
+              type="text"
+              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+              onClick={() => message.destroy('organization-save-as-warning')}
+            />
+          </>
+        ),
+        icon: <ExclamationCircleOutlined />,
+      });
+    },
+    [form, t],
+  );
+
+  const onSaveHandler = (event, toggle = false, options = {}) => {
+    const { skipLinkedPlaceValidation = false } = options;
+    event?.preventDefault();
+    const validateFieldList = getValidateFieldList();
+    let fallbackStatus = activeFallbackFieldsInfo;
+
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields(validateFieldList)
         .then(async () => {
+          const isInvalidLinkedPlace = locationPlace?.validationReport?.hasAllMandatoryFields === false;
+
+          if (isInvalidLinkedPlace && !skipLinkedPlaceValidation) {
+            const locationFieldName =
+              formFields?.find((field) => field?.name === formNames.ORGANIZATION.LOCATION)?.mappedField || 'place';
+            form.setFields([
+              {
+                name: [locationFieldName],
+                errors: [t('common.validations.informationRequired')],
+                value: locationPlace,
+              },
+            ]);
+
+            const validationError = new Error('Linked place is missing mandatory fields');
+            validationError.errorFields = [{ name: [locationFieldName] }];
+            throw validationError;
+          }
+
           setShowDialog(false);
           var values = form.getFieldsValue(true);
           let organizationPayload = {};
@@ -719,30 +783,8 @@ function CreateNewOrganization() {
           }
         })
         .catch((error) => {
-          console.log(error);
-          scrollToFirstError(error, form, {
-            getElement: (fieldNamePath, fieldName) => {
-              const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
-              const className = isDynamic ? String(fieldNamePath[1]) : fieldName;
-              return document.getElementsByClassName(className)?.[0];
-            },
-          });
-          message.warning({
-            duration: 10,
-            maxCount: 1,
-            key: 'organization-save-as-warning',
-            content: (
-              <>
-                {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
-                <Button
-                  type="text"
-                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                  onClick={() => message.destroy('person-save-as-warning')}
-                />
-              </>
-            ),
-            icon: <ExclamationCircleOutlined />,
-          });
+          handleValidationError(error);
+          reject(error);
         });
     });
 
@@ -759,7 +801,9 @@ function CreateNewOrganization() {
     })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesList(
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData, true),
+        );
       })
       .catch((error) => console.log(error));
     if (inputValue && inputValue !== '') {
@@ -805,7 +849,7 @@ function CreateNewOrganization() {
   };
 
   const placeNavigationHandler = (id, type, event) => {
-    onSaveHandler(event, true)
+    onSaveHandler(event, true, { skipLinkedPlaceValidation: true })
       .then((savedOrganizationId) => {
         if (type?.toUpperCase() == taxonomyClass.PLACE)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
@@ -815,6 +859,7 @@ function CreateNewOrganization() {
                   ? `${location.pathname}?id=${organizationId}`
                   : `${location.pathname}?id=${savedOrganizationId}`,
                 isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+                shouldValidateOnOpen: true,
               },
             },
           });
@@ -1220,6 +1265,23 @@ function CreateNewOrganization() {
       });
     }
   }, [organizationId]);
+
+  useEffect(() => {
+    if (!shouldValidateOnOpen || !isRoutingToEventPage || hasValidatedOnOpenRef.current || debouncedLoading) {
+      return;
+    }
+
+    const validateFieldList = getValidateFieldList();
+    if (!validateFieldList?.length) return;
+
+    const timer = setTimeout(() => {
+      if (hasValidatedOnOpenRef.current) return;
+      hasValidatedOnOpenRef.current = true;
+      form.validateFields(validateFieldList).catch((error) => handleValidationError(error));
+    }, 180);
+
+    return () => clearTimeout(timer);
+  }, [shouldValidateOnOpen, isRoutingToEventPage, debouncedLoading, getValidateFieldList, form, handleValidationError]);
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
