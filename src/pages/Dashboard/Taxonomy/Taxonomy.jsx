@@ -13,6 +13,7 @@ import { useDeleteTaxonomyMutation, useLazyGetAllTaxonomyQuery } from '../../../
 import UserSearch from '../../../components/Search/Events/EventsSearch';
 import { PathName } from '../../../constants/pathName';
 import AddEvent from '../../../components/Button/AddEvent';
+import Outlined from '../../../components/Button/Outlined/Outlined';
 import {
   SortAscendingOutlined,
   SortDescendingOutlined,
@@ -29,7 +30,10 @@ import ListItem from '../../../components/List/ListItem.jsx/ListItem';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/SearchableCheckbox';
-import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
+import {
+  useLazyGetEntityDependencyCountQuery,
+  useLazyGetEntityReverseLinksReportQuery,
+} from '../../../services/entities';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
@@ -37,6 +41,39 @@ import EntityReports from '../../../components/EntityReports/EntityReports';
 import { entitiesClass, REPORT_ACTION_KEY } from '../../../constants/entitiesClass';
 
 const { useBreakpoint } = Grid;
+
+const parseContentDispositionFilename = (contentDisposition, fallback = 'impacted-entities_report.csv') => {
+  if (!contentDisposition) return fallback;
+
+  const filenameStarMatch = contentDisposition.match(/filename\*=([^;]+)/i);
+  if (filenameStarMatch?.[1]) {
+    const rawValue = filenameStarMatch[1].trim();
+    const encodedFileName = rawValue.includes("''") ? rawValue.split("''").slice(1).join("''") : rawValue;
+    try {
+      const decoded = decodeURIComponent(encodedFileName.replace(/^"|"$/g, ''));
+      return decoded || fallback;
+    } catch (_error) {
+      // Fallback to plain filename parsing.
+    }
+  }
+
+  const filenameMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+  return filenameMatch?.[1] || fallback;
+};
+
+const downloadBlob = ({ blob, filename }) => {
+  const objectUrl = window.URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = objectUrl;
+  anchor.download = filename;
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+
+  window.URL.revokeObjectURL(objectUrl);
+};
 
 const Taxonomy = () => {
   const { calendarId } = useParams();
@@ -62,6 +99,7 @@ const Taxonomy = () => {
   });
   const [deleteTaxonomy, { isLoading: deleteTaxonomyLoading }] = useDeleteTaxonomyMutation();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
+  const [getEntityReverseLinksReport] = useLazyGetEntityReverseLinksReportQuery();
 
   const sortByParam = searchParams.get('sortBy');
 
@@ -218,7 +256,83 @@ const Taxonomy = () => {
     getDependencyDetails({ ids: id, calendarId })
       .unwrap()
       .then((res) => {
-        Confirm({
+        let isDownloadingReport = false;
+        let confirmInstance;
+
+        const getDeleteConfirmContent = () => (
+          <div className="taxonomy-delete-modal-content-wrapper">
+            <p style={{ marginBottom: 0 }}>
+              {`${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
+                'dashboard.taxonomy.listing.modal.contentDelete.impact',
+              )} ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
+                number: `${res?.events?.publishedEventCount}`,
+              })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
+                number: `${res?.events?.draftEventCount}`,
+              })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
+                number: `${res?.events?.pendingEventCount}`,
+              })}.`}
+            </p>
+            <div className="taxonomy-delete-modal-bottom-actions">
+              <Outlined
+                label={t('dashboard.taxonomy.listing.modal.contentDelete.seeImpactedEntities')}
+                onClick={handleImpactedEntitiesDownload}
+                loading={isDownloadingReport}
+                disabled={isDownloadingReport}
+                data-cy="taxonomy-impacted-entities-download-btn"
+              />
+            </div>
+          </div>
+        );
+
+        const updateConfirmContent = () => {
+          confirmInstance?.update({
+            content: getDeleteConfirmContent(),
+          });
+        };
+
+        const handleImpactedEntitiesDownload = async () => {
+          if (isDownloadingReport) {
+            return;
+          }
+
+          isDownloadingReport = true;
+          updateConfirmContent();
+
+          try {
+            const response = await getEntityReverseLinksReport({ ids: [id], calendarId }).unwrap();
+            const reportBlob = response?.blob;
+
+            if (!reportBlob || reportBlob.size === 0) {
+              notification.info({
+                description: t('dashboard.taxonomy.listing.modal.contentDelete.noImpactedEntitiesFound'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              return;
+            }
+
+            const filename = parseContentDispositionFilename(
+              response?.contentDisposition,
+              'impacted-entities_report.csv',
+            );
+            downloadBlob({ blob: reportBlob, filename });
+          } catch (error) {
+            notification.error({
+              description: error?.data || t('dashboard.taxonomy.listing.modal.contentDelete.reportDownloadError'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          } finally {
+            isDownloadingReport = false;
+            updateConfirmContent();
+          }
+        };
+
+        confirmInstance = Confirm({
           title: t('dashboard.taxonomy.listing.modal.titleDelete'),
           onAction: () => {
             deleteTaxonomy({ id: id, calendarId: calendarId })
@@ -241,15 +355,7 @@ const Taxonomy = () => {
           },
           okText: t('dashboard.settings.addUser.delete'),
           cancelText: t('dashboard.settings.addUser.cancel'),
-          content: `${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
-            'dashboard.taxonomy.listing.modal.contentDelete.impact',
-          )}  ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
-            number: `${res?.events?.publishedEventCount}`,
-          })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
-            number: `${res?.events?.draftEventCount}`,
-          })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
-            number: `${res?.events?.pendingEventCount}`,
-          })}.`,
+          content: getDeleteConfirmContent(),
         });
       });
   };

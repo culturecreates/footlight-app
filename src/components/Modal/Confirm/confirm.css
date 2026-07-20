@@ -10,6 +10,7 @@
 
 .global-delete-modal-container .ant-modal-content {
   border-radius: 8px !important;
+  position: relative;
 }
 
 .global-delete-modal-container .ant-modal-body {
@@ -43,16 +44,18 @@
   gap: 8px;
   border-radius: 4px;
   background: #ffcfcf;
+  color: var(--content-alert-error-darker, #ce1111);
   padding: 16px;
 }
 
-.global-delete-modal-container .ant-modal-confirm-content > div :first-child {
+.global-delete-modal-container .ant-modal-confirm-content > div > span:first-of-type {
   display: flex;
   align-items: flex-start;
   justify-content: center;
   margin-top: 2px;
 }
-.global-delete-modal-container .ant-modal-confirm-content > div :last-child {
+
+.global-delete-modal-container .ant-modal-confirm-content > div > span:last-of-type {
   color: var(--content-alert-error-darker, #ce1111);
   font-family: Helvetica;
   font-size: 18px;
@@ -97,4 +100,51 @@
   font-style: normal;
   font-weight: 600;
   line-height: 24px; /* 150% */
+}
+
+.global-delete-modal-container .taxonomy-delete-modal-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.global-delete-modal-container .taxonomy-delete-modal-bottom-actions {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+}
+
+.global-delete-modal-container .taxonomy-delete-modal-bottom-actions .outlined-button.ant-btn {
+  height: 38px;
+  margin: 0;
+}
+
+.global-delete-modal-container .taxonomy-delete-modal-bottom-actions .outlined-label {
+  color: var(--content-action-default, #1b3de6);
+}
+
+@media only screen and (max-width: 400px) {
+  .global-delete-modal-container .ant-modal-confirm-btns {
+    height: auto;
+    min-height: 104px;
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .global-delete-modal-container .taxonomy-delete-modal-bottom-actions {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 8px;
+  }
+
+  .global-delete-modal-container .taxonomy-delete-modal-bottom-actions .outlined-button.ant-btn {
+    width: 100%;
+  }
+
+  .global-delete-modal-container .taxonomy-delete-modal-bottom-actions .outlined-label {
+    font-size: 16px;
+    line-height: 24px;
+  }
 }
