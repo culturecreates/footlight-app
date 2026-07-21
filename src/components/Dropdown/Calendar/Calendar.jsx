@@ -265,9 +265,9 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       setSearchInput('');
       setSearchQuery('');
       setActiveSearchTerm('');
+      loadingMoreRef.current = false;
       inFlightPageKeysRef.current.clear();
       loadedPageKeysRef.current.clear();
-      setCalendars([]);
       setTotalCount(0);
       setCurrentPage(1);
     }
