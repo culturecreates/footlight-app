@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
+import { setRecentCalendarForUser } from '../../../utils/recentCalendarStorage';
 import LoadingIndicator from '../../LoadingIndicator';
 
 const hashString = (value = '') => {
@@ -281,6 +282,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const handleItemClick = (key) => {
     if (calendarIdInCookies !== key) {
       dispatch(setSelectedCalendar(String(key)));
+      setRecentCalendarForUser({ user, calendarId: key });
       sessionStorage.setItem('calendarId', key);
       setPageNumber(1);
       sessionStorage.clear();
