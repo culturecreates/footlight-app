@@ -9,19 +9,27 @@ const getSafeLocalStorage = () => {
 };
 
 const getUserIdentity = (user) => {
-  if (!user) return 'anonymous';
+  if (!user) return '';
 
-  return user?.id || 'unknown-user';
+  return user?.id ? String(user.id).trim() : '';
 };
 
-const getRecentCalendarStorageKey = (user) => `${RECENT_CALENDAR_STORAGE_PREFIX}:${getUserIdentity(user)}`;
+const getRecentCalendarStorageKey = (user) => {
+  const identity = getUserIdentity(user);
+  if (!identity) return '';
+
+  return `${RECENT_CALENDAR_STORAGE_PREFIX}:${identity}`;
+};
 
 export const getRecentCalendarForUser = (user) => {
   const storage = getSafeLocalStorage();
   if (!storage) return '';
 
+  const storageKey = getRecentCalendarStorageKey(user);
+  if (!storageKey) return '';
+
   try {
-    const value = storage.getItem(getRecentCalendarStorageKey(user));
+    const value = storage.getItem(storageKey);
     if (!value) return '';
     return String(value);
   } catch {
@@ -35,8 +43,11 @@ export const setRecentCalendarForUser = ({ user, calendarId }) => {
   const storage = getSafeLocalStorage();
   if (!storage) return;
 
+  const storageKey = getRecentCalendarStorageKey(user);
+  if (!storageKey) return;
+
   try {
-    storage.setItem(getRecentCalendarStorageKey(user), String(calendarId));
+    storage.setItem(storageKey, String(calendarId));
   } catch {
     // Ignore storage failures (private mode/quota) and keep runtime behavior unchanged.
   }
@@ -46,8 +57,11 @@ export const clearRecentCalendarForUser = (user) => {
   const storage = getSafeLocalStorage();
   if (!storage) return;
 
+  const storageKey = getRecentCalendarStorageKey(user);
+  if (!storageKey) return;
+
   try {
-    storage.removeItem(getRecentCalendarStorageKey(user));
+    storage.removeItem(storageKey);
   } catch {
     // Ignore storage failures.
   }

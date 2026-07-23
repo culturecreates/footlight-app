@@ -283,9 +283,9 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
     if (calendarIdInCookies !== key) {
       dispatch(setSelectedCalendar(String(key)));
       setRecentCalendarForUser({ user, calendarId: key });
-      sessionStorage.setItem('calendarId', key);
       setPageNumber(1);
       sessionStorage.clear();
+      sessionStorage.setItem('calendarId', key);
       setOpen(false);
       const origin = window.location.origin;
       const newUrl = `${origin}${PathName.Dashboard}/${key}${PathName.Events}`;
