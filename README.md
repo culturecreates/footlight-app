@@ -2,44 +2,85 @@
 
 This is the frontend for footlight CMS application.
 
-This is a create react app project.
+## Tech Stack
 
-## Available Scripts
+- React 18
+- Vite 7
+- React Router
+- Redux Toolkit + RTK Query
+- Ant Design
 
-In the project directory, you can run:
+## Prerequisites
 
-### `npm start`
+- Node.js 22.15.0 or newer
+- npm
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Setup
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Install dependencies:
 
-### `npm test`
+```bash
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Development
 
-### `npm run build:production`
+Start the Vite development server:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm run dev
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The app is served by Vite (default: http://localhost:5173).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Alternative start scripts for environment modes:
 
-### `npm run eject`
+```bash
+npm run start:staging
+npm run start:production
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Note: `npm start` is mapped to Vite and is equivalent to running `vite`.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Build
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Create a production-ready build:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+npm run build
+```
+
+This outputs static files to the `build/` directory.
+
+Mode-specific builds:
+
+```bash
+npm run build:staging
+npm run build:production
+```
+
+## Preview Built App
+
+Preview the most recent build locally:
+
+```bash
+npm run preview
+```
+
+Mode-specific preview scripts:
+
+```bash
+npm run preview:staging
+npm run preview:production
+```
+
+## Linting and Formatting
+
+```bash
+npm run lint
+npm run lint:fix
+npm run format
+```
 
 ## Project structure
 
@@ -67,6 +108,7 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 	├── redux               # Redux reducers
 	├── theme               # Configuration for styles
 	└── utils               # Reuseable helper methods
+└── vite.config.js          # Vite Configuration
 └── package-lock.json       # dependencies
 
 ```
