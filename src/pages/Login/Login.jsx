@@ -80,22 +80,16 @@ const Login = () => {
     }
 
     const savedAccessToken = Cookies.get('accessToken');
-    const calenderId = sessionStorage.getItem('calendarId');
     if (location?.state?.previousPath === 'logout') {
       dispatch(clearUser());
     }
-    if (
-      ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) &&
-      calenderId &&
-      calenderId != ''
-    ) {
+    if ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
   }, []);
 
   useEffect(() => {
-    const calenderId = sessionStorage.getItem('calendarId');
-    if (accessToken && accessToken != '' && calenderId && calenderId != '') {
+    if (accessToken && accessToken != '') {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
   }, [accessToken]);
