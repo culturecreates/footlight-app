@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './dashboard.css';
 import { Grid, Layout, Row, Col } from 'antd';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
@@ -25,6 +25,7 @@ import { calendarModes } from '../../constants/calendarModes';
 import { useAuth } from '../../hooks/useAuth';
 import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator';
+import { getRecentCalendarForUser, setRecentCalendarForUser } from '../../utils/recentCalendarStorage';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -49,7 +50,6 @@ function Dashboard() {
 
   const {
     currentData: allCalendarsData,
-    isLoading,
     isSuccess,
     refetch,
   } = useGetAllCalendarsQuery(
@@ -69,6 +69,16 @@ function Dashboard() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const persistActiveCalendar = useCallback(
+    (id) => {
+      if (!id) return;
+      sessionStorage.setItem('calendarId', id);
+      dispatch(setSelectedCalendar(id));
+      setRecentCalendarForUser({ user, calendarId: id });
+    },
+    [dispatch, user],
+  );
+
   useEffect(() => {
     if (location?.state?.previousPath?.toLowerCase() === 'login') {
       dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
@@ -79,9 +89,9 @@ function Dashboard() {
   useEffect(() => {
     const accessTokenFromCookie = Cookies.get('accessToken');
     const refreshTokenFromCookie = Cookies.get('refreshToken');
-    const calendarIdFromCookie = sessionStorage.getItem('calendarId');
+    const calendarIdFromSessionStorage = sessionStorage.getItem('calendarId');
 
-    const calId = calendarId || calendarIdFromCookie;
+    const calId = calendarId || calendarIdFromSessionStorage;
     if (calendarId) sessionStorage.setItem('calendarId', calId);
 
     if (!checkToken(accessToken, accessTokenFromCookie)) navigate(PathName.Login);
@@ -113,8 +123,7 @@ function Dashboard() {
       getCalendar({ id: calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
-          sessionStorage.setItem('calendarId', calendarId);
-          dispatch(setSelectedCalendar(String(calendarId)));
+          persistActiveCalendar(calendarId);
           if (response?.mode === calendarModes.READ_ONLY) {
             setIsReadOnly(true);
             setIsModalVisible(true);
@@ -126,16 +135,47 @@ function Dashboard() {
           }
         });
     } else {
-      let activeCalendarId = sessionStorage.getItem('calendarId');
-      if (activeCalendarId && accessToken) {
-        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-      } else if (!isLoading && allCalendarsData?.data) {
-        activeCalendarId = allCalendarsData?.data[0]?.id;
-        sessionStorage.setItem('calendarId', activeCalendarId);
-        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-      }
+      const resolveAndNavigateToCalendar = async () => {
+        const recentCalendarId = getRecentCalendarForUser(user);
+        if (recentCalendarId) {
+          try {
+            await getCalendar({ id: recentCalendarId, sessionId: timestampRef }).unwrap();
+            persistActiveCalendar(recentCalendarId);
+            navigate(`${PathName.Dashboard}/${recentCalendarId}${PathName.Events}`);
+            return;
+          } catch {
+            // Ignore stale/inaccessible stored recent ID and continue with legacy fallback.
+          }
+        }
+
+        let activeCalendarId = sessionStorage.getItem('calendarId');
+
+        if (activeCalendarId && accessToken) {
+          persistActiveCalendar(activeCalendarId);
+          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+          return;
+        }
+
+        const firstCalendarId = allCalendarsData?.data?.[0]?.id;
+        if (!firstCalendarId) return;
+
+        persistActiveCalendar(firstCalendarId);
+        navigate(`${PathName.Dashboard}/${firstCalendarId}${PathName.Events}`);
+      };
+
+      resolveAndNavigateToCalendar();
     }
-  }, [calendarId, isLoading, allCalendarsData, isSuccess]);
+  }, [
+    accessToken,
+    allCalendarsData,
+    calendarId,
+    getCalendar,
+    isSuccess,
+    navigate,
+    persistActiveCalendar,
+    timestampRef,
+    user,
+  ]);
 
   useEffect(() => {
     if (reloadStatus) {
