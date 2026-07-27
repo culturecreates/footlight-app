@@ -2022,8 +2022,6 @@ function AddEvent() {
         })
         .catch((error) => console.log(error));
 
-    // When the event is still published, revert it to draft first and wait for the
-    // backend to complete the transition; saving while published returns a 409 conflict.
     if (eventId && eventData?.publishState === eventPublishState.PUBLISHED) {
       updateEventState({ id: eventId, calendarId, publishState: eventPublishState.DRAFT })
         .unwrap()
