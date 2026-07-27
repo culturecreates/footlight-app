@@ -1969,54 +1969,69 @@ function AddEvent() {
   };
 
   const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
-    saveAsDraftHandler(event, true, eventPublishState.DRAFT)
-      .then((savedEventId) => {
-        if ((!eventId || eventId === '') && newEventId === null)
-          notification.success({
-            description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-            placement: 'top',
-            closeIcon: <></>,
-            maxCount: 1,
-            duration: 3,
-          });
-        else
-          notification.success({
-            description: t('dashboard.events.addEditEvent.notification.updateEvent'),
-            placement: 'top',
-            closeIcon: <></>,
-            maxCount: 1,
-            duration: 3,
-          });
+    const saveAndNavigate = () =>
+      saveAsDraftHandler(event, true, eventPublishState.DRAFT)
+        .then((savedEventId) => {
+          if ((!eventId || eventId === '') && newEventId === null)
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          else
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
 
-        if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${id}`, {
-            state: {
-              data: {
-                isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
-                shouldValidateOnOpen: true,
+          if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
+            navigate(
+              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${id}`,
+              {
+                state: {
+                  data: {
+                    isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
+                    shouldValidateOnOpen: true,
+                  },
+                },
               },
-            },
-          });
-        else if (type?.toUpperCase() == taxonomyClass.PERSON)
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${id}`, {
-            state: {
-              data: {
-                isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
-                shouldValidateOnOpen: true,
+            );
+          else if (type?.toUpperCase() == taxonomyClass.PERSON)
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${id}`, {
+              state: {
+                data: {
+                  isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
+                  shouldValidateOnOpen: true,
+                },
               },
-            },
-          });
-        else if (type?.toUpperCase() == taxonomyClass.PLACE)
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
-            state: {
-              data: {
-                isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
-                shouldValidateOnOpen: true,
+            });
+          else if (type?.toUpperCase() == taxonomyClass.PLACE)
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
+              state: {
+                data: {
+                  isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}`,
+                  shouldValidateOnOpen: true,
+                },
               },
-            },
-          });
-      })
-      .catch((error) => console.log(error));
+            });
+        })
+        .catch((error) => console.log(error));
+
+    // When the event is still published, revert it to draft first and wait for the
+    // backend to complete the transition; saving while published returns a 409 conflict.
+    if (eventId && eventData?.publishState === eventPublishState.PUBLISHED) {
+      updateEventState({ id: eventId, calendarId, publishState: eventPublishState.DRAFT })
+        .unwrap()
+        .then(() => saveAndNavigate())
+        .catch((error) => console.log(error));
+    } else {
+      saveAndNavigate();
+    }
   };
   const FeaturedJSX = (
     <Row justify={'start'} align={'top'} gutter={[8, 0]}>
