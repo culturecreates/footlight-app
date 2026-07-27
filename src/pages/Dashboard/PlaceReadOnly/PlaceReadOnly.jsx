@@ -28,7 +28,7 @@ import SelectionItem from '../../../components/List/SelectionItem/SelectionItem'
 import Alert from '../../../components/Alert';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataPlaceEntity } from '../../../services/artsData';
@@ -388,7 +388,7 @@ function PlaceReadOnly() {
                     </div>
                   ) : artsData ? (
                     <ArtsDataInfo
-                      artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                      artsDataLink={createArtsDataLink(artsDataLinkChecker(placeData?.sameAs))}
                       name={contentLanguageBilingual({
                         data: artsData?.name,
                         requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
