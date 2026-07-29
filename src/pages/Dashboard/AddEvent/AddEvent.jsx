@@ -616,7 +616,7 @@ function AddEvent() {
         Object.keys(errors).map((fieldName) => ({
           name: fieldName,
           errors: errors[fieldName].errors,
-          value: data,
+          value: errors[fieldName].value,
         })),
       );
     }
