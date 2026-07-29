@@ -26,7 +26,7 @@ import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOpt
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
@@ -368,7 +368,7 @@ function OrganizationsReadOnly() {
                     </div>
                   ) : artsData ? (
                     <ArtsDataInfo
-                      artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
+                      artsDataLink={createArtsDataLink(artsDataLinkChecker(organizationData?.sameAs))}
                       name={contentLanguageBilingual({
                         data: artsData?.name,
                         requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
