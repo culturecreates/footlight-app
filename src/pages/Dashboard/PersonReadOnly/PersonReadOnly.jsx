@@ -24,7 +24,7 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { useGetPersonQuery } from '../../../services/people';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { artsDataLinkChecker, createArtsDataLink } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
@@ -318,7 +318,7 @@ function PersonReadOnly() {
                     </div>
                   ) : artsData ? (
                     <ArtsDataInfo
-                      artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                      artsDataLink={createArtsDataLink(artsDataLinkChecker(personData?.sameAs))}
                       name={contentLanguageBilingual({
                         data: artsData?.name,
                         requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),

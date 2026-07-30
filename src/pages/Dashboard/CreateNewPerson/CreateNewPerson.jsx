@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, notification, message, Skeleton } from 'antd';
 import Icon, {
@@ -95,6 +95,7 @@ function CreateNewPerson() {
   const artsDataId = location?.state?.data?.uri ?? null;
   const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
+  const shouldValidateOnOpen = location?.state?.data?.shouldValidateOnOpen === true;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
@@ -134,6 +135,7 @@ function CreateNewPerson() {
   const [dynamicFields, setDynamicFields] = useState([]);
   const [addedFields, setAddedFields] = useState([]);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
+  const hasValidatedOnOpenRef = useRef(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
@@ -291,10 +293,9 @@ function CreateNewPerson() {
     setScrollToSelectedField(array?.at(-1));
   };
 
-  const onSaveHandler = (event) => {
-    event?.preventDefault();
+  const getValidateFieldList = useCallback(() => {
     let validateFieldList = [];
-    let fallbackStatus = activeFallbackFieldsInfo;
+
     validateFieldList = validateFieldList?.concat(
       formFields
         ?.map((field) => {
@@ -312,6 +313,45 @@ function CreateNewPerson() {
     validateFieldList = validateFieldList?.concat(
       formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
+
+    return validateFieldList;
+  }, [formFields, formFieldProperties, calendarContentLanguage]);
+
+  const handleValidationError = useCallback(
+    (error, options = {}) => {
+      const { scrollBlock = 'center' } = options;
+      scrollToFirstError(error, form, {
+        scrollBlock,
+        getElement: (fieldNamePath, fieldName) => {
+          const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
+          const className = isDynamic ? String(fieldNamePath[1]) : fieldName;
+          return document.getElementsByClassName(className)?.[0];
+        },
+      });
+      message.warning({
+        duration: 10,
+        maxCount: 1,
+        key: 'person-save-as-warning',
+        content: (
+          <>
+            {t('dashboard.people.createNew.addPerson.notification.saveError')} &nbsp;
+            <Button
+              type="text"
+              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+              onClick={() => message.destroy('person-save-as-warning')}
+            />
+          </>
+        ),
+        icon: <ExclamationCircleOutlined />,
+      });
+    },
+    [form, t],
+  );
+
+  const onSaveHandler = (event) => {
+    event?.preventDefault();
+    let fallbackStatus = activeFallbackFieldsInfo;
+    const validateFieldList = getValidateFieldList();
 
     form
       .validateFields(validateFieldList)
@@ -433,32 +473,7 @@ function CreateNewPerson() {
           addUpdatePersonApiHandler(personPayload);
         }
       })
-      .catch((error) => {
-        console.log(error);
-        scrollToFirstError(error, form, {
-          getElement: (fieldNamePath, fieldName) => {
-            const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
-            const className = isDynamic ? String(fieldNamePath[1]) : fieldName;
-            return document.getElementsByClassName(className)?.[0];
-          },
-        });
-        message.warning({
-          duration: 10,
-          maxCount: 1,
-          key: 'person-save-as-warning',
-          content: (
-            <>
-              {t('dashboard.people.createNew.addPerson.notification.saveError')} &nbsp;
-              <Button
-                type="text"
-                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                onClick={() => message.destroy('person-save-as-warning')}
-              />
-            </>
-          ),
-          icon: <ExclamationCircleOutlined />,
-        });
-      });
+      .catch((error) => handleValidationError(error));
   };
 
   const onFieldsChange = (changedValue) => {
@@ -774,6 +789,23 @@ function CreateNewPerson() {
       setNewEntityData({ name });
     }
   }, []);
+
+  useEffect(() => {
+    if (!shouldValidateOnOpen || !isRoutingToEventPage || hasValidatedOnOpenRef.current || debouncedLoading) {
+      return;
+    }
+
+    const validateFieldList = getValidateFieldList();
+    if (!validateFieldList?.length) return;
+
+    const timer = setTimeout(() => {
+      if (hasValidatedOnOpenRef.current) return;
+      hasValidatedOnOpenRef.current = true;
+      form.validateFields(validateFieldList).catch((error) => handleValidationError(error));
+    }, 180);
+
+    return () => clearTimeout(timer);
+  }, [shouldValidateOnOpen, isRoutingToEventPage, debouncedLoading, getValidateFieldList, form, handleValidationError]);
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>

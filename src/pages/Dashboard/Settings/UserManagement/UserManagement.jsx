@@ -38,6 +38,14 @@ import { entitiesClass, REPORT_ACTION_KEY } from '../../../../constants/entities
 
 const { useBreakpoint } = Grid;
 
+const USER_STATUS_KEYS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  INVITED: 'INVITED',
+  REMOVED: 'REMOVED',
+  LEFT: 'LEFT',
+};
+
 const UserManagement = (props) => {
   const [
     // eslint-disable-next-line no-unused-vars
@@ -221,7 +229,7 @@ const UserManagement = (props) => {
 
   const currentCalendarUserStatus = (item) => {
     if (item?.roles.length == 0) {
-      return userActivityStatus[0].key;
+      return USER_STATUS_KEYS.ACTIVE;
     }
     const activeCalendar = item?.roles.filter((r) => {
       return r.calendarId == calendarId;
@@ -238,15 +246,15 @@ const UserManagement = (props) => {
     });
 
     const isUserInactiveInThisCalendar =
-      userStatus[0]?.status === userActivityStatus[1].key ||
-      userStatus[0]?.status === userActivityStatus[3].key ||
-      userStatus[0]?.status === userActivityStatus[4].key;
+      userStatus[0]?.status === USER_STATUS_KEYS.INACTIVE ||
+      userStatus[0]?.status === USER_STATUS_KEYS.REMOVED ||
+      userStatus[0]?.status === USER_STATUS_KEYS.LEFT;
 
     if (adminCheckHandler({ calendar, user })) {
       dropdownItems.push({ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') });
     }
 
-    if (adminCheckHandler({ calendar, user }) && userStatus[0]?.status === userActivityStatus[2].key) {
+    if (adminCheckHandler({ calendar, user }) && userStatus[0]?.status === USER_STATUS_KEYS.INVITED) {
       dropdownItems.push({
         key: 'withDrawInvitation',
         label: t('dashboard.settings.userManagement.tooltip.withDrawInvitation'),
@@ -268,10 +276,10 @@ const UserManagement = (props) => {
     }
 
     if (
-      !(userStatus[0]?.status === userActivityStatus[4].key || userStatus[0]?.status === userActivityStatus[2].key) &&
+      !(userStatus[0]?.status === USER_STATUS_KEYS.LEFT || userStatus[0]?.status === USER_STATUS_KEYS.INVITED) &&
       !item?.isSuperAdmin
     ) {
-      if (!(userStatus[0]?.status == userActivityStatus[0].key)) {
+      if (!(userStatus[0]?.status == USER_STATUS_KEYS.ACTIVE)) {
         dropdownItems.push({
           key: 'activateOrDeactivate',
           label: t('dashboard.settings.userManagement.tooltip.activate'),
@@ -285,7 +293,7 @@ const UserManagement = (props) => {
     }
 
     if (
-      !(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key) &&
+      !(userStatus[0]?.status === USER_STATUS_KEYS.ACTIVE || userStatus[0]?.status === USER_STATUS_KEYS.INVITED) &&
       !item?.isSuperAdmin
     ) {
       dropdownItems.push({
@@ -369,15 +377,14 @@ const UserManagement = (props) => {
   };
 
   const tooltipItemClickHandler = ({ key, item }) => {
-    let invitationLink;
     const currentCalendarRole = item?.roles?.find((role) => role.calendarId === calendarId) ?? {};
     const userStatus = currentCalendarRole?.status;
     const userInvitationId = currentCalendarRole?.invitationId;
 
     const isUserInactiveInThisCalendar = [
-      userActivityStatus[1].key,
-      userActivityStatus[3].key,
-      userActivityStatus[4].key,
+      USER_STATUS_KEYS.INACTIVE,
+      USER_STATUS_KEYS.REMOVED,
+      USER_STATUS_KEYS.LEFT,
     ].includes(userStatus);
 
     switch (key) {
@@ -426,18 +433,26 @@ const UserManagement = (props) => {
           });
         break;
 
-      case 'copyInvitationLink':
-        if (item?.userStatus === 'ACTIVE') invitationLink = import.meta.env.VITE_APP_ACCEPT_URL + item?.invitationId;
-        else if (item?.userStatus === 'INVITED')
-          invitationLink = import.meta.env.VITE_APP_INVITE_URL + item?.invitationId;
+      case 'copyInvitationLink': {
+        const invitationBaseUrl =
+          userStatus === USER_STATUS_KEYS.ACTIVE
+            ? import.meta.env.VITE_APP_ACCEPT_URL
+            : userStatus === USER_STATUS_KEYS.INVITED
+            ? import.meta.env.VITE_APP_INVITE_URL
+            : null;
+
+        const invitationLink =
+          invitationBaseUrl && userInvitationId ? `${invitationBaseUrl}${userInvitationId}` : undefined;
+
         copyText({
           textToCopy: invitationLink,
           message: t('dashboard.settings.userManagement.tooltip.modal.copyText'),
         });
         break;
+      }
 
       case 'activateOrDeactivate':
-        if (userStatus === userActivityStatus[0].key) {
+        if (userStatus === USER_STATUS_KEYS.ACTIVE) {
           deActivateUser({ id: item._id, calendarId: calendarId })
             .unwrap()
             .then(() => {
