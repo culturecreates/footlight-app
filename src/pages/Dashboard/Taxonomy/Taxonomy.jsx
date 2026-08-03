@@ -255,23 +255,13 @@ const Taxonomy = () => {
   const deleteTaxonomyHandler = (id) => {
     getDependencyDetails({ ids: id, calendarId })
       .unwrap()
-      .then((res) => {
+      .then(() => {
         let isDownloadingReport = false;
         let confirmInstance;
 
         const getDeleteConfirmContent = () => (
           <div className="taxonomy-delete-modal-content-wrapper">
-            <p style={{ marginBottom: 0 }}>
-              {`${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
-                'dashboard.taxonomy.listing.modal.contentDelete.impact',
-              )} ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
-                number: `${res?.events?.publishedEventCount}`,
-              })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
-                number: `${res?.events?.draftEventCount}`,
-              })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
-                number: `${res?.events?.pendingEventCount}`,
-              })}.`}
-            </p>
+            <p style={{ marginBottom: 0 }}>{t('dashboard.taxonomy.listing.modal.contentDelete.description')}</p>
             <div className="taxonomy-delete-modal-bottom-actions">
               <Outlined
                 label={t('dashboard.taxonomy.listing.modal.contentDelete.seeImpactedEntities')}
