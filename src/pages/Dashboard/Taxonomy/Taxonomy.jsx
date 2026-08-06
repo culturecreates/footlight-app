@@ -42,23 +42,22 @@ import { entitiesClass, REPORT_ACTION_KEY } from '../../../constants/entitiesCla
 
 const { useBreakpoint } = Grid;
 
-const parseContentDispositionFilename = (contentDisposition, fallback = 'impacted-entities_report.csv') => {
-  if (!contentDisposition) return fallback;
+const slugifyForFilename = (value) => {
+  return (value || '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-{2,}/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
 
-  const filenameStarMatch = contentDisposition.match(/filename\*=([^;]+)/i);
-  if (filenameStarMatch?.[1]) {
-    const rawValue = filenameStarMatch[1].trim();
-    const encodedFileName = rawValue.includes("''") ? rawValue.split("''").slice(1).join("''") : rawValue;
-    try {
-      const decoded = decodeURIComponent(encodedFileName.replace(/^"|"$/g, ''));
-      return decoded || fallback;
-    } catch (_error) {
-      // Fallback to plain filename parsing.
-    }
-  }
-
-  const filenameMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
-  return filenameMatch?.[1] || fallback;
+const buildTaxonomyImpactedEntitiesFilename = (taxonomyName) => {
+  const slug = slugifyForFilename(taxonomyName) || 'taxonomy';
+  const date = new Date().toISOString().slice(0, 10);
+  return `${slug}-impacted-entities-${date}.csv`;
 };
 
 const downloadBlob = ({ blob, filename }) => {
@@ -252,7 +251,7 @@ const Taxonomy = () => {
       !isReadOnly &&
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
-  const deleteTaxonomyHandler = (id) => {
+  const deleteTaxonomyHandler = (id, taxonomyName) => {
     getDependencyDetails({ ids: id, calendarId })
       .unwrap()
       .then(() => {
@@ -303,10 +302,7 @@ const Taxonomy = () => {
               return;
             }
 
-            const filename = parseContentDispositionFilename(
-              response?.contentDisposition,
-              'impacted-entities_report.csv',
-            );
+            const filename = buildTaxonomyImpactedEntitiesFilename(taxonomyName);
             downloadBlob({ blob: reportBlob, filename });
           } catch (error) {
             notification.error({
@@ -607,7 +603,14 @@ const Taxonomy = () => {
                                   style={{ color: '#222732', fontSize: '24px' }}
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    deleteTaxonomyHandler(item?.id);
+                                    deleteTaxonomyHandler(
+                                      item?.id,
+                                      contentLanguageBilingual({
+                                        data: item?.name,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      }),
+                                    );
                                   }}
                                 />
                               ),
