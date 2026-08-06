@@ -1253,7 +1253,10 @@
             "published": "publié - {{number}}",
             "draft": "brouillon - {{number}}",
             "inReview": "attente d'approbation - {{number}}",
-            "success": "Succès ! La taxonomie a été supprimée."
+            "success": "Succès ! La taxonomie a été supprimée.",
+            "seeImpactedEntities": "Voir les entités concernées",
+            "noImpactedEntitiesFound": "Aucune entité concernée trouvée.",
+            "reportDownloadError": "Impossible de télécharger le rapport des entités concernées."
           }
         }
       },

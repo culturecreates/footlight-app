@@ -4,6 +4,7 @@ import './confirm.css';
 
 export const Confirm = ({ title, content, onCancel, onAction, okText, cancelText, className, closable }) => {
   const { confirm } = Modal;
+  const isStringContent = typeof content === 'string';
 
   let modalClassName = ['global-delete-modal-container'];
   if (className) {
@@ -20,7 +21,7 @@ export const Confirm = ({ title, content, onCancel, onAction, okText, cancelText
     content: (
       <div style={{ padding: '24px' }}>
         <ExclamationCircleOutlined size="18px" />
-        <span style={{ fontSize: '16px' }}>{content}</span>
+        {isStringContent ? <span>{content}</span> : content}
       </div>
     ),
     icon: null,
