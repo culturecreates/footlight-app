@@ -239,7 +239,7 @@ jobs:
     if: failure()
     steps:
     - name: Send email via Amazon SES
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_SES_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}
