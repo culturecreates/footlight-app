@@ -970,7 +970,7 @@
         "email": "Courriel",
         "userType": "Type d’utilisateur",
         "languagePreference": "Préférence de langue",
-        "calendarAccess": "Accès aux calendriers",
+        "calendarAccess": "Membre de",
         "details": "Détails",
         "breadcrumb": "Retour à la liste des utilisateurs"
       },
@@ -1012,7 +1012,7 @@
         "organizationSearchHeading": "Organisation",
         "organizationSearchDescription": "Ajouter une organisation qui sera liée à ce profil d’utilisateur.",
         "changePassWord": "Changer le mot de passe",
-        "calendars": "Calendriers",
+        "calendars": "Les listages",
         "calendarsDescription": "Sélectionnez des calendriers disponibles auxquels cet utilisateur peut se joindre.",
         "calendarSearchHeading": "Accès aux calendriers",
         "searchCalendars": "Rechercher des calendriers",
