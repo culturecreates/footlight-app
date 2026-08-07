@@ -57,7 +57,7 @@ jobs:
 
       # Invalidate CloudFront (this action)
       - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v3
+        uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: E3S97I9K4Q2UXB
           PATHS: "/*"
