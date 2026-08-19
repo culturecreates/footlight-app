@@ -94,6 +94,17 @@
   padding-bottom: 8px;
 }
 
+.calendar-settings-wrapper .calendar-settings-heading-col {
+  position: sticky;
+  top: 160px;
+  z-index: 9;
+  background: #fff;
+  padding-top: 24px;
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
 .calendar-settings-wrapper .calendar-settings-section-heading {
   position: sticky;
   top: 160px;
@@ -107,9 +118,21 @@
   .calendar-settings-wrapper .calendar-settings-save-col {
     top: 128px;
     padding-top: 40px;
+    padding-bottom: 0;
+    background: transparent;
+  }
+  .calendar-settings-wrapper .calendar-settings-heading-col {
+    position: static;
+    padding-top: 40px;
   }
   .calendar-settings-wrapper .calendar-settings-section-heading {
     position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-settings-wrapper .calendar-settings-save-col {
+    top: 130px;
   }
 }
 

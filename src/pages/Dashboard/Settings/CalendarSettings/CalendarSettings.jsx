@@ -327,21 +327,17 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   return !debouncedLoading ? (
     <div>
       <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
-        <Col span={24} className="calendar-settings-save-col">
-          <Row justify={'space-between'} align={'middle'}>
-            <Col>
-              <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
-                {t('dashboard.settings.calendarSettings.generalSettings')}
-              </h5>
-            </Col>
-            <Col>
-              <PrimaryButton
-                label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                data-cy="button-save-calendar-settings"
-                onClick={onSaveHandler}
-              />
-            </Col>
-          </Row>
+        <Col flex="auto" className="calendar-settings-heading-col">
+          <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
+            {t('dashboard.settings.calendarSettings.generalSettings')}
+          </h5>
+        </Col>
+        <Col flex="none" className="calendar-settings-save-col">
+          <PrimaryButton
+            label={t('dashboard.events.addEditEvent.saveOptions.save')}
+            data-cy="button-save-calendar-settings"
+            onClick={onSaveHandler}
+          />
         </Col>
         <Col span={24}>
           <p className="calendar-settings-description" data-cy="para-calendar-settings-description">

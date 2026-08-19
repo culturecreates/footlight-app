@@ -319,8 +319,8 @@ function PlaceReadOnly() {
       <Row gutter={[32, 24]} className="read-only-wrapper place-read-only" style={{ margin: 0 }}>
         <div className="place-read-only-sticky-header" ref={stickyHeaderRef}>
           <Col className="top-level-column" span={24}>
-            <Row>
-              <Col flex="auto">
+            <Row wrap={false}>
+              <Col flex="auto" className="place-read-only-breadcrumb-col">
                 <Breadcrumbs
                   name={contentLanguageBilingual({
                     data: placeData?.name,
