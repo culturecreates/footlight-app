@@ -317,6 +317,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
       <div className="calendar-search-wrapper">
         <Input
           className="calendar-search-input"
+          data-cy="input-calendar-search"
           prefix={<SearchOutlined className="calendar-search-icon" />}
           placeholder={t('dashboard.calendar.searchPlaceholder')}
           bordered={false}
@@ -325,7 +326,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
           autoFocus
         />
       </div>
-      <div className="calendar-list-wrapper" ref={listRef} onScroll={handleScroll}>
+      <div data-cy="calendar-list" className="calendar-list-wrapper" ref={listRef} onScroll={handleScroll}>
         {filteredCalendars.map((item) => {
           const name = contentLanguageBilingual({
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -336,22 +337,23 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
             <div
               key={item.id}
               className="calendar-dropdown-item"
+              data-cy="calendar-dropdown-item"
               role="button"
               tabIndex={0}
               onClick={() => handleItemClick(item.id)}
               onKeyDown={(event) => handleItemKeyDown(event, item.id)}>
               <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt="" />
-              <span className="calendar-item-name">{name}</span>
+              <span data-cy="calendar-item-name" className="calendar-item-name">{name}</span>
             </div>
           );
         })}
         {isFetching && (
-          <div className="calendar-load-more-indicator">
+          <div data-cy="calendar-load-more-indicator" className="calendar-load-more-indicator">
             <LoadingIndicator />
           </div>
         )}
         {!filteredCalendars.length && !isFetching && (
-          <div className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
+          <div data-cy="calendar-empty-state" className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
         )}
       </div>
     </div>
