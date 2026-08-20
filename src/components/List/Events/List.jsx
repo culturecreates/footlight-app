@@ -97,6 +97,7 @@ function Lists(props) {
         return (
           <List.Item
             className="event-list-item-wrapper"
+            data-cy="list-item-event"
             key={index}
             actions={[
               calendar[0]?.role === userRoles.GUEST ||
@@ -125,7 +126,7 @@ function Lists(props) {
                       },
                     }}
                     trigger={['click']}>
-                    <span>
+                    <span data-cy="button-event-actions">
                       <MoreOutlined
                         className="event-list-more-icon"
                         style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
@@ -149,7 +150,7 @@ function Lists(props) {
                   updateEventState={updateEventState}
                   deleteEvent={deleteEvent}
                   featureEvents={featureEvents}>
-                  <span>
+                  <span data-cy="button-event-actions">
                     <MoreOutlined
                       className="event-list-more-icon"
                       style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
@@ -171,7 +172,7 @@ function Lists(props) {
                   updateEventState={updateEventState}
                   deleteEvent={deleteEvent}
                   featureEvents={featureEvents}>
-                  <span>
+                  <span data-cy="button-event-actions">
                     <MoreOutlined className="event-list-more-icon-responsive" key={index} />
                   </span>
                 </EventStatusOptions>
