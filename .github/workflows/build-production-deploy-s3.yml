@@ -33,7 +33,7 @@ jobs:
       image: sleavely/node-awscli:22.x
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         
       - name: setup node
         run: npm install --legacy-peer-deps
@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Send email via Amazon SES
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v5
       with:
         aws-access-key-id: ${{ secrets.AWS_SES_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SES_SECRET_ACCESS_KEY }}
