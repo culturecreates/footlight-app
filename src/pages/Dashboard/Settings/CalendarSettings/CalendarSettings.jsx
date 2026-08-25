@@ -43,6 +43,36 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const [updateCalendar, { isLoading: updateCalendarLoading }] = useUpdateCalendarMutation();
   const [addImage, { isLoading: addImageLoading }] = useAddImageMutation();
   const [debouncedLoading, setDebouncedLoading] = useState(true);
+  const [activeHeadingKey, setActiveHeadingKey] = useState('dashboard.settings.calendarSettings.generalSettings');
+
+  useEffect(() => {
+    let frameId;
+    const handleScroll = () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        const widgetHeading = document.getElementById('widget-settings-section');
+        const filterHeading = document.getElementById('filter-settings-section');
+        const saveCol = document.querySelector('.calendar-settings-save-col');
+
+        const threshold = saveCol ? saveCol.getBoundingClientRect().bottom + 40 : 200;
+
+        if (filterHeading && filterHeading.getBoundingClientRect().top <= threshold) {
+          setActiveHeadingKey('dashboard.settings.calendarSettings.filterPersonalization');
+        } else if (widgetHeading && widgetHeading.getBoundingClientRect().top <= threshold) {
+          setActiveHeadingKey('dashboard.settings.calendarSettings.calendarWidgetSetup');
+        } else {
+          setActiveHeadingKey('dashboard.settings.calendarSettings.generalSettings');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    handleScroll();
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, []);
 
   const isAnyLoading = useMemo(
     () =>
@@ -329,12 +359,12 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
       <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
         <Col span={24} className="calendar-settings-save-col">
           <Row justify={'space-between'} align={'middle'}>
-            <Col>
-              <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
-                {t('dashboard.settings.calendarSettings.generalSettings')}
+            <Col style={{ flex: 1, minWidth: 0, marginRight: '16px' }}>
+              <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings" style={{ margin: 0 }}>
+                {t(activeHeadingKey)}
               </h5>
             </Col>
-            <Col>
+            <Col style={{ flexShrink: 0 }}>
               <PrimaryButton
                 label={t('dashboard.events.addEditEvent.saveOptions.save')}
                 data-cy="button-save-calendar-settings"
@@ -388,7 +418,10 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               );
             })}
             <Divider />
-            <h5 className="calendar-settings-heading calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
+            <h5
+              id="widget-settings-section"
+              className="calendar-settings-heading calendar-settings-section-heading"
+              style={{ paddingTop: '24px' }}>
               {t('dashboard.settings.calendarSettings.calendarWidgetSetup')}
             </h5>
             <p className="calendar-settings-description">
@@ -408,7 +441,10 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               );
             })}
             <Divider />
-            <h5 className="calendar-settings-heading calendar-settings-section-heading" style={{ paddingTop: '24px' }}>
+            <h5
+              id="filter-settings-section"
+              className="calendar-settings-heading calendar-settings-section-heading"
+              style={{ paddingTop: '24px' }}>
               {t('dashboard.settings.calendarSettings.filterPersonalization')}
             </h5>
             <p className="calendar-settings-description">

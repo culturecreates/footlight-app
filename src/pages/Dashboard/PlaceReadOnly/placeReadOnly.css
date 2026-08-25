@@ -32,6 +32,18 @@
   padding: 0px !important;
 }
 
+.place-read-only .place-read-only-breadcrumb-col {
+  min-width: 0;
+  padding-right: 16px;
+}
+
+.place-read-only .place-read-only-breadcrumb-col .breadcrumbs,
+.place-read-only .place-read-only-breadcrumb-col .breadcrumb-item {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .place-read-only .read-only-detail-heading {
   font-size: 24px;
 }

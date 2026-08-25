@@ -3,6 +3,8 @@
   font-weight: 700;
   line-height: 32px;
   color: #222732;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .calendar-settings-wrapper .calendar-settings-title {
@@ -95,21 +97,16 @@
 }
 
 .calendar-settings-wrapper .calendar-settings-section-heading {
-  position: sticky;
-  top: 160px;
-  z-index: 9;
-  background: #fff;
   padding-bottom: 8px;
   width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 767px) {
   .calendar-settings-wrapper .calendar-settings-save-col {
     top: 128px;
     padding-top: 40px;
-  }
-  .calendar-settings-wrapper .calendar-settings-section-heading {
-    position: static;
   }
 }
 
