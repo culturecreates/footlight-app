@@ -75,6 +75,23 @@
         "readOnlyMode": "Read-only mode",
         "heading": "Calendar in read only mode",
         "content": "The calendar is currently read only. Editing is unavailable for users. Try again later or contact your admin at {{adminEmail}} for details."
+      },
+      "createCalendar": {
+        "createButton": "Create new calendar",
+        "modalTitle": "Create calendar",
+        "contentLanguage": "Languages",
+        "name": "Name",
+        "namePlaceholder": "Enter calendar name",
+        "namePlaceholderWhenNoLanguage": "Select languages first",
+        "contact": "Contact",
+        "timezone": "Time zone",
+        "dateFormat": "Date format display",
+        "eventTemplate": "Event template",
+        "searchResultTemplate": "Search results template",
+        "cancel": "Cancel",
+        "create": "Create",
+        "success": "Calendar created successfully",
+        "duplicate": "A calendar with this name already exists"
       }
     },
     "topNavigation": {

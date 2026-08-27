@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import './calendar.css';
 import { Dropdown, Input } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlice';
@@ -14,6 +14,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
 import { setRecentCalendarForUser } from '../../../utils/recentCalendarStorage';
 import LoadingIndicator from '../../LoadingIndicator';
+import CreateCalendar from '../../Modal/CreateCalendar';
 
 const hashString = (value = '') => {
   let hash = 0;
@@ -57,6 +58,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   const [getAllCalendars, { isFetching }] = useLazyGetAllCalendarsQuery();
 
   const [open, setOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
@@ -354,19 +356,36 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
           <div className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
         )}
       </div>
+      {user?.isSuperAdmin && (
+        <div className="calendar-create-footer">
+          <button
+            className="calendar-create-button"
+            data-cy="button-create-new-calendar"
+            onClick={() => {
+              setOpen(false);
+              setCreateModalOpen(true);
+            }}>
+            <PlusOutlined style={{ marginRight: 6 }} />
+            {t('dashboard.calendar.createCalendar.createButton')}
+          </button>
+        </div>
+      )}
     </div>
   );
 
   return (
-    <Dropdown
-      open={open}
-      onOpenChange={handleOpenChange}
-      trigger={['click']}
-      overlayClassName="calendar-dropdown-overlay"
-      dropdownRender={renderDropdown}
-      getPopupContainer={(trigger) => trigger.parentNode}>
-      {children}
-    </Dropdown>
+    <>
+      <Dropdown
+        open={open}
+        onOpenChange={handleOpenChange}
+        trigger={['click']}
+        overlayClassName="calendar-dropdown-overlay"
+        dropdownRender={renderDropdown}
+        getPopupContainer={(trigger) => trigger.parentNode}>
+        {children}
+      </Dropdown>
+      {user?.isSuperAdmin && <CreateCalendar open={createModalOpen} setOpen={setCreateModalOpen} />}
+    </>
   );
 }
 

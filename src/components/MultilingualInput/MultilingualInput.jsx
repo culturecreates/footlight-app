@@ -46,7 +46,13 @@ function MultilingualInput({ children, ...rest }) {
     entityId,
     form,
   } = rest;
-  const [currentCalendarData] = useOutletContext();
+  let currentCalendarData = null;
+  try {
+    const outletContext = useOutletContext();
+    currentCalendarData = Array.isArray(outletContext) ? outletContext[0] : outletContext;
+  } catch {
+    currentCalendarData = null;
+  }
   const { t } = useTranslation();
   const [activeKey, setActiveKey] = React.useState(defaultTabProp);
 
