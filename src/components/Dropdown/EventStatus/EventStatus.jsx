@@ -4,7 +4,6 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
-import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
@@ -23,6 +22,7 @@ function EventStatusOptions({
   updateEventState,
   deleteEvent,
   featureEvents,
+  onGetStructuredData,
   ...rest
 }) {
   const { t } = useTranslation();
@@ -33,7 +33,20 @@ function EventStatusOptions({
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
   const canFeature = [userRoles.ADMIN, userRoles.EDITOR].includes(calendar[0]?.role) || user?.isSuperAdmin;
 
-  const items = eventPublishOptions
+  // Write-action tier, reproducing the previous ProtectedComponents wrapper (super admin bypasses
+  // read-only) plus the duplicate-only dropdown the list rendered for guests and non-creator
+  // contributors. The dropdown itself now always renders so read actions stay available to everyone.
+  const role = calendar[0]?.role;
+  const isOwner = user?.id === creator?.userId;
+  let writeTier; // 'all' | 'duplicateOnly' | 'none'
+  if (user?.isSuperAdmin) writeTier = 'all';
+  else if (isReadOnly) writeTier = 'none';
+  else if (role === userRoles.ADMIN || role === userRoles.EDITOR) writeTier = 'all';
+  else if (role === userRoles.CONTRIBUTOR) writeTier = isOwner ? 'all' : 'duplicateOnly';
+  else if (role === userRoles.GUEST) writeTier = 'duplicateOnly';
+  else writeTier = 'none';
+
+  const publishStateItems = eventPublishOptions
     .filter((item) => canFeature || (item.key !== '4' && item.key !== '5'))
     .map((item) => {
       if (publishState == eventPublishState.PUBLISHED) {
@@ -82,6 +95,17 @@ function EventStatusOptions({
       }
     });
 
+  let writeItems = [];
+  if (writeTier === 'all') writeItems = publishStateItems.filter(Boolean);
+  else if (writeTier === 'duplicateOnly') writeItems = eventPublishOptions.filter((item) => item.key === '3');
+
+  const hasWriteItems = writeItems.some((item) => item?.key);
+
+  const items = [
+    { key: '7', label: t('dashboard.events.publishOptions.copyJsonLd') },
+    ...(hasWriteItems ? [{ type: 'divider', key: 'jsonld-divider' }, ...writeItems] : []),
+  ];
+
   const showDeleteConfirm = () => {
     confirm({
       title: t('dashboard.events.deleteEvent.title'),
@@ -110,7 +134,8 @@ function EventStatusOptions({
     });
   };
   const onClick = ({ key }) => {
-    if (key == '2') showDeleteConfirm();
+    if (key === '7') onGetStructuredData && onGetStructuredData(eventData);
+    else if (key == '2') showDeleteConfirm();
     else if (key === '0' || key === '1' || key === '6') {
       const isPublishing = key === '0';
       const isUnpublishing = key === '1' || key === '6';
@@ -163,23 +188,21 @@ function EventStatusOptions({
     }
   };
   return (
-    <ProtectedComponents creator={creator} isReadOnly={isReadOnly}>
-      <Dropdown
-        {...rest}
-        className="calendar-dropdown-wrapper"
-        overlayClassName="event-dropdown-popup"
-        overlayStyle={{
-          minWidth: '150px',
-        }}
-        getPopupContainer={(trigger) => trigger.parentNode}
-        menu={{
-          items,
-          onClick,
-        }}
-        trigger={['click']}>
-        {children}
-      </Dropdown>
-    </ProtectedComponents>
+    <Dropdown
+      {...rest}
+      className="calendar-dropdown-wrapper"
+      overlayClassName="event-dropdown-popup"
+      overlayStyle={{
+        minWidth: '150px',
+      }}
+      getPopupContainer={(trigger) => trigger.parentNode}
+      menu={{
+        items,
+        onClick,
+      }}
+      trigger={['click']}>
+      {children}
+    </Dropdown>
   );
 }
 

@@ -59,6 +59,7 @@ import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInject
 import { getLabelByTimezoneValue } from '../../../utils/handleTimeZones';
 import { Translation } from 'react-i18next';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import StructuredDataModal from '../../../components/StructuredDataModal';
 import '../../../components/NoContent/noContent.css';
 import {
   isReadOnlyValueEmpty,
@@ -116,6 +117,7 @@ function EventReadOnly() {
   const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [structuredDataOpen, setStructuredDataOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -376,6 +378,16 @@ function EventReadOnly() {
 
   return !debouncedLoading ? (
     <div>
+      <StructuredDataModal
+        visible={structuredDataOpen}
+        onCancel={() => setStructuredDataOpen(false)}
+        eventId={eventId}
+        eventName={contentLanguageBilingual({
+          data: eventData?.name,
+          requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
+        })}
+      />
       <Row gutter={[32, 24]} className="read-only-wrapper events-read-only-wrapper " style={{ margin: 0 }}>
         <div className="event-read-only-sticky-header" ref={stickyHeaderRef}>
           <Col className="top-level-column" span={24}>
@@ -389,12 +401,19 @@ function EventReadOnly() {
                   })}
                 />
               </Col>
-              <Col flex="60px" style={{ marginLeft: 'auto' }}>
-                <ReadOnlyProtectedComponent
-                  creator={eventData.createdByUserId}
-                  isReadOnly={isReadOnly}
-                  eventState={eventData?.publishState}>
-                  <div className="button-container">
+              <Col flex="none" style={{ marginLeft: 'auto' }}>
+                <div className="button-container" style={{ display: 'flex', gap: '8px' }}>
+                  <OutlinedButton
+                    data-cy="button-get-structured-data"
+                    label={t('dashboard.events.structuredData.getStructuredData')}
+                    size="middle"
+                    style={{ height: '40px' }}
+                    onClick={() => setStructuredDataOpen(true)}
+                  />
+                  <ReadOnlyProtectedComponent
+                    creator={eventData.createdByUserId}
+                    isReadOnly={isReadOnly}
+                    eventState={eventData?.publishState}>
                     <OutlinedButton
                       data-cy="button-edit-place"
                       label={t('dashboard.places.readOnly.edit')}
@@ -409,8 +428,8 @@ function EventReadOnly() {
                         )
                       }
                     />
-                  </div>
-                </ReadOnlyProtectedComponent>
+                  </ReadOnlyProtectedComponent>
+                </div>
               </Col>
             </Row>
           </Col>

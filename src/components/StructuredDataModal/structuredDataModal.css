@@ -1,0 +1,46 @@
+.structured-data-modal .ant-modal-body {
+  overflow-x: hidden;
+}
+
+.structured-data-modal .structured-data-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 100%;
+}
+
+.structured-data-modal .structured-data-help {
+  margin: 0;
+  color: #646d7b;
+  font-size: 14px;
+}
+
+.structured-data-modal .switch-wrapper-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.structured-data-modal .switch-wrapper-container .switch-label {
+  font-size: 14px;
+  color: #1f2635;
+}
+
+.structured-data-modal .structured-data-series-note {
+  margin-bottom: 0;
+}
+
+.structured-data-modal .structured-data-code {
+  margin: 0;
+  padding: 12px;
+  max-height: 45vh;
+  overflow: auto;
+  white-space: pre;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  background-color: #f7f8fa;
+  border: 1px solid #e3e5e8;
+  border-radius: 4px;
+  color: #1f2635;
+}
