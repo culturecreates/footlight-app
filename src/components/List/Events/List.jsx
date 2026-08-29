@@ -23,6 +23,7 @@ import { sameAsTypes } from '../../../constants/sameAsTypes';
 import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio';
 import Link from 'antd/lib/typography/Link';
 import { truncateText } from '../../../utils/stringManipulations';
+import { paginationItemRender } from '../../../utils/paginationItemRender';
 
 const { useBreakpoint } = Grid;
 
@@ -73,6 +74,7 @@ function Lists(props) {
       dataSource={data?.data}
       bordered={false}
       pagination={{
+        itemRender: paginationItemRender,
         onChange: (page) => {
           setPageNumber(page);
         },

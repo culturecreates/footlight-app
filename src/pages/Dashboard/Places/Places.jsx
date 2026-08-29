@@ -47,6 +47,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import EntityReports from '../../../components/EntityReports/EntityReports';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { reconcileTaxonomyFilters } from '../../../utils/taxonomyFilterReconciliation';
+import { paginationItemRender } from '../../../utils/paginationItemRender';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -725,6 +726,7 @@ function Places() {
                     dataSource={allPlacesData?.data}
                     bordered={false}
                     pagination={{
+                      itemRender: paginationItemRender,
                       onChange: (page) => {
                         setPageNumber(page);
                       },
