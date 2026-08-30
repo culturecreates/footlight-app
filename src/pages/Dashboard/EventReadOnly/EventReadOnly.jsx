@@ -404,7 +404,7 @@ function EventReadOnly() {
               <Col flex="none" style={{ marginLeft: 'auto' }}>
                 <div className="button-container" style={{ display: 'flex', gap: '8px' }}>
                   <OutlinedButton
-                    data-cy="button-get-structured-data"
+                    data-cy="button-get-structured-data-event"
                     label={t('dashboard.events.structuredData.getStructuredData')}
                     size="middle"
                     style={{ height: '40px' }}
