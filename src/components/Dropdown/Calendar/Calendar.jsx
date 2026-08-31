@@ -15,8 +15,7 @@ import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
 import { setRecentCalendarForUser } from '../../../utils/recentCalendarStorage';
 import LoadingIndicator from '../../LoadingIndicator';
 import CreateCalendar from '../../Modal/CreateCalendar';
-import { adminCheckHandler } from '../../../utils/adminCheckHandler';
-import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { userRoles } from '../../../constants/userRoles';
 
 const hashString = (value = '') => {
   let hash = 0;
@@ -91,11 +90,8 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
 
   const canCreateCalendar = useMemo(() => {
     if (user?.isSuperAdmin) return true;
-    const activeCalendarId = calendarIdInCookies || sessionStorage.getItem('calendarId');
-    if (!activeCalendarId) return false;
-    const calendar = getCurrentCalendarDetailsFromUserDetails(user, activeCalendarId);
-    return adminCheckHandler({ user, calendar });
-  }, [user, calendarIdInCookies, open]);
+    return user?.roles?.some((r) => r?.role === userRoles.ADMIN) ?? false;
+  }, [user]);
 
   const filteredCalendars = useMemo(() => {
     const normalizedSearch = normalizeForSearch(searchQuery);

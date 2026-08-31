@@ -1,12 +1,12 @@
 import React from 'react';
-import { Form, Input, notification, message } from 'antd';
+import { Form, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import CustomModal from '../Common/CustomModal';
 import { useAddCalendarMutation } from '../../../services/calendar';
 import { calendarLanguages, contentLanguageKeyMap } from '../../../constants/contentLanguage';
-import { timeZones, dateFormats } from '../../../constants/calendarSettingsForm';
+import { dateFormats } from '../../../constants/calendarSettingsForm';
 import Select from '../../Select';
 import TreeSelectOption from '../../TreeSelectOption';
 import Tags from '../../Tags/Common/Tags';
@@ -47,15 +47,7 @@ function CreateCalendar({ open, setOpen }) {
         contentLanguage: values.contentLanguage,
       };
 
-      if (values.contact) dto.contact = values.contact;
-      if (values.timezone) dto.timezone = values.timezone;
       if (values.dateFormatDisplay) dto.dateFormatDisplay = values.dateFormatDisplay;
-
-      if (values.eventTemplate || values.searchResultTemplate) {
-        dto.widgetSettings = {};
-        if (values.eventTemplate) dto.widgetSettings.eventDetailsUrlTemplate = values.eventTemplate;
-        if (values.searchResultTemplate) dto.widgetSettings.listEventsUrlTemplate = values.searchResultTemplate;
-      }
 
       const response = await addCalendar({ data: dto }).unwrap();
       const id = response?.id ?? response?.data?.id;
@@ -105,11 +97,14 @@ function CreateCalendar({ open, setOpen }) {
       footer={null}
       wrapClassName="create-calendar-modal-wrapper"
       className="create-calendar-modal">
-      <Form form={form} layout="vertical" preserve={false} className="create-calendar-form">
+      <Form form={form} layout="vertical" preserve={false} className="create-calendar-form" autoComplete="off">
         <Form.Item
           name="contentLanguage"
           label={
-            <span className="create-calendar-label">{t('dashboard.calendar.createCalendar.contentLanguage')}</span>
+            <span className="create-calendar-label">
+              {t('dashboard.calendar.createCalendar.contentLanguage')}
+              <span className="create-calendar-required-star">*</span>
+            </span>
           }
           rules={[{ required: true, message: t('common.validations.informationRequired') }]}
           data-cy="form-item-create-calendar-content-language">
@@ -138,47 +133,29 @@ function CreateCalendar({ open, setOpen }) {
           />
         </Form.Item>
 
-        {contentLanguage && contentLanguage.length > 0 ? (
-          <CreateMultiLingualFormItems
-            calendarContentLanguage={contentLanguage}
-            form={form}
-            name="name"
-            data={{}}
-            validations={t('common.validations.informationRequired')}
-            required={true}
-            placeholder={namePlaceholderMap}
-            data-cy="input-create-calendar-name">
-            <StyledInput data-cy="input-create-calendar-name-input" />
-          </CreateMultiLingualFormItems>
-        ) : (
-          <Form.Item
-            label={<span className="create-calendar-label">{t('dashboard.calendar.createCalendar.name')}</span>}
-            required>
-            <Input disabled placeholder={t('dashboard.calendar.createCalendar.namePlaceholderWhenNoLanguage')} />
-          </Form.Item>
+        {contentLanguage && contentLanguage.length > 0 && (
+          <div className="create-calendar-name-field">
+            <label className="create-calendar-label create-calendar-name-label">
+              {t('dashboard.calendar.createCalendar.name')}
+              <span className="create-calendar-required-star">*</span>
+            </label>
+            <CreateMultiLingualFormItems
+              calendarContentLanguage={contentLanguage}
+              form={form}
+              name="name"
+              data={{}}
+              validations={t('common.validations.informationRequired')}
+              required={true}
+              placeholder={namePlaceholderMap}
+              data-cy="input-create-calendar-name">
+              <StyledInput
+                placeholder={namePlaceholder}
+                data-cy="input-create-calendar-name-input"
+                autoComplete="off"
+              />
+            </CreateMultiLingualFormItems>
+          </div>
         )}
-
-        <Form.Item
-          name="contact"
-          label={t('dashboard.calendar.createCalendar.contact')}
-          rules={[{ type: 'email', message: t('login.validations.invalidEmail') }]}
-          data-cy="form-item-create-calendar-contact">
-          <StyledInput
-            placeholder={t('dashboard.settings.calendarSettings.placeholders.contact')}
-            data-cy="input-create-calendar-contact"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="timezone"
-          label={t('dashboard.calendar.createCalendar.timezone')}
-          data-cy="form-item-create-calendar-timezone">
-          <Select
-            options={timeZones}
-            placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
-            data-cy="select-create-calendar-timezone"
-          />
-        </Form.Item>
 
         <Form.Item
           name="dateFormatDisplay"
@@ -188,42 +165,6 @@ function CreateCalendar({ open, setOpen }) {
             options={dateFormats}
             placeholder={t('dashboard.settings.calendarSettings.placeholders.dateFormatDisplay')}
             data-cy="select-create-calendar-date-format"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="eventTemplate"
-          label={t('dashboard.calendar.createCalendar.eventTemplate')}
-          rules={[{ type: 'url', message: t('dashboard.events.addEditEvent.validations.url') }]}
-          extra={
-            <span className="create-calendar-help">
-              {t('dashboard.settings.calendarSettings.eventTemplateDescription')}
-            </span>
-          }
-          data-cy="form-item-create-calendar-event-template">
-          <StyledInput
-            addonBefore="URL"
-            autoComplete="off"
-            placeholder={t('dashboard.settings.calendarSettings.placeholders.eventTemplate')}
-            data-cy="input-create-calendar-event-template"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="searchResultTemplate"
-          label={t('dashboard.calendar.createCalendar.searchResultTemplate')}
-          rules={[{ type: 'url', message: t('dashboard.events.addEditEvent.validations.url') }]}
-          extra={
-            <span className="create-calendar-help">
-              {t('dashboard.settings.calendarSettings.searchResultTemplateDescription')}
-            </span>
-          }
-          data-cy="form-item-create-calendar-search-result-template">
-          <StyledInput
-            addonBefore="URL"
-            autoComplete="off"
-            placeholder={t('dashboard.settings.calendarSettings.placeholders.searchResultTemplate')}
-            data-cy="input-create-calendar-search-result-template"
           />
         </Form.Item>
 
