@@ -45,6 +45,7 @@ function MultilingualInput({ children, ...rest }) {
     isLabelWarningVisible = {},
     entityId,
     form,
+    namePrefix = [],
   } = rest;
   const [currentCalendarData] = useOutletContext();
   const { t } = useTranslation();
@@ -61,6 +62,7 @@ function MultilingualInput({ children, ...rest }) {
       dataCyCollection,
       placeholderCollection,
       form,
+      namePrefix,
     });
 
   const inputRefs = useRef([]);
@@ -110,8 +112,11 @@ function MultilingualInput({ children, ...rest }) {
   const shouldDisplayLabel = (required, fieldData, entityId, langKey, fieldName) => {
     const hasFieldData = fieldData != null ? isDataValid(fieldData) : false;
 
-    // Check current form value first, fall back to initial fieldData
-    const currentFormValue = form?.getFieldValue(fieldName);
+    // Check current form value first, fall back to initial fieldData.
+    // In a Form.List, the child name is relative, so prefix it for imperative form reads.
+    const absoluteFieldName =
+      Array.isArray(fieldName) && namePrefix?.length > 0 ? [...namePrefix, ...fieldName] : fieldName;
+    const currentFormValue = absoluteFieldName ? form?.getFieldValue(absoluteFieldName) : undefined;
     const hasCurrentValue = currentFormValue !== undefined && currentFormValue !== null;
     const isFieldEmpty = hasCurrentValue
       ? !currentFormValue || currentFormValue === ''

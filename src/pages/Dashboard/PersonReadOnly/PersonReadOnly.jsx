@@ -654,7 +654,7 @@ function PersonReadOnly() {
                                       <div key={index}>
                                         {Object.keys(link?.name ?? {})?.length > 0 && (
                                           <FallbackInjectorForReadOnlyPages
-                                            fieldName="additionalLinkName"
+                                            fieldName={`additionalLinkName-${index}`}
                                             data={link?.name}
                                             languageKey={activeTabKey}>
                                             {(processedData) =>

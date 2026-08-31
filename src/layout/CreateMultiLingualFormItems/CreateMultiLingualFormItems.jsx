@@ -37,6 +37,7 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
     placeholder,
     entityId,
     formItemProps = {},
+    namePrefix = [],
     ...additionalProps
   } = rest;
   const { t } = useTranslation();
@@ -44,11 +45,18 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
   // Determine if this is in a Form.List context by checking name structure
   const isListContext = Array.isArray(name) && name.length > 1;
 
+  // Relative path used for Form.Item name (antd resolves it against the surrounding Form.List).
+  const relativePath = (lanKey) => (isListContext ? [...name, lanKey] : [name, lanKey]);
+
+  // Absolute path used for imperative form API calls (getFieldValue/setFieldValue/isFieldTouched/useWatch).
+  // In a Form.List, the Form.Item name is relative, so imperative calls must be prefixed with the list path.
+  const absolutePath = (lanKey) => (isListContext ? [...namePrefix, ...name, lanKey] : [name, lanKey]);
+
   // Watch all language-specific field paths to trigger re-renders when any language field changes
   const fieldPathsToWatch =
     calendarContentLanguage?.map((language) => {
       const lanKey = contentLanguageKeyMap[language];
-      return isListContext ? [...name, lanKey] : [name, lanKey];
+      return absolutePath(lanKey);
     }) || [];
 
   useWatch(fieldPathsToWatch, form);
@@ -59,8 +67,8 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
       const lanKey = contentLanguageKeyMap[language];
       const content = data?.[lanKey];
       const value = Array.isArray(content) ? content[0] : content;
-      if (value !== undefined && !form.isFieldTouched(isListContext ? [...name, lanKey] : [name, lanKey])) {
-        form.setFieldValue(isListContext ? [...name, lanKey] : [name, lanKey], value);
+      if (value !== undefined && !form.isFieldTouched(absolutePath(lanKey))) {
+        form.setFieldValue(absolutePath(lanKey), value);
       }
     });
   }, [data]);
@@ -72,8 +80,7 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
 
   calendarContentLanguage?.forEach((language) => {
     const lanKey = contentLanguageKeyMap[language];
-    const fieldName = isListContext ? [...name, lanKey] : [name, lanKey];
-    isFieldDirty[lanKey] = form.isFieldTouched(fieldName);
+    isFieldDirty[lanKey] = form.isFieldTouched(absolutePath(lanKey));
   });
 
   const formItemList = calendarContentLanguage?.map((language) => {
@@ -109,7 +116,7 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
     return (
       <Form.Item
         {...formItemProps}
-        name={isListContext ? [...name, lanKey] : [name, lanKey]}
+        name={relativePath(lanKey)}
         key={language}
         dependencies={dependencies}
         initialValue={!isListContext ? initialValue : undefined}
@@ -128,6 +135,7 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
       dataCyCollection={dataCyCollection}
       required={required}
       form={form}
+      namePrefix={namePrefix}
       placeholderCollection={placeholderCollection}
       {...additionalProps}>
       {formItemList}
