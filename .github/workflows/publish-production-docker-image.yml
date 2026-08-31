@@ -42,6 +42,7 @@ jobs:
         run: |
           {
             echo "VITE_APP_API_URL=http://localhost:3001/"
+            echo "VITE_APP_OPEN_API_URL=https://api.footlight.io"
             echo "VITE_APP_ARTS_DATA_URI=https://api.artsdata.ca/"
             echo "VITE_APP_ARTS_DATA_PAGE_URI=https://kg.artsdata.ca/resource/"
             echo "VITE_APP_DEEPL_URL=https://www.deepl.com/translator#"
