@@ -13,7 +13,6 @@ const StructuredDataModal = ({ visible, onCancel, eventId, eventName }) => {
 
   const [wrapInScript, setWrapInScript] = useState(true);
   const [jsonLd, setJsonLd] = useState(null);
-  const [isSeries, setIsSeries] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [fetchCount, setFetchCount] = useState(0);
@@ -26,8 +25,7 @@ const StructuredDataModal = ({ visible, onCancel, eventId, eventName }) => {
     getEventStructuredData({ eventId })
       .then((result) => {
         if (!active) return;
-        setJsonLd(result.jsonLd);
-        setIsSeries(result.isSeries);
+        setJsonLd(result);
         setIsLoading(false);
       })
       .catch((fetchError) => {
@@ -141,20 +139,9 @@ const StructuredDataModal = ({ visible, onCancel, eventId, eventName }) => {
           />
         ) : (
           jsonLd && (
-            <>
-              {isSeries && (
-                <Alert
-                  data-cy="alert-structured-data-series"
-                  className="structured-data-series-note"
-                  type="warning"
-                  showIcon
-                  message={t('dashboard.events.structuredData.seriesNote')}
-                />
-              )}
-              <pre className="structured-data-code" aria-label={eventName} data-cy="code-structured-data">
-                {displayedText}
-              </pre>
-            </>
+            <pre className="structured-data-code" aria-label={eventName} data-cy="code-structured-data">
+              {displayedText}
+            </pre>
           )
         )}
       </div>

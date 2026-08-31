@@ -520,8 +520,7 @@
         "errorNotFound": "This event could not be found. It may have been deleted.",
         "errorNetwork": "Could not reach the server. Check your connection and try again.",
         "errorInvalid": "The server did not return usable structured data for this event. Try again, and contact support if it persists.",
-        "retry": "Retry",
-        "seriesNote": "This snippet covers the event series itself — its individual dates are not included."
+        "retry": "Retry"
       },
       "publishState": {
         "published": "Published",

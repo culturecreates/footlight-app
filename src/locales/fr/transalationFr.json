@@ -521,8 +521,7 @@
         "errorNotFound": "Cet événement est introuvable. Il a peut-être été supprimé.",
         "errorNetwork": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
         "errorInvalid": "Le serveur n’a pas retourné de données structurées utilisables pour cet événement. Réessayez et contactez le soutien si le problème persiste.",
-        "retry": "Réessayer",
-        "seriesNote": "Cet extrait couvre la série d’événements elle-même — ses dates individuelles ne sont pas incluses."
+        "retry": "Réessayer"
       },
       "publishState": {
         "published": "Publié",

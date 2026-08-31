@@ -98,13 +98,14 @@ function EventStatusOptions({
   let writeItems = [];
   if (writeTier === 'all') writeItems = publishStateItems.filter(Boolean);
   else if (writeTier === 'duplicateOnly') writeItems = eventPublishOptions.filter((item) => item.key === '3');
+  if (!writeItems.some((item) => item?.key)) writeItems = [];
 
-  const hasWriteItems = writeItems.some((item) => item?.key);
+  const copyJsonLdItem = { key: '7', label: t('dashboard.events.publishOptions.copyJsonLd') };
+  const featureIndex = writeItems.findIndex((item) => item?.key === '4' || item?.key === '5');
+  const dividerIndex = writeItems.findIndex((item) => item?.type === 'divider');
+  const insertIndex = featureIndex !== -1 ? featureIndex + 1 : dividerIndex !== -1 ? dividerIndex : 0;
 
-  const items = [
-    { key: '7', label: t('dashboard.events.publishOptions.copyJsonLd') },
-    ...(hasWriteItems ? [{ type: 'divider', key: 'jsonld-divider' }, ...writeItems] : []),
-  ];
+  const items = [...writeItems.slice(0, insertIndex), copyJsonLdItem, ...writeItems.slice(insertIndex)];
 
   const showDeleteConfirm = () => {
     confirm({

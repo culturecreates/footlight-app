@@ -39,11 +39,5 @@ export const getEventStructuredData = async ({ eventId } = {}) => {
     throw structuredDataError('invalid', 'data.jsonld is not parseable JSON');
   }
 
-  const isSeries =
-    (body?.data?.subEvent?.length ?? 0) > 0 || (body?.data?.subEventDetails?.totalSubEventCount ?? 0) > 0;
-
-  return {
-    jsonLd: JSON.stringify(normalizeEventJsonLd(parsedJsonLd), null, 2),
-    isSeries,
-  };
+  return JSON.stringify(normalizeEventJsonLd(parsedJsonLd), null, 2);
 };
