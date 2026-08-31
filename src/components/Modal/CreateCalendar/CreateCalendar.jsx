@@ -237,7 +237,7 @@ function CreateCalendar({ open, setOpen }) {
             onClick={handleFinish}
             disabled={isLoading}
             data-cy="button-create-calendar-submit">
-            {isLoading ? t('common.creating') || 'Creating...' : t('dashboard.calendar.createCalendar.create')}
+            {isLoading ? t('Creating...') || 'Creating...' : t('dashboard.calendar.createCalendar.create')}
           </button>
         </div>
       </Form>

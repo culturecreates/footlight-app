@@ -15,6 +15,8 @@ import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
 import { setRecentCalendarForUser } from '../../../utils/recentCalendarStorage';
 import LoadingIndicator from '../../LoadingIndicator';
 import CreateCalendar from '../../Modal/CreateCalendar';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const hashString = (value = '') => {
   let hash = 0;
@@ -86,6 +88,14 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
   });
 
   const hasMore = currentPage * ITEMS_PER_PAGE < totalCount;
+
+  const canCreateCalendar = useMemo(() => {
+    if (user?.isSuperAdmin) return true;
+    const activeCalendarId = calendarIdInCookies || sessionStorage.getItem('calendarId');
+    if (!activeCalendarId) return false;
+    const calendar = getCurrentCalendarDetailsFromUserDetails(user, activeCalendarId);
+    return adminCheckHandler({ user, calendar });
+  }, [user, calendarIdInCookies, open]);
 
   const filteredCalendars = useMemo(() => {
     const normalizedSearch = normalizeForSearch(searchQuery);
@@ -356,7 +366,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
           <div className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
         )}
       </div>
-      {user?.isSuperAdmin && (
+      {canCreateCalendar && (
         <div className="calendar-create-footer">
           <button
             className="calendar-create-button"
@@ -384,7 +394,7 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
         getPopupContainer={(trigger) => trigger.parentNode}>
         {children}
       </Dropdown>
-      {user?.isSuperAdmin && <CreateCalendar open={createModalOpen} setOpen={setCreateModalOpen} />}
+      {canCreateCalendar && <CreateCalendar open={createModalOpen} setOpen={setCreateModalOpen} />}
     </>
   );
 }
