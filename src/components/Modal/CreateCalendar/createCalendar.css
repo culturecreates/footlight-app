@@ -25,6 +25,11 @@
   margin-left: 4px;
 }
 
+.create-calendar-name-field {
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
 .create-calendar-name-label {
   display: inline-block;
   margin-bottom: 8px;
@@ -66,26 +71,4 @@
 
 .create-calendar-modal-wrapper .ant-modal-content {
   border-radius: 8px;
-}
-
-.calendar-create-footer {
-  border-top: 1px solid #b6c1c9;
-  padding: 12px 12px;
-  display: flex;
-  justify-content: center;
-}
-
-.calendar-create-button {
-  width: 100%;
-  border: 1px solid #1b3de6;
-  color: #1b3de6;
-  background: #fff;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.calendar-create-button:hover {
-  background: #eff2ff;
 }

@@ -90,6 +90,7 @@
         "searchResultTemplate": "Search results template",
         "cancel": "Cancel",
         "create": "Create",
+        "creating": "Creating...",
         "success": "Calendar created successfully",
         "duplicate": "A calendar with this name already exists"
       }

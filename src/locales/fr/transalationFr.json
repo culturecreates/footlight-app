@@ -90,6 +90,7 @@
         "searchResultTemplate": "Modèle de résultats de recherche",
         "cancel": "Annuler",
         "create": "Créer",
+        "creating": "Création...",
         "success": "Calendrier créé avec succès",
         "duplicate": "Un calendrier avec ce nom existe déjà"
       }
