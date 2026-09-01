@@ -37,7 +37,14 @@ function Sidebar(props) {
     const itemJson = {
       key: key,
       icon: item.icon,
-      label: t(item.name),
+      label: (
+        <span
+          data-cy="sidebar-navigation-item"
+          data-path={item.path}
+          data-active={location.pathname?.includes(item.path) ? 'true' : 'false'}>
+          {t(item.name)}
+        </span>
+      ),
       className: 'sidebar-menu-item',
       path: item.path,
       disabled: item.disabled,
