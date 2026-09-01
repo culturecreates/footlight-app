@@ -1151,7 +1151,7 @@ const AddTaxonomy = () => {
                           return {
                             key: role.key,
                             label: (
-                              <Checkbox value={role.value} key={role.key} style={{ marginLeft: '8px' }}>
+                              <Checkbox data-cy="searchable-checkbox-input" value={role.value} key={role.key} style={{ marginLeft: '8px' }}>
                                 {t(`dashboard.taxonomy.addNew.adminOnly`)}
                               </Checkbox>
                             ),

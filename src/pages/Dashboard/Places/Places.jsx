@@ -668,6 +668,7 @@ function Places() {
                       label: (
                         <>
                           <Checkbox
+                            data-cy="searchable-checkbox-input"
                             value={userDetail?._id}
                             key={userDetail?._id}
                             style={{ marginLeft: '8px' }}

@@ -807,7 +807,7 @@ function Events() {
                         return {
                           key: publication.key,
                           label: (
-                            <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
+                            <Checkbox data-cy="searchable-checkbox-input" value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
                               {publication.title}
                             </Checkbox>
                           ),
@@ -892,6 +892,7 @@ function Events() {
                         label: (
                           <>
                             <Checkbox
+                              data-cy="searchable-checkbox-input"
                               value={userDetail?._id}
                               key={userDetail?._id}
                               style={{ marginLeft: '8px' }}
@@ -1030,6 +1031,7 @@ function Events() {
                         label: (
                           <>
                             <Checkbox
+                              data-cy="searchable-checkbox-input"
                               value={organizer?.id}
                               key={organizer?.id}
                               style={{ marginLeft: '8px' }}
@@ -1050,7 +1052,7 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ borderColor: organizerFilter?.length > 0 && '#607EFC' }}
-                      data-cy="button-filter-users">
+                      data-cy="button-filter-organizers">
                       {t('dashboard.events.filter.organizer.label')}
                       {organizerFilter?.length > 0 && (
                         <>

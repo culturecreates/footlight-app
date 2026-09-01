@@ -49,7 +49,7 @@ function SearchableCheckbox(props) {
         overlayClassName="searchable-checkbox-overlay"
         trigger={['click']}
         dropdownRender={() => (
-          <div className="searchable-checkbox-dropdown-wrapper">
+          <div className="searchable-checkbox-dropdown-wrapper" data-cy="searchable-checkbox-options">
             {allowSearch && (
               <AuthenticationInput
                 data-cy="input-search-entity"
@@ -63,7 +63,7 @@ function SearchableCheckbox(props) {
             {!loading ? (
               <div className="searchable-checkbox-dropdown-content">
                 {items?.length > 0 ? (
-                  items?.map((item, index) => <span key={item.id || index}>{item.label}</span>)
+                  items?.map((item, index) => <span data-cy="searchable-checkbox-option" key={item.id || index}>{item.label}</span>)
                 ) : (
                   <NoContent />
                 )}
