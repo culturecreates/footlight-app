@@ -44,7 +44,7 @@ const MapComponent = (props) => {
   }, [latitude, longitude]);
 
   return (
-    <APIProvider apiKey={import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY}>
+    <APIProvider apiKey={import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY} region="CA">
       <Map
         defaultZoom={5}
         mapId={import.meta.env.VITE_APP_GOOGLE_MAPS_ID}
