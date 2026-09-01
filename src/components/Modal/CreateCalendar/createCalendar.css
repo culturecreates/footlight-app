@@ -49,6 +49,9 @@
 }
 
 .create-calendar-cancel {
+  background: none;
+  border: none;
+  padding: 0;
   color: #1b3de6;
   font-weight: 600;
   cursor: pointer;

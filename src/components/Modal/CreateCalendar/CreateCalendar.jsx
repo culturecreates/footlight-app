@@ -169,9 +169,9 @@ function CreateCalendar({ open, setOpen }) {
         </Form.Item>
 
         <div className="create-calendar-footer">
-          <a onClick={handleCancel} className="create-calendar-cancel">
+          <button type="button" onClick={handleCancel} className="create-calendar-cancel">
             {t('dashboard.calendar.createCalendar.cancel')}
-          </a>
+          </button>
           <button
             type="button"
             className="create-calendar-submit-btn"
