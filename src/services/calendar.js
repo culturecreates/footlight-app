@@ -30,6 +30,13 @@ export const calendarApi = createApi({
         },
       }),
     }),
+    addCalendar: builder.mutation({
+      query: ({ data }) => ({
+        url: `calendars`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -38,4 +45,5 @@ export const {
   useLazyGetCalendarQuery,
   useLazyGetAllCalendarsQuery,
   useUpdateCalendarMutation,
+  useAddCalendarMutation,
 } = calendarApi;
