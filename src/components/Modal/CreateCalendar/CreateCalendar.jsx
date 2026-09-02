@@ -160,6 +160,7 @@ function CreateCalendar({ open, setOpen }) {
         <Form.Item
           name="dateFormatDisplay"
           label={t('dashboard.calendar.createCalendar.dateFormat')}
+          initialValue={dateFormats[0]?.value}
           data-cy="form-item-create-calendar-date-format">
           <Select
             options={dateFormats}
