@@ -79,30 +79,18 @@ function ResponsiveSidebar(props) {
           />
         ),
         label: (
-          <div
-            data-cy="calendar-selector"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}>
-            <span 
-              data-cy="calendar-selected-name"
-              style={{ height: currentCalendarData?.mode === calendarModes.READ_ONLY && '16px' }}>
-              {label}
-              <DownOutlined
-                style={{
-                  position: 'relative',
-                  left: '70%',
-                  top: '50%',
-                  fontSize: '8px',
-                }}
-              />
+          <div className="calendar-label-wrapper" data-cy="calendar-selector">
+            <span
+              className="calendar-label-row"
+              style={{ height: currentCalendarData?.mode === calendarModes.READ_ONLY ? '16px' : undefined }}>
+              <span className="calendar-label-text" data-cy="calendar-selected-name">
+                {label}
+              </span>
+              <DownOutlined className="calendar-label-icon" />
             </span>
 
             {currentCalendarData?.mode === calendarModes.READ_ONLY && (
-              <span style={{ fontSize: '12px', fontWeight: 400 }}>
-                {t('dashboard.calendar.readOnlyMode.readOnlyMode')}
-              </span>
+              <span className="calendar-read-only-label">{t('dashboard.calendar.readOnlyMode.readOnlyMode')}</span>
             )}
           </div>
         ),
