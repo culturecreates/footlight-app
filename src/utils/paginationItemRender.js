@@ -16,3 +16,5 @@ export const paginationItemRender = (page, type, originalElement) => {
 
   return originalElement;
 };
+
+
