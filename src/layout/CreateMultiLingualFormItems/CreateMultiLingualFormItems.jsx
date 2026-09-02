@@ -71,7 +71,7 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
         form.setFieldValue(absolutePath(lanKey), value);
       }
     });
-  }, [data]);
+  }, [data, form, calendarContentLanguage, name, namePrefix]);
 
   // Track dirty fields
   const isFieldDirty = {};

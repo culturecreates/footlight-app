@@ -77,7 +77,7 @@ function useChildrenWithLanguageFallback({
     if (JSON.stringify(status) !== JSON.stringify(fallbackStatus)) {
       setFallbackStatus(status);
     }
-  }, [children, isFieldsDirty]);
+  }, [children, isFieldsDirty, currentCalendarData, calendarContentLanguage, fieldData, form, namePrefix]);
 
   useEffect(() => {
     const modifiedActiveFallbackFieldsInfo = {
@@ -100,9 +100,6 @@ function useChildrenWithLanguageFallback({
     }
   }, [fallbackStatus]);
 
-  // In a Form.List context (e.g. additional links) antd does not reliably re-apply a Form.Item
-  // initialValue that becomes available after mount. Inject the fallback value imperatively using
-  // the absolute field path, but only when the field is still empty and untouched by the user.
   useEffect(() => {
     if (!form || !fallbackStatus || !(namePrefix?.length > 0)) return;
     React.Children.forEach(children, (child) => {
@@ -117,7 +114,7 @@ function useChildrenWithLanguageFallback({
         form.setFieldValue(absolutePath, fallbackValue);
       }
     });
-  }, [fallbackStatus]);
+  }, [fallbackStatus, children, form, namePrefix]);
 
   const modifiedChildren = useMemo(() => {
     if (!children || !fallbackStatus) return children;
