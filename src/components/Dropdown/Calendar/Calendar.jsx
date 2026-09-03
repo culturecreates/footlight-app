@@ -343,7 +343,9 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
               onClick={() => handleItemClick(item.id)}
               onKeyDown={(event) => handleItemKeyDown(event, item.id)}>
               <img className="calendar-item-logo" src={item?.logo?.original?.uri} alt="" />
-              <span data-cy="calendar-item-name" className="calendar-item-name">{name}</span>
+              <span data-cy="calendar-item-name" className="calendar-item-name">
+                {name}
+              </span>
             </div>
           );
         })}
@@ -353,7 +355,9 @@ function Calendar({ children, setPageNumber, allCalendarsData }) {
           </div>
         )}
         {!filteredCalendars.length && !isFetching && (
-          <div data-cy="calendar-empty-state" className="calendar-empty-state">{t('dashboard.calendar.noCalendarsFound')}</div>
+          <div data-cy="calendar-empty-state" className="calendar-empty-state">
+            {t('dashboard.calendar.noCalendarsFound')}
+          </div>
         )}
       </div>
     </div>

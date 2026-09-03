@@ -807,7 +807,11 @@ function Events() {
                         return {
                           key: publication.key,
                           label: (
-                            <Checkbox data-cy="searchable-checkbox-input" value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
+                            <Checkbox
+                              data-cy="searchable-checkbox-input"
+                              value={publication.value}
+                              key={publication.key}
+                              style={{ marginLeft: '8px' }}>
                               {publication.title}
                             </Checkbox>
                           ),

@@ -72,13 +72,13 @@ function Sidebar(props) {
           </div>
         ),
         label: (
-          <div 
+          <div
             data-cy="calendar-selector"
             style={{
               display: 'flex',
               flexDirection: 'column',
             }}>
-            <span 
+            <span
               data-cy="calendar-selected-name"
               style={{ height: currentCalendarData?.mode === calendarModes.READ_ONLY && '16px' }}>
               {label}

@@ -63,7 +63,11 @@ function SearchableCheckbox(props) {
             {!loading ? (
               <div className="searchable-checkbox-dropdown-content">
                 {items?.length > 0 ? (
-                  items?.map((item, index) => <span data-cy="searchable-checkbox-option" key={item.id || index}>{item.label}</span>)
+                  items?.map((item, index) => (
+                    <span data-cy="searchable-checkbox-option" key={item.id || index}>
+                      {item.label}
+                    </span>
+                  ))
                 ) : (
                   <NoContent />
                 )}

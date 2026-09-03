@@ -68,7 +68,9 @@ const UserProfileDropDown = () => {
           icon={!user?.profileImage && <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
           size={32}
         />
-        <span data-cy="user-profile-name" className="user-profile-user-name">{user?.userName}</span>
+        <span data-cy="user-profile-name" className="user-profile-user-name">
+          {user?.userName}
+        </span>
         <CaretDownOutlined />
       </div>
     </Dropdown>
