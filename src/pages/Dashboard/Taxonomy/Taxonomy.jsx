@@ -493,7 +493,6 @@ const Taxonomy = () => {
                       key: classType.key,
                       label: (
                         <Checkbox
-                          data-cy="searchable-checkbox-input"
                           value={classType.key}
                           key={classType.key}
                           style={{ marginLeft: '8px' }}
