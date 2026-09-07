@@ -75,6 +75,24 @@
         "readOnlyMode": "Mode lecture seule",
         "heading": "Calendrier en mode lecture seule",
         "content": "Le calendrier est actuellement en mode lecture seule. Les utilisateurs ne peuvent pas modifier son contenu. Réessayez plus tard ou contactez votre administrateur à {{adminEmail}} pour plus de détails."
+      },
+      "createCalendar": {
+        "createButton": "Créer un nouveau calendrier",
+        "modalTitle": "Créer un calendrier",
+        "contentLanguage": "Langues",
+        "name": "Nom",
+        "namePlaceholder": "Entrez le nom du calendrier",
+        "namePlaceholderWhenNoLanguage": "Sélectionnez d'abord les langues",
+        "contact": "Contact",
+        "timezone": "Fuseau horaire",
+        "dateFormat": "Format de la date",
+        "eventTemplate": "Modèle d'événement",
+        "searchResultTemplate": "Modèle de résultats de recherche",
+        "cancel": "Annuler",
+        "create": "Créer",
+        "creating": "Création...",
+        "success": "Calendrier créé avec succès",
+        "duplicate": "Un calendrier avec ce nom existe déjà"
       }
     },
     "topNavigation": {
