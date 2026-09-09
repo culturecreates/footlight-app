@@ -80,7 +80,7 @@ export const formPayloadHandler = (
 
       case dataTypes.ADDITIONAL_LINKS:
         if (value?.length > 0) {
-          payload = value?.map((link) => {
+          payload = value?.map((link, index) => {
             let labelType;
 
             switch (link?.type) {
@@ -92,9 +92,17 @@ export const formPayloadHandler = (
                 break;
             }
             if (!labelType || !(link?.value && link?.value.trim() !== '')) return null;
+
+            const filteredName = filterUneditedFallbackValues({
+              values: link?.name,
+              activeFallbackFieldsInfo,
+              fieldName: `${index}name`,
+              initialDataValue: initialValue?.[index]?.name ?? {},
+            });
+
             return {
               [labelType]: labelType === 'uri' ? urlProtocolCheck(link?.value) : link?.value,
-              name: link?.name,
+              name: filteredName ?? {},
             };
           });
 
