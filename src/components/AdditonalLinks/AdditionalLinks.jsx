@@ -128,6 +128,9 @@ const AdditionalLinks = ({
           <>
             {fields.map(({ key, name: fieldName, ...restField }, index) => {
               const isOnlyField = fields.length === 1;
+              const linkNameData = Object.fromEntries(
+                Object.entries(initialData?.[index]?.name ?? {}).filter(([, value]) => value !== ''),
+              );
 
               return (
                 <Row
@@ -226,12 +229,14 @@ const AdditionalLinks = ({
                     </Col>
                   </Space.Compact>
 
-                  <Form.Item name={[fieldName, 'name']} style={{ marginBottom: 0, width: '100%' }}>
+                  <Form.Item style={{ marginBottom: 0, width: '100%' }}>
                     <CreateMultiLingualFormItems
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
                       name={[fieldName, 'name']}
+                      namePrefix={Array.isArray(name) ? name : [name]}
                       entityId={entityId}
+                      data={linkNameData}
                       validations={validations && validations.trim() !== '' ? validations : ''}
                       dataCy={`input-text-area-additional-link-${index}`}
                       placeholder={placeHolderCollectionCreator({
