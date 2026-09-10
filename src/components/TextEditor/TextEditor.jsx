@@ -1,8 +1,8 @@
 import { Form } from 'antd';
 import React, { useState, useEffect, useMemo } from 'react';
-import ReactQuill from 'react-quill';
+import QuillEditor from './QuillEditor';
 import './textEditor.css';
-import 'react-quill/dist/quill.snow.css';
+import 'quill/dist/quill.snow.css';
 import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
 import OutlinedButton from '../Button/Outlined';
@@ -131,7 +131,6 @@ function TextEditor(props) {
         },
       },
       clipboard: {
-        matchVisual: false,
         matchers: [[Node.ELEMENT_NODE, removeImagesMatcher]],
       },
     }),
@@ -212,12 +211,8 @@ function TextEditor(props) {
 
   useEffect(() => {
     if (currentReactQuillRef.current && initialValue && !initialized) {
-      const editor = currentReactQuillRef.current.getEditor();
-      const currentContent = editor.getContents();
-      const initialContent = editor.clipboard.convert(initialValue);
-
-      if (JSON.stringify(currentContent) !== JSON.stringify(initialContent)) {
-        editor.setContents(initialContent);
+      if (form.getFieldValue(formName) == null) {
+        form.setFieldValue(formName, initialValue);
       }
       setInitialized(true);
 
@@ -259,7 +254,7 @@ function TextEditor(props) {
         rules={rules}
         getValueFromEvent={(value) => value}
         valuePropName="value">
-        <ReactQuill
+        <QuillEditor
           ref={currentReactQuillRef}
           placeholder={placeholder}
           className="text-editor"
