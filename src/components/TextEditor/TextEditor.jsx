@@ -211,8 +211,9 @@ function TextEditor(props) {
 
   useEffect(() => {
     if (currentReactQuillRef.current && initialValue && !initialized) {
-      // The editor's initial content is seeded by QuillEditor from the `value`
-      // prop; here we only need to clear the form dirtiness caused by mounting.
+      if (form.getFieldValue(formName) == null) {
+        form.setFieldValue(formName, initialValue);
+      }
       setInitialized(true);
 
       // Reset form dirtiness after initialization

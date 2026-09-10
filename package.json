@@ -40,7 +40,6 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "start:dev": "vite --mode develop",
     "start:staging": "vite --mode staging",
     "start:production": "vite --mode production",
     "build": "vite build --mode staging",
