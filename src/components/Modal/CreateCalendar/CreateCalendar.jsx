@@ -6,8 +6,6 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 import CustomModal from '../Common/CustomModal';
 import { useAddCalendarMutation } from '../../../services/calendar';
 import { calendarLanguages, contentLanguageKeyMap } from '../../../constants/contentLanguage';
-import { dateFormats } from '../../../constants/calendarSettingsForm';
-import Select from '../../Select';
 import TreeSelectOption from '../../TreeSelectOption';
 import Tags from '../../Tags/Common/Tags';
 import NoContent from '../../NoContent/NoContent';
@@ -46,8 +44,6 @@ function CreateCalendar({ open, setOpen }) {
         name: values.name,
         contentLanguage: values.contentLanguage,
       };
-
-      if (values.dateFormatDisplay) dto.dateFormatDisplay = values.dateFormatDisplay;
 
       const response = await addCalendar({ data: dto }).unwrap();
       const id = response?.id ?? response?.data?.id;
@@ -156,18 +152,6 @@ function CreateCalendar({ open, setOpen }) {
             </CreateMultiLingualFormItems>
           </div>
         )}
-
-        <Form.Item
-          name="dateFormatDisplay"
-          label={t('dashboard.calendar.createCalendar.dateFormat')}
-          initialValue={dateFormats[0]?.value}
-          data-cy="form-item-create-calendar-date-format">
-          <Select
-            options={dateFormats}
-            placeholder={t('dashboard.settings.calendarSettings.placeholders.dateFormatDisplay')}
-            data-cy="select-create-calendar-date-format"
-          />
-        </Form.Item>
 
         <div className="create-calendar-footer">
           <button type="button" onClick={handleCancel} className="create-calendar-cancel">
