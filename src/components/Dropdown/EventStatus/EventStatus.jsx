@@ -109,11 +109,13 @@ function EventStatusOptions({
 
   const showDeleteConfirm = () => {
     confirm({
-      title: t('dashboard.events.deleteEvent.title'),
+      title: <span data-cy="confirm-modal-title">{t('dashboard.events.deleteEvent.title')}</span>,
       icon: <ExclamationCircleOutlined />,
-      content: t('dashboard.events.deleteEvent.description'),
+      content: <span data-cy="confirm-modal-content">{t('dashboard.events.deleteEvent.description')}</span>,
       okText: t('dashboard.events.deleteEvent.ok'),
       okType: 'danger',
+      okButtonProps: { 'data-cy': 'button-confirm-ok' },
+      cancelButtonProps: { 'data-cy': 'button-confirm-cancel' },
       cancelText: t('dashboard.events.deleteEvent.cancel'),
       className: 'delete-modal-container',
       onOk() {

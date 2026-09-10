@@ -415,7 +415,7 @@ function EventReadOnly() {
                     isReadOnly={isReadOnly}
                     eventState={eventData?.publishState}>
                     <OutlinedButton
-                      data-cy="button-edit-place"
+                      data-cy="button-edit-event"
                       label={t('dashboard.places.readOnly.edit')}
                       size="middle"
                       style={{ height: '40px', width: '60px' }}
