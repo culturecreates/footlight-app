@@ -897,6 +897,7 @@ function Events() {
                           <>
                             <Checkbox
                               data-cy="searchable-checkbox-input"
+                              data-filter-option={user?.id == userDetail?._id ? 'my-events' : undefined}
                               value={userDetail?._id}
                               key={userDetail?._id}
                               style={{ marginLeft: '8px' }}
@@ -933,6 +934,7 @@ function Events() {
                     content={
                       <div style={{ display: 'flex', width: 'max-content' }}>
                         <Radio.Group
+                          data-cy="event-date-filter-options"
                           onChange={(e) => dateFilterHandler(e)}
                           value={selectedDateType}
                           style={{
@@ -970,7 +972,8 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ borderColor: filter?.dates?.length > 0 > 0 && '#607EFC' }}
-                      data-cy="button-filter-dates">
+                      data-cy="button-filter-dates"
+                      data-filter-kind="dates">
                       {t('dashboard.events.filter.dates.dates')}
                       {filter?.dates?.length > 0 && (
                         <>
