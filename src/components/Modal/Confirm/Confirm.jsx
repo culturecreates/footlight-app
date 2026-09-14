@@ -15,11 +15,11 @@ export const Confirm = ({ title, content, onCancel, onAction, okText, cancelText
   const config = {
     title: (
       <>
-        <span>{title}</span>
+        <span data-cy="confirm-modal-title">{title}</span>
       </>
     ),
     content: (
-      <div style={{ padding: '24px' }}>
+      <div data-cy="confirm-modal-content" style={{ padding: '24px' }}>
         <ExclamationCircleOutlined size="18px" />
         {isStringContent ? <span>{content}</span> : content}
       </div>
@@ -28,6 +28,12 @@ export const Confirm = ({ title, content, onCancel, onAction, okText, cancelText
     okType: 'danger',
     okText,
     cancelText,
+    okButtonProps: {
+      'data-cy': 'button-confirm-ok',
+    },
+    cancelButtonProps: {
+      'data-cy': 'button-confirm-cancel',
+    },
     centered: true,
     className: modalClassName,
     closable: closable ?? true,
