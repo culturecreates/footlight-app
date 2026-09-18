@@ -130,7 +130,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
       });
       setUpdatedFormFields(initializedFields);
     }
-  }, [allTaxonomyData, currentCalendarData]);
+  }, [allTaxonomyData, currentCalendarData, tabKey]);
 
   const onSaveHandler = () => {
     const savedFormFields = updatedFormFields?.map((f, index) => {
@@ -199,6 +199,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
         getCalendar({ id: calendarId, sessionId: timestampRef })
           .unwrap()
           .then(() => {
+            setDirtyStatus(false);
             notification.success({
               description: t('dashboard.settings.mandatoryFields.notification.update'),
               placement: 'top',
