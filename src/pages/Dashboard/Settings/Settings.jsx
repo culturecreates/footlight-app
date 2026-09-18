@@ -103,7 +103,7 @@ const Settings = () => {
     {
       label: <span data-cy="tab-widget-settings">{t('dashboard.settings.tab2')}</span>,
       key: '2',
-      children: <WidgetSettings tabKey={tabKey} />,
+      children: <WidgetSettings tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       adminOnly: true,
       className: 'widget-settings-tab',
     },
