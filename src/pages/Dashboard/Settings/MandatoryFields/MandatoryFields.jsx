@@ -196,7 +196,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
     updateCalendar({ data: calendarData, calendarId: currentCalendarData.id })
       .unwrap()
       .then(() => {
-        getCalendar({ id: calendarId, sessionId: timestampRef })
+return getCalendar({ id: calendarId, sessionId: timestampRef })
           .unwrap()
           .then(() => {
             setDirtyStatus(false);
