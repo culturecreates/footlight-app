@@ -646,14 +646,19 @@ const AddUser = () => {
         onValuesChange={setRouteBlockingFlag}
         onFinish={onSaveHandler}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && e.target?.tagName !== 'TEXTAREA') {
+          const target = e.target;
+          const tagName = target?.tagName;
+          const isButton = tagName === 'BUTTON' || target?.getAttribute('role') === 'button';
+          const isTextEntry =
+            tagName === 'INPUT' || target?.getAttribute('role') === 'combobox' || target?.isContentEditable;
+          if (e.key === 'Enter' && isTextEntry && !isButton) {
             e.preventDefault();
             const focusableElements = Array.from(
               e.currentTarget.querySelectorAll(
                 'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])',
               ),
             ).filter((el) => el.offsetParent !== null);
-            const currentIndex = focusableElements.indexOf(e.target);
+            const currentIndex = focusableElements.indexOf(target);
             const nextElement = focusableElements[currentIndex + 1];
             if (nextElement) nextElement.focus();
           }
