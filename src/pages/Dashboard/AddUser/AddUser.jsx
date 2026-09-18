@@ -645,6 +645,19 @@ const AddUser = () => {
         form={formInstance}
         onValuesChange={setRouteBlockingFlag}
         onFinish={onSaveHandler}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && e.target?.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const focusableElements = Array.from(
+              e.currentTarget.querySelectorAll(
+                'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+              ),
+            ).filter((el) => el.offsetParent !== null);
+            const currentIndex = focusableElements.indexOf(e.target);
+            const nextElement = focusableElements[currentIndex + 1];
+            if (nextElement) nextElement.focus();
+          }
+        }}
         layout="vertical"
         fields={[
           {
