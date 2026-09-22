@@ -528,9 +528,9 @@
       "structuredData": {
         "title": "Structured data for your website",
         "help": "Paste this into an HTML block on your event page.",
-        "getStructuredData": "Get structured data",
-        "wrapScript": "Wrap in <script type=\"application/ld+json\">",
-        "copy": "Copy to clipboard",
+        "getStructuredData": "Copy structured data",
+        "wrapScript": "Enable \"Wrap in <script type=\"application/ld+json\">\" to paste this into an HTML block on your event page.",
+        "copy": "Copy",
         "copied": "Structured data copied to clipboard",
         "download": "Download .jsonld",
         "close": "Close",

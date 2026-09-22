@@ -17,7 +17,7 @@
 
 .structured-data-modal .switch-wrapper-container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
 }
 
