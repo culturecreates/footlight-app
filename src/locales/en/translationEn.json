@@ -1111,7 +1111,7 @@
         "validation": {
           "width": "Enter width in pixels",
           "height": "Enter height in pixels",
-          "color": "Paste your color code or select a colour",
+          "color": "Paste your colour code or select a colour",
           "limit": "Enter maximum number to display",
           "limitMax": "Number of events is too high. The maximum number is 100."
         },
