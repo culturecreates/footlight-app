@@ -16,6 +16,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { PathName } from '../../../constants/pathName';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -74,19 +75,22 @@ const Settings = () => {
 
   const onTabChange = (key) => {
     // Update tabKey in sessionStorage on tab change
-    if (isFormDirty) {
-      const confirm = window.confirm(`${t('common.unsavedChanges')}`);
-      if (confirm) {
-        sessionStorage.setItem('tabKey', key);
-        setSearchParams({ tab: key });
-        setTabKey(key);
-        setIsFormDirty(false);
-      }
-    } else {
+    const switchTab = () => {
       sessionStorage.setItem('tabKey', key);
       setSearchParams({ tab: key });
       setTabKey(key);
       setIsFormDirty(false);
+    };
+
+    if (isFormDirty) {
+      Confirm({
+        content: t('common.unsavedChanges'),
+        closable: false,
+        className: 'unsaved-changes-popup',
+        onAction: switchTab,
+      });
+    } else {
+      switchTab();
     }
   };
 
