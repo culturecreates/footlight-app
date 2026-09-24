@@ -63,7 +63,6 @@ on:
       GOOGLE_MAPS_ID:
         required: true
 
-
 jobs:
   built-and-run-cypress:
     runs-on: ubuntu-latest
