@@ -529,9 +529,9 @@
       "structuredData": {
         "title": "Données structurées pour votre site web",
         "help": "Collez ceci dans un bloc HTML sur la page de votre événement.",
-        "getStructuredData": "Obtenir les données structurées",
-        "wrapScript": "Envelopper dans <script type=\"application/ld+json\">",
-        "copy": "Copier dans le presse-papiers",
+        "getStructuredData": "Copier les données structurées",
+        "wrapScript": "Activez l'option \"Wrap dans <script type=\\\"application/ld+json\\\">\" pour coller ce code dans un bloc HTML sur la page de votre événement.",
+        "copy": "Copier",
         "copied": "Données structurées copiées dans le presse-papiers",
         "download": "Télécharger le .jsonld",
         "close": "Fermer",
