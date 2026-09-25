@@ -201,7 +201,9 @@ jobs:
           base_url="http://test.footlight.app:3000/"
 
           # Run Cypress tests with the formatted --env argument
-          docker run \
+          docker run --rm \
+          --workdir /e2e \
+          --entrypoint npx \
           --network footlight-network.test \
           -e DEBUG="" \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
@@ -216,7 +218,7 @@ jobs:
           -v ${GITHUB_WORKSPACE}/cypress/videos:/e2e/cypress/videos \
           -v ${GITHUB_WORKSPACE}/cypress/logs:/e2e/cypress/logs \
           ghcr.io/kmdvs/cms-cypress_regression_tests:${{ inputs.dockerImage }} \
-          npx cypress run --browser firefox --env "$env_arg"
+          --no-install cypress run --browser firefox --expose "$env_arg"
 
       - name: Upload Cypress Debug Logs
         uses: actions/upload-artifact@v4
