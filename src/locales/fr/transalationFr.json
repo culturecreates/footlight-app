@@ -524,7 +524,7 @@
         "featureEvent": "Mettre en vedette",
         "unFeatureEvent": "Retirer la mise en vedette",
         "revertToDraft": "Revenir au brouillon",
-        "copyJsonLd": "Copier le JSON-LD"
+        "copyJsonLd": "Copier les données structurées"
       },
       "structuredData": {
         "title": "Données structurées pour votre site web",
