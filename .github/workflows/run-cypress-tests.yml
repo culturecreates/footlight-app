@@ -15,6 +15,10 @@ on:
         description: 'Grep tags for selecting tests'
         required: false
         default: '@essential'
+      dockerImage:
+        description: 'Tag of the ghcr.io/kmdvs/cms-cypress_regression_tests image to use'
+        required: false
+        default: 'main'
 
   workflow_call:
     inputs:
@@ -31,6 +35,11 @@ on:
         required: false
         type: string
         default: '@essential'
+      dockerImage:
+        description: 'Tag of the ghcr.io/kmdvs/cms-cypress_regression_tests image to use'
+        required: false
+        type: string
+        default: 'main'
 
     secrets:
       DOCKER_PAT:
@@ -53,7 +62,6 @@ on:
         required: true
       GOOGLE_MAPS_ID:
         required: true
-
 
 jobs:
   built-and-run-cypress:
@@ -162,7 +170,7 @@ jobs:
           docker exec test.footlight.api npm run migrate:up
 
       - name: Pull cypress docker image
-        run: docker pull ghcr.io/kmdvs/cms-cypress_regression_tests:main
+        run: docker pull ghcr.io/kmdvs/cms-cypress_regression_tests:${{ inputs.dockerImage }}
 
       - name: Run Cypress tests
         run: |
@@ -193,7 +201,9 @@ jobs:
           base_url="http://test.footlight.app:3000/"
 
           # Run Cypress tests with the formatted --env argument
-          docker run \
+          docker run --rm \
+          --workdir /e2e \
+          --entrypoint npx \
           --network footlight-network.test \
           -e DEBUG="" \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
@@ -207,8 +217,8 @@ jobs:
           -v ${GITHUB_WORKSPACE}/cypress/screenshots:/e2e/cypress/screenshots \
           -v ${GITHUB_WORKSPACE}/cypress/videos:/e2e/cypress/videos \
           -v ${GITHUB_WORKSPACE}/cypress/logs:/e2e/cypress/logs \
-          ghcr.io/kmdvs/cms-cypress_regression_tests:main \
-          npx cypress run --browser firefox --env "$env_arg"
+          ghcr.io/kmdvs/cms-cypress_regression_tests:${{ inputs.dockerImage }} \
+          --no-install cypress run --browser firefox --expose "$env_arg"
 
       - name: Upload Cypress Debug Logs
         uses: actions/upload-artifact@v4
