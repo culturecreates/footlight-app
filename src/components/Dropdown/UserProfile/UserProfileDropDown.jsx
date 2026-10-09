@@ -61,14 +61,16 @@ const UserProfileDropDown = () => {
         onClick,
       }}
       trigger={['click']}>
-      <div className="user-profile-dropwdown-content">
+      <div data-cy="user-profile-menu-trigger" className="user-profile-dropwdown-content">
         <Avatar
           className="dropdown-avatar"
           src={user?.profileImage || undefined}
           icon={!user?.profileImage && <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
           size={32}
         />
-        <span className="user-profile-user-name">{user?.userName}</span>
+        <span data-cy="user-profile-name" className="user-profile-user-name">
+          {user?.userName}
+        </span>
         <CaretDownOutlined />
       </div>
     </Dropdown>
