@@ -3669,6 +3669,7 @@ function AddEvent() {
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage)}
                     data-cy="treeselect-event-type"
+                    dropdownDataCy="treeselect-event-type-options"
                   />
                 </Form.Item>
                 <Form.Item
@@ -3723,6 +3724,7 @@ function AddEvent() {
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage)}
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
                     data-cy="treeselect-audience"
+                    dropdownDataCy="treeselect-audience-options"
                   />
                 </Form.Item>
                 <Form.Item
@@ -3780,6 +3782,7 @@ function AddEvent() {
                       calendarContentLanguage,
                     )}
                     data-cy="treeselect-event-discipline"
+                    dropdownDataCy="treeselect-event-discipline-options"
                   />
                 </Form.Item>
               </Form.Item>
@@ -5536,6 +5539,7 @@ function AddEvent() {
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage', false, calendarContentLanguage)}
                   data-cy="treeselect-event-language"
+                  dropdownDataCy="treeselect-event-language-options"
                 />
               </Form.Item>
               {allTaxonomyData?.data?.map((taxonomy, index) => {
@@ -5606,6 +5610,7 @@ function AddEvent() {
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
                         data-cy={`treeselect-${taxonomy?.id}`}
+                        dropdownDataCy={`treeselect-${taxonomy?.id}-options`}
                       />
                     </Form.Item>
                   );
@@ -5750,6 +5755,7 @@ function AddEvent() {
                     )}
                     placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
                     data-cy="treeselect-event-accessibility"
+                    dropdownDataCy="treeselect-event-accessibility-options"
                   />
                 </Form.Item>
                 <Form.Item

@@ -2,9 +2,18 @@ import React from 'react';
 import { TreeSelect } from 'antd';
 import './treeSelectOption.css';
 
-function TreeSelectOption(props) {
+function TreeSelectOption({ dropdownDataCy, dropdownRender, ...props }) {
   const TITLE = 'title';
   const LABEL = 'label';
+
+  const renderDropdown = dropdownDataCy
+    ? (originNode, dropdownProps) => {
+        const content = dropdownRender ? dropdownRender(originNode, dropdownProps) : originNode;
+
+        return React.isValidElement(content) ? React.cloneElement(content, { 'data-cy': dropdownDataCy }) : content;
+      }
+    : dropdownRender;
+
   return (
     <TreeSelect
       getPopupContainer={(trigger) => trigger.parentNode}
@@ -18,6 +27,7 @@ function TreeSelectOption(props) {
       treeNodeFilterProp={TITLE}
       treeNodeLabelProp={LABEL}
       {...props}
+      dropdownRender={renderDropdown}
       showArrow={props?.showArrow ?? true}
     />
   );

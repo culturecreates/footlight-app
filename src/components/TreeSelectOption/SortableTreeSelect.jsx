@@ -15,6 +15,8 @@ function SortableTreeSelect({
   fieldName,
   draggable = false,
   dataCy,
+  dropdownDataCy,
+  dropdownRender,
   setShowDialog,
   treeData = [],
   treeCheckStrictly = false,
@@ -105,6 +107,14 @@ function SortableTreeSelect({
     });
   };
 
+  const renderDropdown = dropdownDataCy
+    ? (originNode, dropdownProps) => {
+        const content = dropdownRender ? dropdownRender(originNode, dropdownProps) : originNode;
+
+        return React.isValidElement(content) ? React.cloneElement(content, { 'data-cy': dropdownDataCy }) : content;
+      }
+    : dropdownRender;
+
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={selectedValues} strategy={horizontalListSortingStrategy}>
@@ -117,6 +127,7 @@ function SortableTreeSelect({
           popupClassName={`tree-select-dropdown-wrapper ${
             strictCheckEnabled ? 'tree-select-dropdown-wrapper-strict' : ''
           }`}
+          dropdownRender={renderDropdown}
           dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
           multiple
           showSearch

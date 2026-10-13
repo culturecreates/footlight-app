@@ -410,6 +410,7 @@ export const formFieldValue = [
           draggable
           fieldName={name}
           data-cy={`treeselect-${mappedField}`}
+          dropdownDataCy={`treeselect-${mappedField}-options`}
           allowClear
           treeDefaultExpandAll
           notFoundContent={<NoContent />}

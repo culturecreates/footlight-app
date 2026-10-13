@@ -1415,6 +1415,7 @@ function QuickCreatePlace(props) {
                       draggable
                       fieldName={formFieldNames.REGION}
                       data-cy="treeselect-place-region"
+                      dropdownDataCy="treeselect-place-region-options"
                       placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                       allowClear
                       treeDefaultExpandAll

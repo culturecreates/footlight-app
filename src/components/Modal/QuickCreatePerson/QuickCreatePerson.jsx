@@ -446,6 +446,7 @@ function QuickCreatePerson(props) {
                                       draggable
                                       fieldName={['dynamicFields', taxonomy?.id]}
                                       data-cy={`treeselect-person-dynamic-fields-${index}`}
+                                      dropdownDataCy={`treeselect-person-dynamic-fields-${index}-options`}
                                       allowClear
                                       treeDefaultExpandAll
                                       notFoundContent={<NoContent />}

@@ -634,6 +634,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                           data-cy="widget-settings-font">
                           <SelectOption
                             data-cy="widget-settings-font-dropdown"
+                            dropdownDataCy="widget-settings-font-dropdown-options"
                             styles={{
                               minWidth: '100%',
                               padding: '8px 0px',
@@ -668,6 +669,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                               );
                             }}
                             data-cy="widget-settings-treeselect-filter-options"
+                            dropdownDataCy="widget-settings-treeselect-filter-options-dropdown"
                           />
                         </Form.Item>
                         <p className="page-description" data-cy="widget-settings-page-description">
@@ -739,6 +741,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                           data-cy="widget-settings-redirection-mode">
                           <SelectOption
                             data-cy="widget-settings-redirectionMode-dropdown"
+                            dropdownDataCy="widget-settings-redirectionMode-dropdown-options"
                             styles={{
                               minWidth: '100%',
                               padding: '8px 0px',
@@ -794,6 +797,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                               );
                             }}
                             data-cy="widget-settings-treeselect-event-type"
+                            dropdownDataCy="widget-settings-treeselect-event-type-options"
                           />
                         </Form.Item>
                       </Col>
@@ -807,6 +811,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                           data-cy="widget-settings-language-label">
                           <SelectOption
                             data-cy="widget-settings-language"
+                            dropdownDataCy="widget-settings-language-options"
                             styles={{
                               minWidth: '100%',
                               padding: '8px 0px',
@@ -823,6 +828,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                           data-cy="widget-settings-region-label">
                           <TreeSelectOption
                             data-cy="treeselect-place-region"
+                            dropdownDataCy="treeselect-place-region-options"
                             allowClear
                             treeDefaultExpandAll
                             notFoundContent={<NoContent />}
@@ -894,6 +900,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                               );
                             }}
                             data-cy="widget-settings-location-select"
+                            dropdownDataCy="widget-settings-location-select-options"
                           />
                         </Form.Item>
                       </Col>
@@ -935,6 +942,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                               );
                             }}
                             data-cy="widget-settings-organizer-person-select"
+                            dropdownDataCy="widget-settings-organizer-person-select-options"
                           />
                         </Form.Item>
                       </Col>
@@ -974,6 +982,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                               );
                             }}
                             data-cy="widget-settings-organizer-select"
+                            dropdownDataCy="widget-settings-organizer-select-options"
                           />
                         </Form.Item>
                       </Col>
@@ -1010,6 +1019,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
                               );
                             }}
                             data-cy="widget-settings-person-select"
+                            dropdownDataCy="widget-settings-person-select-options"
                           />
                         </Form.Item>
                       </Col>
