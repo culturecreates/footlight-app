@@ -2,6 +2,16 @@ import React from 'react';
 import { TreeSelect } from 'antd';
 import './treeSelectOption.css';
 
+const addDropdownDataCy = (content, dataCy) => {
+  if (!React.isValidElement(content)) return content;
+
+  if (typeof content.type === 'string') {
+    return React.cloneElement(content, { 'data-cy': dataCy });
+  }
+
+  return <div data-cy={dataCy}>{content}</div>;
+};
+
 function TreeSelectOption({ dropdownDataCy, dropdownRender, ...props }) {
   const TITLE = 'title';
   const LABEL = 'label';
@@ -10,7 +20,7 @@ function TreeSelectOption({ dropdownDataCy, dropdownRender, ...props }) {
     ? (originNode, dropdownProps) => {
         const content = dropdownRender ? dropdownRender(originNode, dropdownProps) : originNode;
 
-        return React.isValidElement(content) ? React.cloneElement(content, { 'data-cy': dropdownDataCy }) : content;
+        return addDropdownDataCy(content, dropdownDataCy);
       }
     : dropdownRender;
 
