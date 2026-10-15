@@ -42,7 +42,7 @@ const fieldName = {
   performerOrganization: 'performerOrganization',
 };
 
-const WidgetSettings = ({ tabKey }) => {
+const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -225,6 +225,7 @@ const WidgetSettings = ({ tabKey }) => {
         `<iframe src="${urlCopy.href}" width="100%" style="max-width:${formValues.width}px; border:none" height="${formValues.height}px"></iframe>`,
       );
       setHasFormChangedSinceLastUpdate(false);
+      setDirtyStatus?.(false);
       setTimeout(() => {
         setIsMaskVisible(false);
         setShowMobileIframe(true);
@@ -235,6 +236,7 @@ const WidgetSettings = ({ tabKey }) => {
 
   const handleFormValuesChange = () => {
     setHasFormChangedSinceLastUpdate(true);
+    setDirtyStatus?.(true);
     setIsMaskVisible(true);
     setShowMobileIframe(false);
   };
