@@ -27,10 +27,13 @@ export const notificationApi = createApi({
       },
 
       transformResponse: (response) => {
-        const unreadCount = response?.data?.filter((item) => item.messageStatus === messageStatusMap.SENT).length || 0;
+        const messages = Array.isArray(response?.data) ? response.data : response?.data?.messages ?? [];
+        const unreadCount = messages.filter((item) => item.messageStatus === messageStatusMap.SENT).length || 0;
         return {
-          notifications: response?.data,
+          notifications: messages,
           unreadCount,
+          totalCount: response?.data?.totalCount ?? messages.length,
+          pageCount: response?.data?.pageCount,
           lastUpdated: new Date().toISOString(),
         };
       },
