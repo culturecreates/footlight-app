@@ -101,7 +101,12 @@
       "help": "Aide",
       "systemUpdates": "Mises à jour du système",
       "notification": {
-        "noEventsForReview": "Il n'y a aucun événement à examiner."
+        "noEventsForReview": "Il n'y a aucun événement à examiner.",
+        "updatedEvents": {
+          "heading": "Champs mis à jour",
+          "eventLabel": "Événement {{count}}",
+          "viewEvent": "Voir l'événement"
+        }
       }
     },
     "sidebar": {

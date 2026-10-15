@@ -6,4 +6,6 @@ export const messageStatusMap = {
 
 export const messageTypeMap = {
   SYSTEM: 'SystemUpdate',
+  AGGREGATOR_UPDATED_EVENTS: 'AggregatorUpdatedEvents',
+  AGGREGATOR_NEW_EVENTS: 'AggregatorNewEvents',
 };

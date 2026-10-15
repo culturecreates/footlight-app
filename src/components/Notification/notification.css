@@ -14,3 +14,53 @@
   background-color: #f9faff;
   cursor: pointer;
 }
+
+.notification-updated-events {
+  margin: 8px 0;
+  padding: 8px;
+  background-color: #f6f9ff;
+  border-radius: 6px;
+}
+
+.notification-updated-events-heading {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f0f0f;
+  margin-bottom: 6px;
+}
+
+.notification-updated-event {
+  margin-bottom: 8px;
+}
+
+.notification-updated-event:last-child {
+  margin-bottom: 0;
+}
+
+.notification-updated-event-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1b3de6;
+  margin-bottom: 4px;
+}
+
+a.notification-updated-event-label:hover {
+  text-decoration: underline;
+}
+
+.notification-changed-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.notification-changed-field-tag {
+  margin: 0;
+  font-size: 11px;
+  line-height: 18px;
+  border-radius: 4px;
+  background-color: #ffffff;
+  border-color: #d6ddf5;
+  color: #0f0f0f;
+}

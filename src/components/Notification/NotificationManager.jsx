@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Badge, Dropdown, List, notification, Spin } from 'antd';
+import { Badge, Dropdown, List, notification, Spin, Tag } from 'antd';
 import BellOutlined from '../../assets/icons/Vector.svg';
 import { useGetNotificationsQuery, useMarkAsReadMutation } from '../../services/notification';
 import { useParams } from 'react-router-dom';
@@ -7,11 +7,53 @@ import './notification.css';
 import { bilingual } from '../../utils/bilingual';
 import i18next from 'i18next';
 import { formatNotificationTime } from '../../utils/notificationUtils';
-import { messageStatusMap } from '../../constants/notificationConstants';
+import { messageStatusMap, messageTypeMap } from '../../constants/notificationConstants';
 import { useTranslation } from 'react-i18next';
 
 const POLLING_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const LOOKBACK_DAYS = 14;
+
+const UpdatedEventsPreview = ({ updatedEvents }) => {
+  const { t } = useTranslation();
+
+  if (!Array.isArray(updatedEvents) || updatedEvents.length === 0) return null;
+
+  return (
+    <div className="notification-updated-events">
+      <div className="notification-updated-events-heading">
+        {t('dashboard.topNavigation.notification.updatedEvents.heading')}
+      </div>
+      {updatedEvents.map((event, index) => {
+        const changedFields = Array.isArray(event?.changedFields) ? event.changedFields : [];
+        return (
+          <div className="notification-updated-event" key={event?.id ?? index}>
+            {event?.uri ? (
+              <a
+                className="notification-updated-event-label"
+                href={event.uri}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}>
+                {t('dashboard.topNavigation.notification.updatedEvents.eventLabel', { count: index + 1 })}
+              </a>
+            ) : (
+              <span className="notification-updated-event-label">
+                {t('dashboard.topNavigation.notification.updatedEvents.eventLabel', { count: index + 1 })}
+              </span>
+            )}
+            <div className="notification-changed-fields">
+              {changedFields.map((field, fieldIndex) => (
+                <Tag className="notification-changed-field-tag" key={field?.fieldName ?? fieldIndex}>
+                  {bilingual({ interfaceLanguage: i18next.language, data: field?.label }) || field?.fieldName}
+                </Tag>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const NotificationManager = () => {
   const { calendarId } = useParams();
@@ -62,7 +104,9 @@ const NotificationManager = () => {
       }
       if (
         !item?.messageUrl &&
-        (item?.messageType === 'AggregatorUpdatedEvents' || item?.messageType === 'AggregatorNewEvents')
+        !(item?.updatedEvents?.length > 0) &&
+        (item?.messageType === messageTypeMap.AGGREGATOR_UPDATED_EVENTS ||
+          item?.messageType === messageTypeMap.AGGREGATOR_NEW_EVENTS)
       ) {
         notification.info({
           message: t('dashboard.topNavigation.notification.noEventsForReview'),
@@ -117,6 +161,9 @@ const NotificationManager = () => {
                 description={
                   <>
                     <div>{item.message}</div>
+                    {item?.messageType === messageTypeMap.AGGREGATOR_UPDATED_EVENTS && (
+                      <UpdatedEventsPreview updatedEvents={item?.updatedEvents} />
+                    )}
                     <small style={{ color: '#888' }}>{formatNotificationTime(item?.messageTime)}</small>
                   </>
                 }

@@ -101,7 +101,12 @@
       "help": "Help",
       "systemUpdates": "System Updates",
       "notification": {
-        "noEventsForReview": "There are no events to review."
+        "noEventsForReview": "There are no events to review.",
+        "updatedEvents": {
+          "heading": "Updated fields",
+          "eventLabel": "Event {{count}}",
+          "viewEvent": "View event"
+        }
       }
     },
     "sidebar": {
