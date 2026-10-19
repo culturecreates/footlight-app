@@ -8,4 +8,5 @@ export const messageTypeMap = {
   SYSTEM: 'SystemUpdate',
   AGGREGATOR_UPDATED_EVENTS: 'AggregatorUpdatedEvents',
   AGGREGATOR_NEW_EVENTS: 'AggregatorNewEvents',
+  ARTSDATA_EVENT_CHANGES: 'ArtsdataEventChanges',
 };

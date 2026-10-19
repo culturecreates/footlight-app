@@ -102,10 +102,21 @@
       "systemUpdates": "Mises à jour du système",
       "notification": {
         "noEventsForReview": "Il n'y a aucun événement à examiner.",
+        "title": "Notifications",
+        "markAllAsRead": "Tout marquer comme lu",
+        "sourceEventUpdated": "L'événement source a été mis à jour pour {{name}}",
+        "deleteLabel": "Supprimer la notification",
+        "empty": "Aucune nouvelle notification",
         "updatedEvents": {
           "heading": "Champs mis à jour",
-          "eventLabel": "Événement {{count}}",
+          "eventLabel": "Événement mis à jour",
           "viewEvent": "Voir l'événement"
+        },
+        "artsdataChanges": {
+          "title": "Changements dans Artsdata pour {{name}}",
+          "editedInCms": "Modifié dans le CMS",
+          "viewInArtsdata": "Voir dans Artsdata",
+          "valueRemoved": "(supprimé)"
         }
       }
     },

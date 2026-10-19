@@ -6,61 +6,224 @@
   border-radius: 8px;
 }
 
-.notification-dropdown .ant-list-item-meta-avatar {
-  margin-right: 8px;
+.notification-dropdown-panel {
+  width: 520px;
+  max-height: 560px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.notification-item * :hover {
-  background-color: #f9faff;
+.notification-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #e6e8f0;
+}
+
+.notification-dropdown-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+  color: #0f0f0f;
+}
+
+.notification-mark-all-button {
+  background-color: #1b3de6;
+  border-color: #1b3de6;
+}
+
+.notification-dropdown-list {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.notification-dropdown .ant-spin-nested-loading,
+.notification-dropdown .ant-spin-container {
+  height: 100%;
+}
+
+.notification-dropdown .ant-list {
+  font-size: 14px;
+}
+
+.notification-dropdown .notification-item.ant-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
   cursor: pointer;
 }
 
-.notification-updated-events {
-  margin: 8px 0;
-  padding: 8px;
+.notification-item:hover {
+  background-color: #f9faff;
+}
+
+.notification-item-unread {
   background-color: #f6f9ff;
-  border-radius: 6px;
 }
 
-.notification-updated-events-heading {
-  font-size: 12px;
+.notification-item-date {
+  flex: 0 0 130px;
+  min-width: 130px;
+}
+
+.notification-item-date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification-item-unread-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: #1b3de6;
+}
+
+.notification-item-date-value {
+  font-size: 14px;
   font-weight: 700;
+  line-height: 22px;
   color: #0f0f0f;
-  margin-bottom: 6px;
 }
 
-.notification-updated-event {
-  margin-bottom: 8px;
-}
-
-.notification-updated-event:last-child {
-  margin-bottom: 0;
-}
-
-.notification-updated-event-label {
-  display: inline-block;
+.notification-item-today {
+  display: block;
   font-size: 12px;
-  font-weight: 600;
-  color: #1b3de6;
-  margin-bottom: 4px;
+  line-height: 18px;
+  color: #5f6368;
+  margin-left: 16px;
 }
 
-a.notification-updated-event-label:hover {
-  text-decoration: underline;
+.notification-item:not(.notification-item-unread) .notification-item-today {
+  margin-left: 0;
+}
+
+.notification-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-item-message {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  color: #0f0f0f;
+}
+
+.notification-item-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.notification-item-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #5f6368;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.notification-item-delete:hover {
+  background-color: #f0f2f8;
+  color: #d93645;
+}
+
+.notification-item-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .notification-changed-fields {
   display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0 0;
+}
+
+.notification-changed-field-line {
+  font-size: 12px;
+  line-height: 18px;
+  color: #0f0f0f;
+}
+
+.notification-changed-field-label {
+  font-weight: 600;
+  color: #0f0f0f;
+}
+
+.notification-changed-field-value {
+  color: #5f6368;
+}
+
+.notification-changed-field-value::before {
+  content: ': ';
+}
+
+.notification-artsdata-change {
+  display: inline-flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 4px;
 }
 
-.notification-changed-field-tag {
-  margin: 0;
-  font-size: 11px;
-  line-height: 18px;
-  border-radius: 4px;
-  background-color: #ffffff;
-  border-color: #d6ddf5;
+.notification-artsdata-change::before {
+  content: ':';
+  color: #5f6368;
+  margin-right: 2px;
+}
+
+.notification-artsdata-removed {
+  color: #5f6368;
+  text-decoration: line-through;
+}
+
+.notification-artsdata-arrow {
+  color: #5f6368;
+}
+
+.notification-artsdata-added {
   color: #0f0f0f;
+}
+
+.notification-artsdata-cleared {
+  color: #5f6368;
+  font-style: italic;
+}
+
+.notification-artsdata-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.notification-artsdata-meta:empty {
+  display: none;
+}
+
+.notification-artsdata-edited-tag {
+  font-size: 11px;
+  line-height: 16px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background-color: #fff4e5;
+  color: #b25e00;
+}
+
+.notification-artsdata-link {
+  font-size: 12px;
+  line-height: 18px;
+  color: #1b3de6;
 }
