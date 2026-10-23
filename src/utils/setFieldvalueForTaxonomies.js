@@ -92,11 +92,11 @@ export const setInitialValueForStandardTaxonomyFieldsForPlaceForm = ({
             return type?.entityId;
           })
         : artsDataId
-        ? artsData?.regions &&
-          artsData?.regions?.map((region) => {
-            return region?.entityId;
-          })
-        : [];
+          ? artsData?.regions &&
+            artsData?.regions?.map((region) => {
+              return region?.entityId;
+            })
+          : [];
     },
   });
   initialValues[formFieldNames.PLACE_ACCESSIBILITY] = resolveTaxonomyValues({

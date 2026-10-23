@@ -110,8 +110,8 @@ function CalendarAccordion(props) {
       image: Array.isArray(v?.image)
         ? v?.image.find((image) => image?.isMain) || null
         : typeof v?.image === 'object' && v?.image !== null
-        ? v?.image
-        : null,
+          ? v?.image
+          : null,
     }));
   };
 

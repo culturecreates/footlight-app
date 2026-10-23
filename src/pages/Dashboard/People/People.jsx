@@ -99,8 +99,8 @@ function People() {
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
       : sessionStorage.getItem('peopleUsers')
-      ? decodeURIComponent(sessionStorage.getItem('peopleUsers'))?.split(',')
-      : [],
+        ? decodeURIComponent(sessionStorage.getItem('peopleUsers'))?.split(',')
+        : [],
   );
   const [peopleIdFilter, setPeopleIdFilter] = useState(
     searchParams.get('ids') ? decodeURIComponent(searchParams.get('ids'))?.split(',') : [],
@@ -114,33 +114,33 @@ function People() {
 
   const [isUserOpen, setIsUserOpen] = useState(false);
   const [pageNumber, setPageNumber] = useState(
-    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('peoplePage') ?? 1,
+    searchParams.get('page') ? searchParams.get('page') : (sessionStorage.getItem('peoplePage') ?? 1),
   );
   const [peopleSearchQuery, setPeopleSearchQuery] = useState(
-    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('peopleSearchQuery') ?? '',
+    searchParams.get('query') ? searchParams.get('query') : (sessionStorage.getItem('peopleSearchQuery') ?? ''),
   );
   const [filter, setFilter] = useState({
     sort: searchParams.get('sortBy')
       ? searchParams.get('sortBy')
-      : sessionStorage.getItem('peopleSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
+      : (sessionStorage.getItem('peopleSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key),
     order: searchParams.get('order')
       ? searchParams.get('order')
-      : sessionStorage.getItem('peopleOrder') ?? sortOrder?.ASC,
+      : (sessionStorage.getItem('peopleOrder') ?? sortOrder?.ASC),
   });
   const [taxonomyFilter, setTaxonomyFilter] = useState(
     searchParams.get('taxonomyFilter')
       ? JSON.parse(searchParams.get('taxonomyFilter'))
       : sessionStorage.getItem('peopleTaxonomyFilter')
-      ? JSON.parse(sessionStorage.getItem('peopleTaxonomyFilter'))
-      : {},
+        ? JSON.parse(sessionStorage.getItem('peopleTaxonomyFilter'))
+        : {},
   );
 
   const [standardTaxonomyFilter, setStandardTaxonomyFilter] = useState(
     searchParams.get('standardTaxonomyFilter')
       ? JSON.parse(searchParams.get('standardTaxonomyFilter'))
       : sessionStorage.getItem('standardPeopleTaxonomyFilter')
-      ? JSON.parse(sessionStorage.getItem('standardPeopleTaxonomyFilter'))
-      : {},
+        ? JSON.parse(sessionStorage.getItem('standardPeopleTaxonomyFilter'))
+        : {},
   );
 
   const totalCount = allPeopleData?.count;

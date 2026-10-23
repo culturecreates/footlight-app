@@ -195,8 +195,8 @@ function CreateNewPerson() {
           let sameAsArray = Array.isArray(artsData.sameAs)
             ? artsData.sameAs
             : artsData.sameAs && typeof artsData.sameAs === 'object'
-            ? [artsData.sameAs]
-            : [];
+              ? [artsData.sameAs]
+              : [];
 
           const existingIndex = sameAsArray.findIndex((item) => item.uri === artsData.uri);
 
@@ -980,10 +980,10 @@ function CreateNewPerson() {
                               entityData: personData
                                 ? personData
                                 : artsDataId
-                                ? artsData
-                                : externalCalendarEntityId && externalCalendarEntityData?.length > 0
-                                ? externalEntityData
-                                : newEntityData,
+                                  ? artsData
+                                  : externalCalendarEntityId && externalCalendarEntityData?.length > 0
+                                    ? externalEntityData
+                                    : newEntityData,
                               index,
                               t,
                               adminCheck: adminCheckHandler({ calendar, user }),

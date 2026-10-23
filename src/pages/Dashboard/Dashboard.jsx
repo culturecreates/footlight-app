@@ -63,7 +63,7 @@ function Dashboard() {
   let [searchParams] = useSearchParams();
 
   const [pageNumber, setPageNumber] = useState(
-    searchParams.get('page') ? searchParams.get('page') : Cookies.get('page') ?? 1,
+    searchParams.get('page') ? searchParams.get('page') : (Cookies.get('page') ?? 1),
   );
   const [contentBackgroundColor, setContentBackgroundColor] = useState('#fff');
   const [isReadOnly, setIsReadOnly] = useState(false);

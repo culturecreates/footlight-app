@@ -153,8 +153,8 @@ function EventStatusOptions({
               isPublishing
                 ? 'dashboard.events.addEditEvent.notification.publish'
                 : isUnpublishing
-                ? 'dashboard.events.addEditEvent.notification.saveAsDraft'
-                : 'dashboard.events.addEditEvent.notification.updateEvent',
+                  ? 'dashboard.events.addEditEvent.notification.saveAsDraft'
+                  : 'dashboard.events.addEditEvent.notification.updateEvent',
             ),
             placement: 'top',
             closeIcon: <></>,

@@ -51,14 +51,18 @@
 
 .custom-table .ant-table-tbody .drop-over-downward,
 .drop-over-upward {
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
   transform: scale(1.02);
   background-color: rgba(24, 144, 255, 0.1);
 }
 
 .custom-table .ant-table-tbody .drop-over-upward,
 .custom-table .ant-table-tbody .drop-over-upward-in-gap {
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
   transform: scale(1.02);
   background-color: rgba(24, 144, 255, 0.1);
 }
