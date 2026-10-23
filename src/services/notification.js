@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithReauth } from '../utils/services';
-import { messageStatusMap } from '../constants/notificationConstants';
+import { isNotificationUnread } from '../utils/notificationUtils';
 
 export const notificationApi = createApi({
   reducerPath: 'notificationApi',
@@ -27,10 +27,13 @@ export const notificationApi = createApi({
       },
 
       transformResponse: (response) => {
-        const unreadCount = response?.data?.filter((item) => item.messageStatus === messageStatusMap.SENT).length || 0;
+        const messages = Array.isArray(response?.data) ? response.data : response?.data?.messages ?? [];
+        const unreadCount = messages.filter(isNotificationUnread).length || 0;
         return {
-          notifications: response?.data,
+          notifications: messages,
           unreadCount,
+          totalCount: response?.data?.totalCount ?? messages.length,
+          pageCount: response?.data?.pageCount,
           lastUpdated: new Date().toISOString(),
         };
       },
@@ -41,6 +44,24 @@ export const notificationApi = createApi({
       query: ({ calendarId, messageId }) => ({
         url: `messages/mark-as-read?ids=${messageId}`,
         method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+    }),
+    markAllAsRead: builder.mutation({
+      query: ({ calendarId, messageIds }) => ({
+        url: `messages/mark-as-read?ids=${(messageIds || []).join(',')}`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+    }),
+    deleteNotification: builder.mutation({
+      query: ({ calendarId, messageId }) => ({
+        url: `messages/${messageId}`,
+        method: 'DELETE',
         headers: {
           'calendar-id': calendarId,
         },
@@ -63,5 +84,7 @@ export const {
   useGetNotificationsQuery,
   useLazyGetNotificationsQuery,
   useMarkAsReadMutation,
+  useMarkAllAsReadMutation,
+  useDeleteNotificationMutation,
   useCreateNotificationMutation,
 } = notificationApi;
