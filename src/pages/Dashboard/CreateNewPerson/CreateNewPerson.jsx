@@ -529,6 +529,11 @@ function CreateNewPerson() {
       .catch((error) => {
         setArtsDataLoading(false);
         console.log(error);
+        notification.error({
+          key: 'arts-data-fetch-error',
+          message: t('common.errorMessages.artsDataFetchFailed'),
+          duration: 5,
+        });
       });
   };
 
