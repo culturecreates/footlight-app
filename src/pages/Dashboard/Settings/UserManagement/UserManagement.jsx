@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import UserSearch from '../../../../components/Search/Events/EventsSearch';
-import { useNavigate, useParams, useSearchParams, createSearchParams, useOutletContext } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, createSearchParams } from 'react-router-dom';
 import {
   useActivateUserMutation,
   useDeactivateUserMutation,
@@ -47,18 +47,6 @@ const USER_STATUS_KEYS = {
 };
 
 const UserManagement = (props) => {
-  const [
-    // eslint-disable-next-line no-unused-vars
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    // eslint-disable-next-line no-unused-vars
-    setContentBackgroundColor,
-    // eslint-disable-next-line no-unused-vars
-    isReadOnly,
-  ] = useOutletContext();
-
   const { tabKey } = props;
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;

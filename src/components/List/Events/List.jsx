@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import './list.css';
 import { List, Grid } from 'antd';
 import { MoreOutlined, StarOutlined } from '@ant-design/icons';
@@ -36,7 +37,7 @@ function Lists(props) {
   let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
   const totalCount = data?.totalCount;
   const dateTimeFormat = lang === 'fr' ? 'DD MMM YYYY - HH:mm' : 'DD MMM YYYY - h:mm a';
 

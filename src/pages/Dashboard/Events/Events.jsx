@@ -26,7 +26,8 @@ import {
   useFeatureEventsMutation,
   useUpdateEventStateMutation,
 } from '../../../services/events';
-import { useParams, useSearchParams, createSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
+import { useParams, useSearchParams, createSearchParams, useNavigate } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import AddEvent from '../../../components/Button/AddEvent';
 import { PathName } from '../../../constants/pathName';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
@@ -104,14 +105,8 @@ function Events() {
   const { user } = useSelector(getUserDetails);
   const errorDetails = useSelector(getErrorDetails);
   const dispatch = useDispatch();
-  const [
-    currentCalendarData,
-    pageNumber,
-    setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, pageNumber, setPageNumber, setContentBackgroundColor, isReadOnly } =
+    useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#fff');

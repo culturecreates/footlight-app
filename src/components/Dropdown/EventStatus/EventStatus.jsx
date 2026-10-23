@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
 import { eventPublishState } from '../../../constants/eventPublishState';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { PathName } from '../../../constants/pathName';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -28,7 +29,7 @@ function EventStatusOptions({
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
-  const [, , , , , isReadOnly] = useOutletContext();
+  const { isReadOnly } = useDashboardContext();
   const { user } = useSelector(getUserDetails);
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
   const canFeature = [userRoles.ADMIN, userRoles.EDITOR].includes(calendar[0]?.role) || user?.isSuperAdmin;

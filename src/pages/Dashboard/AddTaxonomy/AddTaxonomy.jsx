@@ -1,7 +1,10 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { getStandardFieldTranslation, standardFieldsForTaxonomy } from '../../../utils/standardFields';
-import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
+import { useContentBackground } from '../../../hooks/useContentBackground';
+import { useReadOnlyRedirect } from '../../../hooks/useReadOnlyRedirect';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import { Card, Checkbox, Col, Form, Input, Row, notification, Tabs, Popover, Table } from 'antd';
 import Alert from '../../../components/Alert';
@@ -63,14 +66,7 @@ const cachedVocabularyTaxonomies = new Map();
 const vocabularyTaxonomyFetchPromises = new Map();
 
 const AddTaxonomy = () => {
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, getCalendar } = useDashboardContext();
   let [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -173,9 +169,7 @@ const AddTaxonomy = () => {
     return fetchPromise;
   };
 
-  useEffect(() => {
-    setContentBackgroundColor('#F9FAFF');
-  }, [setContentBackgroundColor]);
+  useContentBackground();
 
   useEffect(() => {
     if (taxonomyId && currentCalendarData) {
@@ -709,9 +703,7 @@ const AddTaxonomy = () => {
       .catch((error) => console.log(error));
   }, []);
 
-  useEffect(() => {
-    if (isReadOnly) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
-  }, [isReadOnly]);
+  useReadOnlyRedirect({ entityPath: PathName.Taxonomies, calendarId });
 
   useEffect(() => {
     // Flatten the fallbackStatus structure to extract all tagdisplaystatus values

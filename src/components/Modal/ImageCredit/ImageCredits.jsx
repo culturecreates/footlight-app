@@ -11,7 +11,7 @@ import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormI
 import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { filterNonEmptyValues } from '../../../utils/filterNonEmptyValues';
 import { languageFallbackStatusCreator } from '../../../utils/languageFallbackStatusCreator';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { useDispatch, useSelector } from 'react-redux';
 import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
@@ -22,7 +22,7 @@ const { TextArea } = Input;
 const ImageCredits = (props) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
 

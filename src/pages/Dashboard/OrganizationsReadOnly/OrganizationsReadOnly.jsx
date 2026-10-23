@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Col, Row, Skeleton } from 'antd';
 import OutlinedButton from '../../../components/Button/Outlined';
 import Alert from '../../../components/Alert';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { useGetOrganizationQuery } from '../../../services/organization';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -60,14 +61,7 @@ function OrganizationsReadOnly() {
   const timestampRef = useRef(Date.now()).current;
   const stickyHeaderRef = useRef(null);
   const navigate = useNavigate();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);

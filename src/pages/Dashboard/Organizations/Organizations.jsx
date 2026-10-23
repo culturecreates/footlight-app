@@ -13,14 +13,8 @@ import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
 import { useDeleteOrganizationMutation, useLazyGetAllOrganizationQuery } from '../../../services/organization';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import {
-  useLocation,
-  useNavigate,
-  useOutletContext,
-  useParams,
-  useSearchParams,
-  createSearchParams,
-} from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams, createSearchParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { PathName } from '../../../constants/pathName';
 import { useSelector } from 'react-redux';
@@ -61,14 +55,7 @@ function Organizations() {
   const { calendarId } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   let taxonomyClassQuery = new URLSearchParams();
 

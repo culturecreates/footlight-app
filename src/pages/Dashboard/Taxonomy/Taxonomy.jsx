@@ -3,7 +3,8 @@ import i18next from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSearchParams, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { createSearchParams, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import NoContent from '../../../components/NoContent/NoContent';
 import { sortByOptionsTaxonomy, sortOrder } from '../../../constants/sortByOptions';
@@ -82,14 +83,7 @@ const Taxonomy = () => {
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const screens = useBreakpoint();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, getCalendar, setContentBackgroundColor, isReadOnly } = useDashboardContext();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

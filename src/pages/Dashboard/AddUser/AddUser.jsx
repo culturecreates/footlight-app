@@ -31,7 +31,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassword';
 import { useInviteUserMutation } from '../../../services/invite';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
@@ -56,17 +56,7 @@ const AddUser = () => {
   const location = useLocation();
   let [searchParams, setSearchParams] = useSearchParams();
   const [formInstance] = Form.useForm();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor, // eslint-disable-next-line no-unused-vars
-    _isReadOnly, // eslint-disable-next-line no-unused-vars
-    _setIsReadOnly, // eslint-disable-next-line no-unused-vars
-    _refetch,
-    allCalendarsData,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, allCalendarsData } = useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');

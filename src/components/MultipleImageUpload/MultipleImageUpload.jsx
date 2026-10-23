@@ -10,7 +10,7 @@ import Outlined from '../Button/Outlined';
 const type = 'DragableUploadList';
 import './multipleImageUpload.css';
 import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOptions';
 import ImageCredits from '../Modal/ImageCredit';
 import Credit from '../Tags/Credit';
@@ -232,7 +232,7 @@ const MultipleImageUpload = (props) => {
   const [loading, setLoading] = useState(false);
   const { eventImageData, form, imageReadOnly, setShowDialog } = props;
   const { t } = useTranslation();
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
   const [fileList, setFileList] = useState(
     eventImageData?.length > 0 ? eventImageData?.map(generateImageObject)?.flat() : [],

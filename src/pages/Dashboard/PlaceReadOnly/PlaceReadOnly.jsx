@@ -3,7 +3,8 @@ import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Col, Row, Skeleton } from 'antd';
 import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined, WarningOutlined } from '@ant-design/icons';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
@@ -61,14 +62,7 @@ function PlaceReadOnly() {
   const timestampRef = useRef(Date.now()).current;
   const stickyHeaderRef = useRef(null);
   const navigate = useNavigate();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');

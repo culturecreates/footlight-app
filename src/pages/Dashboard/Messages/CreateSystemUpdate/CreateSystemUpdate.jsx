@@ -1,7 +1,8 @@
 import { Button, Col, Form, Grid, Input, message, Row, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../../hooks/useDashboardContext';
 import CreateMultiLingualFormItems from '../../../../layout/CreateMultiLingualFormItems';
 import { placeHolderCollectionCreator } from '../../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../../components/MultilingualTextEditor/MultiLingualTextEditor';
@@ -27,14 +28,7 @@ const CreateSystemUpdate = () => {
   const [form] = Form.useForm();
   const { t } = useTranslation();
 
-  const [
-    // eslint-disable-next-line no-unused-vars
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-  ] = useOutletContext();
+  const { setContentBackgroundColor } = useDashboardContext();
   const { user } = useSelector(getUserDetails);
 
   const paddingValue = screens.md ? '24px 8px' : '16px 0px';
