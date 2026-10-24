@@ -4,7 +4,7 @@ import TextEditor from '../TextEditor';
 import MultilingualInput from '../MultilingualInput';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../redux/reducer/languageLiteralSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import LiteralBadge from '../Badge/LiteralBadge';
@@ -32,7 +32,7 @@ function MultiLingualTextEditor(props) {
     props;
 
   const { t } = useTranslation();
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
   const reactQuillRefs = useRef(
     calendarContentLanguage.reduce((acc, lang) => {
       acc[lang] = React.createRef();

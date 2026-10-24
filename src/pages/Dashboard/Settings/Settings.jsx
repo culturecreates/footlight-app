@@ -5,7 +5,8 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './settings.css';
 import UserManagement from './UserManagement/UserManagement';
-import { useOutletContext, useParams } from 'react-router';
+import { useParams } from 'react-router';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import WidgetSettings from './WidgetSettings/WidgetSettings';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
@@ -26,13 +27,7 @@ const Settings = () => {
   const { user } = useSelector(getUserDetails);
   let [searchParams, setSearchParams] = useSearchParams();
   const { calendarId } = useParams();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor } = useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#fff');

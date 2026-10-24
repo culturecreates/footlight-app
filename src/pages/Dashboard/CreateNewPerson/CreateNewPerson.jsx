@@ -1,16 +1,16 @@
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button, notification, message, Skeleton } from 'antd';
+import { Form, Row, Col, Button, notification, Skeleton } from 'antd';
 import Icon, {
   CloseCircleOutlined,
-  ExclamationCircleOutlined,
   PlusOutlined,
   InfoCircleOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { LeftOutlined } from '@ant-design/icons';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
@@ -23,7 +23,6 @@ import { dataTypes, formCategory, formFieldValue, returnFormDataWithFields } fro
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import NoContent from '../../../components/NoContent/NoContent';
@@ -39,25 +38,29 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
-import { useGetEntitiesByIdQuery, useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
-import { sameAsTypes } from '../../../constants/sameAsTypes';
+import { useGetEntitiesByIdQuery } from '../../../services/entities';
 import moment from 'moment';
 import SelectionItem from '../../../components/List/SelectionItem';
-import {
-  clearActiveFallbackFieldsInfo,
-  getActiveFallbackFieldsInfo,
-  getLanguageLiteralBannerDisplayStatus,
-  setLanguageLiteralBannerDisplayStatus,
-  setBannerDismissed,
-  getIsBannerDismissed,
-} from '../../../redux/reducer/languageLiteralSlice';
+import { setLanguageLiteralBannerDisplayStatus, setBannerDismissed } from '../../../redux/reducer/languageLiteralSlice';
+import { useDebouncedLoading } from '../../../hooks/useDebouncedLoading';
+import { useFallbackLanguageBanner } from '../../../hooks/useFallbackLanguageBanner';
+import { useContentBackground } from '../../../hooks/useContentBackground';
+import { useReadOnlyRedirect } from '../../../hooks/useReadOnlyRedirect';
+import { useDynamicTaxonomyFields } from '../../../hooks/useDynamicTaxonomyFields';
+import { useEntityDerivedData } from '../../../hooks/useEntityDerivedData';
+import { useArtsDataLoader } from '../../../hooks/useArtsDataLoader';
+import { useValidateOnOpen } from '../../../hooks/useValidateOnOpen';
+import { useHandleValidationError } from '../../../hooks/useHandleValidationError';
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
-import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import { buildImageCropPayload } from '../../../utils/buildImageCropPayload';
+import { processImageAndSave } from '../../../utils/processImageAndSave';
+import { buildSameAsArray } from '../../../utils/buildSameAsArray';
+import { createOnFieldsChange } from '../../../utils/createOnFieldsChange';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import ChangeType from '../../../components/ChangeType';
 import i18next from 'i18next';
@@ -69,22 +72,11 @@ function CreateNewPerson() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
-  useEffect(() => {
-    setContentBackgroundColor('#F9FAFF');
-  }, [setContentBackgroundColor]);
+  useContentBackground();
 
-  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
-  const isBannerDismissed = useSelector(getIsBannerDismissed);
-  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const { languageLiteralBannerDisplayStatus, activeFallbackFieldsInfo } = useFallbackLanguageBanner();
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -120,24 +112,52 @@ function CreateNewPerson() {
   const [addPerson, { isLoading: addPersonLoading }] = useAddPersonMutation();
   const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
   const [updatePerson, { isLoading: updatePersonLoading }] = useUpdatePersonMutation();
-  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
-    sessionId: timestampRef,
-  });
 
-  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
-  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
-  const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
-  const [artsDataLoading, setArtsDataLoading] = useState(false);
-  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-  const [dynamicFields, setDynamicFields] = useState([]);
-  const [addedFields, setAddedFields] = useState([]);
-  const [scrollToSelectedField, setScrollToSelectedField] = useState();
-  const hasValidatedOnOpenRef = useRef(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
+  const { artsData, artsDataLoading, getArtsData } = useArtsDataLoader(loadArtsDataEntity);
+
+  const { derivedEntitiesData, derivedEntitiesDisplayStatus, isEntityDetailsLoading } = useEntityDerivedData({
+    entityId: personId,
+    calendarId,
+    timestampRef,
+    relatedKeys: ['events', 'people', 'organizations'],
+  });
+
+  const { dynamicFields, setAddedFields, addedFields, addFieldsHandler, scrollToSelectedField } =
+    useDynamicTaxonomyFields({
+      taxonomyLoading,
+      allTaxonomyData,
+      currentCalendarData,
+      entityClass: entitiesClass.person,
+      buildFieldObject: (taxonomy, requiredTaxonomies) => {
+        const tooltip = contentLanguageBilingual({
+          calendarContentLanguage,
+          data: taxonomy?.disambiguatingDescription,
+          requiredLanguageKey: i18next.language,
+        });
+        return {
+          type: taxonomy?.id,
+          fieldNames: taxonomy?.id,
+          mappedField: taxonomy?.id,
+          id: taxonomy?.id,
+          taxonomy: false,
+          disabled: false,
+          isPreset: requiredTaxonomies?.includes(taxonomy?.id),
+          label: contentLanguageBilingual({
+            data: taxonomy?.name,
+            requiredLanguageKey: i18next.language,
+            calendarContentLanguage,
+          }),
+          ...(tooltip && { infoPopup: tooltip }),
+        };
+      },
+    });
+
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
 
   const isAnyLoading = useMemo(
@@ -163,16 +183,7 @@ function CreateNewPerson() {
     ],
   );
 
-  useEffect(() => {
-    if (isAnyLoading) {
-      setDebouncedLoading(true);
-    } else {
-      const timer = setTimeout(() => {
-        setDebouncedLoading(false);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnyLoading]);
+  const debouncedLoading = useDebouncedLoading(isAnyLoading);
 
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person);
   let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
@@ -191,45 +202,18 @@ function CreateNewPerson() {
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!personId || personId === '') {
-        if (artsDataId && artsData && !isImportingExistingEntity) {
-          let sameAsArray = Array.isArray(artsData.sameAs)
-            ? artsData.sameAs
-            : artsData.sameAs && typeof artsData.sameAs === 'object'
-            ? [artsData.sameAs]
-            : [];
-
-          const existingIndex = sameAsArray.findIndex((item) => item.uri === artsData.uri);
-
-          const artsDataIdentifier = {
-            uri: artsData.uri,
-            type: sameAsTypes.ARTSDATA_IDENTIFIER,
-          };
-
-          if (existingIndex !== -1) {
-            sameAsArray[existingIndex] = artsDataIdentifier;
-          } else {
-            sameAsArray.push(artsDataIdentifier);
-          }
-
+        const sameAs = buildSameAsArray({
+          artsData,
+          artsDataId,
+          isImportingExistingEntity,
+          externalCalendarEntityId,
+          externalEntityData,
+        });
+        if (sameAs !== undefined) {
           personObj = {
             ...personObj,
-            sameAs: sameAsArray,
+            sameAs,
           };
-        }
-
-        if (externalCalendarEntityId && !isImportingExistingEntity) {
-          let sameAs = [
-            {
-              uri: externalCalendarEntityId,
-              type: sameAsTypes.FOOTLIGHT_IDENTIFIER,
-            },
-          ];
-          if (externalEntityData?.sameAs) {
-            personObj = {
-              ...personObj,
-              sameAs: externalEntityData?.sameAs?.concat(sameAs),
-            };
-          }
         }
         addPerson({
           data: personObj,
@@ -286,13 +270,6 @@ function CreateNewPerson() {
     return promise;
   };
 
-  const addFieldsHandler = (fieldNames) => {
-    let array = addedFields?.concat(fieldNames);
-    array = [...new Set(array)];
-    setAddedFields(array);
-    setScrollToSelectedField(array?.at(-1));
-  };
-
   const getValidateFieldList = useCallback(() => {
     let validateFieldList = [];
 
@@ -317,36 +294,11 @@ function CreateNewPerson() {
     return validateFieldList;
   }, [formFields, formFieldProperties, calendarContentLanguage]);
 
-  const handleValidationError = useCallback(
-    (error, options = {}) => {
-      const { scrollBlock = 'center' } = options;
-      scrollToFirstError(error, form, {
-        scrollBlock,
-        getElement: (fieldNamePath, fieldName) => {
-          const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
-          const className = isDynamic ? String(fieldNamePath[1]) : fieldName;
-          return document.getElementsByClassName(className)?.[0];
-        },
-      });
-      message.warning({
-        duration: 10,
-        maxCount: 1,
-        key: 'person-save-as-warning',
-        content: (
-          <>
-            {t('dashboard.people.createNew.addPerson.notification.saveError')} &nbsp;
-            <Button
-              type="text"
-              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-              onClick={() => message.destroy('person-save-as-warning')}
-            />
-          </>
-        ),
-        icon: <ExclamationCircleOutlined />,
-      });
-    },
-    [form, t],
-  );
+  const handleValidationError = useHandleValidationError({
+    form,
+    warningKey: 'person-save-as-warning',
+    errorMessageKey: 'dashboard.people.createNew.addPerson.notification.saveError',
+  });
 
   const onSaveHandler = (event) => {
     event?.preventDefault();
@@ -377,187 +329,26 @@ function CreateNewPerson() {
             };
           }
         });
-        let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
         let mainImageOptions = form.getFieldValue('mainImageOptions');
-        if (imageCrop.length > 0) {
-          imageCrop = [
-            {
-              large: {
-                xCoordinate: imageCrop[0]?.large?.x,
-                yCoordinate: imageCrop[0]?.large?.y,
-                height: imageCrop[0]?.large?.height,
-                width: imageCrop[0]?.large?.width,
-              },
-              thumbnail: {
-                xCoordinate: imageCrop[0]?.thumbnail?.x,
-                yCoordinate: imageCrop[0]?.thumbnail?.y,
-                height: imageCrop[0]?.thumbnail?.height,
-                width: imageCrop[0]?.thumbnail?.width,
-              },
-              original: {
-                entityId: imageCrop[0]?.original?.entityId,
-                height: imageCrop[0]?.original?.height,
-                width: imageCrop[0]?.original?.width,
-              },
-              isMain: true,
-              description: mainImageOptions?.altText,
-              creditText: mainImageOptions?.credit,
-              caption: mainImageOptions?.caption,
-            },
-          ];
-        }
+        let imageCrop = buildImageCropPayload(form.getFieldValue('imageCrop'), mainImageOptions);
 
-        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-          const formdata = new FormData();
-          formdata.append('file', values?.image[0].originFileObj);
-          formdata &&
-            addImage({ data: formdata, calendarId })
-              .unwrap()
-              .then(async (response) => {
-                if (featureFlags.imageCropFeature) {
-                  let entityId = response?.data?.original?.entityId;
-                  imageCrop = [
-                    {
-                      large: imageCrop[0]?.large,
-                      thumbnail: imageCrop[0]?.thumbnail,
-                      isMain: true,
-                      original: {
-                        entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                      description: mainImageOptions?.altText,
-                      creditText: mainImageOptions?.credit,
-                      caption: mainImageOptions?.caption,
-                    },
-                  ];
-                } else
-                  imageCrop = [
-                    {
-                      large: imageCrop[0]?.large,
-                      thumbnail: imageCrop[0]?.thumbnail,
-                      isMain: true,
-                      original: {
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                      description: mainImageOptions?.altText,
-                      creditText: mainImageOptions?.credit,
-                      caption: mainImageOptions?.caption,
-                    },
-                  ];
-
-                if (values.multipleImagesCrop?.length > 0)
-                  await uploadImageListHelper(values, addImage, calendarId, imageCrop);
-                personPayload['image'] = imageCrop;
-                addUpdatePersonApiHandler(personPayload);
-              })
-              .catch((error) => {
-                console.log(error);
-                const element = document.getElementsByClassName('image');
-                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-              });
-        } else {
-          if (values.multipleImagesCrop?.length > 0)
-            await uploadImageListHelper(values, addImage, calendarId, imageCrop);
-          if (
-            values?.image &&
-            values?.image?.length === 0 &&
-            (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
-          ) {
-            // Main image is removed and no new image is added
-            // No gallery images are added
-            personPayload['image'] = [];
-          } else personPayload['image'] = imageCrop;
-          addUpdatePersonApiHandler(personPayload);
-        }
+        await processImageAndSave({
+          values,
+          calendarId,
+          addImage,
+          imageCrop,
+          mainImageOptions,
+          mainImageFile: values?.image,
+          isMainImageRemoved: values?.image,
+          scrollClassName: 'image',
+          entityPayload: personPayload,
+          saveHandler: (payload) => addUpdatePersonApiHandler(payload),
+        });
       })
       .catch((error) => handleValidationError(error));
   };
 
-  const onFieldsChange = (changedValue) => {
-    if (changedValue?.length > 0 && !showDialog) {
-      if (changedValue?.filter((field) => field?.touched).length > 0) {
-        setShowDialog(true);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
-    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person);
-    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
-      (field) => field,
-    );
-
-    allTaxonomyData?.data?.map((taxonomy) => {
-      if (taxonomy?.isDynamicField) {
-        const tooltip = contentLanguageBilingual({
-          calendarContentLanguage,
-          data: taxonomy?.disambiguatingDescription,
-          requiredLanguageKey: i18next.language,
-        });
-
-        const fieldObject = {
-          type: taxonomy?.id,
-          fieldNames: taxonomy?.id,
-          mappedField: taxonomy?.id,
-          id: taxonomy?.id,
-          taxonomy: false,
-          disabled: false,
-          isPreset: requiredTaxonomies?.includes(taxonomy?.id),
-          label: contentLanguageBilingual({
-            data: taxonomy?.name,
-            requiredLanguageKey: i18next.language,
-            calendarContentLanguage,
-          }),
-          ...(tooltip && { infoPopup: tooltip }),
-        };
-        setDynamicFields((prev) => [...prev, fieldObject]);
-      }
-    });
-  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
-
-  const getArtsData = (id) => {
-    setArtsDataLoading(true);
-    loadArtsDataEntity({ entityId: id })
-      .then((response) => {
-        setArtsData(response?.data[0]);
-        setArtsDataLoading(false);
-      })
-      .catch((error) => {
-        setArtsDataLoading(false);
-        console.log(error);
-      });
-  };
-
-  useEffect(() => {
-    dispatch(clearActiveFallbackFieldsInfo());
-    dispatch(setBannerDismissed(false));
-  }, []);
-
-  useEffect(() => {
-    let shouldDisplay = true;
-
-    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
-    let individualFallbackFieldsCollection = [];
-    fallbackFieldNames.forEach((name) => {
-      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
-    });
-
-    individualFallbackFieldsCollection.forEach((element) => {
-      if (element?.tagDisplayStatus) {
-        shouldDisplay = false;
-      }
-    });
-
-    if (!shouldDisplay && !isBannerDismissed) {
-      dispatch(setLanguageLiteralBannerDisplayStatus(true));
-    } else {
-      dispatch(setLanguageLiteralBannerDisplayStatus(false));
-    }
-  }, [activeFallbackFieldsInfo]);
+  const onFieldsChange = createOnFieldsChange(showDialog, setShowDialog);
 
   useEffect(() => {
     if (calendarId && currentCalendarData) {
@@ -753,27 +544,7 @@ function CreateNewPerson() {
     }
   }, [addedFields]);
 
-  useEffect(() => {
-    if (isReadOnly) {
-      if (personId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`, { replace: true });
-      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`, { replace: true });
-    }
-  }, [isReadOnly]);
-
-  useEffect(() => {
-    if (personId) {
-      getDerivedEntities({ id: personId, calendarId }).then((response) => {
-        if (
-          response?.data?.events?.length > 0 ||
-          response?.data?.people?.length > 0 ||
-          response?.data?.organizations?.length > 0
-        ) {
-          setDerivedEntitiesData(response?.data);
-          setDerivedEntitiesDisplayStatus(true);
-        }
-      });
-    }
-  }, []);
+  useReadOnlyRedirect({ entityId: personId, entityPath: PathName.People, calendarId });
 
   useEffect(() => {
     const newEntityName = location?.state?.name;
@@ -790,22 +561,14 @@ function CreateNewPerson() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!shouldValidateOnOpen || !isRoutingToEventPage || hasValidatedOnOpenRef.current || debouncedLoading) {
-      return;
-    }
-
-    const validateFieldList = getValidateFieldList();
-    if (!validateFieldList?.length) return;
-
-    const timer = setTimeout(() => {
-      if (hasValidatedOnOpenRef.current) return;
-      hasValidatedOnOpenRef.current = true;
-      form.validateFields(validateFieldList).catch((error) => handleValidationError(error));
-    }, 180);
-
-    return () => clearTimeout(timer);
-  }, [shouldValidateOnOpen, isRoutingToEventPage, debouncedLoading, getValidateFieldList, form, handleValidationError]);
+  useValidateOnOpen({
+    shouldValidateOnOpen,
+    isRoutingBack: isRoutingToEventPage,
+    debouncedLoading,
+    getValidateFieldList,
+    form,
+    handleValidationError,
+  });
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>

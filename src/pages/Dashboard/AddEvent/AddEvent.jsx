@@ -16,7 +16,8 @@ import {
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
-import { useNavigate, useParams, useSearchParams, useOutletContext, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
@@ -96,16 +97,10 @@ import CustomPopover from '../../../components/Popover/Popover';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import EntityPopoverSection from '../../../components/EntityImport/EntityPopoverSection';
+import EntityRelationField from '../../../components/EntityRelationField/EntityRelationField';
 import { getEmbedUrl, validateVideoLink } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
-import {
-  clearActiveFallbackFieldsInfo,
-  getActiveFallbackFieldsInfo,
-  getLanguageLiteralBannerDisplayStatus,
-  setBannerDismissed,
-  getIsBannerDismissed,
-  setLanguageLiteralBannerDisplayStatus,
-} from '../../../redux/reducer/languageLiteralSlice';
+import { setBannerDismissed, setLanguageLiteralBannerDisplayStatus } from '../../../redux/reducer/languageLiteralSlice';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
@@ -121,6 +116,12 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import { buildImageCropPayload } from '../../../utils/buildImageCropPayload';
+import { mergeUploadedImageIntoCrop } from '../../../utils/mergeUploadedImageIntoCrop';
+import { useDebouncedLoading } from '../../../hooks/useDebouncedLoading';
+import { useFallbackLanguageBanner } from '../../../hooks/useFallbackLanguageBanner';
+import { useContentBackground } from '../../../hooks/useContentBackground';
+import { useReadOnlyRedirect } from '../../../hooks/useReadOnlyRedirect';
 import { loadArtsDataEntity, loadArtsDataEventEntity, loadArtsDataPlaceEntity } from '../../../services/artsData';
 import { identifyBestTimezone } from '../../../utils/handleTimeZones';
 import { timeZones } from '../../../constants/calendarSettingsForm';
@@ -146,20 +147,13 @@ function AddEvent() {
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
   const errorDetails = useSelector(getErrorDetails);
-  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
-  const isBannerDismissed = useSelector(getIsBannerDismissed);
-  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
+  const { languageLiteralBannerDisplayStatus, activeFallbackFieldsInfo } = useFallbackLanguageBanner();
   const { t } = useTranslation();
   const artsDataId = location?.state?.data?.uri ?? null;
   const isImportingExistingEntity = location?.state?.data?.footlightId ?? false;
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
+
+  useContentBackground();
   const {
     currentData: eventData,
     isError,
@@ -236,7 +230,6 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
-  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [dynamicFields, setDynamicFields] = useState([]);
 
   const addEventPlaceImportConfig = getImportProviderConfig(importProviderContexts.ADD_EVENT_PLACE);
@@ -286,16 +279,7 @@ function AddEvent() {
     ],
   );
 
-  useEffect(() => {
-    if (isAnyLoading) {
-      setDebouncedLoading(true);
-    } else {
-      const timer = setTimeout(() => {
-        setDebouncedLoading(false);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnyLoading]);
+  const debouncedLoading = useDebouncedLoading(isAnyLoading);
 
   const [failedImports, setFailedImports] = useState({
     location: { failed: false, count: 0, total: 0 },
@@ -303,10 +287,6 @@ function AddEvent() {
     performers: { failed: false, count: 0, total: 0 },
     supporters: { failed: false, count: 0, total: 0 },
   });
-
-  useEffect(() => {
-    setContentBackgroundColor('#F9FAFF');
-  }, [setContentBackgroundColor]);
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
@@ -1222,35 +1202,8 @@ function AddEvent() {
               scheduleTimezone: timezone,
             };
 
-            let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
             let mainImageOptions = form.getFieldValue('mainImageOptions');
-            if (imageCrop.length > 0) {
-              imageCrop = [
-                {
-                  large: {
-                    xCoordinate: imageCrop[0]?.large?.x,
-                    yCoordinate: imageCrop[0]?.large?.y,
-                    height: imageCrop[0]?.large?.height,
-                    width: imageCrop[0]?.large?.width,
-                  },
-                  thumbnail: {
-                    xCoordinate: imageCrop[0]?.thumbnail?.x,
-                    yCoordinate: imageCrop[0]?.thumbnail?.y,
-                    height: imageCrop[0]?.thumbnail?.height,
-                    width: imageCrop[0]?.thumbnail?.width,
-                  },
-                  original: {
-                    entityId: imageCrop[0]?.original?.entityId,
-                    height: imageCrop[0]?.original?.height,
-                    width: imageCrop[0]?.original?.width,
-                  },
-                  isMain: true,
-                  description: mainImageOptions?.altText,
-                  creditText: mainImageOptions?.credit,
-                  caption: mainImageOptions?.caption,
-                },
-              ];
-            }
+            let imageCrop = buildImageCropPayload(form.getFieldValue('imageCrop'), mainImageOptions);
 
             if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
               const formdata = new FormData();
@@ -1259,39 +1212,7 @@ function AddEvent() {
                 addImage({ data: formdata, calendarId })
                   .unwrap()
                   .then(async (response) => {
-                    if (featureFlags.imageCropFeature) {
-                      let entityId = response?.data?.original?.entityId;
-                      imageCrop = [
-                        {
-                          large: imageCrop[0]?.large,
-                          thumbnail: imageCrop[0]?.thumbnail,
-                          isMain: true,
-                          original: {
-                            entityId,
-                            height: response?.data?.height,
-                            width: response?.data?.width,
-                          },
-                          description: mainImageOptions?.altText,
-                          creditText: mainImageOptions?.credit,
-                          caption: mainImageOptions?.caption,
-                        },
-                      ];
-                    } else
-                      imageCrop = [
-                        {
-                          large: imageCrop[0]?.large,
-                          thumbnail: imageCrop[0]?.thumbnail,
-                          isMain: true,
-                          original: {
-                            entityId: response?.data?.original?.entityId,
-                            height: response?.data?.height,
-                            width: response?.data?.width,
-                          },
-                          description: mainImageOptions?.altText,
-                          creditText: mainImageOptions?.credit,
-                          caption: mainImageOptions?.caption,
-                        },
-                      ];
+                    imageCrop = mergeUploadedImageIntoCrop(response, imageCrop, mainImageOptions);
 
                     if (values.multipleImagesCrop?.length > 0)
                       await uploadImageListHelper(values, addImage, calendarId, imageCrop);
@@ -2627,11 +2548,6 @@ function AddEvent() {
     });
   }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
 
-  useEffect(() => {
-    dispatch(clearActiveFallbackFieldsInfo());
-    dispatch(setBannerDismissed(false));
-  }, []);
-
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
@@ -2647,28 +2563,6 @@ function AddEvent() {
       });
     }
   }, [artsDataId]);
-
-  useEffect(() => {
-    let shouldDisplay = true;
-
-    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
-    let individualFallbackFieldsCollection = [];
-    fallbackFieldNames.forEach((name) => {
-      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
-    });
-
-    individualFallbackFieldsCollection.forEach((element) => {
-      if (element?.tagDisplayStatus) {
-        shouldDisplay = false;
-      }
-    });
-
-    if (!shouldDisplay && !isBannerDismissed) {
-      dispatch(setLanguageLiteralBannerDisplayStatus(true));
-    } else {
-      dispatch(setLanguageLiteralBannerDisplayStatus(false));
-    }
-  }, [activeFallbackFieldsInfo]);
 
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
@@ -3169,12 +3063,7 @@ function AddEvent() {
     }
   }, [artsDataId]);
 
-  useEffect(() => {
-    if (isReadOnly) {
-      if (eventId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`, { replace: true });
-      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`, { replace: true });
-    }
-  }, [isReadOnly]);
+  useReadOnlyRedirect({ entityId: eventId, entityPath: PathName.Events, calendarId });
 
   useEffect(() => {
     if (!taxonomyLoading && allTaxonomyData && !eventId && !duplicateId) {
@@ -4498,11 +4387,13 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item
-                  name="organizers"
-                  className="organizers"
+                <EntityRelationField
+                  t={t}
+                  fieldName="organizers"
+                  fieldClassName="organizers"
+                  fieldDataCy="form-item-organizers-label"
+                  fieldRequired={requiredFieldNames?.includes(eventFormRequiredFieldNames?.ORGANIZERS)}
                   initialValue={selectedOrganizers}
-                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.ORGANIZERS)}
                   rules={[
                     () => ({
                       validator() {
@@ -4517,160 +4408,39 @@ function AddEvent() {
                       },
                     }),
                   ]}
-                  data-cy="form-item-organizers-label">
-                  <KeyboardAccessibleLayout
-                    setItem={(organizer) => setSelectedOrganizers([...selectedOrganizers, organizer])}
-                    data={[organizersList, organizersImportsFootlightList, organizersArtsdataList]}
-                    setFieldValue={() => {
-                      return;
-                    }}
-                    popOverHandler={() => setIsPopoverOpen({ ...isPopoverOpen, organizer: false })}
-                    isPopoverOpen={isPopoverOpen.organizer}>
-                    <CustomPopover
-                      open={isPopoverOpen.organizer}
-                      onOpenChange={(open) => {
-                        debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'organizers');
-                        if (quickCreateKeyword !== '') {
-                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'organizers');
-                        }
-                        setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
-                      }}
-                      destroyTooltipOnHide={true}
-                      overlayClassName="event-popover"
-                      placement="bottom"
-                      autoAdjustOverflow={false}
-                      getPopupContainer={(trigger) => trigger.parentNode}
-                      trigger={['click']}
-                      data-cy="popover-organizers"
-                      content={
-                        <div>
-                          <div>
-                            <EntityPopoverSection
-                              title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                              headerDataCy="div-organizers-footlight-entity-heading"
-                              isLoading={isEntitiesFetching}
-                              hasError={false}
-                              items={organizersList}
-                              itemDataCy={(index) => `div-select-organizer-${index}`}
-                              itemClassName="event-popover-options"
-                              onSelect={(organizer) => {
-                                setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  organizer: false,
-                                });
-                                if (!showDialog) setShowDialog(true);
-                              }}
-                              renderItem={(organizer) => organizer?.label}
-                            />
-                            {showRelationshipFootlightImportSection && quickCreateKeyword !== '' && (
-                              <EntityPopoverSection
-                                title={t('dashboard.organization.createNew.search.importsFromFootlight')}
-                                headerDataCy="div-organizers-artsdata-entity-heading"
-                                isLoading={isExternalSourceFetching}
-                                hasError={false}
-                                items={organizersImportsFootlightList}
-                                itemDataCy={(index) => `div-select-import-footlight-organizer-${index}`}
-                                itemClassName="event-popover-options"
-                                onSelect={(organizer) => {
-                                  setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    organizer: false,
-                                  });
-                                  if (!showDialog) setShowDialog(true);
-                                }}
-                                renderItem={(organizer) => organizer?.label}
-                              />
-                            )}
-                            {quickCreateKeyword !== '' && (
-                              <EntityPopoverSection
-                                title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                                headerDataCy="div-organizers-artsdata-entity-heading"
-                                isLoading={isExternalSourceFetching}
-                                hasError={false}
-                                items={organizersArtsdataList}
-                                itemDataCy={(index) => `div-select-artsdata-organizer-${index}`}
-                                itemClassName="event-popover-options"
-                                onSelect={(organizer) => {
-                                  setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    organizer: false,
-                                  });
-                                  if (!showDialog) setShowDialog(true);
-                                }}
-                                renderItem={(organizer) => organizer?.label}
-                              />
-                            )}
-                          </div>
-                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
-                            {quickCreateKeyword?.length > 0 && (
-                              <div
-                                className="quick-create"
-                                onClick={() => {
-                                  setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
-                                  setQuickOrganizerModal(true);
-                                }}
-                                data-cy="div-select-quick-create-organizer-keyword">
-                                <PlusCircleOutlined />
-                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
-                                {quickCreateKeyword}&#34;
-                              </div>
-                            )}
-                          </FeatureFlag>
-                        </div>
-                      }>
-                      <EventsSearch
-                        style={{ borderRadius: '4px' }}
-                        placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
-                        onChange={(e) => {
-                          setQuickCreateKeyword(e.target.value);
-                          debounceSearchOrganizationPersonSearch(e.target.value, 'organizers');
-                          if (e.target.value !== '') {
-                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'organizers');
-                          }
-                          setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
-                        }}
-                        onClick={(e) => {
-                          setSelectedOrganizerPerformerSupporterType(organizerPerformerSupporterTypes.organizer);
-                          setQuickCreateKeyword(e.target.value);
-                          setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
-                        }}
-                        data-cy="input-quick-create-organizer-keyword"
-                      />
-                    </CustomPopover>
-                  </KeyboardAccessibleLayout>
-
-                  {selectedOrganizers?.map((organizer, index) => {
-                    return (
-                      <SelectionItem
-                        key={index}
-                        icon={organizer?.label?.props?.icon}
-                        name={organizer?.name}
-                        description={organizer?.description}
-                        {...(organizer?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
-                        bordered
-                        closable
-                        itemWidth="100%"
-                        onClose={() => {
-                          setSelectedOrganizers(
-                            selectedOrganizers?.filter((selectedOrganizer, indexValue) => indexValue != index),
-                          );
-                          if (!showDialog) setShowDialog(true);
-                        }}
-                        edit={organizer?.source === sourceOptions.CMS && true}
-                        calendarContentLanguage={calendarContentLanguage}
-                        onEdit={(e) =>
-                          organizerPerformerSupporterPlaceNavigationHandler(organizer?.value, organizer?.type, e)
-                        }
-                        creatorId={organizer?.creatorId}
-                        fallbackConfig={organizer?.fallBackStatus}
-                        isTransparent={organizer?.isTransparent}
-                      />
-                    );
-                  })}
-                </Form.Item>
+                  selectedItems={selectedOrganizers}
+                  setSelectedItems={setSelectedOrganizers}
+                  footlightList={organizersList}
+                  footlightImportsList={organizersImportsFootlightList}
+                  artsdataList={organizersArtsdataList}
+                  popoverKey="organizer"
+                  popoverDataCy="popover-organizers"
+                  isPopoverOpen={isPopoverOpen}
+                  setIsPopoverOpen={setIsPopoverOpen}
+                  searchType="organizers"
+                  entityType={organizerPerformerSupporterTypes.organizer}
+                  searchPlaceholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
+                  searchInputDataCy="input-quick-create-organizer-keyword"
+                  quickCreateKeyword={quickCreateKeyword}
+                  setQuickCreateKeyword={setQuickCreateKeyword}
+                  footlightHeaderDataCy="div-organizers-footlight-entity-heading"
+                  importsHeaderDataCy="div-organizers-artsdata-entity-heading"
+                  artsdataHeaderDataCy="div-organizers-artsdata-entity-heading"
+                  itemDataCyPrefix="organizer"
+                  quickCreateWrapperDataCy="div-select-quick-create-organizer-keyword"
+                  wrapSectionsInDiv={true}
+                  isEntitiesFetching={isEntitiesFetching}
+                  isExternalSourceFetching={isExternalSourceFetching}
+                  showRelationshipFootlightImportSection={showRelationshipFootlightImportSection}
+                  showDialog={showDialog}
+                  setShowDialog={setShowDialog}
+                  debounceSearchOrganizationPersonSearch={debounceSearchOrganizationPersonSearch}
+                  debounceSearchExternalSourceOrganizationPerson={debounceSearchExternalSourceOrganizationPerson}
+                  setQuickOrganizerModal={setQuickOrganizerModal}
+                  setSelectedOrganizerPerformerSupporterType={setSelectedOrganizerPerformerSupporterType}
+                  navigationHandler={organizerPerformerSupporterPlaceNavigationHandler}
+                  calendarContentLanguage={calendarContentLanguage}
+                />
                 <QuickSelect
                   open={quickOrganizerModal}
                   setOpen={setQuickOrganizerModal}
@@ -4977,9 +4747,11 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item
-                  name="performers"
-                  className="performers"
+                <EntityRelationField
+                  t={t}
+                  fieldName="performers"
+                  fieldClassName="performers"
+                  fieldDataCy="form-item-event-performer-name"
                   initialValue={selectedPerformers}
                   rules={[
                     () => ({
@@ -4992,158 +4764,39 @@ function AddEvent() {
                       },
                     }),
                   ]}
-                  data-cy="form-item-event-performer-name">
-                  <KeyboardAccessibleLayout
-                    setItem={(performer) => setSelectedPerformers([...selectedPerformers, performer])}
-                    data={[performerList, performerImportsFootlightList, performerArtsdataList]}
-                    setFieldValue={() => {
-                      return;
-                    }}
-                    popOverHandler={() => setIsPopoverOpen({ ...isPopoverOpen, performer: false })}
-                    isPopoverOpen={isPopoverOpen.performer}>
-                    <CustomPopover
-                      open={isPopoverOpen.performer}
-                      onOpenChange={(open) => {
-                        debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'performers');
-                        if (quickCreateKeyword !== '') {
-                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'performers');
-                        }
-                        setIsPopoverOpen({ ...isPopoverOpen, performer: open });
-                      }}
-                      overlayClassName="event-popover"
-                      placement="bottom"
-                      autoAdjustOverflow={false}
-                      destroyTooltipOnHide={true}
-                      trigger={['click']}
-                      getPopupContainer={(trigger) => trigger.parentNode}
-                      data-cy="popover-performer"
-                      content={
-                        <div>
-                          <EntityPopoverSection
-                            title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                            headerDataCy="performer-footlight-entity-heading"
-                            isLoading={isEntitiesFetching}
-                            hasError={false}
-                            items={performerList}
-                            itemDataCy={(index) => `div-select-performer-${index}`}
-                            itemClassName="event-popover-options"
-                            onSelect={(performer) => {
-                              setSelectedPerformers([...selectedPerformers, performer]);
-                              setIsPopoverOpen({
-                                ...isPopoverOpen,
-                                performer: false,
-                              });
-                              if (!showDialog) setShowDialog(true);
-                            }}
-                            renderItem={(performer) => performer?.label}
-                          />
-                          {showRelationshipFootlightImportSection && quickCreateKeyword !== '' && (
-                            <EntityPopoverSection
-                              title={t('dashboard.organization.createNew.search.importsFromFootlight')}
-                              headerDataCy="performer-artsdata-entity-heading"
-                              isLoading={isExternalSourceFetching}
-                              hasError={false}
-                              items={performerImportsFootlightList}
-                              itemDataCy={(index) => `div-select-import-footlight-performer-${index}`}
-                              itemClassName="event-popover-options"
-                              onSelect={(performer) => {
-                                setSelectedPerformers([...selectedPerformers, performer]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  performer: false,
-                                });
-                                if (!showDialog) setShowDialog(true);
-                              }}
-                              renderItem={(performer) => performer?.label}
-                            />
-                          )}
-                          {quickCreateKeyword !== '' && (
-                            <EntityPopoverSection
-                              title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                              headerDataCy="performer-artsdata-entity-heading"
-                              isLoading={isExternalSourceFetching}
-                              hasError={false}
-                              items={performerArtsdataList}
-                              itemDataCy={(index) => `div-select-artsdata-performer-${index}`}
-                              itemClassName="event-popover-options"
-                              onSelect={(performer) => {
-                                setSelectedPerformers([...selectedPerformers, performer]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  performer: false,
-                                });
-                                if (!showDialog) setShowDialog(true);
-                              }}
-                              renderItem={(performer) => performer?.label}
-                            />
-                          )}
-
-                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
-                            {quickCreateKeyword?.length > 0 && (
-                              <div
-                                className="quick-create"
-                                onClick={() => {
-                                  setIsPopoverOpen({ ...isPopoverOpen, performer: false });
-                                  setQuickOrganizerModal(true);
-                                }}
-                                data-cy="div-select-quick-create-performer-keyword">
-                                <PlusCircleOutlined />
-                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
-                                {quickCreateKeyword}&#34;
-                              </div>
-                            )}
-                          </FeatureFlag>
-                        </div>
-                      }>
-                      <EventsSearch
-                        style={{ borderRadius: '4px' }}
-                        placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
-                        onChange={(e) => {
-                          debounceSearchOrganizationPersonSearch(e.target.value, 'performers');
-                          if (e.target.value !== '') {
-                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'performers');
-                          }
-                          setIsPopoverOpen({ ...isPopoverOpen, performer: true });
-                          setQuickCreateKeyword(e.target.value);
-                        }}
-                        onClick={(e) => {
-                          setSelectedOrganizerPerformerSupporterType(organizerPerformerSupporterTypes.performer);
-                          setQuickCreateKeyword(e.target.value);
-                          setIsPopoverOpen({ ...isPopoverOpen, performer: true });
-                        }}
-                        data-cy="input-quick-create-performer-keyword"
-                      />
-                    </CustomPopover>
-                  </KeyboardAccessibleLayout>
-                  {selectedPerformers?.map((performer, index) => {
-                    return (
-                      <SelectionItem
-                        key={index}
-                        icon={performer?.label?.props?.icon}
-                        name={performer?.name}
-                        description={performer?.description}
-                        {...(performer?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
-                        calendarContentLanguage={calendarContentLanguage}
-                        bordered
-                        closable
-                        itemWidth="100%"
-                        onClose={() => {
-                          setSelectedPerformers(
-                            selectedPerformers?.filter((selectedPerformer, indexValue) => indexValue != index),
-                          );
-                          if (!showDialog) setShowDialog(true);
-                        }}
-                        edit={performer?.source === sourceOptions.CMS && true}
-                        onEdit={(e) =>
-                          organizerPerformerSupporterPlaceNavigationHandler(performer?.value, performer?.type, e)
-                        }
-                        creatorId={performer?.creatorId}
-                        fallbackConfig={performer?.fallBackStatus}
-                        isTransparent={performer?.isTransparent}
-                      />
-                    );
-                  })}
-                </Form.Item>
+                  selectedItems={selectedPerformers}
+                  setSelectedItems={setSelectedPerformers}
+                  footlightList={performerList}
+                  footlightImportsList={performerImportsFootlightList}
+                  artsdataList={performerArtsdataList}
+                  popoverKey="performer"
+                  popoverDataCy="popover-performer"
+                  isPopoverOpen={isPopoverOpen}
+                  setIsPopoverOpen={setIsPopoverOpen}
+                  searchType="performers"
+                  entityType={organizerPerformerSupporterTypes.performer}
+                  searchPlaceholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
+                  searchInputDataCy="input-quick-create-performer-keyword"
+                  quickCreateKeyword={quickCreateKeyword}
+                  setQuickCreateKeyword={setQuickCreateKeyword}
+                  footlightHeaderDataCy="performer-footlight-entity-heading"
+                  importsHeaderDataCy="performer-artsdata-entity-heading"
+                  artsdataHeaderDataCy="performer-artsdata-entity-heading"
+                  itemDataCyPrefix="performer"
+                  quickCreateWrapperDataCy="div-select-quick-create-performer-keyword"
+                  wrapSectionsInDiv={false}
+                  isEntitiesFetching={isEntitiesFetching}
+                  isExternalSourceFetching={isExternalSourceFetching}
+                  showRelationshipFootlightImportSection={showRelationshipFootlightImportSection}
+                  showDialog={showDialog}
+                  setShowDialog={setShowDialog}
+                  debounceSearchOrganizationPersonSearch={debounceSearchOrganizationPersonSearch}
+                  debounceSearchExternalSourceOrganizationPerson={debounceSearchExternalSourceOrganizationPerson}
+                  setQuickOrganizerModal={setQuickOrganizerModal}
+                  setSelectedOrganizerPerformerSupporterType={setSelectedOrganizerPerformerSupporterType}
+                  navigationHandler={organizerPerformerSupporterPlaceNavigationHandler}
+                  calendarContentLanguage={calendarContentLanguage}
+                />
               </Form.Item>
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
@@ -5161,9 +4814,10 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item
-                  name="supporters"
-                  className="supporters"
+                <EntityRelationField
+                  t={t}
+                  fieldName="supporters"
+                  fieldClassName="supporters"
                   initialValue={selectedSupporters}
                   rules={[
                     () => ({
@@ -5175,160 +4829,41 @@ function AddEvent() {
                         }
                       },
                     }),
-                  ]}>
-                  <KeyboardAccessibleLayout
-                    setItem={(supporter) => setSelectedSupporters([...selectedSupporters, supporter])}
-                    data={[supporterList, supporterImportsFootlightList, supporterArtsdataList]}
-                    setFieldValue={() => {
-                      return;
-                    }}
-                    popOverHandler={() => setIsPopoverOpen({ ...isPopoverOpen, supporter: false })}
-                    isPopoverOpen={isPopoverOpen.supporter}>
-                    <CustomPopover
-                      open={isPopoverOpen.supporter}
-                      onOpenChange={(open) => {
-                        debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'supporters');
-                        if (quickCreateKeyword !== '') {
-                          debounceSearchExternalSourceOrganizationPerson(quickCreateKeyword, 'supporters');
-                        }
-                        setIsPopoverOpen({ ...isPopoverOpen, supporter: open });
-                      }}
-                      overlayClassName="event-popover"
-                      placement="bottom"
-                      autoAdjustOverflow={false}
-                      destroyTooltipOnHide={true}
-                      trigger={['click']}
-                      getPopupContainer={(trigger) => trigger.parentNode}
-                      data-cy="popover-supporter"
-                      content={
-                        <div>
-                          <div>
-                            <EntityPopoverSection
-                              title={t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                              headerDataCy="supporter-footlight-entity-heading"
-                              isLoading={isEntitiesFetching}
-                              hasError={false}
-                              items={supporterList}
-                              itemDataCy={(index) => `div-select-supporter-${index}`}
-                              itemClassName="event-popover-options"
-                              onSelect={(supporter) => {
-                                setSelectedSupporters([...selectedSupporters, supporter]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  supporter: false,
-                                });
-                                if (!showDialog) setShowDialog(true);
-                              }}
-                              renderItem={(supporter) => supporter?.label}
-                            />
-                            {showRelationshipFootlightImportSection && quickCreateKeyword !== '' && (
-                              <EntityPopoverSection
-                                title={t('dashboard.organization.createNew.search.importsFromFootlight')}
-                                headerDataCy="supporter-artsdata-entity-heading"
-                                isLoading={isExternalSourceFetching}
-                                hasError={false}
-                                items={supporterImportsFootlightList}
-                                itemDataCy={(index) => `div-select-import-footlight-supporter-${index}`}
-                                itemClassName="event-popover-options"
-                                onSelect={(supporter) => {
-                                  setSelectedSupporters([...selectedSupporters, supporter]);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    supporter: false,
-                                  });
-                                  if (!showDialog) setShowDialog(true);
-                                }}
-                                renderItem={(supporter) => supporter?.label}
-                              />
-                            )}
-                            {quickCreateKeyword !== '' && (
-                              <EntityPopoverSection
-                                title={t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                                headerDataCy="supporter-artsdata-entity-heading"
-                                isLoading={isExternalSourceFetching}
-                                hasError={false}
-                                items={supporterArtsdataList}
-                                itemDataCy={(index) => `div-select-artsdata-supporter-${index}`}
-                                itemClassName="event-popover-options"
-                                onSelect={(supporter) => {
-                                  setSelectedSupporters([...selectedSupporters, supporter]);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    supporter: false,
-                                  });
-                                  if (!showDialog) setShowDialog(true);
-                                }}
-                                renderItem={(supporter) => supporter?.label}
-                              />
-                            )}
-                          </div>
-                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
-                            {quickCreateKeyword?.length > 0 && (
-                              <div
-                                className="quick-create"
-                                onClick={() => {
-                                  setIsPopoverOpen({ ...isPopoverOpen, supporter: false });
-                                  setQuickOrganizerModal(true);
-                                }}
-                                data-cy="div-quick-create-keyword-supporter">
-                                <PlusCircleOutlined data-cy="div-select-quick-create-supporter-keyword" />
-                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
-                                {quickCreateKeyword}&#34;
-                              </div>
-                            )}
-                          </FeatureFlag>
-                        </div>
-                      }>
-                      <EventsSearch
-                        style={{ borderRadius: '4px' }}
-                        placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
-                        onChange={(e) => {
-                          debounceSearchOrganizationPersonSearch(e.target.value, 'supporters');
-                          if (e.target.value !== '') {
-                            debounceSearchExternalSourceOrganizationPerson(e.target.value, 'supporters');
-                          }
-                          setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
-                          setQuickCreateKeyword(e.target.value);
-                        }}
-                        onClick={(e) => {
-                          setSelectedOrganizerPerformerSupporterType(organizerPerformerSupporterTypes.supporter);
-                          setQuickCreateKeyword(e.target.value);
-                          setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
-                        }}
-                        data-cy="input-quick-create-supporter-keyword"
-                      />
-                    </CustomPopover>
-                  </KeyboardAccessibleLayout>
-
-                  {selectedSupporters?.map((supporter, index) => {
-                    return (
-                      <SelectionItem
-                        key={index}
-                        icon={supporter?.label?.props?.icon}
-                        name={supporter?.name}
-                        description={supporter?.description}
-                        {...(supporter?.validationReport?.hasAllMandatoryFields === false && { borderColor: 'red' })}
-                        bordered
-                        itemWidth="100%"
-                        closable
-                        onClose={() => {
-                          setSelectedSupporters(
-                            selectedSupporters?.filter((selectedSupporter, indexValue) => indexValue != index),
-                          );
-                          if (!showDialog) setShowDialog(true);
-                        }}
-                        edit={supporter?.source === sourceOptions.CMS && true}
-                        onEdit={(e) =>
-                          organizerPerformerSupporterPlaceNavigationHandler(supporter?.value, supporter?.type, e)
-                        }
-                        calendarContentLanguage={calendarContentLanguage}
-                        creatorId={supporter?.creatorId}
-                        fallbackConfig={supporter?.fallBackStatus}
-                        isTransparent={supporter?.isTransparent}
-                      />
-                    );
-                  })}
-                </Form.Item>
+                  ]}
+                  selectedItems={selectedSupporters}
+                  setSelectedItems={setSelectedSupporters}
+                  footlightList={supporterList}
+                  footlightImportsList={supporterImportsFootlightList}
+                  artsdataList={supporterArtsdataList}
+                  popoverKey="supporter"
+                  popoverDataCy="popover-supporter"
+                  isPopoverOpen={isPopoverOpen}
+                  setIsPopoverOpen={setIsPopoverOpen}
+                  searchType="supporters"
+                  entityType={organizerPerformerSupporterTypes.supporter}
+                  searchPlaceholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
+                  searchInputDataCy="input-quick-create-supporter-keyword"
+                  quickCreateKeyword={quickCreateKeyword}
+                  setQuickCreateKeyword={setQuickCreateKeyword}
+                  footlightHeaderDataCy="supporter-footlight-entity-heading"
+                  importsHeaderDataCy="supporter-artsdata-entity-heading"
+                  artsdataHeaderDataCy="supporter-artsdata-entity-heading"
+                  itemDataCyPrefix="supporter"
+                  quickCreateWrapperDataCy="div-quick-create-keyword-supporter"
+                  quickCreateIconDataCy="div-select-quick-create-supporter-keyword"
+                  wrapSectionsInDiv={true}
+                  isEntitiesFetching={isEntitiesFetching}
+                  isExternalSourceFetching={isExternalSourceFetching}
+                  showRelationshipFootlightImportSection={showRelationshipFootlightImportSection}
+                  showDialog={showDialog}
+                  setShowDialog={setShowDialog}
+                  debounceSearchOrganizationPersonSearch={debounceSearchOrganizationPersonSearch}
+                  debounceSearchExternalSourceOrganizationPerson={debounceSearchExternalSourceOrganizationPerson}
+                  setQuickOrganizerModal={setQuickOrganizerModal}
+                  setSelectedOrganizerPerformerSupporterType={setSelectedOrganizerPerformerSupporterType}
+                  navigationHandler={organizerPerformerSupporterPlaceNavigationHandler}
+                  calendarContentLanguage={calendarContentLanguage}
+                />
               </Form.Item>
               <Form.Item
                 name={otherInformationFieldNames.eventLink}

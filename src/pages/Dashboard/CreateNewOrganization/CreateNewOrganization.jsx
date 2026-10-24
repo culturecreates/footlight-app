@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button, message, notification, Skeleton } from 'antd';
+import { Form, Row, Col, Button, notification, Skeleton } from 'antd';
 import {
   CloseCircleOutlined,
   CalendarOutlined,
@@ -9,10 +9,10 @@ import {
   InfoCircleOutlined,
   UserOutlined,
   EnvironmentOutlined,
-  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { LeftOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -30,7 +30,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import {
   useAddOrganizationMutation,
   useGetOrganizationQuery,
@@ -48,7 +47,6 @@ import {
   useGetEntitiesByIdQuery,
   useLazyGetEntitiesByIdQuery,
   useLazyGetEntitiesQuery,
-  useLazyGetEntityDependencyDetailsQuery,
 } from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ChangeType from '../../../components/ChangeType';
@@ -63,7 +61,6 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
-import { sameAsTypes } from '../../../constants/sameAsTypes';
 import {
   getExternalSourcesQuery,
   getImportProviderConfig,
@@ -72,14 +69,16 @@ import {
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import SelectionItem from '../../../components/List/SelectionItem';
 import moment from 'moment';
-import {
-  clearActiveFallbackFieldsInfo,
-  getActiveFallbackFieldsInfo,
-  getLanguageLiteralBannerDisplayStatus,
-  setLanguageLiteralBannerDisplayStatus,
-  setBannerDismissed,
-  getIsBannerDismissed,
-} from '../../../redux/reducer/languageLiteralSlice';
+import { setLanguageLiteralBannerDisplayStatus, setBannerDismissed } from '../../../redux/reducer/languageLiteralSlice';
+import { useDebouncedLoading } from '../../../hooks/useDebouncedLoading';
+import { useFallbackLanguageBanner } from '../../../hooks/useFallbackLanguageBanner';
+import { useContentBackground } from '../../../hooks/useContentBackground';
+import { useReadOnlyRedirect } from '../../../hooks/useReadOnlyRedirect';
+import { useDynamicTaxonomyFields } from '../../../hooks/useDynamicTaxonomyFields';
+import { useEntityDerivedData } from '../../../hooks/useEntityDerivedData';
+import { useArtsDataLoader } from '../../../hooks/useArtsDataLoader';
+import { useValidateOnOpen } from '../../../hooks/useValidateOnOpen';
+import { useHandleValidationError } from '../../../hooks/useHandleValidationError';
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
@@ -87,6 +86,11 @@ import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import { buildImageCropPayload } from '../../../utils/buildImageCropPayload';
+import { mergeUploadedImageIntoCrop } from '../../../utils/mergeUploadedImageIntoCrop';
+import { processImageAndSave } from '../../../utils/processImageAndSave';
+import { buildSameAsArray } from '../../../utils/buildSameAsArray';
+import { createOnFieldsChange } from '../../../utils/createOnFieldsChange';
 import i18next from 'i18next';
 
 function CreateNewOrganization() {
@@ -96,23 +100,12 @@ function CreateNewOrganization() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
-  useEffect(() => {
-    setContentBackgroundColor('#F9FAFF');
-  }, [setContentBackgroundColor]);
+  useContentBackground();
 
-  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const { languageLiteralBannerDisplayStatus, activeFallbackFieldsInfo } = useFallbackLanguageBanner();
   const { user } = useSelector(getUserDetails);
-  const isBannerDismissed = useSelector(getIsBannerDismissed);
-  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
@@ -145,9 +138,6 @@ function CreateNewOrganization() {
     sessionId: timestampRef,
   });
 
-  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
-    sessionId: timestampRef,
-  });
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
@@ -157,23 +147,14 @@ function CreateNewOrganization() {
   const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
   const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
 
-  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
-  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
-  const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
-  const [artsDataLoading, setArtsDataLoading] = useState(false);
-  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [addedFields, setAddedFields] = useState([]);
-  const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [showDialog, setShowDialog] = useState(false);
-  const [dynamicFields, setDynamicFields] = useState([]);
-  const hasValidatedOnOpenRef = useRef(false);
 
   const organizationPlaceImportConfig = getImportProviderConfig(importProviderContexts.CREATE_ORGANIZATION_PLACE);
   const externalSourcesQuery = getExternalSourcesQuery(importProviderContexts.CREATE_ORGANIZATION_PLACE);
@@ -181,6 +162,44 @@ function CreateNewOrganization() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
+
+  const { artsData, artsDataLoading, getArtsData } = useArtsDataLoader(loadArtsDataEntity);
+
+  const { derivedEntitiesData, derivedEntitiesDisplayStatus, isEntityDetailsLoading } = useEntityDerivedData({
+    entityId: organizationId,
+    calendarId,
+    timestampRef,
+    relatedKeys: ['events', 'people', 'places'],
+  });
+
+  const { dynamicFields, setAddedFields, addedFields, addFieldsHandler } = useDynamicTaxonomyFields({
+    taxonomyLoading,
+    allTaxonomyData,
+    currentCalendarData,
+    entityClass: entitiesClass.organization,
+    buildFieldObject: (taxonomy, requiredTaxonomies) => {
+      const tooltip = contentLanguageBilingual({
+        data: taxonomy?.disambiguatingDescription,
+        requiredLanguageKey: i18next.language,
+        calendarContentLanguage,
+      });
+      return {
+        type: taxonomy?.id,
+        id: taxonomy?.id,
+        fieldNames: taxonomy?.id,
+        mappedField: taxonomy?.id,
+        taxonomy: false,
+        disabled: false,
+        isPreset: requiredTaxonomies?.includes(taxonomy?.id),
+        label: contentLanguageBilingual({
+          data: taxonomy?.name,
+          requiredLanguageKey: i18next.language,
+          calendarContentLanguage,
+        }),
+        ...(tooltip && { infoPopup: tooltip }),
+      };
+    },
+  });
 
   const isAnyLoading = useMemo(
     () =>
@@ -205,16 +224,7 @@ function CreateNewOrganization() {
     ],
   );
 
-  useEffect(() => {
-    if (isAnyLoading) {
-      setDebouncedLoading(true);
-    } else {
-      const timer = setTimeout(() => {
-        setDebouncedLoading(false);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnyLoading]);
+  const debouncedLoading = useDebouncedLoading(isAnyLoading);
 
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
@@ -230,44 +240,18 @@ function CreateNewOrganization() {
   const addUpdateOrganizationApiHandler = (organizationObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if (!organizationId || organizationId === '') {
-        if (artsDataId && artsData && !isImportingExistingEntity) {
-          let sameAsArray = Array.isArray(artsData.sameAs)
-            ? artsData.sameAs
-            : artsData.sameAs && typeof artsData.sameAs === 'object'
-            ? [artsData.sameAs]
-            : [];
-
-          const existingIndex = sameAsArray.findIndex((item) => item.uri === artsData.uri);
-
-          const artsDataIdentifier = {
-            uri: artsData.uri,
-            type: sameAsTypes.ARTSDATA_IDENTIFIER,
-          };
-
-          if (existingIndex !== -1) {
-            sameAsArray[existingIndex] = artsDataIdentifier;
-          } else {
-            sameAsArray.push(artsDataIdentifier);
-          }
-
+        const sameAs = buildSameAsArray({
+          artsData,
+          artsDataId,
+          isImportingExistingEntity,
+          externalCalendarEntityId,
+          externalEntityData,
+        });
+        if (sameAs !== undefined) {
           organizationObj = {
             ...organizationObj,
-            sameAs: sameAsArray,
+            sameAs,
           };
-        }
-        if (externalCalendarEntityId && !isImportingExistingEntity) {
-          let sameAs = [
-            {
-              uri: externalCalendarEntityId,
-              type: sameAsTypes.FOOTLIGHT_IDENTIFIER,
-            },
-          ];
-          if (externalEntityData?.sameAs) {
-            organizationObj = {
-              ...organizationObj,
-              sameAs: externalEntityData?.sameAs?.concat(sameAs),
-            };
-          }
         }
         addOrganization({
           data: organizationObj,
@@ -347,36 +331,11 @@ function CreateNewOrganization() {
     return validateFieldList;
   }, [formFields, formFieldProperties, calendarContentLanguage]);
 
-  const handleValidationError = useCallback(
-    (error, options = {}) => {
-      const { scrollBlock = 'center' } = options;
-      scrollToFirstError(error, form, {
-        scrollBlock,
-        getElement: (fieldNamePath, fieldName) => {
-          const isDynamic = Array.isArray(fieldNamePath) && fieldNamePath[0] === 'dynamicFields';
-          const className = isDynamic ? String(fieldNamePath[1]) : fieldName;
-          return document.getElementsByClassName(className)?.[0];
-        },
-      });
-      message.warning({
-        duration: 10,
-        maxCount: 1,
-        key: 'organization-save-as-warning',
-        content: (
-          <>
-            {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
-            <Button
-              type="text"
-              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-              onClick={() => message.destroy('organization-save-as-warning')}
-            />
-          </>
-        ),
-        icon: <ExclamationCircleOutlined />,
-      });
-    },
-    [form, t],
-  );
+  const handleValidationError = useHandleValidationError({
+    form,
+    warningKey: 'organization-save-as-warning',
+    errorMessageKey: 'dashboard.organization.createNew.notification.saveError',
+  });
 
   const onSaveHandler = (event, toggle = false, options = {}) => {
     const { skipLinkedPlaceValidation = false } = options;
@@ -451,116 +410,32 @@ function CreateNewOrganization() {
               },
             };
           }
-          let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
           let mainImageOptions = form.getFieldValue('mainImageOptions');
-          if (imageCrop.length > 0) {
-            imageCrop = [
-              {
-                large: {
-                  xCoordinate: imageCrop[0]?.large?.x,
-                  yCoordinate: imageCrop[0]?.large?.y,
-                  height: imageCrop[0]?.large?.height,
-                  width: imageCrop[0]?.large?.width,
-                },
-                thumbnail: {
-                  xCoordinate: imageCrop[0]?.thumbnail?.x,
-                  yCoordinate: imageCrop[0]?.thumbnail?.y,
-                  height: imageCrop[0]?.thumbnail?.height,
-                  width: imageCrop[0]?.thumbnail?.width,
-                },
-                original: {
-                  entityId: imageCrop[0]?.original?.entityId,
-                  height: imageCrop[0]?.original?.height,
-                  width: imageCrop[0]?.original?.width,
-                },
-                isMain: true,
-                description: mainImageOptions?.altText,
-                creditText: mainImageOptions?.credit,
-                caption: mainImageOptions?.caption,
-              },
-            ];
-          }
+          let imageCrop = buildImageCropPayload(form.getFieldValue('imageCrop'), mainImageOptions);
 
           if (
             (values?.image || (values?.image && values?.image?.length > 0)) &&
             (!values?.logo || (Array.isArray(values?.logo) && values?.logo?.length === 0))
           ) {
             organizationPayload['logo'] = null;
-            if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-              const formdata = new FormData();
-              formdata.append('file', values?.image[0].originFileObj);
-              formdata &&
-                addImage({ data: formdata, calendarId })
-                  .unwrap()
-                  .then(async (response) => {
-                    if (featureFlags.imageCropFeature) {
-                      let entityId = response?.data?.original?.entityId;
-                      imageCrop = [
-                        {
-                          large: imageCrop[0]?.large,
-                          thumbnail: imageCrop[0]?.thumbnail,
-                          isMain: true,
-                          original: {
-                            entityId,
-                            height: response?.data?.height,
-                            width: response?.data?.width,
-                          },
-                          description: mainImageOptions?.altText,
-                          creditText: mainImageOptions?.credit,
-                          caption: mainImageOptions?.caption,
-                        },
-                      ];
-                    } else
-                      imageCrop = [
-                        {
-                          large: imageCrop[0]?.large,
-                          thumbnail: imageCrop[0]?.thumbnail,
-                          isMain: true,
-                          original: {
-                            entityId: response?.data?.original?.entityId,
-                            height: response?.data?.height,
-                            width: response?.data?.width,
-                          },
-                          description: mainImageOptions?.altText,
-                          creditText: mainImageOptions?.credit,
-                          caption: mainImageOptions?.caption,
-                        },
-                      ];
-
-                    if (values.multipleImagesCrop?.length > 0)
-                      await uploadImageListHelper(values, addImage, calendarId, imageCrop);
-                    organizationPayload['image'] = imageCrop;
-                    addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                      .then((id) => resolve(id))
-                      .catch((error) => {
-                        reject();
-                        console.log(error);
-                      });
-                  })
+            await processImageAndSave({
+              values,
+              calendarId,
+              addImage,
+              imageCrop,
+              mainImageOptions,
+              mainImageFile: values?.image,
+              isMainImageRemoved: values?.image,
+              scrollClassName: 'image',
+              entityPayload: organizationPayload,
+              saveHandler: (payload) =>
+                addUpdateOrganizationApiHandler(payload, toggle)
+                  .then((id) => resolve(id))
                   .catch((error) => {
+                    reject();
                     console.log(error);
-                    const element = document.getElementsByClassName('image');
-                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                  });
-            } else {
-              if (values.multipleImagesCrop?.length > 0)
-                await uploadImageListHelper(values, addImage, calendarId, imageCrop);
-              if (
-                values?.image &&
-                values?.image?.length === 0 &&
-                (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
-              ) {
-                // Main image is removed and no new image is added
-                // No gallery images are added
-                organizationPayload['image'] = [];
-              } else organizationPayload['image'] = imageCrop;
-              addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                .then((id) => resolve(id))
-                .catch((error) => {
-                  reject();
-                  console.log(error);
-                });
-            }
+                  }),
+            });
           } else if ((values?.logo || (values?.logo && values?.logo?.length > 0)) && !values?.image) {
             if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
               const formdata = new FormData();
@@ -616,39 +491,7 @@ function CreateNewOrganization() {
                 addImage({ data: formdata, calendarId })
                   .unwrap()
                   .then(async (response) => {
-                    if (featureFlags.imageCropFeature) {
-                      let entityId = response?.data?.original?.entityId;
-                      imageCrop = [
-                        {
-                          large: imageCrop[0]?.large,
-                          thumbnail: imageCrop[0]?.thumbnail,
-                          isMain: true,
-                          original: {
-                            entityId,
-                            height: response?.data?.height,
-                            width: response?.data?.width,
-                          },
-                          description: mainImageOptions?.altText,
-                          creditText: mainImageOptions?.credit,
-                          caption: mainImageOptions?.caption,
-                        },
-                      ];
-                    } else
-                      imageCrop = [
-                        {
-                          large: imageCrop[0]?.large,
-                          thumbnail: imageCrop[0]?.thumbnail,
-                          isMain: true,
-                          original: {
-                            entityId: response?.data?.original?.entityId,
-                            height: response?.data?.height,
-                            width: response?.data?.width,
-                          },
-                          description: mainImageOptions?.altText,
-                          creditText: mainImageOptions?.credit,
-                          caption: mainImageOptions?.caption,
-                        },
-                      ];
+                    imageCrop = mergeUploadedImageIntoCrop(response, imageCrop, mainImageOptions);
 
                     if (values.multipleImagesCrop?.length > 0)
                       await uploadImageListHelper(values, addImage, calendarId, imageCrop);
@@ -833,20 +676,7 @@ function CreateNewOrganization() {
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
 
-  const addFieldsHandler = (fieldNames) => {
-    let array = addedFields?.concat(fieldNames);
-    array = [...new Set(array)];
-    setAddedFields(array);
-    setScrollToSelectedField(array?.at(-1));
-  };
-
-  const onFieldsChange = (changedValue) => {
-    if (changedValue?.length > 0 && !showDialog) {
-      if (changedValue?.filter((field) => field?.touched).length > 0) {
-        setShowDialog(true);
-      }
-    }
-  };
+  const onFieldsChange = createOnFieldsChange(showDialog, setShowDialog);
 
   const placeNavigationHandler = (id, type, event) => {
     onSaveHandler(event, true, { skipLinkedPlaceValidation: true })
@@ -866,87 +696,6 @@ function CreateNewOrganization() {
       })
       .catch((error) => console.log(error));
   };
-
-  const getArtsData = (id) => {
-    setArtsDataLoading(true);
-    loadArtsDataEntity({ entityId: id })
-      .then((response) => {
-        setArtsData(response?.data[0]);
-        setArtsDataLoading(false);
-      })
-      .catch((error) => {
-        setArtsDataLoading(false);
-        console.log(error);
-      });
-  };
-
-  useEffect(() => {
-    if (addedFields?.length > 0) {
-      const element = document.getElementsByClassName(scrollToSelectedField);
-      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
-  }, [addedFields]);
-
-  useEffect(() => {
-    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
-    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
-    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
-      (field) => field,
-    );
-
-    allTaxonomyData?.data?.map((taxonomy) => {
-      if (taxonomy?.isDynamicField) {
-        const tooltip = contentLanguageBilingual({
-          data: taxonomy?.disambiguatingDescription,
-          requiredLanguageKey: i18next.language,
-          calendarContentLanguage,
-        });
-        const fieldObject = {
-          type: taxonomy?.id,
-          id: taxonomy?.id,
-          fieldNames: taxonomy?.id,
-          mappedField: taxonomy?.id,
-          taxonomy: false,
-          disabled: false,
-          isPreset: requiredTaxonomies?.includes(taxonomy?.id),
-          label: contentLanguageBilingual({
-            data: taxonomy?.name,
-            requiredLanguageKey: i18next.language,
-            calendarContentLanguage,
-          }),
-          ...(tooltip && { infoPopup: tooltip }),
-        };
-        setDynamicFields((prev) => [...prev, fieldObject]);
-      }
-    });
-  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
-
-  useEffect(() => {
-    dispatch(clearActiveFallbackFieldsInfo());
-    dispatch(setBannerDismissed(false));
-  }, []);
-
-  useEffect(() => {
-    let shouldDisplay = true;
-
-    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
-    let individualFallbackFieldsCollection = [];
-    fallbackFieldNames.forEach((name) => {
-      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
-    });
-
-    individualFallbackFieldsCollection.forEach((element) => {
-      if (element?.tagDisplayStatus) {
-        shouldDisplay = false;
-      }
-    });
-
-    if (!shouldDisplay && !isBannerDismissed) {
-      dispatch(setLanguageLiteralBannerDisplayStatus(true));
-    } else {
-      dispatch(setLanguageLiteralBannerDisplayStatus(false));
-    }
-  }, [activeFallbackFieldsInfo]);
 
   useEffect(() => {
     if (calendarId && currentCalendarData) {
@@ -1226,13 +975,7 @@ function CreateNewOrganization() {
     }
   }, [organizationLoading, currentCalendarData, externalEntityLoading]);
 
-  useEffect(() => {
-    if (isReadOnly) {
-      if (organizationId)
-        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`, { replace: true });
-      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`, { replace: true });
-    }
-  }, [isReadOnly]);
+  useReadOnlyRedirect({ entityId: organizationId, entityPath: PathName.Organizations, calendarId });
 
   useEffect(() => {
     const newEntityName = location?.state?.name;
@@ -1251,37 +994,14 @@ function CreateNewOrganization() {
     placesSearch('');
   }, []);
 
-  useEffect(() => {
-    if (organizationId) {
-      getDerivedEntities({ id: organizationId, calendarId }).then((response) => {
-        if (
-          response?.data?.events?.length > 0 ||
-          response?.data?.people?.length > 0 ||
-          response?.data?.places?.length > 0
-        ) {
-          setDerivedEntitiesData(response?.data);
-          setDerivedEntitiesDisplayStatus(true);
-        }
-      });
-    }
-  }, [organizationId]);
-
-  useEffect(() => {
-    if (!shouldValidateOnOpen || !isRoutingToEventPage || hasValidatedOnOpenRef.current || debouncedLoading) {
-      return;
-    }
-
-    const validateFieldList = getValidateFieldList();
-    if (!validateFieldList?.length) return;
-
-    const timer = setTimeout(() => {
-      if (hasValidatedOnOpenRef.current) return;
-      hasValidatedOnOpenRef.current = true;
-      form.validateFields(validateFieldList).catch((error) => handleValidationError(error));
-    }, 180);
-
-    return () => clearTimeout(timer);
-  }, [shouldValidateOnOpen, isRoutingToEventPage, debouncedLoading, getValidateFieldList, form, handleValidationError]);
+  useValidateOnOpen({
+    shouldValidateOnOpen,
+    isRoutingBack: isRoutingToEventPage,
+    debouncedLoading,
+    getValidateFieldList,
+    form,
+    handleValidationError,
+  });
 
   return !debouncedLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>

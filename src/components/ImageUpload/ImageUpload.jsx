@@ -5,7 +5,7 @@ import { DownloadOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@a
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { ImageCrop } from '../ImageCrop';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
 import { IMAGE_ACTIONS, mainImageUploadOptions } from '../../constants/imageUploadOptions';
 import ImageCredits from '../Modal/ImageCredit';
@@ -68,7 +68,7 @@ function ImageUpload(props) {
   });
 
   const [isUploadTransparent, setIsUploadTransparent] = useState(false);
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
   const [cropValues, setCropValues] = useState({
     large: {

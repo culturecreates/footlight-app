@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Table } from 'antd';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import './draggableTable.css';
@@ -34,7 +34,7 @@ const DraggableTable = ({
   onBeforeDelete,
   stickyOffset,
 }) => {
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const { t } = useTranslation();
 
