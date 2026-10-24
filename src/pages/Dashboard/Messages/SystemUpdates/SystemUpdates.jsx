@@ -6,6 +6,7 @@ import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import { messageTypeMap } from '../../../../constants/notificationConstants';
 import { bilingual } from '../../../../utils/bilingual';
+import { sanitizeHtml } from '../../../../utils/stringManipulations';
 import i18next from 'i18next';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
@@ -116,10 +117,12 @@ const SystemUpdates = () => {
                         className="update-description"
                         style={{ fontWeight: 400 }}
                         dangerouslySetInnerHTML={{
-                          __html: bilingual({
-                            interfaceLanguage,
-                            data: notification.messageDescription,
-                          }),
+                          __html: sanitizeHtml(
+                            bilingual({
+                              interfaceLanguage,
+                              data: notification.messageDescription,
+                            }),
+                          ),
                         }}
                       />
                     </div>
