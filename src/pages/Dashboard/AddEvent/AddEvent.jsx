@@ -347,8 +347,8 @@ function AddEvent() {
         dateType === dateTypes.MULTIPLE
           ? 'customEventTimezone'
           : dateType === dateTypes.RANGE
-          ? 'dateRangeEventTimezone'
-          : 'eventTimezone'
+            ? 'dateRangeEventTimezone'
+            : 'eventTimezone'
       ] ?? currentCalendarData?.timezone;
 
     // Determine if the date is already in the 'DD-MM-YYYY' format.
@@ -720,8 +720,8 @@ function AddEvent() {
                   ? eventData?.sameAs
                   : []
                 : artsDataId && isArtsdataUri(artsData?.sameAs)
-                ? artsData?.sameAs
-                : [],
+                  ? artsData?.sameAs
+                  : [],
               eventDiscipline = [],
               timezone;
 
@@ -1195,8 +1195,8 @@ function AddEvent() {
               ...(accessibilityNote
                 ? { accessibilityNote }
                 : eventData?.accessibilityNote
-                ? { accessibilityNote: null }
-                : {}),
+                  ? { accessibilityNote: null }
+                  : {}),
               additionalType,
               audience,
               discipline: eventDiscipline,
@@ -1458,8 +1458,8 @@ function AddEvent() {
                         calendar[0]?.role === userRoles.GUEST
                           ? t('dashboard.events.addEditEvent.notification.sendToReview')
                           : eventData?.publishState === eventPublishState.DRAFT
-                          ? t('dashboard.events.addEditEvent.notification.publish')
-                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                            ? t('dashboard.events.addEditEvent.notification.publish')
+                            : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
                       placement: 'top',
                       closeIcon: <></>,
                       maxCount: 1,
@@ -1486,8 +1486,8 @@ function AddEvent() {
                         calendar[0]?.role === userRoles.GUEST
                           ? t('dashboard.events.addEditEvent.notification.sendToReview')
                           : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
-                          ? t('dashboard.events.addEditEvent.notification.publish')
-                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                            ? t('dashboard.events.addEditEvent.notification.publish')
+                            : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
                       placement: 'top',
                       closeIcon: <></>,
                       maxCount: 1,
@@ -1507,8 +1507,8 @@ function AddEvent() {
                     calendar[0]?.role === userRoles.GUEST
                       ? t('dashboard.events.addEditEvent.notification.sendToReview')
                       : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
-                      ? t('dashboard.events.addEditEvent.notification.publish')
-                      : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                        ? t('dashboard.events.addEditEvent.notification.publish')
+                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
                   placement: 'top',
                   closeIcon: <></>,
                   maxCount: 1,
@@ -1528,8 +1528,8 @@ function AddEvent() {
                     calendar[0]?.role === userRoles.GUEST
                       ? t('dashboard.events.addEditEvent.notification.sendToReview')
                       : eventData?.publishState === eventPublishState.DRAFT
-                      ? t('dashboard.events.addEditEvent.notification.publish')
-                      : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                        ? t('dashboard.events.addEditEvent.notification.publish')
+                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
                   placement: 'top',
                   closeIcon: <></>,
                   maxCount: 1,
@@ -1559,8 +1559,8 @@ function AddEvent() {
               {calendar[0]?.role === <userRoles className="GUEST"></userRoles>
                 ? t('dashboard.events.addEditEvent.validations.errorReview')
                 : eventId && eventData?.publishState === eventPublishState.PUBLISHED
-                ? t('dashboard.events.addEditEvent.validations.errorDraft')
-                : t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                  ? t('dashboard.events.addEditEvent.validations.errorDraft')
+                  : t('dashboard.events.addEditEvent.validations.errorPublishing')}
               &nbsp;
               <Button
                 type="text"
@@ -2366,8 +2366,8 @@ function AddEvent() {
               const addressData = Array.isArray(placeData?.address)
                 ? placeData.address
                 : placeData?.address
-                ? [placeData.address]
-                : [];
+                  ? [placeData.address]
+                  : [];
 
               const primaryAddress = addressData[0];
 
@@ -2881,7 +2881,7 @@ function AddEvent() {
                 moment(
                   eventData?.recurringEvent?.startDate
                     ? eventData?.recurringEvent?.startDate
-                    : eventData?.startDate ?? eventData?.startDateTime,
+                    : (eventData?.startDate ?? eventData?.startDateTime),
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',
@@ -2890,7 +2890,7 @@ function AddEvent() {
                 moment(
                   eventData?.recurringEvent?.endDate
                     ? eventData?.recurringEvent?.endDate
-                    : eventData?.endDate ?? eventData?.endDateTime,
+                    : (eventData?.endDate ?? eventData?.endDateTime),
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',
@@ -2911,7 +2911,7 @@ function AddEvent() {
                 moment(
                   eventData?.recurringEvent?.startDate
                     ? eventData?.recurringEvent?.startDate
-                    : eventData?.startDate ?? eventData?.startDateTime,
+                    : (eventData?.startDate ?? eventData?.startDateTime),
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',
@@ -2920,7 +2920,7 @@ function AddEvent() {
                 moment(
                   eventData?.recurringEvent?.endDate
                     ? eventData?.recurringEvent?.endDate
-                    : eventData?.endDate ?? eventData?.endDateTime,
+                    : (eventData?.endDate ?? eventData?.endDateTime),
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',

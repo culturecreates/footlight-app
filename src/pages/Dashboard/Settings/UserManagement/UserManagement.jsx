@@ -100,7 +100,7 @@ const UserManagement = (props) => {
   const [selectedItemId, setSelectedItemId] = useState(null);
 
   const [pageNumber, setPageNumber] = useState(
-    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('usersPage') ?? 1,
+    searchParams.get('page') ? searchParams.get('page') : (sessionStorage.getItem('usersPage') ?? 1),
   );
 
   const [getAllUsers, { currentData: userData, isFetching: isUsersLoading }] = useLazyGetAllUsersQuery();
@@ -439,8 +439,8 @@ const UserManagement = (props) => {
           userStatus === USER_STATUS_KEYS.ACTIVE
             ? import.meta.env.VITE_APP_ACCEPT_URL
             : userStatus === USER_STATUS_KEYS.INVITED
-            ? import.meta.env.VITE_APP_INVITE_URL
-            : null;
+              ? import.meta.env.VITE_APP_INVITE_URL
+              : null;
 
         const invitationLink =
           invitationBaseUrl && userInvitationId ? `${invitationBaseUrl}${userInvitationId}` : undefined;
