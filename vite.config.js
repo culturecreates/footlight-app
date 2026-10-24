@@ -3,8 +3,11 @@ import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import eslint from 'vite-plugin-eslint';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   base: '/',
+  esbuild: {
+    drop: command === 'build' ? ['console', 'debugger'] : [],
+  },
   plugins: [
     react({
       babel: {
@@ -41,4 +44,4 @@ export default defineConfig({
     port: 3000,
     allowedHosts: ['test.footlight.app'],
   },
-});
+}));
