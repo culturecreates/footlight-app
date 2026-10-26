@@ -97,8 +97,8 @@ function Organizations() {
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
       : sessionStorage.getItem('organizationUsers')
-        ? decodeURIComponent(sessionStorage.getItem('organizationUsers'))?.split(',')
-        : [],
+      ? decodeURIComponent(sessionStorage.getItem('organizationUsers'))?.split(',')
+      : [],
   );
   const [organizationIdFilter, setOrganizationIdFilter] = useState(
     searchParams.get('ids') ? decodeURIComponent(searchParams.get('ids'))?.split(',') : [],
@@ -112,32 +112,32 @@ function Organizations() {
 
   const [isUserOpen, setIsUserOpen] = useState(false);
   const [pageNumber, setPageNumber] = useState(
-    searchParams.get('page') ? searchParams.get('page') : (sessionStorage.getItem('organizationPage') ?? 1),
+    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('organizationPage') ?? 1,
   );
   const [organizationSearchQuery, setOrganizationSearchQuery] = useState(
-    searchParams.get('query') ? searchParams.get('query') : (sessionStorage.getItem('organizationSearchQuery') ?? ''),
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('organizationSearchQuery') ?? '',
   );
   const [filter, setFilter] = useState({
     sort: searchParams.get('sortBy')
       ? searchParams.get('sortBy')
-      : (sessionStorage.getItem('organizationSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key),
+      : sessionStorage.getItem('organizationSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
-      : (sessionStorage.getItem('organizationOrder') ?? sortOrder?.ASC),
+      : sessionStorage.getItem('organizationOrder') ?? sortOrder?.ASC,
   });
   const [taxonomyFilter, setTaxonomyFilter] = useState(
     searchParams.get('taxonomyFilter')
       ? JSON.parse(searchParams.get('taxonomyFilter'))
       : sessionStorage.getItem('organizationTaxonomyFilter')
-        ? JSON.parse(sessionStorage.getItem('organizationTaxonomyFilter'))
-        : {},
+      ? JSON.parse(sessionStorage.getItem('organizationTaxonomyFilter'))
+      : {},
   );
   const [standardTaxonomyFilter, setStandardTaxonomyFilter] = useState(
     searchParams.get('standardTaxonomyFilter')
       ? JSON.parse(searchParams.get('standardTaxonomyFilter'))
       : sessionStorage.getItem('standardOrganizationTaxonomyFilter')
-        ? JSON.parse(sessionStorage.getItem('standardOrganizationTaxonomyFilter'))
-        : {},
+      ? JSON.parse(sessionStorage.getItem('standardOrganizationTaxonomyFilter'))
+      : {},
   );
 
   const totalCount = allOrganizationData?.count;

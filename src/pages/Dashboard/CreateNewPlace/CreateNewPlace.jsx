@@ -327,8 +327,8 @@ function CreateNewPlace() {
           let sameAsArray = Array.isArray(artsData.sameAs)
             ? artsData.sameAs
             : artsData.sameAs && typeof artsData.sameAs === 'object'
-              ? [artsData.sameAs]
-              : [];
+            ? [artsData.sameAs]
+            : [];
 
           const existingIndex = sameAsArray.findIndex((item) => item.uri === artsData.uri);
 
@@ -1723,10 +1723,10 @@ function CreateNewPlace() {
                       placeData?.name
                         ? placeData?.name
                         : artsDataId
-                          ? artsData?.name
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0]?.name
+                        ? artsData?.name
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.name
                     }
                     required={true}
                     validations={t('dashboard.places.createNew.addPlace.validations.nameRequired')}
@@ -1819,10 +1819,10 @@ function CreateNewPlace() {
                       placeData?.disambiguatingDescription
                         ? placeData?.disambiguatingDescription
                         : artsDataId
-                          ? artsData?.disambiguatingDescription
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0].disambiguatingDescription
+                        ? artsData?.disambiguatingDescription
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0].disambiguatingDescription
                     }
                     required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)}
                     validations={t('common.validations.informationRequired')}
@@ -1855,10 +1855,10 @@ function CreateNewPlace() {
                       placeData?.description
                         ? placeData?.description
                         : artsData?.description && artsDataId
-                          ? artsData?.description
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0].description
+                        ? artsData?.description
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0].description
                     }
                     form={form}
                     calendarContentLanguage={calendarContentLanguage}
@@ -2174,10 +2174,10 @@ function CreateNewPlace() {
                       placeData?.address?.streetAddress
                         ? placeData?.address?.streetAddress
                         : artsDataId
-                          ? artsData?.address?.streetAddress
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0]?.address?.streetAddress
+                        ? artsData?.address?.streetAddress
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.address?.streetAddress
                     }
                     required={requiredFieldNames?.includes(placeFormRequiredFieldNames.STREET_ADDRESS)}
                     validations={t('common.validations.informationRequired')}
@@ -2213,10 +2213,10 @@ function CreateNewPlace() {
                       placeData?.address?.addressLocality
                         ? placeData?.address?.addressLocality
                         : artsDataId
-                          ? artsData?.address?.addressLocality
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0]?.address?.addressLocality
+                        ? artsData?.address?.addressLocality
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.address?.addressLocality
                     }
                     required={requiredFieldNames?.includes(placeFormRequiredFieldNames.CITY)}
                     validations={t('common.validations.informationRequired')}
@@ -2246,10 +2246,10 @@ function CreateNewPlace() {
                     placeData?.address?.postalCode
                       ? placeData?.address?.postalCode
                       : artsDataId
-                        ? artsData?.address?.postalCode
-                        : externalCalendarEntityId &&
-                          externalCalendarEntityData?.length > 0 &&
-                          externalCalendarEntityData[0]?.address?.postalCode
+                      ? artsData?.address?.postalCode
+                      : externalCalendarEntityId &&
+                        externalCalendarEntityData?.length > 0 &&
+                        externalCalendarEntityData[0]?.address?.postalCode
                   }
                   label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
                   rules={[
@@ -2283,10 +2283,10 @@ function CreateNewPlace() {
                           placeData?.address?.addressRegion
                             ? placeData?.address?.addressRegion
                             : artsDataId
-                              ? artsData?.address?.addressRegion
-                              : externalCalendarEntityId &&
-                                externalCalendarEntityData?.length > 0 &&
-                                externalCalendarEntityData[0]?.address?.addressRegion
+                            ? artsData?.address?.addressRegion
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.addressRegion
                         }
                         required={requiredFieldNames?.includes(placeFormRequiredFieldNames.PROVINCE)}
                         validations={t('common.validations.informationRequired')}
@@ -2324,10 +2324,10 @@ function CreateNewPlace() {
                           placeData?.address?.addressCountry
                             ? placeData?.address?.addressCountry
                             : artsDataId
-                              ? artsData?.address?.addressCountry
-                              : externalCalendarEntityId &&
-                                externalCalendarEntityData?.length > 0 &&
-                                externalCalendarEntityData[0]?.address?.addressCountry
+                            ? artsData?.address?.addressCountry
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.addressCountry
                         }
                         required={requiredFieldNames?.includes(placeFormRequiredFieldNames.COUNTRY)}
                         validations={t('common.validations.informationRequired')}
@@ -2358,14 +2358,14 @@ function CreateNewPlace() {
                     placeData?.geoCoordinates?.latitude || placeData?.geoCoordinates?.longitude
                       ? placeData?.geoCoordinates?.latitude + ',' + placeData?.geoCoordinates?.longitude
                       : artsDataId && (artsData?.geo?.latitude || artsData?.geo?.longitude)
-                        ? artsData?.geo?.latitude + '' + artsData?.geo?.longitude
-                        : externalCalendarEntityId &&
-                          externalCalendarEntityData?.length > 0 &&
-                          (externalCalendarEntityData[0]?.geo?.latitude ||
-                            externalCalendarEntityData[0]?.geo?.longitude) &&
-                          externalCalendarEntityData[0]?.geo?.latitude +
-                            ',' +
-                            externalCalendarEntityData[0]?.geo?.longitude
+                      ? artsData?.geo?.latitude + '' + artsData?.geo?.longitude
+                      : externalCalendarEntityId &&
+                        externalCalendarEntityData?.length > 0 &&
+                        (externalCalendarEntityData[0]?.geo?.latitude ||
+                          externalCalendarEntityData[0]?.geo?.longitude) &&
+                        externalCalendarEntityData[0]?.geo?.latitude +
+                          ',' +
+                          externalCalendarEntityData[0]?.geo?.longitude
                   }
                   data-cy="form--item-place-coordinates-title"
                   label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}

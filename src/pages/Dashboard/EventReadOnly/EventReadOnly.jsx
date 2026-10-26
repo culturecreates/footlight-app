@@ -491,8 +491,8 @@ function EventReadOnly() {
                         state?.value === eventPublishState?.PUBLISHED && isContributor
                           ? 'dashboard.events.readOnlyEvent.notification.contributorPublished'
                           : state?.value === eventPublishState?.PUBLISHED
-                            ? 'dashboard.events.readOnlyEvent.notification.underPublished'
-                            : 'dashboard.events.readOnlyEvent.notification.underReview';
+                          ? 'dashboard.events.readOnlyEvent.notification.underPublished'
+                          : 'dashboard.events.readOnlyEvent.notification.underReview';
 
                       return (
                         <Alert

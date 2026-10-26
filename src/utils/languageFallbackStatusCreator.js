@@ -45,8 +45,8 @@ export function languageFallbackStatusCreator({
       const fallbackErrorHandled = fallbackInfo
         ? { key: fallbackInfo, value: fieldData[fallbackInfo] }
         : Object.keys(fieldData).length > 0
-          ? { key: Object.keys(fieldData)[0], value: fieldData[Object.keys(fieldData)[0]] }
-          : { key: null, value: null };
+        ? { key: Object.keys(fieldData)[0], value: fieldData[Object.keys(fieldData)[0]] }
+        : { key: null, value: null };
 
       results[languageKey] = {
         tagDisplayStatus: !isFieldsDirty[languageKey] ? true : false,

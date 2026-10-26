@@ -160,7 +160,7 @@ function Events() {
   const [searchKey, setSearchKey] = useState();
   const [organizationSearchKey, setOrganizationSearchKey] = useState();
   const [eventSearchQuery, setEventSearchQuery] = useState(
-    searchParams.get('query') ? searchParams.get('query') : (sessionStorage.getItem('query') ?? ''),
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
   );
   const dateValidChecker = (date = '') => {
     const dateFormat = 'YYYY-MM-DD';
@@ -175,12 +175,12 @@ function Events() {
     publication: searchParams.get('publication')
       ? decodeURIComponent(searchParams.get('publication'))?.split(',')
       : sessionStorage.getItem('publication')
-        ? decodeURIComponent(sessionStorage.getItem('publication'))?.split(',')
-        : [],
+      ? decodeURIComponent(sessionStorage.getItem('publication'))?.split(',')
+      : [],
     sort: searchParams.get('sortBy')
       ? searchParams.get('sortBy')
-      : (sessionStorage.getItem('sortBy') ?? sortByOptions[3]?.key),
-    order: searchParams.get('order') ? searchParams.get('order') : (sessionStorage.getItem('order') ?? sortOrder?.ASC),
+      : sessionStorage.getItem('sortBy') ?? sortByOptions[3]?.key,
+    order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
     dates:
       (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
       (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
@@ -190,19 +190,19 @@ function Events() {
                 ? moment(searchParams.get('startDateRange'))
                 : searchParams.get('startDateRange')
               : sessionStorage.getItem('startDateRange')
-                ? dateValidChecker(sessionStorage.getItem('startDateRange'))
-                  ? moment(sessionStorage.getItem('startDateRange'))
-                  : sessionStorage.getItem('startDateRange')
-                : '',
+              ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+                ? moment(sessionStorage.getItem('startDateRange'))
+                : sessionStorage.getItem('startDateRange')
+              : '',
             searchParams.get('endDateRange')
               ? dateValidChecker(searchParams.get('endDateRange'))
                 ? moment(searchParams.get('endDateRange'))
                 : searchParams.get('endDateRange')
               : sessionStorage.getItem('endDateRange')
-                ? dateValidChecker(sessionStorage.getItem('endDateRange'))
-                  ? moment(sessionStorage.getItem('endDateRange'))
-                  : sessionStorage.getItem('endDateRange')
-                : '',
+              ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+                ? moment(sessionStorage.getItem('endDateRange'))
+                : sessionStorage.getItem('endDateRange')
+              : '',
           ]
         : [],
   });
@@ -210,24 +210,24 @@ function Events() {
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
       : sessionStorage.getItem('users')
-        ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
-        : [],
+      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
+      : [],
   );
 
   const [eventIds, setEventIds] = useState(
     searchParams.get('ids')
       ? decodeURIComponent(searchParams.get('ids'))?.split(',')
       : sessionStorage.getItem('ids')
-        ? decodeURIComponent(sessionStorage.getItem('ids'))?.split(',')
-        : [],
+      ? decodeURIComponent(sessionStorage.getItem('ids'))?.split(',')
+      : [],
   );
 
   const [organizerFilter, setOrganizerFilter] = useState(
     searchParams.get('organizers')
       ? decodeURIComponent(searchParams.get('organizers'))?.split(',')
       : sessionStorage.getItem('organizers')
-        ? decodeURIComponent(sessionStorage.getItem('organizers'))?.split(',')
-        : [],
+      ? decodeURIComponent(sessionStorage.getItem('organizers'))?.split(',')
+      : [],
   );
 
   let initialSelectedUsers = {},
@@ -259,19 +259,19 @@ function Events() {
               ? moment(searchParams.get('startDateRange'))
               : ''
             : sessionStorage.getItem('startDateRange')
-              ? dateValidChecker(sessionStorage.getItem('startDateRange'))
-                ? moment(sessionStorage.getItem('startDateRange'))
-                : ''
-              : '',
+            ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+              ? moment(sessionStorage.getItem('startDateRange'))
+              : ''
+            : '',
           searchParams.get('endDateRange')
             ? dateValidChecker(searchParams.get('endDateRange'))
               ? moment(searchParams.get('endDateRange'))
               : ''
             : sessionStorage.getItem('endDateRange')
-              ? dateValidChecker(sessionStorage.getItem('endDateRange'))
-                ? moment(sessionStorage.getItem('endDateRange'))
-                : ''
-              : '',
+            ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+              ? moment(sessionStorage.getItem('endDateRange'))
+              : ''
+            : '',
         ]
       : [],
   );
@@ -279,16 +279,16 @@ function Events() {
     searchParams.get('taxonomyFilter')
       ? JSON.parse(searchParams.get('taxonomyFilter'))
       : sessionStorage.getItem('taxonomyFilter')
-        ? JSON.parse(sessionStorage.getItem('taxonomyFilter'))
-        : {},
+      ? JSON.parse(sessionStorage.getItem('taxonomyFilter'))
+      : {},
   );
 
   const [standardTaxonomyFilter, setStandardTaxonomyFilter] = useState(
     searchParams.get('standardTaxonomyFilter')
       ? JSON.parse(searchParams.get('standardTaxonomyFilter'))
       : sessionStorage.getItem('standardTaxonomyFilter')
-        ? JSON.parse(sessionStorage.getItem('standardTaxonomyFilter'))
-        : {},
+      ? JSON.parse(sessionStorage.getItem('standardTaxonomyFilter'))
+      : {},
   );
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);

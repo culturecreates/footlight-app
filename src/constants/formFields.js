@@ -690,8 +690,8 @@ export const renderFormFields = ({
             ? initialValue?.length > 0
               ? initialValue
               : datatype === dataTypes.URI_STRING_ARRAY
-                ? [undefined]
-                : []
+              ? [undefined]
+              : []
             : initialValue
         }
         required={required}

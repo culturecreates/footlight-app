@@ -715,8 +715,8 @@ const AddUser = () => {
                       {isCurrentUser
                         ? t('dashboard.settings.addUser.userProfile')
                         : userId
-                          ? t('dashboard.settings.addUser.editUser')
-                          : t('dashboard.settings.addUser.newUser')}
+                        ? t('dashboard.settings.addUser.editUser')
+                        : t('dashboard.settings.addUser.newUser')}
                     </h4>
                   </div>
                 </Col>
@@ -731,8 +731,8 @@ const AddUser = () => {
                         {isCurrentUser
                           ? t('dashboard.settings.addUser.detailsCardDescriptionCurrentUser')
                           : userId
-                            ? t('dashboard.settings.addUser.detailsCardDescriptionEditPage')
-                            : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
+                          ? t('dashboard.settings.addUser.detailsCardDescriptionEditPage')
+                          : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
                       </div>
                     </Col>
                     <Col span={24}>

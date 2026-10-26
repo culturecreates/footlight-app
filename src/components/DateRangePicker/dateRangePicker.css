@@ -23,14 +23,10 @@
 }
 
 .date-range-picker-calendar
-  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single):not(
-    .ant-picker-cell-range-end
-  )
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single):not(.ant-picker-cell-range-end)
   .ant-picker-cell-inner,
 .date-range-picker-calendar
-  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single):not(
-    .ant-picker-cell-range-start
-  )
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single):not(.ant-picker-cell-range-start)
   .ant-picker-cell-inner {
   border-radius: 4px;
 }

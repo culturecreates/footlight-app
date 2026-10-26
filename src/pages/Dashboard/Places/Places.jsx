@@ -104,17 +104,17 @@ function Places() {
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
   const [pageNumber, setPageNumber] = useState(
-    searchParams.get('page') ? searchParams.get('page') : (sessionStorage.getItem('placesPage') ?? 1),
+    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('placesPage') ?? 1,
   );
   const [placesSearchQuery, setPlacesSearchQuery] = useState(
-    searchParams.get('query') ? searchParams.get('query') : (sessionStorage.getItem('placesSearchQuery') ?? ''),
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('placesSearchQuery') ?? '',
   );
   const [userFilter, setUserFilter] = useState(
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
       : sessionStorage.getItem('placesUsers')
-        ? decodeURIComponent(sessionStorage.getItem('placesUsers'))?.split(',')
-        : [],
+      ? decodeURIComponent(sessionStorage.getItem('placesUsers'))?.split(',')
+      : [],
   );
   const [placeIds, setPlaceIds] = useState(
     searchParams.get('ids') ? decodeURIComponent(searchParams.get('ids'))?.split(',') : [],
@@ -135,26 +135,26 @@ function Places() {
   const [filter, setFilter] = useState({
     sort: searchParams.get('sortBy')
       ? searchParams.get('sortBy')
-      : (sessionStorage.getItem('placeSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key),
+      : sessionStorage.getItem('placeSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
-      : (sessionStorage.getItem('placeOrder') ?? sortOrder?.ASC),
+      : sessionStorage.getItem('placeOrder') ?? sortOrder?.ASC,
   });
 
   const [taxonomyFilter, setTaxonomyFilter] = useState(
     searchParams.get('taxonomyFilter')
       ? JSON.parse(searchParams.get('taxonomyFilter'))
       : sessionStorage.getItem('placeTaxonomyFilter')
-        ? JSON.parse(sessionStorage.getItem('placeTaxonomyFilter'))
-        : {},
+      ? JSON.parse(sessionStorage.getItem('placeTaxonomyFilter'))
+      : {},
   );
 
   const [standardTaxonomyFilter, setStandardTaxonomyFilter] = useState(
     searchParams.get('standardTaxonomyFilter')
       ? JSON.parse(searchParams.get('standardTaxonomyFilter'))
       : sessionStorage.getItem('standardPlaceTaxonomyFilter')
-        ? JSON.parse(sessionStorage.getItem('standardPlaceTaxonomyFilter'))
-        : {},
+      ? JSON.parse(sessionStorage.getItem('standardPlaceTaxonomyFilter'))
+      : {},
   );
 
   const totalCount = allPlacesData?.count;
