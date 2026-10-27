@@ -1359,7 +1359,7 @@
           "update": "Succès ! Votre [organisation | personne | lieu] a été mis à jour."
         },
         "adminOnly": "Administrateur uniquement",
-        "addAsFilter": "Rendre ce type de taxonomie disponible en tant que filtre.",
+        "addAsFilter": "Rendre cette taxonomie disponible comme filtre.",
         "externalVocabularies": {
           "label": "Vocabulaire contrôlé externe",
           "placeholder": "Sélectionner le vocabulaire contrôlé",
