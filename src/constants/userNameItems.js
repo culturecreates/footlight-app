@@ -7,17 +7,29 @@ const iconStyle = {
 
 export const userNameItems = [
   {
-    label: <Translation>{(t) => t('dashboard.topNavigation.userProfile')}</Translation>,
+    label: (
+      <span data-cy="user-menu-item" data-action="user-profile">
+        <Translation>{(t) => t('dashboard.topNavigation.userProfile')}</Translation>
+      </span>
+    ),
     icon: <SettingOutlined style={iconStyle} />,
     key: 'userProfile',
   },
   {
-    label: <Translation>{(t) => t('dashboard.topNavigation.help')}</Translation>,
+    label: (
+      <span data-cy="user-menu-item" data-action="help">
+        <Translation>{(t) => t('dashboard.topNavigation.help')}</Translation>
+      </span>
+    ),
     key: 'help',
     icon: <QuestionCircleOutlined style={iconStyle} />,
   },
   {
-    label: <Translation>{(t) => t('dashboard.topNavigation.logOut')}</Translation>,
+    label: (
+      <span data-cy="user-menu-item" data-action="logout">
+        <Translation>{(t) => t('dashboard.topNavigation.logOut')}</Translation>
+      </span>
+    ),
     key: 'logOut',
     icon: <LogoutOutlined style={iconStyle} />,
   },
@@ -25,7 +37,11 @@ export const userNameItems = [
 
 export const superAdminItems = [
   {
-    label: <Translation>{(t) => t('dashboard.topNavigation.systemUpdates')}</Translation>,
+    label: (
+      <span data-cy="user-menu-item" data-action="system-updates">
+        <Translation>{(t) => t('dashboard.topNavigation.systemUpdates')}</Translation>
+      </span>
+    ),
     key: 'systemUpdates',
     icon: <DeploymentUnitOutlined style={iconStyle} />,
   },

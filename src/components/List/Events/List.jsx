@@ -24,6 +24,7 @@ import { sameAsTypes } from '../../../constants/sameAsTypes';
 import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio';
 import Link from 'antd/lib/typography/Link';
 import { truncateText } from '../../../utils/stringManipulations';
+import { paginationItemRender } from '../../../utils/paginationItemRender';
 
 const { useBreakpoint } = Grid;
 
@@ -86,6 +87,7 @@ function Lists(props) {
         dataSource={data?.data}
         bordered={false}
         pagination={{
+          itemRender: paginationItemRender,
           onChange: (page) => {
             setPageNumber(page);
           },
@@ -110,6 +112,7 @@ function Lists(props) {
           return (
             <List.Item
               className="event-list-item-wrapper"
+              data-cy="list-item-event"
               key={index}
               actions={[
                 <EventStatusOptions
@@ -127,7 +130,7 @@ function Lists(props) {
                   deleteEvent={deleteEvent}
                   featureEvents={featureEvents}
                   onGetStructuredData={() => setStructuredDataEvent(eventItem)}>
-                  <span>
+                  <span data-cy="button-event-actions">
                     <MoreOutlined
                       className="event-list-more-icon"
                       style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
@@ -149,7 +152,7 @@ function Lists(props) {
                     deleteEvent={deleteEvent}
                     featureEvents={featureEvents}
                     onGetStructuredData={() => setStructuredDataEvent(eventItem)}>
-                    <span>
+                    <span data-cy="button-event-actions">
                       <MoreOutlined className="event-list-more-icon-responsive" key={index} />
                     </span>
                   </EventStatusOptions>

@@ -40,6 +40,7 @@ import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import EntityReports from '../../../components/EntityReports/EntityReports';
 import { entitiesClass, REPORT_ACTION_KEY } from '../../../constants/entitiesClass';
+import { paginationItemRender } from '../../../utils/paginationItemRender';
 
 const { useBreakpoint } = Grid;
 
@@ -552,6 +553,7 @@ const Taxonomy = () => {
                         dataSource={allTaxonomy?.data}
                         bordered={false}
                         pagination={{
+                          itemRender: paginationItemRender,
                           onChange: (page) => {
                             setPageNumber(page);
                             window.scrollTo({

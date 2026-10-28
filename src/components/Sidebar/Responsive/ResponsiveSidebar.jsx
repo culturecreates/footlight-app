@@ -8,7 +8,7 @@ import { userNameItems } from '../../../constants/userNameItems';
 import { sidebarItems } from '../../../constants/sidebarItems';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, getUserDetails } from '../../../redux/reducer/userSlice';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
@@ -24,6 +24,7 @@ function ResponsiveSidebar(props) {
   const { t } = useTranslation();
   let { calendarId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
 
@@ -45,7 +46,14 @@ function ResponsiveSidebar(props) {
     const itemJson = {
       key: key,
       icon: item.icon,
-      label: t(item.name),
+      label: (
+        <span
+          data-cy="sidebar-navigation-item"
+          data-path={item.path}
+          data-active={location.pathname?.includes(item.path) ? 'true' : 'false'}>
+          {t(item.name)}
+        </span>
+      ),
       className: 'sidebar-menu-item',
       path: item.path,
       disabled: item.disabled,
@@ -71,11 +79,13 @@ function ResponsiveSidebar(props) {
           />
         ),
         label: (
-          <div className="calendar-label-wrapper">
+          <div className="calendar-label-wrapper" data-cy="calendar-selector">
             <span
               className="calendar-label-row"
               style={{ height: currentCalendarData?.mode === calendarModes.READ_ONLY ? '16px' : undefined }}>
-              <span className="calendar-label-text">{label}</span>
+              <span className="calendar-label-text" data-cy="calendar-selected-name">
+                {label}
+              </span>
               <DownOutlined className="calendar-label-icon" />
             </span>
 

@@ -41,6 +41,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import EntityReports from '../../../components/EntityReports/EntityReports';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { reconcileTaxonomyFilters } from '../../../utils/taxonomyFilterReconciliation';
+import { paginationItemRender } from '../../../utils/paginationItemRender';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -642,6 +643,7 @@ function People() {
                       label: (
                         <>
                           <Checkbox
+                            data-cy="searchable-checkbox-input"
                             value={userDetail?._id}
                             key={userDetail?._id}
                             style={{ marginLeft: '8px' }}
@@ -699,6 +701,7 @@ function People() {
                     dataSource={allPeopleData?.data}
                     bordered={false}
                     pagination={{
+                      itemRender: paginationItemRender,
                       onChange: (page) => {
                         setPageNumber(page);
                       },

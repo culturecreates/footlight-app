@@ -3169,6 +3169,9 @@ function AddEvent() {
         layout="vertical"
         name="event"
         onValuesChange={onValuesChangeHandler}
+        onFieldsChange={() => {
+          setFormValue(form.getFieldsValue(true));
+        }}
         initialValues={
           !eventId && !duplicateId
             ? setInitialValueForStandardTaxonomyFieldsForEventForm({
@@ -3188,10 +3191,7 @@ function AddEvent() {
                 calendarContentLanguage,
               })
             : {}
-        }
-        onFieldsChange={() => {
-          setFormValue(form.getFieldsValue(true));
-        }}>
+        }>
         <div className="sticky-header add-edit-wrapper">
           <Row justify="space-between" gutter={16} align="middle">
             <Col>
@@ -3204,9 +3204,7 @@ function AddEvent() {
               </div>
             </Col>
             <Col style={{ marginLeft: 'auto' }}>
-              <div className="add-event-button-wrap">
-                <ButtonDisplayHandler />
-              </div>
+              <div className="add-event-button-wrap">{ButtonDisplayHandler()}</div>
             </Col>
           </Row>
         </div>
