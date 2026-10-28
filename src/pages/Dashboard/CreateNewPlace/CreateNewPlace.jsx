@@ -57,7 +57,13 @@ import ImageUpload from '../../../components/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { scrollToFirstError } from '../../../utils/scrollToFirstError';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import {
+  artsDataLinkChecker,
+  createArtsDataLink,
+  addArtsdataIdentifier,
+  removeArtsdataIdentifier,
+} from '../../../utils/artsDataLinkChecker';
+import ArtsdataReconciliationModal from '../../../components/Modal/ArtsdataReconciliation/ArtsdataReconciliationModal';
 import ChangeType from '../../../components/ChangeType';
 import { addressTypeOptions, addressTypeOptionsFieldNames } from '../../../constants/addressTypeOptions';
 import {
@@ -226,6 +232,9 @@ function CreateNewPlace() {
 
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [reconciliationModalOpen, setReconciliationModalOpen] = useState(false);
+  const [reconciliationEntityData, setReconciliationEntityData] = useState(null);
+  const [currentSameAs, setCurrentSameAs] = useState(undefined);
   const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [isPopoverOpen, setIsPopoverOpen] = useState({
     containedInPlace: false,
@@ -399,7 +408,7 @@ function CreateNewPlace() {
       } else {
         placeObj = {
           ...placeObj,
-          sameAs: placeData?.sameAs,
+          sameAs: currentSameAs ?? placeData?.sameAs,
         };
         if (!placeData?.address) {
           addPostalAddress({ data: postalObj, calendarId })
@@ -1025,6 +1034,9 @@ function CreateNewPlace() {
   };
 
   const getArtsDataPlace = (id) => {
+    // artsDataLinkChecker returns `false` when sameAs has no Artsdata link; bail out instead of
+    // requesting `/query?uri=false`, which the backend rejects as "Not a valid (absolute) IRI".
+    if (!id) return;
     setArtsDataLoading(true);
     loadArtsDataPlaceEntity({ entityId: id })
       .then((response) => {
@@ -1042,6 +1054,43 @@ function CreateNewPlace() {
         console.log(error);
       });
   };
+
+  // Keep a local copy of sameAs so link/unlink reflect immediately in the form before saving.
+  useEffect(() => {
+    if (placeData) setCurrentSameAs(placeData?.sameAs ?? []);
+  }, [placeData]);
+
+  const effectiveSameAs = currentSameAs !== undefined ? currentSameAs : placeData?.sameAs;
+
+  // Stages the link to the chosen Artsdata candidate in local state. It is persisted when the
+  // user saves the form (same as any other edit), not with an immediate PATCH.
+  const handleArtsdataLink = (uri) => {
+    const newSameAs = addArtsdataIdentifier(effectiveSameAs, uri);
+    setCurrentSameAs(newSameAs);
+    getArtsDataPlace(uri);
+    setReconciliationModalOpen(false);
+    setShowDialog(true);
+  };
+
+  // Stages the unlink in local state. It is persisted when the user saves the form, not immediately.
+  const handleArtsdataUnlink = () => {
+    const newSameAs = removeArtsdataIdentifier(effectiveSameAs);
+    setCurrentSameAs(newSameAs);
+    setArtsData(null);
+    setShowDialog(true);
+  };
+
+  // Opens the reconciliation modal, matching on the current (possibly unsaved) form values so the
+  // candidate search reflects edits the admin has made but not yet saved.
+  const openReconciliationModal = () => {
+    const liveName = form.getFieldValue('name');
+    setReconciliationEntityData({
+      ...placeData,
+      ...(liveName ? { name: liveName } : {}),
+    });
+    setReconciliationModalOpen(true);
+  };
+
   useEffect(() => {
     if (addedFields?.length > 0) {
       const element = document.getElementsByClassName(scrollToSelectedField);
@@ -1645,7 +1694,7 @@ function CreateNewPlace() {
             )}
             <Card marginResponsive="0px">
               <>
-                {(artsDataLinkChecker(placeData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
+                {(placeId || artsDataLinkChecker(artsData?.sameAs)) && (
                   <Row>
                     <Col span={24}>
                       <p className="add-entity-label" data-cy="para-place-data-source">
@@ -1662,50 +1711,76 @@ function CreateNewPlace() {
                             style={{ width: '100%' }}
                           />
                         </div>
+                      ) : artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs) ? (
+                        <div className="artsdata-link-row">
+                          <div className="artsdata-link-row-info">
+                            <ArtsDataInfo
+                              artsDataLink={createArtsDataLink(
+                                artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs),
+                              )}
+                              name={contentLanguageBilingual({
+                                data: artsData?.name,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              disambiguatingDescription={contentLanguageBilingual({
+                                data: artsData?.disambiguatingDescription,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                            />
+                          </div>
+                          {placeId && (
+                            <OutlinedButton
+                              label={t('dashboard.reconciliation.unlink')}
+                              size="middle"
+                              onClick={handleArtsdataUnlink}
+                              data-cy="button-unlink-artsdata"
+                            />
+                          )}
+                        </div>
                       ) : (
-                        <ArtsDataInfo
-                          artsDataLink={
-                            artsDataLinkChecker(placeData?.sameAs)
-                              ? artsDataLinkChecker(placeData?.sameAs)
-                              : artsDataLinkChecker(artsData?.sameAs)
-                          }
-                          name={contentLanguageBilingual({
-                            data: artsData?.name,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          disambiguatingDescription={contentLanguageBilingual({
-                            data: artsData?.disambiguatingDescription,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                        />
+                        placeId && (
+                          <div className="artsdata-link-row artsdata-link-row--empty">
+                            <span className="artsdata-link-empty-label" data-cy="span-link-artsdata-label">
+                              {t('dashboard.reconciliation.linkWithArtsdata')}
+                            </span>
+                            <OutlinedButton
+                              label={t('dashboard.reconciliation.link')}
+                              size="middle"
+                              onClick={openReconciliationModal}
+                              data-cy="button-open-reconciliation"
+                            />
+                          </div>
+                        )
                       )}
                     </Col>
-                    <Col span={24}>
-                      <div style={{ display: 'inline' }}>
-                        <span className="add-event-date-heading" data-cy="span-place-question-part-one">
-                          {t('dashboard.places.createNew.addPlace.question.firstPart')}
-                        </span>
-                        <span
-                          data-cy="span-place-question-part-two"
-                          className="add-event-date-heading"
-                          style={{
-                            color: '#1b3de6',
-                            textDecoration: 'underline',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => {
-                            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
-                          }}>
-                          {t('dashboard.places.createNew.addPlace.question.secondPart')}
-                        </span>
-                        <span className="add-event-date-heading" data-cy="span-place-question-part-three">
-                          {t('dashboard.places.createNew.addPlace.question.thirdPart')}
-                        </span>
-                      </div>
-                    </Col>
+                    {(artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
+                      <Col span={24}>
+                        <div style={{ display: 'inline' }}>
+                          <span className="add-event-date-heading" data-cy="span-place-question-part-one">
+                            {t('dashboard.places.createNew.addPlace.question.firstPart')}
+                          </span>
+                          <span
+                            data-cy="span-place-question-part-two"
+                            className="add-event-date-heading"
+                            style={{
+                              color: '#1b3de6',
+                              textDecoration: 'underline',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => {
+                              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
+                            }}>
+                            {t('dashboard.places.createNew.addPlace.question.secondPart')}
+                          </span>
+                          <span className="add-event-date-heading" data-cy="span-place-question-part-three">
+                            {t('dashboard.places.createNew.addPlace.question.thirdPart')}
+                          </span>
+                        </div>
+                      </Col>
+                    )}
                     <Col span={24}>
                       <div>
                         <br />
@@ -3079,6 +3154,17 @@ function CreateNewPlace() {
             )}
           </Row>
         </Form>
+        {reconciliationModalOpen && (
+          <ArtsdataReconciliationModal
+            open={reconciliationModalOpen}
+            onCancel={() => setReconciliationModalOpen(false)}
+            onLink={handleArtsdataLink}
+            entityClass={entitiesClass.place}
+            entityData={reconciliationEntityData ?? placeData}
+            calendarContentLanguage={calendarContentLanguage}
+            interfaceLanguage={user?.interfaceLanguage}
+          />
+        )}
       </div>
     </FeatureFlag>
   ) : (

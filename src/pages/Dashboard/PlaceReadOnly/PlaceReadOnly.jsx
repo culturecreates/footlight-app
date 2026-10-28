@@ -203,6 +203,9 @@ function PlaceReadOnly() {
   };
 
   const getArtsDataPlace = (id) => {
+    // artsDataLinkChecker returns `false` when sameAs has no Artsdata link; bail out instead of
+    // requesting `/query?uri=false`, which the backend rejects as "Not a valid (absolute) IRI".
+    if (!id) return;
     setArtsDataLoading(true);
     loadArtsDataPlaceEntity({ entityId: id })
       .then((response) => {

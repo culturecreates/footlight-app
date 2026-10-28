@@ -90,7 +90,14 @@ import {
 } from '../../../constants/importProviders';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker, isArtsdataUri } from '../../../utils/artsDataLinkChecker';
+import {
+  artsDataLinkChecker,
+  isArtsdataUri,
+  createArtsDataLink,
+  addArtsdataIdentifier,
+  removeArtsdataIdentifier,
+} from '../../../utils/artsDataLinkChecker';
+import ArtsdataReconciliationModal from '../../../components/Modal/ArtsdataReconciliation/ArtsdataReconciliationModal';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
 import Alert from '../../../components/Alert';
@@ -236,6 +243,9 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [reconciliationModalOpen, setReconciliationModalOpen] = useState(false);
+  const [reconciliationEntityData, setReconciliationEntityData] = useState(null);
+  const [currentSameAs, setCurrentSameAs] = useState(undefined);
   const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [dynamicFields, setDynamicFields] = useState([]);
 
@@ -374,7 +384,9 @@ function AddEvent() {
     return dateTime.toISOString();
   };
 
-  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
+  // Local copy of sameAs so link/unlink reflect immediately in the form before saving.
+  const effectiveSameAs = currentSameAs !== undefined ? currentSameAs : eventData?.sameAs;
+  let artsDataLink = effectiveSameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
@@ -716,16 +728,16 @@ function AddEvent() {
               subEventConfiguration = undefined,
               inLanguage = [],
               sameAs = eventId
-                ? eventData?.sameAs
-                  ? eventData?.sameAs
-                  : []
+                ? currentSameAs ?? eventData?.sameAs ?? []
                 : artsDataId && isArtsdataUri(artsData?.sameAs)
                 ? artsData?.sameAs
                 : [],
               eventDiscipline = [],
               timezone;
 
-            if (artsData?.uri && !isImportingExistingEntity && isArtsdataUri(artsData?.uri)) {
+            // Seed the Artsdata link from an import only while creating; in edit mode the link is
+            // driven by the staged `currentSameAs` (manual link/unlink), so don't re-append it here.
+            if (!eventId && artsData?.uri && !isImportingExistingEntity && isArtsdataUri(artsData?.uri)) {
               sameAs = [...sameAs, { uri: artsData?.uri }];
             }
 
@@ -988,7 +1000,7 @@ function AddEvent() {
                 })
               ) {
                 if (eventData?.publishState === eventPublishState.PUBLISHED) {
-                  sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                  sameAs = sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
                 }
               }
             }
@@ -2226,6 +2238,56 @@ function AddEvent() {
       })
       .catch((e) => console.error('Failed to fetch ArtsData event for display', e))
       .finally(() => setArtsDataLoading(false));
+  };
+
+  // Keep the local sameAs copy in sync with the loaded event.
+  useEffect(() => {
+    if (eventData) setCurrentSameAs(eventData?.sameAs ?? []);
+  }, [eventData]);
+
+  // Stages the link to the chosen Artsdata candidate in local state. It is persisted when the
+  // user saves the form (same as any other edit), not with an immediate PATCH.
+  const handleArtsdataLink = (uri) => {
+    const newSameAs = addArtsdataIdentifier(effectiveSameAs, uri);
+    setCurrentSameAs(newSameAs);
+    fetchArtsDataForDisplay(uri);
+    setReconciliationModalOpen(false);
+    setShowDialog(true);
+  };
+
+  // Stages the unlink in local state. It is persisted when the user saves the form, not immediately.
+  const handleArtsdataUnlink = () => {
+    const newSameAs = removeArtsdataIdentifier(effectiveSameAs);
+    setCurrentSameAs(newSameAs);
+    setArtsData(null);
+    setShowDialog(true);
+  };
+
+  // Best-effort read of the event's start date from the live form across the date types.
+  const getLiveEventStartDate = () => {
+    const values = form.getFieldsValue();
+    const candidate =
+      values?.datePicker ??
+      values?.dateRangePicker?.[0] ??
+      values?.startDateRecur?.[0] ??
+      values?.customDates?.[0]?.startDate ??
+      values?.customDates?.[0];
+    if (!candidate) return undefined;
+    const parsed = moment(candidate);
+    return parsed.isValid() ? parsed.format('YYYY-MM-DD') : undefined;
+  };
+
+  // Opens the reconciliation modal, matching on the current (possibly unsaved) form values so the
+  // candidate search reflects edits the admin has made but not yet saved (e.g. a changed date).
+  const openReconciliationModal = () => {
+    const liveName = form.getFieldValue('name');
+    const liveStartDate = getLiveEventStartDate();
+    setReconciliationEntityData({
+      ...eventData,
+      ...(liveName ? { name: liveName } : {}),
+      ...(liveStartDate ? { startDateTime: liveStartDate, startDate: liveStartDate } : {}),
+    });
+    setReconciliationModalOpen(true);
   };
 
   const getArtsDataEvent = () => {
@@ -3475,7 +3537,7 @@ function AddEvent() {
           )}
           <CardEvent marginTop="5%" marginResponsive="0px">
             <>
-              {artsDataLink?.length > 0 && (
+              {eventId && (
                 <Row>
                   <Col span={24}>
                     <p className="add-entity-label" data-cy="para-place-data-source">
@@ -3492,46 +3554,70 @@ function AddEvent() {
                           style={{ width: '100%' }}
                         />
                       </div>
+                    ) : artsDataLink?.length > 0 ? (
+                      <div className="artsdata-link-row">
+                        <div className="artsdata-link-row-info">
+                          <ArtsDataInfo
+                            artsDataLink={createArtsDataLink(artsDataLinkChecker(artsDataLink[0]?.uri))}
+                            name={contentLanguageBilingual({
+                              data: artsData?.name,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            disambiguatingDescription={contentLanguageBilingual({
+                              data: artsData?.disambiguatingDescription,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                          />
+                        </div>
+                        <OutlinedButton
+                          label={t('dashboard.reconciliation.unlink')}
+                          size="middle"
+                          onClick={handleArtsdataUnlink}
+                          data-cy="button-unlink-artsdata"
+                        />
+                      </div>
                     ) : (
-                      <ArtsDataInfo
-                        artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
-                        name={contentLanguageBilingual({
-                          data: artsData?.name,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        disambiguatingDescription={contentLanguageBilingual({
-                          data: artsData?.disambiguatingDescription,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                      />
+                      <div className="artsdata-link-row artsdata-link-row--empty">
+                        <span className="artsdata-link-empty-label" data-cy="span-link-artsdata-label">
+                          {t('dashboard.reconciliation.linkWithArtsdata')}
+                        </span>
+                        <OutlinedButton
+                          label={t('dashboard.reconciliation.link')}
+                          size="middle"
+                          onClick={openReconciliationModal}
+                          data-cy="button-open-reconciliation"
+                        />
+                      </div>
                     )}
                   </Col>
-                  <Col span={24}>
-                    <div style={{ display: 'inline' }}>
-                      <span className="add-event-date-heading" data-cy="span-place-question-part-one">
-                        {t('dashboard.events.addEditEvent.question.firstPart')}
-                      </span>
-                      <span
-                        data-cy="span-place-question-part-two"
-                        className="add-event-date-heading"
-                        style={{
-                          color: '#1b3de6',
-                          textDecoration: 'underline',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          window.location.pathname = `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`;
-                        }}>
-                        {t('dashboard.events.addEditEvent.question.secondPart')}
-                      </span>
-                      <span className="add-event-date-heading" data-cy="span-place-question-part-three">
-                        {t('dashboard.events.addEditEvent.question.thirdPart')}
-                      </span>
-                    </div>
-                  </Col>
+                  {artsDataLink?.length > 0 && (
+                    <Col span={24}>
+                      <div style={{ display: 'inline' }}>
+                        <span className="add-event-date-heading" data-cy="span-place-question-part-one">
+                          {t('dashboard.events.addEditEvent.question.firstPart')}
+                        </span>
+                        <span
+                          data-cy="span-place-question-part-two"
+                          className="add-event-date-heading"
+                          style={{
+                            color: '#1b3de6',
+                            textDecoration: 'underline',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            window.location.pathname = `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`;
+                          }}>
+                          {t('dashboard.events.addEditEvent.question.secondPart')}
+                        </span>
+                        <span className="add-event-date-heading" data-cy="span-place-question-part-three">
+                          {t('dashboard.events.addEditEvent.question.thirdPart')}
+                        </span>
+                      </div>
+                    </Col>
+                  )}
                   <Col span={24}>
                     <div>
                       <br />
@@ -6182,6 +6268,17 @@ function AddEvent() {
           </CardEvent>
         </Row>
       </Form>
+      {reconciliationModalOpen && (
+        <ArtsdataReconciliationModal
+          open={reconciliationModalOpen}
+          onCancel={() => setReconciliationModalOpen(false)}
+          onLink={handleArtsdataLink}
+          entityClass={entitiesClass.event}
+          entityData={reconciliationEntityData ?? eventData}
+          calendarContentLanguage={calendarContentLanguage}
+          interfaceLanguage={user?.interfaceLanguage}
+        />
+      )}
     </div>
   ) : (
     <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

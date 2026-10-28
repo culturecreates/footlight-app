@@ -18,3 +18,46 @@
   height: 2px;
   width: 2px;
 }
+
+/* Layout for the link/unlink affordances on entity edit pages (Data source section).
+   The row itself is the single Artsdata container (blue), with the info + unlink button
+   living inside it, so the button sits within the box and matches its colour. */
+.artsdata-link-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #e3e8ff;
+}
+
+.artsdata-link-row .artsdata-link-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Inside the unified row the ArtsDataInfo box blends in instead of nesting a second box. */
+.artsdata-link-row .arts-data-info {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  min-height: auto;
+}
+
+/* Keep the unlink button compact so it fits within the box height and echoes its blue theme. */
+.artsdata-link-row .outlined-button.ant-btn {
+  flex: none;
+  padding: 4px 16px;
+  height: auto;
+  background: transparent;
+}
+
+/* Empty state mirrors the linked row: same blue container, with the link button inside it. */
+.artsdata-link-row--empty {
+  justify-content: space-between;
+}
+
+.artsdata-link-row--empty .artsdata-link-empty-label {
+  font-size: 14px;
+  color: #0f0e98;
+}
