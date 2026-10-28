@@ -101,7 +101,23 @@
       "help": "Help",
       "systemUpdates": "System Updates",
       "notification": {
-        "noEventsForReview": "There are no events to review."
+        "noEventsForReview": "There are no events to review.",
+        "title": "Notifications",
+        "markAllAsRead": "Mark all as read",
+        "sourceEventUpdated": "Source event updated for {{name}}",
+        "deleteLabel": "Delete notification",
+        "empty": "No new notifications",
+        "updatedEvents": {
+          "heading": "Updated fields",
+          "eventLabel": "Updated event",
+          "viewEvent": "View event"
+        },
+        "artsdataChanges": {
+          "title": "Artsdata changes for {{name}}",
+          "editedInCms": "Edited in CMS",
+          "viewInArtsdata": "View in Artsdata",
+          "valueRemoved": "(removed)"
+        }
       }
     },
     "sidebar": {

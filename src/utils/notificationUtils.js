@@ -1,4 +1,5 @@
 import { Translation } from 'react-i18next';
+import { messageStatusMap } from '../constants/notificationConstants';
 
 export const formatNotificationTime = (timestamp) => {
   const now = new Date();
@@ -11,3 +12,6 @@ export const formatNotificationTime = (timestamp) => {
     return <Translation>{(t) => t('notification.daysAgo', { count: diffInDays })}</Translation>;
   }
 };
+
+// messageStatus is the single source of truth for read state: 'Sent' means unread.
+export const isNotificationUnread = (item) => item?.messageStatus === messageStatusMap.SENT;
