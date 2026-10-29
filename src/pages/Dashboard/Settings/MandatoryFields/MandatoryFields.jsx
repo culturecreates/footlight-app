@@ -3,7 +3,8 @@ import './mandatoryFields.css';
 import { Row, Col, notification } from 'antd';
 import MandatoryFieldCard from '../../../../components/Card/MandatoryField/MandatoryField';
 import { useTranslation } from 'react-i18next';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../../hooks/useDashboardContext';
 import PrimaryButton from '../../../../components/Button/Primary';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
@@ -13,7 +14,7 @@ import LoadingIndicator from '../../../../components/LoadingIndicator';
 
 function MandatoryFields({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
-  const [currentCalendarData, , , getCalendar, , , , refetch, ,] = useOutletContext();
+  const { currentCalendarData, getCalendar, refetch } = useDashboardContext();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const [updatedFormFields, setUpdatedFormFields] = useState([]);

@@ -1,11 +1,13 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Col, Row, Skeleton } from 'antd';
+import { Col, Row, Skeleton, notification } from 'antd';
 import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined, WarningOutlined } from '@ant-design/icons';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { sanitizeHtml } from '../../../utils/stringManipulations';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -61,14 +63,7 @@ function PlaceReadOnly() {
   const timestampRef = useRef(Date.now()).current;
   const stickyHeaderRef = useRef(null);
   const navigate = useNavigate();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');
@@ -214,6 +209,11 @@ function PlaceReadOnly() {
       .catch((error) => {
         setArtsDataLoading(false);
         console.log(error);
+        notification.error({
+          key: 'arts-data-fetch-error',
+          message: t('common.errorMessages.artsDataFetchFailed'),
+          duration: 5,
+        });
       });
   };
 
@@ -629,11 +629,13 @@ function PlaceReadOnly() {
                                         <div
                                           className="read-only-place-description"
                                           dangerouslySetInnerHTML={{
-                                            __html: contentLanguageBilingual({
-                                              data: processedData,
-                                              calendarContentLanguage,
-                                              requiredLanguageKey: activeTabKey,
-                                            }),
+                                            __html: sanitizeHtml(
+                                              contentLanguageBilingual({
+                                                data: processedData,
+                                                calendarContentLanguage,
+                                                requiredLanguageKey: activeTabKey,
+                                              }),
+                                            ),
                                           }}
                                           data-cy="div-place-description-french"
                                         />

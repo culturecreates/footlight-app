@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setActiveTabKey } from '../../redux/reducer/readOnlyTabSlice';
 import './readOnlyPageTabLayout.css';
 const ReadOnlyPageTabLayout = ({ children }) => {
-  const [currentCalendarData, , , , , ,] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
   const { t } = useTranslation();
   const dispatch = useDispatch();
 

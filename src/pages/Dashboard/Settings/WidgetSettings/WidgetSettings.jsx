@@ -11,7 +11,8 @@ import NoContent from '../../../../components/NoContent/NoContent';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { contentLanguageKeyMap } from '../../../../constants/contentLanguage';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../../hooks/useDashboardContext';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import Tags from '../../../../components/Tags/Common/Tags';
@@ -47,7 +48,7 @@ const WidgetSettings = ({ tabKey, setDirtyStatus }) => {
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
   const screens = useBreakpoint();
   const [form] = Form.useForm();
 

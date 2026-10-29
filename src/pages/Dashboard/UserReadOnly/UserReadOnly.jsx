@@ -2,7 +2,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { Button, Card, Col, Form, Row } from 'antd';
 import { LeftOutlined, UserOutlined } from '@ant-design/icons';
 import './userReadOnly.css';
@@ -26,13 +27,7 @@ const UserReadOnly = () => {
   const timestampRef = useRef(Date.now()).current;
   const stickyHeaderRef = useRef(null);
   const { userId, calendarId } = useParams();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor } = useDashboardContext();
   const { user, accessToken } = useSelector(getUserDetails);
 
   useEffect(() => {

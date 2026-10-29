@@ -7,8 +7,9 @@ import { getActiveTabKey } from '../../redux/reducer/readOnlyTabSlice';
 import './fallbackInjectorForReadOnlyPages.css';
 import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { contentLanguageBilingual } from '../../utils/bilingual';
+import { sanitizeHtml } from '../../utils/stringManipulations';
 
 /**
  * FallbackInjectorForReadOnlyPages Component
@@ -37,7 +38,7 @@ import { contentLanguageBilingual } from '../../utils/bilingual';
 const FallbackInjectorForReadOnlyPages = (props) => {
   const { children = <></>, fieldName, data, languageKey } = props;
 
-  const [currentCalendarData] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const langKey = useSelector(getActiveTabKey);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
@@ -87,11 +88,14 @@ const FallbackInjectorForReadOnlyPages = (props) => {
       <Col>
         {typeof children === 'function'
           ? children(
-              contentLanguageBilingual({
-                calendarContentLanguage,
-                data,
-                requiredLanguageKey: activeFallbackFieldsInfo[fieldName]?.[langKey]?.fallbackLiteralKey ?? languageKey,
-              }),
+              sanitizeHtml(
+                contentLanguageBilingual({
+                  calendarContentLanguage,
+                  data,
+                  requiredLanguageKey:
+                    activeFallbackFieldsInfo[fieldName]?.[langKey]?.fallbackLiteralKey ?? languageKey,
+                }),
+              ),
             )
           : children}
       </Col>

@@ -2,10 +2,12 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import './personReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Col, Row, Skeleton } from 'antd';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { Col, Row, Skeleton, notification } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { sanitizeHtml } from '../../../utils/stringManipulations';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -60,14 +62,7 @@ function PersonReadOnly() {
   const timestampRef = useRef(Date.now()).current;
   const stickyHeaderRef = useRef(null);
   const navigate = useNavigate();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   const {
     data: personData,
@@ -196,6 +191,11 @@ function PersonReadOnly() {
       .catch((error) => {
         setArtsDataLoading(false);
         console.log(error);
+        notification.error({
+          key: 'arts-data-fetch-error',
+          message: t('common.errorMessages.artsDataFetchFailed'),
+          duration: 5,
+        });
       });
   };
 
@@ -562,11 +562,13 @@ function PersonReadOnly() {
                                           <div
                                             className="read-only-person-description"
                                             dangerouslySetInnerHTML={{
-                                              __html: contentLanguageBilingual({
-                                                data: processedData,
-                                                calendarContentLanguage,
-                                                requiredLanguageKey: activeTabKey,
-                                              }),
+                                              __html: sanitizeHtml(
+                                                contentLanguageBilingual({
+                                                  data: processedData,
+                                                  calendarContentLanguage,
+                                                  requiredLanguageKey: activeTabKey,
+                                                }),
+                                              ),
                                             }}
                                             data-cy="div-person-description-french"
                                           />
