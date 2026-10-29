@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 're
 import './organizationsReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Col, Row, Skeleton } from 'antd';
+import { Col, Row, Skeleton, notification } from 'antd';
 import OutlinedButton from '../../../components/Button/Outlined';
 import Alert from '../../../components/Alert';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { useGetOrganizationQuery } from '../../../services/organization';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { sanitizeHtml } from '../../../utils/stringManipulations';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -201,6 +202,11 @@ function OrganizationsReadOnly() {
       .catch((error) => {
         setArtsDataLoading(false);
         console.log(error);
+        notification.error({
+          key: 'arts-data-fetch-error',
+          message: t('common.errorMessages.artsDataFetchFailed'),
+          duration: 5,
+        });
       });
   };
 
@@ -534,7 +540,7 @@ function OrganizationsReadOnly() {
                                       <div
                                         className="read-only-organization-description"
                                         dangerouslySetInnerHTML={{
-                                          __html: processedData,
+                                          __html: sanitizeHtml(processedData),
                                         }}
                                         data-cy="div-organization-description-french"
                                       />

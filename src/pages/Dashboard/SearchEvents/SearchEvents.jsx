@@ -107,6 +107,11 @@ function SearchEvents() {
         })
         .catch((error) => {
           console.log(error);
+          notification.error({
+            key: 'arts-data-fetch-error',
+            message: t('common.errorMessages.artsDataFetchFailed'),
+            duration: 5,
+          });
         });
     };
 

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
 import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { contentLanguageBilingual } from '../../utils/bilingual';
+import { sanitizeHtml } from '../../utils/stringManipulations';
 
 /**
  * FallbackInjectorForReadOnlyPages Component
@@ -87,11 +88,14 @@ const FallbackInjectorForReadOnlyPages = (props) => {
       <Col>
         {typeof children === 'function'
           ? children(
-              contentLanguageBilingual({
-                calendarContentLanguage,
-                data,
-                requiredLanguageKey: activeFallbackFieldsInfo[fieldName]?.[langKey]?.fallbackLiteralKey ?? languageKey,
-              }),
+              sanitizeHtml(
+                contentLanguageBilingual({
+                  calendarContentLanguage,
+                  data,
+                  requiredLanguageKey:
+                    activeFallbackFieldsInfo[fieldName]?.[langKey]?.fallbackLiteralKey ?? languageKey,
+                }),
+              ),
             )
           : children}
       </Col>

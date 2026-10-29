@@ -1438,6 +1438,9 @@
     "tabKorean": "Korean",
     "tabChinese": "Chinese",
     "noneFound": "None Found",
+    "errorMessages": {
+      "artsDataFetchFailed": "Could not load data from Artsdata. Please try again later."
+    },
     "readOnly": {
       "emptyValue": "Information is required.",
       "missingRequiredBanner": "Some required information is missing. See highlighted sections below.",

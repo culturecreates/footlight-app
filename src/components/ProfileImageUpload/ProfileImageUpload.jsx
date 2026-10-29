@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Dropdown, Space, Upload } from 'antd';
+import { Dropdown, Space, Upload, message } from 'antd';
 import { DownloadOutlined, MoreOutlined, UserOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './profileImageUpload.css';
@@ -60,6 +60,7 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
       setCropOpen(true);
     } catch (error) {
       console.error('Profile image crop source resolution failed:', error);
+      message.error('Could not load image for cropping');
     } finally {
       setLoading(false);
     }
@@ -122,6 +123,7 @@ const ProfileImageUpload = forwardRef(function ProfileImageUpload(
       setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
     } catch (e) {
       console.error('Profile image download failed:', e);
+      message.error('Image download failed');
     }
   };
 

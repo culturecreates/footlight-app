@@ -60,7 +60,6 @@ import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTre
 import { buildImageCropPayload } from '../../../utils/buildImageCropPayload';
 import { processImageAndSave } from '../../../utils/processImageAndSave';
 import { buildSameAsArray } from '../../../utils/buildSameAsArray';
-import { createOnFieldsChange } from '../../../utils/createOnFieldsChange';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import ChangeType from '../../../components/ChangeType';
 import i18next from 'i18next';
@@ -348,7 +347,13 @@ function CreateNewPerson() {
       .catch((error) => handleValidationError(error));
   };
 
-  const onFieldsChange = createOnFieldsChange(showDialog, setShowDialog);
+  const onFieldsChange = (changedValue) => {
+    if (changedValue?.length > 0 && !showDialog) {
+      if (changedValue?.filter((field) => field?.touched).length > 0) {
+        setShowDialog(true);
+      }
+    }
+  };
 
   useEffect(() => {
     if (calendarId && currentCalendarData) {
