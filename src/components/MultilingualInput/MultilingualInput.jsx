@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import LiteralBadge from '../Badge/LiteralBadge';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
-import { useOutletContext } from 'react-router-dom';
+import { useDashboardContext } from '../../hooks/useDashboardContext';
 import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguageFallback';
 import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
 import MoveLeftExtra from '../../assets/icons/left.svg?react';
@@ -49,8 +49,8 @@ function MultilingualInput({ children, ...rest }) {
   } = rest;
   let currentCalendarData = null;
   try {
-    const outletContext = useOutletContext();
-    currentCalendarData = Array.isArray(outletContext) ? outletContext[0] : outletContext;
+    const context = useDashboardContext();
+    currentCalendarData = context?.currentCalendarData ?? null;
   } catch {
     currentCalendarData = null;
   }

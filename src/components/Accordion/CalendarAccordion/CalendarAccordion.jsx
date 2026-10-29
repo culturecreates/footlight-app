@@ -9,7 +9,8 @@ import Select from '../../Select';
 import { useTranslation } from 'react-i18next';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import LoadingIndicator from '../../LoadingIndicator';
 import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
 import { sourceOptions } from '../../../constants/sourceOptions';
@@ -49,13 +50,7 @@ function CalendarAccordion(props) {
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar, // eslint-disable-next-line no-unused-vars
-    _setContentBackgroundColor,
-  ] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);

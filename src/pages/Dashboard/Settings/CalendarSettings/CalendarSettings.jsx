@@ -4,7 +4,8 @@ import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
 import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { STATIC_FILTERS, calendarSettingsFormFields } from '../../../../constants/calendarSettingsForm';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../../hooks/useDashboardContext';
 import { entitiesClass } from '../../../../constants/entitiesClass';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
@@ -21,7 +22,7 @@ import LoadingIndicator from '../../../../components/LoadingIndicator/LoadingInd
 function CalendarSettings({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [currentCalendarData, , , , , , , , , isCurrentCalendarInfoLoading] = useOutletContext();
+  const { currentCalendarData, isCurrentCalendarInfoLoading } = useDashboardContext();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);

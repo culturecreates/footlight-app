@@ -7,7 +7,8 @@ import Logo from '../../../assets/icons/organization-light.svg?react';
 import { useTranslation } from 'react-i18next';
 import './searchOrganizations.css';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
@@ -32,14 +33,7 @@ import { CustomModal } from '../../../components/Modal/HookModal/Modal';
 function SearchOrganizations() {
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');

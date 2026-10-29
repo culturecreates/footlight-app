@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
-import { Row, Col, Button, Skeleton } from 'antd';
+import { Row, Col, Button, Skeleton, notification } from 'antd';
 import { CalendarOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
-import { useParams, useOutletContext, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { useGetEventQuery } from '../../../services/events';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import { sanitizeHtml } from '../../../utils/stringManipulations';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { eventStatusOptions } from '../../../constants/eventStatus';
 import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
@@ -73,14 +75,7 @@ function EventReadOnly() {
   const { calendarId, eventId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const stickyHeaderRef = useRef(null);
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');
@@ -256,6 +251,11 @@ function EventReadOnly() {
       .catch((error) => {
         setArtsDataLoading(false);
         console.log(error);
+        notification.error({
+          key: 'arts-data-fetch-error',
+          message: t('common.errorMessages.artsDataFetchFailed'),
+          duration: 5,
+        });
       });
   };
 
@@ -1133,7 +1133,7 @@ function EventReadOnly() {
                                         <div
                                           className="read-only-event-description"
                                           dangerouslySetInnerHTML={{
-                                            __html: processedData,
+                                            __html: sanitizeHtml(processedData),
                                           }}
                                         />
                                       )
