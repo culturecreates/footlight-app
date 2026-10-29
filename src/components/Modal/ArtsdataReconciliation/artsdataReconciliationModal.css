@@ -1,3 +1,8 @@
+.artsdata-reconciliation-modal .ant-modal-content {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 .artsdata-reconciliation-modal .artsdata-reconciliation-modal-title {
   font-size: 20px;
   font-weight: 700;
