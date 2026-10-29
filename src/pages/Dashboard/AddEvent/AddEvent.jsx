@@ -2224,7 +2224,14 @@ function AddEvent() {
           setArtsData(response.data[0]);
         }
       })
-      .catch((e) => console.error('Failed to fetch ArtsData event for display', e))
+      .catch((e) => {
+        console.error('Failed to fetch ArtsData event for display', e);
+        notification.error({
+          key: 'arts-data-fetch-error',
+          message: t('common.errorMessages.artsDataFetchFailed'),
+          duration: 5,
+        });
+      })
       .finally(() => setArtsDataLoading(false));
   };
 
@@ -2591,6 +2598,11 @@ function AddEvent() {
       .catch((error) => {
         setArtsDataLoading(false);
         console.log(error);
+        notification.error({
+          key: 'arts-data-fetch-error',
+          message: t('common.errorMessages.artsDataFetchFailed'),
+          duration: 5,
+        });
       });
   };
 
