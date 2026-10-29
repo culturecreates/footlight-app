@@ -16,7 +16,8 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import NoContent from '../../NoContent/NoContent';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 import { eventPublishState } from '../../../constants/eventPublishState';
@@ -67,12 +68,7 @@ function QuickCreatePerson(props) {
 
   const { user } = useSelector(getUserDetails);
   const navigate = useNavigate();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-  ] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
   const [event, setEvent] = useState([]);
   const [imageCropOpen, setImageCropOpen] = useState(false);

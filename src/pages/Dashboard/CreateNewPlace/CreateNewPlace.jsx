@@ -16,7 +16,8 @@ import Icon, {
 } from '@ant-design/icons';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
-import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { PathName } from '../../../constants/pathName';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -49,7 +50,6 @@ import {
   useGetEntitiesByIdQuery,
   useLazyGetEntitiesByIdQuery,
   useLazyGetEntitiesQuery,
-  useLazyGetEntityDependencyDetailsQuery,
 } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
@@ -79,17 +79,15 @@ import {
   getImportProviderConfig,
   importProviderContexts,
 } from '../../../constants/importProviders';
-import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import moment from 'moment';
-import {
-  clearActiveFallbackFieldsInfo,
-  getActiveFallbackFieldsInfo,
-  getLanguageLiteralBannerDisplayStatus,
-  setLanguageLiteralBannerDisplayStatus,
-  setBannerDismissed,
-  getIsBannerDismissed,
-} from '../../../redux/reducer/languageLiteralSlice';
+import { setLanguageLiteralBannerDisplayStatus, setBannerDismissed } from '../../../redux/reducer/languageLiteralSlice';
+import { useDebouncedLoading } from '../../../hooks/useDebouncedLoading';
+import { useFallbackLanguageBanner } from '../../../hooks/useFallbackLanguageBanner';
+import { useContentBackground } from '../../../hooks/useContentBackground';
+import { useReadOnlyRedirect } from '../../../hooks/useReadOnlyRedirect';
+import { useDynamicTaxonomyFields } from '../../../hooks/useDynamicTaxonomyFields';
+import { useEntityDerivedData } from '../../../hooks/useEntityDerivedData';
 import Alert from '../../../components/Alert';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
@@ -100,7 +98,10 @@ import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/M
 import MapComponent from '../../../components/MapComponent';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
-import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
+import { buildImageCropPayload } from '../../../utils/buildImageCropPayload';
+import { processImageAndSave } from '../../../utils/processImageAndSave';
+import { buildSameAsArray } from '../../../utils/buildSameAsArray';
+import { markFormDirty } from '../../../utils/createOnFieldsChange';
 import i18next from 'i18next';
 import { setInitialValueForStandardTaxonomyFieldsForPlaceForm } from '../../../utils/setFieldvalueForTaxonomies';
 import EntityPopoverSection from '../../../components/EntityImport/EntityPopoverSection';
@@ -114,22 +115,11 @@ function CreateNewPlace() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData } = useDashboardContext();
 
-  useEffect(() => {
-    setContentBackgroundColor('#F9FAFF');
-  }, [setContentBackgroundColor]);
+  useContentBackground();
 
-  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
-  const isBannerDismissed = useSelector(getIsBannerDismissed);
-  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
+  const { languageLiteralBannerDisplayStatus, activeFallbackFieldsInfo } = useFallbackLanguageBanner();
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -198,8 +188,11 @@ function CreateNewPlace() {
     { ids: placeIdsQuery, calendarId, sessionId: timestampRef },
     { skip: externalCalendarEntityId ? false : true },
   );
-  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
-    sessionId: timestampRef,
+  const { derivedEntitiesData, derivedEntitiesDisplayStatus, isEntityDetailsLoading } = useEntityDerivedData({
+    entityId: placeId,
+    calendarId,
+    timestampRef,
+    relatedKeys: ['events', 'people', 'organizations'],
   });
 
   let taxonomyClassQuery = new URLSearchParams();
@@ -226,7 +219,6 @@ function CreateNewPlace() {
 
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
-  const [debouncedLoading, setDebouncedLoading] = useState(true);
   const [isPopoverOpen, setIsPopoverOpen] = useState({
     containedInPlace: false,
     containsPlace: false,
@@ -254,19 +246,8 @@ function CreateNewPlace() {
     ],
   );
 
-  useEffect(() => {
-    if (isAnyLoading) {
-      setDebouncedLoading(true);
-    } else {
-      const timer = setTimeout(() => {
-        setDebouncedLoading(false);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnyLoading]);
+  const debouncedLoading = useDebouncedLoading(isAnyLoading);
 
-  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
-  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const [containedInPlace, setContainedInPlace] = useState();
   const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState({ containsPlace: [], containedInPlace: [] });
@@ -277,8 +258,6 @@ function CreateNewPlace() {
   });
   const [descriptionMinimumWordCount] = useState(1);
   const [imageCropOpen, setImageCropOpen] = useState(false);
-  const [addedFields, setAddedFields] = useState([]);
-  const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [showDialog, setShowDialog] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState({
@@ -291,8 +270,34 @@ function CreateNewPlace() {
     longitude: null,
   });
   const [geocoder, setGeocoder] = useState(null);
-  const [dynamicFields, setDynamicFields] = useState([]);
   const hasValidatedOnOpenRef = useRef(false);
+
+  const { dynamicFields, addedFields, setAddedFields, addFieldsHandler } = useDynamicTaxonomyFields({
+    taxonomyLoading,
+    allTaxonomyData,
+    currentCalendarData,
+    entityClass: entitiesClass.place,
+    buildFieldObject: (taxonomy, requiredTaxonomies) => {
+      const tooltip = contentLanguageBilingual({
+        data: taxonomy?.disambiguatingDescription,
+        requiredLanguageKey: i18next.language,
+        calendarContentLanguage,
+      });
+      return {
+        type: taxonomy?.id,
+        fieldNames: taxonomy?.id,
+        taxonomy: false,
+        disabled: false,
+        required: requiredTaxonomies?.includes(taxonomy?.id),
+        label: contentLanguageBilingual({
+          data: taxonomy?.name,
+          requiredLanguageKey: i18next.language,
+          calendarContentLanguage,
+        }),
+        ...(tooltip && { tooltip }),
+      };
+    },
+  });
 
   const placeRelationsImportConfig = getImportProviderConfig(importProviderContexts.CREATE_PLACE_RELATIONS);
   const externalSourcesQuery = getExternalSourcesQuery(importProviderContexts.CREATE_PLACE_RELATIONS);
@@ -323,45 +328,18 @@ function CreateNewPlace() {
   const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
-        if (artsDataId && artsData && !isImportingExistingEntity) {
-          let sameAsArray = Array.isArray(artsData.sameAs)
-            ? artsData.sameAs
-            : artsData.sameAs && typeof artsData.sameAs === 'object'
-            ? [artsData.sameAs]
-            : [];
-
-          const existingIndex = sameAsArray.findIndex((item) => item.uri === artsData.uri);
-
-          const artsDataIdentifier = {
-            uri: artsData.uri,
-            type: sameAsTypes.ARTSDATA_IDENTIFIER,
-          };
-
-          if (existingIndex !== -1) {
-            sameAsArray[existingIndex] = artsDataIdentifier;
-          } else {
-            sameAsArray.push(artsDataIdentifier);
-          }
-
+        const sameAs = buildSameAsArray({
+          artsData,
+          artsDataId,
+          isImportingExistingEntity,
+          externalCalendarEntityId,
+          externalEntityData,
+        });
+        if (sameAs !== undefined) {
           placeObj = {
             ...placeObj,
-            sameAs: sameAsArray,
+            sameAs,
           };
-        }
-
-        if (externalCalendarEntityId && !isImportingExistingEntity) {
-          let sameAs = [
-            {
-              uri: externalCalendarEntityId,
-              type: sameAsTypes.FOOTLIGHT_IDENTIFIER,
-            },
-          ];
-          if (externalEntityData?.sameAs) {
-            placeObj = {
-              ...placeObj,
-              sameAs: externalEntityData?.sameAs?.concat(sameAs),
-            };
-          }
         }
         addPostalAddress({ data: postalObj, calendarId })
           .unwrap()
@@ -596,35 +574,8 @@ function CreateNewPlace() {
               };
             });
           }
-          let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
           let mainImageOptions = form.getFieldValue('mainImageOptions');
-          if (imageCrop.length > 0) {
-            imageCrop = [
-              {
-                large: {
-                  xCoordinate: imageCrop[0]?.large?.x,
-                  yCoordinate: imageCrop[0]?.large?.y,
-                  height: imageCrop[0]?.large?.height,
-                  width: imageCrop[0]?.large?.width,
-                },
-                thumbnail: {
-                  xCoordinate: imageCrop[0]?.thumbnail?.x,
-                  yCoordinate: imageCrop[0]?.thumbnail?.y,
-                  height: imageCrop[0]?.thumbnail?.height,
-                  width: imageCrop[0]?.thumbnail?.width,
-                },
-                original: {
-                  entityId: imageCrop[0]?.original?.entityId,
-                  height: imageCrop[0]?.original?.height,
-                  width: imageCrop[0]?.original?.width,
-                },
-                isMain: true,
-                description: mainImageOptions?.altText,
-                creditText: mainImageOptions?.credit,
-                caption: mainImageOptions?.caption,
-              },
-            ];
-          }
+          let imageCrop = buildImageCropPayload(form.getFieldValue('imageCrop'), mainImageOptions);
           if (values?.containedInPlace || values?.containedInPlace?.length > 0) {
             if (
               containedInPlace?.source === sourceOptions.CMS ||
@@ -730,82 +681,24 @@ function CreateNewPlace() {
             ...(values?.containsPlace && { containsPlace }),
           };
 
-          if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.dragger[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then(async (response) => {
-                  if (featureFlags.imageCropFeature) {
-                    let entityId = response?.data?.original?.entityId;
-                    imageCrop = [
-                      {
-                        large: imageCrop[0]?.large,
-                        thumbnail: imageCrop[0]?.thumbnail,
-                        isMain: true,
-                        original: {
-                          entityId,
-                          height: response?.data?.height,
-                          width: response?.data?.width,
-                        },
-                        description: mainImageOptions?.altText,
-                        creditText: mainImageOptions?.credit,
-                        caption: mainImageOptions?.caption,
-                      },
-                    ];
-                  } else
-                    imageCrop = [
-                      {
-                        large: imageCrop[0]?.large,
-                        thumbnail: imageCrop[0]?.thumbnail,
-                        isMain: true,
-                        original: {
-                          entityId: response?.data?.original?.entityId,
-                          height: response?.data?.height,
-                          width: response?.data?.width,
-                        },
-                        description: mainImageOptions?.altText,
-                        creditText: mainImageOptions?.credit,
-                        caption: mainImageOptions?.caption,
-                      },
-                    ];
-
-                  if (values.multipleImagesCrop?.length > 0)
-                    await uploadImageListHelper(values, addImage, calendarId, imageCrop);
-                  placeObj['image'] = imageCrop;
-                  addUpdatePlaceApiHandler(placeObj, postalObj)
-                    .then((id) => resolve(id))
-                    .catch((error) => {
-                      reject();
-                      console.log(error);
-                    });
-                })
+          await processImageAndSave({
+            values,
+            calendarId,
+            addImage,
+            imageCrop,
+            mainImageOptions,
+            mainImageFile: values?.dragger,
+            isMainImageRemoved: values?.draggerWrap,
+            scrollClassName: formFieldNames.DRAGGER_WRAP,
+            entityPayload: placeObj,
+            saveHandler: (payload) =>
+              addUpdatePlaceApiHandler(payload, postalObj)
+                .then((id) => resolve(id))
                 .catch((error) => {
+                  reject();
                   console.log(error);
-                  const element = document.getElementsByClassName(formFieldNames.DRAGGER_WRAP);
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values.multipleImagesCrop?.length > 0)
-              await uploadImageListHelper(values, addImage, calendarId, imageCrop);
-            if (
-              values?.draggerWrap &&
-              values?.dragger?.length === 0 &&
-              (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
-            ) {
-              // Main image is removed and no new image is added
-              // No gallery images are added
-              placeObj['image'] = [];
-            } else placeObj['image'] = imageCrop;
-
-            addUpdatePlaceApiHandler(placeObj, postalObj)
-              .then((id) => resolve(id))
-              .catch((error) => {
-                reject();
-                console.log(error);
-              });
-          }
+                }),
+          });
         })
         .catch((error) => handleValidationError(error));
     });
@@ -938,12 +831,6 @@ function CreateNewPlace() {
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
 
-  const addFieldsHandler = (fieldNames) => {
-    let array = addedFields?.concat(fieldNames);
-    array = [...new Set(array)];
-    setAddedFields(array);
-    setScrollToSelectedField(array?.at(-1));
-  };
   const isValidCoordinates = (latitude, longitude) => {
     const isLatitudeValid = typeof latitude === 'number' && latitude >= -90 && latitude <= 90;
     const isLongitudeValid = typeof longitude === 'number' && longitude >= -180 && longitude <= 180;
@@ -998,12 +885,8 @@ function CreateNewPlace() {
   };
 
   const onFieldsChange = (changedValue) => {
+    markFormDirty(changedValue, showDialog, setShowDialog);
     if (changedValue?.length > 0) {
-      if (!showDialog) {
-        if (changedValue?.filter((field) => field?.touched).length > 0) {
-          setShowDialog(true);
-        }
-      }
       const coordinatesField = changedValue.find((field) => field.name[0] === formFieldNames.COORDINATES);
 
       if (coordinatesField?.touched) {
@@ -1047,87 +930,6 @@ function CreateNewPlace() {
         });
       });
   };
-  useEffect(() => {
-    if (addedFields?.length > 0) {
-      const element = document.getElementsByClassName(scrollToSelectedField);
-      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
-  }, [addedFields]);
-
-  useEffect(() => {
-    if (taxonomyLoading && !allTaxonomyData && !currentCalendarData) return;
-    const requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.place);
-    const requiredTaxonomies = requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map(
-      (field) => field,
-    );
-
-    allTaxonomyData?.data?.map((taxonomy) => {
-      if (taxonomy?.isDynamicField) {
-        const tooltip = contentLanguageBilingual({
-          data: taxonomy?.disambiguatingDescription,
-          requiredLanguageKey: i18next.language,
-          calendarContentLanguage,
-        });
-        const fieldObject = {
-          type: taxonomy?.id,
-          fieldNames: taxonomy?.id,
-          taxonomy: false,
-          disabled: false,
-          required: requiredTaxonomies?.includes(taxonomy?.id),
-          label: contentLanguageBilingual({
-            data: taxonomy?.name,
-            requiredLanguageKey: i18next.language,
-            calendarContentLanguage,
-          }),
-          ...(tooltip && { tooltip }),
-        };
-        setDynamicFields((prev) => [...prev, fieldObject]);
-      }
-    });
-  }, [taxonomyLoading, allTaxonomyData, currentCalendarData]);
-
-  useEffect(() => {
-    if (placeId) {
-      getDerivedEntities({ id: placeId, calendarId }).then((response) => {
-        if (
-          response?.data?.events?.length > 0 ||
-          response?.data?.people?.length > 0 ||
-          response?.data?.organizations?.length > 0
-        ) {
-          setDerivedEntitiesData(response?.data);
-          setDerivedEntitiesDisplayStatus(true);
-        }
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    dispatch(clearActiveFallbackFieldsInfo());
-    dispatch(setBannerDismissed(false));
-  }, []);
-
-  useEffect(() => {
-    let shouldDisplay = true;
-
-    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
-    let individualFallbackFieldsCollection = [];
-    fallbackFieldNames.forEach((name) => {
-      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
-    });
-
-    individualFallbackFieldsCollection.forEach((element) => {
-      if (element?.tagDisplayStatus) {
-        shouldDisplay = false;
-      }
-    });
-
-    if (!shouldDisplay && !isBannerDismissed) {
-      dispatch(setLanguageLiteralBannerDisplayStatus(true));
-    } else {
-      dispatch(setLanguageLiteralBannerDisplayStatus(false));
-    }
-  }, [activeFallbackFieldsInfo]);
-
   useEffect(() => {
     if (selectedContainsPlaces) form.setFieldValue(formFieldNames.CONTAINS_PLACE, selectedContainsPlaces);
   }, [selectedContainsPlaces]);
@@ -1411,12 +1213,7 @@ function CreateNewPlace() {
     }
   }, [isPlaceLoading, currentCalendarData, externalEntityLoading]);
 
-  useEffect(() => {
-    if (isReadOnly) {
-      if (placeId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`, { replace: true });
-      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`, { replace: true });
-    }
-  }, [isReadOnly]);
+  useReadOnlyRedirect({ entityId: placeId, entityPath: PathName.Places, calendarId });
 
   useEffect(() => {
     let publishValidateFields = [],
@@ -2067,7 +1864,7 @@ function CreateNewPlace() {
                     .every((fieldName) => addedFields?.includes(fieldName));
 
                   return (
-                    nonPresetDynamicFields?.length && (
+                    nonPresetDynamicFields?.length > 0 && (
                       <Form.Item
                         label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
                         style={{ lineHeight: '2.5' }}

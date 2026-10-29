@@ -2,7 +2,8 @@ import { Popover } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import EntityCard from '../../../components/Card/Common/EntityCard';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -32,14 +33,7 @@ import { CustomModal } from '../../../components/Modal/HookModal/Modal';
 function SearchPerson() {
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
 
   useEffect(() => {
     setContentBackgroundColor('#F9FAFF');

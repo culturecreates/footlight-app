@@ -2,7 +2,8 @@ import { Button, Card, Col, Dropdown, Form, Row, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, DownOutlined, PlusOutlined, DatabaseOutlined } from '@ant-design/icons';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import './selectTaxonomyType.css';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import DateAction from '../../../components/Button/DateAction/DateAction';
@@ -19,14 +20,7 @@ const SelectTaxonomyType = () => {
   const navigate = useNavigate();
   const [formInstance] = Form.useForm();
   const { calendarId } = useParams();
-  const [
-    currentCalendarData, // eslint-disable-next-line no-unused-vars
-    _pageNumber, // eslint-disable-next-line no-unused-vars
-    _setPageNumber, // eslint-disable-next-line no-unused-vars
-    _getCalendar,
-    setContentBackgroundColor,
-    isReadOnly,
-  ] = useOutletContext();
+  const { currentCalendarData, setContentBackgroundColor, isReadOnly } = useDashboardContext();
   const { user } = useSelector(getUserDetails);
   const dispatch = useDispatch();
 

@@ -245,7 +245,7 @@ function Dashboard() {
                   </Row>
                 </CustomModal>
                 <Outlet
-                  context={[
+                  context={{
                     currentCalendarData,
                     pageNumber,
                     setPageNumber,
@@ -254,9 +254,9 @@ function Dashboard() {
                     isReadOnly,
                     setIsReadOnly,
                     refetch,
-                    allCalendarsData?.data,
+                    allCalendarsData: allCalendarsData?.data,
                     isCurrentCalendarInfoLoading,
-                  ]}
+                  }}
                 />
               </Content>
             </Layout>
