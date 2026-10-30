@@ -41,8 +41,8 @@ export const eventsApi = createApi({
     }),
     deleteEvent: builder.mutation({
       query: ({ id, calendarId }) => ({
-        url: `events/${id}`,
-        method: 'DELETE',
+        url: `events/${id}/soft-delete`,
+        method: 'PATCH',
         headers: {
           'calendar-id': calendarId,
         },
