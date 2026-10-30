@@ -54,7 +54,13 @@ import { PathName } from '../../../constants/pathName';
 import { useAddImageMutation } from '../../../services/image';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import {
+  artsDataLinkChecker,
+  createArtsDataLink,
+  addArtsdataIdentifier,
+  removeArtsdataIdentifier,
+} from '../../../utils/artsDataLinkChecker';
+import ArtsdataReconciliationModal from '../../../components/Modal/ArtsdataReconciliation/ArtsdataReconciliationModal';
 import { useLazyGetPlaceQuery } from '../../../services/places';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
@@ -148,6 +154,9 @@ function CreateNewOrganization() {
   const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
 
   const [newEntityData, setNewEntityData] = useState(null);
+  const [reconciliationModalOpen, setReconciliationModalOpen] = useState(false);
+  const [reconciliationEntityData, setReconciliationEntityData] = useState(null);
+  const [currentSameAs, setCurrentSameAs] = useState(undefined);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
@@ -163,7 +172,7 @@ function CreateNewOrganization() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
 
-  const { artsData, artsDataLoading, getArtsData } = useArtsDataLoader(loadArtsDataEntity);
+  const { artsData, setArtsData, artsDataLoading, getArtsData } = useArtsDataLoader(loadArtsDataEntity);
 
   const { derivedEntitiesData, derivedEntitiesDisplayStatus, isEntityDetailsLoading } = useEntityDerivedData({
     entityId: organizationId,
@@ -276,7 +285,8 @@ function CreateNewOrganization() {
       } else {
         organizationObj = {
           ...organizationObj,
-          sameAs: organizationData?.sameAs,
+          // Use the locally staged sameAs so a pending Artsdata link/unlink is persisted on save.
+          sameAs: currentSameAs ?? organizationData?.sameAs,
         };
         updateOrganization({
           data: organizationObj,
@@ -697,6 +707,44 @@ function CreateNewOrganization() {
       .catch((error) => console.log(error));
   };
 
+  // Keep a local copy of sameAs so link/unlink reflect immediately without a full form reload.
+  useEffect(() => {
+    if (organizationData) setCurrentSameAs(organizationData?.sameAs ?? []);
+  }, [organizationData]);
+
+  const effectiveSameAs = currentSameAs !== undefined ? currentSameAs : organizationData?.sameAs;
+
+  // Stages the link to the chosen Artsdata candidate in local state. It is persisted when the
+  // user saves the form (same as any other edit), not with an immediate PATCH.
+  const handleArtsdataLink = (uri) => {
+    const newSameAs = addArtsdataIdentifier(effectiveSameAs, uri);
+    setCurrentSameAs(newSameAs);
+    getArtsData(uri);
+    setReconciliationModalOpen(false);
+    setShowDialog(true);
+  };
+
+  // Stages the unlink in local state. It is persisted when the user saves the form, not immediately.
+  const handleArtsdataUnlink = () => {
+    const newSameAs = removeArtsdataIdentifier(effectiveSameAs);
+    setCurrentSameAs(newSameAs);
+    setArtsData(null);
+    setShowDialog(true);
+  };
+
+  // Opens the reconciliation modal, matching on the current (possibly unsaved) form values so the
+  // candidate search reflects edits the admin has made but not yet saved.
+  const openReconciliationModal = () => {
+    const liveName = form.getFieldValue('name');
+    const liveUrl = form.getFieldValue('url');
+    setReconciliationEntityData({
+      ...organizationData,
+      ...(liveName ? { name: liveName } : {}),
+      ...(liveUrl ? { url: liveUrl } : {}),
+    });
+    setReconciliationModalOpen(true);
+  };
+
   useEffect(() => {
     if (calendarId && currentCalendarData) {
       let initialPlaceAccessibiltiy = [],
@@ -1095,8 +1143,8 @@ function CreateNewOrganization() {
                     title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category}
                     key={index}>
                     <>
-                      {(artsDataLinkChecker(organizationData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) &&
-                        section[0]?.category === formCategory.PRIMARY && (
+                      {section[0]?.category === formCategory.PRIMARY &&
+                        (organizationId || artsDataLinkChecker(artsData?.sameAs)) && (
                           <Row>
                             <Col span={24}>
                               <p className="add-entity-label" data-cy="para-organization-data-source">
@@ -1113,54 +1161,82 @@ function CreateNewOrganization() {
                                     style={{ width: '100%' }}
                                   />
                                 </div>
+                              ) : artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs) ? (
+                                <div className="artsdata-link-row">
+                                  <div className="artsdata-link-row-info">
+                                    <ArtsDataInfo
+                                      artsDataLink={createArtsDataLink(
+                                        artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs),
+                                      )}
+                                      name={contentLanguageBilingual({
+                                        data: artsData?.name,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      disambiguatingDescription={contentLanguageBilingual({
+                                        data: artsData?.disambiguatingDescription,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                    />
+                                  </div>
+                                  {organizationId && (
+                                    <OutlinedButton
+                                      label={t('dashboard.reconciliation.unlink')}
+                                      size="middle"
+                                      onClick={handleArtsdataUnlink}
+                                      data-cy="button-unlink-artsdata"
+                                    />
+                                  )}
+                                </div>
                               ) : (
-                                <ArtsDataInfo
-                                  artsDataLink={
-                                    artsDataLinkChecker(organizationData?.sameAs)
-                                      ? artsDataLinkChecker(organizationData?.sameAs)
-                                      : artsDataLinkChecker(artsData?.sameAs)
-                                  }
-                                  name={contentLanguageBilingual({
-                                    data: artsData?.name,
-                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                    calendarContentLanguage: calendarContentLanguage,
-                                  })}
-                                  disambiguatingDescription={contentLanguageBilingual({
-                                    data: artsData?.disambiguatingDescription,
-                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                    calendarContentLanguage: calendarContentLanguage,
-                                  })}
-                                />
+                                organizationId && (
+                                  <div className="artsdata-link-row artsdata-link-row--empty">
+                                    <span className="artsdata-link-empty-label" data-cy="span-link-artsdata-label">
+                                      {t('dashboard.reconciliation.linkWithArtsdata')}
+                                    </span>
+                                    <OutlinedButton
+                                      label={t('dashboard.reconciliation.link')}
+                                      size="middle"
+                                      onClick={openReconciliationModal}
+                                      data-cy="button-open-reconciliation"
+                                    />
+                                  </div>
+                                )
                               )}
                             </Col>
-                            <Col span={24}>
-                              <div style={{ display: 'inline' }}>
-                                <span className="add-event-date-heading" data-cy="span-data-source-help-text-part-one">
-                                  {t('dashboard.organization.createNew.addOrganization.question.firstPart')}
-                                </span>
-                                <span
-                                  data-cy="span-data-source-help-text-part-two"
-                                  className="add-event-date-heading"
-                                  style={{
-                                    color: '#1b3de6',
-                                    textDecoration: 'underline',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                  }}
-                                  onClick={() => {
-                                    navigate(
-                                      `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`,
-                                    );
-                                  }}>
-                                  {t('dashboard.organization.createNew.addOrganization.question.secondPart')}
-                                </span>
-                                <span
-                                  className="add-event-date-heading"
-                                  data-cy="span-data-source-help-text-part-three">
-                                  {t('dashboard.organization.createNew.addOrganization.question.thirdPart')}
-                                </span>
-                              </div>
-                            </Col>
+                            {(artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
+                              <Col span={24}>
+                                <div style={{ display: 'inline' }}>
+                                  <span
+                                    className="add-event-date-heading"
+                                    data-cy="span-data-source-help-text-part-one">
+                                    {t('dashboard.organization.createNew.addOrganization.question.firstPart')}
+                                  </span>
+                                  <span
+                                    data-cy="span-data-source-help-text-part-two"
+                                    className="add-event-date-heading"
+                                    style={{
+                                      color: '#1b3de6',
+                                      textDecoration: 'underline',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                    }}
+                                    onClick={() => {
+                                      navigate(
+                                        `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`,
+                                      );
+                                    }}>
+                                    {t('dashboard.organization.createNew.addOrganization.question.secondPart')}
+                                  </span>
+                                  <span
+                                    className="add-event-date-heading"
+                                    data-cy="span-data-source-help-text-part-three">
+                                    {t('dashboard.organization.createNew.addOrganization.question.thirdPart')}
+                                  </span>
+                                </div>
+                              </Col>
+                            )}
 
                             <Col span={24}>
                               <div>
@@ -1480,6 +1556,17 @@ function CreateNewOrganization() {
             )}
           </Row>
         </Form>
+        {reconciliationModalOpen && (
+          <ArtsdataReconciliationModal
+            open={reconciliationModalOpen}
+            onCancel={() => setReconciliationModalOpen(false)}
+            onLink={handleArtsdataLink}
+            entityClass={entitiesClass.organization}
+            entityData={reconciliationEntityData ?? organizationData}
+            calendarContentLanguage={calendarContentLanguage}
+            interfaceLanguage={user?.interfaceLanguage}
+          />
+        )}
       </div>
     </FeatureFlag>
   ) : (

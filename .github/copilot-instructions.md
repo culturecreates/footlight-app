@@ -23,6 +23,7 @@ Guidance:
 
 - Prefer JavaScript/JSX (do not introduce TypeScript unless explicitly requested).
 - Match existing style and patterns in nearby files.
+
 ## Top-Level Structure
 
 - src/: application source code
