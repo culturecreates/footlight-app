@@ -22,6 +22,15 @@ const buildNameCondition = (name) => ({
   matchQuantifier: 'any',
 });
 
+// The match service only honours property conditions whose `propertyId` is a full IRI. A
+// prefixed id (e.g. `schema:startDate`) is silently ignored, so candidates are ranked by name
+// alone and the right event (same name, different date) can fall outside the result limit.
+const SCHEMA_PROPERTY = {
+  url: 'http://schema.org/url',
+  streetAddress: 'http://schema.org/streetAddress',
+  startDate: 'http://schema.org/startDate',
+};
+
 const buildPropertyCondition = (propertyId, values) => ({
   matchType: 'property',
   propertyId,
@@ -63,7 +72,7 @@ export function buildReconciliationQuery({ entityClass, entityData, calendarCont
     case entitiesClass.person:
     case entitiesClass.people: {
       const url = entityData?.url?.uri ?? entityData?.url;
-      if (url) conditions.push(buildPropertyCondition('schema:url', url));
+      if (url) conditions.push(buildPropertyCondition(SCHEMA_PROPERTY.url, url));
       break;
     }
     case entitiesClass.place: {
@@ -73,12 +82,14 @@ export function buildReconciliationQuery({ entityClass, entityData, calendarCont
         interfaceLanguage: interfaceLanguage?.toLowerCase(),
         calendarContentLanguage,
       });
-      if (streetValue) conditions.push(buildPropertyCondition('schema:streetAddress', streetValue));
+      if (streetValue) conditions.push(buildPropertyCondition(SCHEMA_PROPERTY.streetAddress, streetValue));
       break;
     }
     case entitiesClass.event: {
       if (entityData?.startDateTime || entityData?.startDate) {
-        conditions.push(buildPropertyCondition('schema:startDate', entityData?.startDateTime ?? entityData?.startDate));
+        conditions.push(
+          buildPropertyCondition(SCHEMA_PROPERTY.startDate, entityData?.startDateTime ?? entityData?.startDate),
+        );
       }
       break;
     }

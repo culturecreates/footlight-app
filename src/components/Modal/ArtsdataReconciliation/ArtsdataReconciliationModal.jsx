@@ -65,7 +65,7 @@ function ArtsdataReconciliationModal({
         const rawCandidates = await reconcileArtsDataByQuery({
           type: queryConfig.type,
           conditions: queryConfig.conditions,
-          limit: 5,
+          limit: 10,
           language: interfaceLanguage,
         });
 
