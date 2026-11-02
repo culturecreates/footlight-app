@@ -34,7 +34,13 @@ import { useAddImageMutation } from '../../../services/image';
 import { PathName } from '../../../constants/pathName';
 import { loadArtsDataEntity } from '../../../services/artsData';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import {
+  artsDataLinkChecker,
+  createArtsDataLink,
+  addArtsdataIdentifier,
+  removeArtsdataIdentifier,
+} from '../../../utils/artsDataLinkChecker';
+import ArtsdataReconciliationModal from '../../../components/Modal/ArtsdataReconciliation/ArtsdataReconciliationModal';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { RouteLeavingGuard } from '../../../hooks/usePrompt';
@@ -113,12 +119,15 @@ function CreateNewPerson() {
   const [updatePerson, { isLoading: updatePersonLoading }] = useUpdatePersonMutation();
 
   const [newEntityData, setNewEntityData] = useState(null);
+  const [reconciliationModalOpen, setReconciliationModalOpen] = useState(false);
+  const [reconciliationEntityData, setReconciliationEntityData] = useState(null);
+  const [currentSameAs, setCurrentSameAs] = useState(undefined);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const { artsData, artsDataLoading, getArtsData } = useArtsDataLoader(loadArtsDataEntity);
+  const { artsData, setArtsData, artsDataLoading, getArtsData } = useArtsDataLoader(loadArtsDataEntity);
 
   const { derivedEntitiesData, derivedEntitiesDisplayStatus, isEntityDetailsLoading } = useEntityDerivedData({
     entityId: personId,
@@ -237,7 +246,7 @@ function CreateNewPerson() {
       } else {
         personObj = {
           ...personObj,
-          sameAs: personData?.sameAs,
+          sameAs: currentSameAs ?? personData?.sameAs,
         };
         updatePerson({
           data: personObj,
@@ -353,6 +362,44 @@ function CreateNewPerson() {
         setShowDialog(true);
       }
     }
+  };
+
+  // Keep a local copy of sameAs so link/unlink reflect immediately in the form before saving.
+  useEffect(() => {
+    if (personData) setCurrentSameAs(personData?.sameAs ?? []);
+  }, [personData]);
+
+  const effectiveSameAs = currentSameAs !== undefined ? currentSameAs : personData?.sameAs;
+
+  // Stages the link to the chosen Artsdata candidate in local state. It is persisted when the
+  // user saves the form (same as any other edit), not with an immediate PATCH.
+  const handleArtsdataLink = (uri) => {
+    const newSameAs = addArtsdataIdentifier(effectiveSameAs, uri);
+    setCurrentSameAs(newSameAs);
+    getArtsData(uri);
+    setReconciliationModalOpen(false);
+    setShowDialog(true);
+  };
+
+  // Stages the unlink in local state. It is persisted when the user saves the form, not immediately.
+  const handleArtsdataUnlink = () => {
+    const newSameAs = removeArtsdataIdentifier(effectiveSameAs);
+    setCurrentSameAs(newSameAs);
+    setArtsData(null);
+    setShowDialog(true);
+  };
+
+  // Opens the reconciliation modal, matching on the current (possibly unsaved) form values so the
+  // candidate search reflects edits the admin has made but not yet saved.
+  const openReconciliationModal = () => {
+    const liveName = form.getFieldValue('name');
+    const liveUrl = form.getFieldValue('url');
+    setReconciliationEntityData({
+      ...personData,
+      ...(liveName ? { name: liveName } : {}),
+      ...(liveUrl ? { url: liveUrl } : {}),
+    });
+    setReconciliationModalOpen(true);
   };
 
   useEffect(() => {
@@ -665,8 +712,8 @@ function CreateNewPerson() {
                     title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category}
                     key={index}>
                     <>
-                      {(artsDataLinkChecker(personData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) &&
-                        section[0]?.category === formCategory.PRIMARY && (
+                      {section[0]?.category === formCategory.PRIMARY &&
+                        (personId || artsDataLinkChecker(artsData?.sameAs)) && (
                           <Row>
                             <Col span={24}>
                               <p className="add-entity-label" data-cy="para-person-datasource-title">
@@ -683,50 +730,78 @@ function CreateNewPerson() {
                                     style={{ width: '100%' }}
                                   />
                                 </div>
+                              ) : artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs) ? (
+                                <div className="artsdata-link-row">
+                                  <div className="artsdata-link-row-info">
+                                    <ArtsDataInfo
+                                      artsDataLink={createArtsDataLink(
+                                        artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs),
+                                      )}
+                                      name={contentLanguageBilingual({
+                                        data: artsData?.name,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      disambiguatingDescription={contentLanguageBilingual({
+                                        data: artsData?.disambiguatingDescription,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                    />
+                                  </div>
+                                  {personId && (
+                                    <OutlinedButton
+                                      label={t('dashboard.reconciliation.unlink')}
+                                      size="middle"
+                                      onClick={handleArtsdataUnlink}
+                                      data-cy="button-unlink-artsdata"
+                                    />
+                                  )}
+                                </div>
                               ) : (
-                                <ArtsDataInfo
-                                  artsDataLink={
-                                    artsDataLinkChecker(personData?.sameAs)
-                                      ? artsDataLinkChecker(personData?.sameAs)
-                                      : artsDataLinkChecker(artsData?.sameAs)
-                                  }
-                                  name={contentLanguageBilingual({
-                                    data: artsData?.name,
-                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                    calendarContentLanguage: calendarContentLanguage,
-                                  })}
-                                  disambiguatingDescription={contentLanguageBilingual({
-                                    data: artsData?.disambiguatingDescription,
-                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                    calendarContentLanguage: calendarContentLanguage,
-                                  })}
-                                />
+                                personId && (
+                                  <div className="artsdata-link-row artsdata-link-row--empty">
+                                    <span className="artsdata-link-empty-label" data-cy="span-link-artsdata-label">
+                                      {t('dashboard.reconciliation.linkWithArtsdata')}
+                                    </span>
+                                    <OutlinedButton
+                                      label={t('dashboard.reconciliation.link')}
+                                      size="middle"
+                                      onClick={openReconciliationModal}
+                                      data-cy="button-open-reconciliation"
+                                    />
+                                  </div>
+                                )
                               )}
                             </Col>
-                            <Col span={24}>
-                              <div style={{ display: 'inline' }}>
-                                <span className="add-event-date-heading" data-cy="span-person-question-part-one">
-                                  {t('dashboard.people.createNew.addPerson.question.firstPart')}
-                                </span>
-                                <span
-                                  data-cy="span-person-question-part-two"
-                                  className="add-event-date-heading"
-                                  style={{
-                                    color: '#1b3de6',
-                                    textDecoration: 'underline',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                  }}
-                                  onClick={() => {
-                                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
-                                  }}>
-                                  {t('dashboard.people.createNew.addPerson.question.secondPart')}
-                                </span>
-                                <span className="add-event-date-heading" data-cy="span-person-question-part-three">
-                                  {t('dashboard.people.createNew.addPerson.question.thirdPart')}
-                                </span>
-                              </div>
-                            </Col>
+                            {(artsDataLinkChecker(effectiveSameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
+                              <Col span={24}>
+                                <div style={{ display: 'inline' }}>
+                                  <span className="add-event-date-heading" data-cy="span-person-question-part-one">
+                                    {t('dashboard.people.createNew.addPerson.question.firstPart')}
+                                  </span>
+                                  <span
+                                    data-cy="span-person-question-part-two"
+                                    className="add-event-date-heading"
+                                    style={{
+                                      color: '#1b3de6',
+                                      textDecoration: 'underline',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                    }}
+                                    onClick={() => {
+                                      navigate(
+                                        `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`,
+                                      );
+                                    }}>
+                                    {t('dashboard.people.createNew.addPerson.question.secondPart')}
+                                  </span>
+                                  <span className="add-event-date-heading" data-cy="span-person-question-part-three">
+                                    {t('dashboard.people.createNew.addPerson.question.thirdPart')}
+                                  </span>
+                                </div>
+                              </Col>
+                            )}
                             <Col span={24}>
                               <div>
                                 <br />
@@ -1036,6 +1111,17 @@ function CreateNewPerson() {
             )}
           </Row>
         </Form>
+        {reconciliationModalOpen && (
+          <ArtsdataReconciliationModal
+            open={reconciliationModalOpen}
+            onCancel={() => setReconciliationModalOpen(false)}
+            onLink={handleArtsdataLink}
+            entityClass={entitiesClass.person}
+            entityData={reconciliationEntityData ?? personData}
+            calendarContentLanguage={calendarContentLanguage}
+            interfaceLanguage={user?.interfaceLanguage}
+          />
+        )}
       </div>
     </FeatureFlag>
   ) : (

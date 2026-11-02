@@ -1,0 +1,76 @@
+.artsdata-reconciliation-modal .ant-modal-content {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.artsdata-reconciliation-modal .artsdata-reconciliation-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.artsdata-reconciliation-modal-body {
+  padding: 8px 4px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.artsdata-reconciliation-candidate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.artsdata-reconciliation-candidate {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #d0d5f8;
+  border-radius: 4px;
+  background-color: #f9faff;
+}
+
+.artsdata-reconciliation-candidate-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.artsdata-reconciliation-candidate-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222732;
+}
+
+.artsdata-reconciliation-candidate-description {
+  font-size: 13px;
+  color: #646d7b;
+}
+
+.artsdata-reconciliation-candidate-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #0f0e98 !important;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.artsdata-reconciliation-candidate-action {
+  flex-shrink: 0;
+}
+
+.artsdata-reconciliation-error {
+  padding: 20px;
+  text-align: center;
+  color: #ff4d4f;
+}
+
+.artsdata-reconciliation-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 6px;
+}

@@ -68,6 +68,15 @@
     "acceptInvitationSuccess": "Success! Invitation accepted."
   },
   "dashboard": {
+    "reconciliation": {
+      "modalTitle": "Link with Artsdata",
+      "linkWithArtsdata": "Link this entity with Artsdata",
+      "link": "Link",
+      "unlink": "Unlink",
+      "cancel": "Cancel",
+      "noCandidates": "No matching Artsdata entities were found.",
+      "matchError": "Unable to fetch Artsdata matches. Please try again."
+    },
     "calendar": {
       "searchPlaceholder": "Search calendars",
       "noCalendarsFound": "No calendars found",
