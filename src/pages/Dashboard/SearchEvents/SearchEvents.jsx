@@ -26,8 +26,6 @@ import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUn
 import { CalendarOutlined } from '@ant-design/icons';
 import { CustomModal } from '../../../components/Modal/HookModal/Modal';
 import { useHardDeleteEventsMutation } from '../../../services/events';
-import { userRoles } from '../../../constants/userRoles';
-import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -47,10 +45,6 @@ function SearchEvents() {
   useAbortControllersOnUnmount([activePromiseRef]);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
-  // Reimporting hard-deletes the obsolete event, which the API only allows for admins and super admins.
-  const canReimportDeletedEvent =
-    user?.isSuperAdmin || getCurrentCalendarDetailsFromUserDetails(user, calendarId)[0]?.role === userRoles.ADMIN;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [eventsList, setEventsList] = useState([]);
@@ -144,10 +138,8 @@ function SearchEvents() {
         primaryButtonText: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.editText'),
         cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
         showSecondaryButton: false,
-        primaryButtonDisabled: !canReimportDeletedEvent,
         className: 'reimport-entity-info-modal',
         primaryAction: () => {
-          if (!canReimportDeletedEvent) return;
           hardDeleteEvents({ ids: entity?.footlightId, calendarId })
             .unwrap()
             .then(() => {
