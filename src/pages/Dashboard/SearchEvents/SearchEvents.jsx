@@ -25,6 +25,9 @@ import { loadArtsDataEventEntity } from '../../../services/artsData';
 import useAbortControllersOnUnmount from '../../../hooks/useAbortControllersOnUnmount';
 import { CalendarOutlined } from '@ant-design/icons';
 import { CustomModal } from '../../../components/Modal/HookModal/Modal';
+import { useHardDeleteEventsMutation } from '../../../services/events';
+import { userRoles } from '../../../constants/userRoles';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function SearchEvents() {
   const { t } = useTranslation();
@@ -45,6 +48,10 @@ function SearchEvents() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  // Reimporting hard-deletes the obsolete event, which the API only allows for admins and super admins.
+  const canReimportDeletedEvent =
+    user?.isSuperAdmin || getCurrentCalendarDetailsFromUserDetails(user, calendarId)[0]?.role === userRoles.ADMIN;
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [eventsList, setEventsList] = useState([]);
   const [eventListExternalSource, setEventListExternalSource] = useState([]);
@@ -56,6 +63,7 @@ function SearchEvents() {
   const [externalSourceError, setExternalSourceError] = useState(false);
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
+  const [hardDeleteEvents] = useHardDeleteEventsMutation();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
@@ -83,12 +91,12 @@ function SearchEvents() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    const handleImport = () => {
+    const handleImport = (importData = entity) => {
       loadArtsDataEventEntity({ entityId: entity?.uri })
         .then(async (response) => {
           if (response?.data?.length > 0) {
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`, {
-              state: { data: entity },
+              state: { data: importData },
             });
           } else {
             notification.info({
@@ -114,20 +122,7 @@ function SearchEvents() {
           });
         });
     };
-
-    if (entity?.footlightId && entity?.isObsolete) {
-      CustomModal({
-        title: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.title'),
-        content: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.content'),
-        primaryButtonText: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.editText'),
-        cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
-        showSecondaryButton: false,
-        className: 'reimport-entity-info-modal',
-        primaryAction: () => {
-          // TODO: delete the obsolete CMS event (entity.footlightId) and reimport it from Artsdata as a new entity
-        },
-      });
-    } else if (entity?.footlightId) {
+    if (entity?.footlightId && !entity?.isObsolete) {
       CustomModal({
         title: t('dashboard.events.createNew.search.confirm.title'),
         content: t('dashboard.events.createNew.search.confirm.content'),
@@ -140,6 +135,36 @@ function SearchEvents() {
         },
         primaryAction: () => {
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${entity?.footlightId}`);
+        },
+      });
+    } else if (entity?.footlightId && entity?.isObsolete) {
+      CustomModal({
+        title: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.title'),
+        content: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.content'),
+        primaryButtonText: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.editText'),
+        cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
+        showSecondaryButton: false,
+        primaryButtonDisabled: !canReimportDeletedEvent,
+        className: 'reimport-entity-info-modal',
+        primaryAction: () => {
+          if (!canReimportDeletedEvent) return;
+          hardDeleteEvents({ ids: entity?.footlightId, calendarId })
+            .unwrap()
+            .then(() => {
+              // The CMS copy is gone, so import as a brand-new entity (no footlightId / isObsolete),
+              // otherwise AddEvent treats it as a duplicate of an existing event and drops the Artsdata link.
+              // eslint-disable-next-line no-unused-vars
+              const { footlightId, isObsolete, ...newEntity } = entity;
+              handleImport(newEntity);
+            })
+            .catch((error) => {
+              console.log(error);
+              notification.error({
+                key: 'reimport-delete-error',
+                message: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.deleteFailed'),
+                duration: 5,
+              });
+            });
         },
       });
     } else {

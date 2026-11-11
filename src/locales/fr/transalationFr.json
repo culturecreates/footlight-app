@@ -604,7 +604,8 @@
             "reimport-deleted-events": {
               "title": "Réimporter l’événement supprimé?",
               "content": "Cet événement a précédemment été supprimé du CMS. Le réimporter dans la liste des événements?",
-              "editText": "Réimporter l’événement"
+              "editText": "Réimporter l’événement",
+              "deleteFailed": "Échec de la réimportation de l’événement!"
             },
             "title": "L'entité est en double",
             "content": "Vous disposez déjà d'une version de cette entité dans votre CMS. Êtes-vous sûr de vouloir créer une copie à partir de cette nouvelle version, ou préférez-vous modifier celle que vous avez déjà ?",

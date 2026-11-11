@@ -49,6 +49,16 @@ export const eventsApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Events', id: arg.id }],
     }),
+    hardDeleteEvents: builder.mutation({
+      query: ({ ids, calendarId }) => ({
+        url: `events?ids=${[].concat(ids).join(',')}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: ['Events'],
+    }),
     addEvent: builder.mutation({
       query: ({ data, calendarId }) => ({
         url: 'events',
@@ -87,6 +97,7 @@ export const {
   useLazyGetEventsQuery,
   useUpdateEventStateMutation,
   useDeleteEventMutation,
+  useHardDeleteEventsMutation,
   useAddEventMutation,
   useGetEventQuery,
   useUpdateEventMutation,

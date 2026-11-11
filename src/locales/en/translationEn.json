@@ -610,7 +610,8 @@
             "reimport-deleted-events": {
               "title": "Reimport deleted event?",
               "content": "This event was previously deleted from the CMS. Reimport it into the events list?",
-              "editText": "Reimport event"
+              "editText": "Reimport event",
+              "deleteFailed": "Reimporting event failed!"
             },
             "title": "Entity is a duplicate",
             "content": "You already have a version of this entity in your CMS. Are you sure you want to create a duplicate from this new version, or would you like to edit the one you already have?",
