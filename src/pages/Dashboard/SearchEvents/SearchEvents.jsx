@@ -115,7 +115,19 @@ function SearchEvents() {
         });
     };
 
-    if (entity?.footlightId) {
+    if (entity?.footlightId && entity?.isObsolete) {
+      CustomModal({
+        title: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.title'),
+        content: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.content'),
+        primaryButtonText: t('dashboard.events.createNew.search.confirm.reimport-deleted-events.editText'),
+        cancelText: t('dashboard.events.createNew.search.confirm.cancelText'),
+        showSecondaryButton: false,
+        className: 'reimport-entity-info-modal',
+        primaryAction: () => {
+          // TODO: delete the obsolete CMS event (entity.footlightId) and reimport it from Artsdata as a new entity
+        },
+      });
+    } else if (entity?.footlightId) {
       CustomModal({
         title: t('dashboard.events.createNew.search.confirm.title'),
         content: t('dashboard.events.createNew.search.confirm.content'),
