@@ -540,7 +540,6 @@
           }
         }
       },
-
       "publishOptions": {
         "publishEvent": "Publier l'événement",
         "unpublishEvent": "Passer en brouillon",
@@ -602,6 +601,12 @@
           "artsdataTemporarilyUnavailable": "Résultats non disponibles",
           "footlightResultsStillAvailable": "Résultats non disponibles",
           "confirm": {
+            "reimport-deleted-events": {
+              "title": "Réimporter l’événement supprimé?",
+              "content": "Cet événement a précédemment été supprimé du CMS. Le réimporter dans la liste des événements?",
+              "editText": "Réimporter l’événement",
+              "deleteFailed": "Échec de la réimportation de l’événement!"
+            },
             "title": "L'entité est en double",
             "content": "Vous disposez déjà d'une version de cette entité dans votre CMS. Êtes-vous sûr de vouloir créer une copie à partir de cette nouvelle version, ou préférez-vous modifier celle que vous avez déjà ?",
             "okText": "Creer copie",
@@ -1288,7 +1293,9 @@
           "PerformerRole": "Rôle d'interprète",
           "SupporterRole": "Rôle de contributeur"
         },
-        "Person": { "Occupation": "Occupation" },
+        "Person": {
+          "Occupation": "Occupation"
+        },
         "organization": {
           "organizationType": "Type d'organisme"
         }
@@ -1305,7 +1312,6 @@
         },
         "modal": {
           "titleDelete": "Confirmer la suppression",
-
           "contentDelete": {
             "description": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie ? Cette taxonomie sera supprimée partout où elle est utilisée.",
             "impact": "Événements concernés : ",
@@ -1533,7 +1539,6 @@
         "FETCH_ERROR": {
           "message": "Impossible de compléter la requête."
         },
-
         "403": {
           "message": "Non autorisé"
         },

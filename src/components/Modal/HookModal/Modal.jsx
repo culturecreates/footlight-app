@@ -11,6 +11,7 @@ export const CustomModal = ({
   primaryAction,
   primaryButtonText,
   secondaryButtonText,
+  showSecondaryButton = true,
   cancelText,
   className = 'custom-hook-modal',
   closable,
@@ -50,16 +51,18 @@ export const CustomModal = ({
               />
             </div>
             <div>
-              <TextButton
-                key="cancel"
-                size="large"
-                label={secondaryButtonText}
-                onClick={() => {
-                  secondaryAction?.();
-                  handleClose();
-                }}
-                data-cy="button-secondary-action-hook-modal"
-              />
+              {showSecondaryButton && (
+                <TextButton
+                  key="cancel"
+                  size="large"
+                  label={secondaryButtonText}
+                  onClick={() => {
+                    secondaryAction?.();
+                    handleClose();
+                  }}
+                  data-cy="button-secondary-action-hook-modal"
+                />
+              )}
               <PrimaryButton
                 key="primaryAction"
                 label={primaryButtonText}
