@@ -166,7 +166,10 @@
           "upcomingEvents": "Upcoming events",
           "dateRange": "Date range"
         },
-        "organizer": { "label": "Organizations", "placeholderSearch": "Search name" },
+        "organizer": {
+          "label": "Organizations",
+          "placeholderSearch": "Search name"
+        },
         "clear": "Clear"
       },
       "readOnlyEvent": {
@@ -177,7 +180,10 @@
         }
       },
       "addEditEvent": {
-        "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
+        "heading": {
+          "newEvent": "New Event",
+          "editEvent": "Edit Event"
+        },
         "addMoreDetails": "Add more details",
         "allDone": "All done",
         "featuredEvent": "Featured event",
@@ -601,6 +607,12 @@
           "artsdataTemporarilyUnavailable": "Results not available",
           "footlightResultsStillAvailable": "Results not available",
           "confirm": {
+            "reimport-deleted-events": {
+              "title": "Reimport deleted event?",
+              "content": "This event was previously deleted from the CMS. Reimport it into the events list?",
+              "editText": "Reimport event",
+              "deleteFailed": "Reimporting event failed!"
+            },
             "title": "Entity is a duplicate",
             "content": "You already have a version of this entity in your CMS. Are you sure you want to create a duplicate from this new version, or would you like to edit the one you already have?",
             "okText": "Create duplicate",
@@ -790,7 +802,6 @@
           "placeType": {
             "placeholder": "Select place type"
           },
-
           "dataSource": "Data source",
           "address": {
             "address": "Address",
@@ -935,7 +946,6 @@
             "secondPart": "create a new person",
             "thirdPart": " and do not edit this one."
           },
-
           "dataSource": "Data source",
           "notification": {
             "addSuccess": "Success! Your person has been created.",
@@ -1293,7 +1303,9 @@
           "PerformerRole": "Performer Role",
           "SupporterRole": "Contributor Role"
         },
-        "Person": { "Occupation": "Occupation" },
+        "Person": {
+          "Occupation": "Occupation"
+        },
         "organization": {
           "organizationType": "Organization type"
         }
