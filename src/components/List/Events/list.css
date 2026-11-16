@@ -80,6 +80,11 @@
   gap: 8px;
 }
 
+.event-list-wrapper .event-status-list-item-title-container .event-status-tag {
+  min-width: 112px;
+  box-sizing: border-box;
+}
+
 .event-list-wrapper .event-status-list-item-title-container .artsdata-link-pill {
   background-color: #e3e8ff;
   color: #0f0e98;
