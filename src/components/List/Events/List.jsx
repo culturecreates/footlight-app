@@ -297,8 +297,12 @@ function Lists(props) {
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}>
                           <span className="artsdata-link-pill-text">{t('dashboard.events.list.artsdata')}</span>
-                          <LinkOutlined style={{ fontSize: '14px' }} />
-                          {eventItem?.subEventDetails?.isSubEventLinkedToArtsdata && (
+                          {eventItem?.subEventDetails?.isSubEventLinkedToArtsdata ? (
+                            <span className="artsdata-double-link-icon">
+                              <LinkOutlined style={{ fontSize: '14px' }} />
+                              <LinkOutlined style={{ fontSize: '14px' }} />
+                            </span>
+                          ) : (
                             <LinkOutlined style={{ fontSize: '14px' }} />
                           )}
                         </Link>
@@ -322,8 +326,10 @@ function Lists(props) {
                               navigate(`${location.pathname}/${eventItem?.id}`);
                             }
                           }}>
-                          <LinkOutlined style={{ fontSize: '14px' }} />
-                          <LinkOutlined style={{ fontSize: '14px' }} />
+                          <span className="artsdata-double-link-icon">
+                            <LinkOutlined style={{ fontSize: '14px' }} />
+                            <LinkOutlined style={{ fontSize: '14px' }} />
+                          </span>
                         </div>
                       </Tooltip>
                     ) : null}
