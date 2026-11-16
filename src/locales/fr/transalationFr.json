@@ -575,7 +575,10 @@
         "updatedBy": "Modifié le",
         "by": "par",
         "to": "au",
-        "event": "occurrence"
+        "event": "occurrence",
+        "artsdata": "Artsdata",
+        "viewInArtsdata": "Voir dans Artsdata",
+        "goToLinkedEvents": "Voir les événements liés"
       },
       "deleteEvent": {
         "title": "Confirmer la suppression",

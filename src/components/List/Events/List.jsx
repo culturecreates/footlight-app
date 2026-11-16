@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import './list.css';
-import { List, Grid } from 'antd';
+import { List, Grid, Tooltip } from 'antd';
 import { MoreOutlined, StarOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
@@ -287,18 +287,47 @@ function Lists(props) {
                 }}
                 title={
                   <div className="event-status-list-item-title-container">
-                    <EventStatus label={eventItem?.publishState} />
-                    {artsDataLinkChecker(eventItem)?.length > 0 && (
-                      <div className="artsdata-link-outlined-icon" data-cy="artsdata-link-outlined-icon">
+                    {artsDataLinkChecker(eventItem)?.length > 0 ? (
+                      <Tooltip title={t('dashboard.events.list.viewInArtsdata')}>
                         <Link
+                          className="artsdata-link-pill"
+                          data-cy="artsdata-link-pill"
                           href={artsDataLinkChecker(eventItem)[0]?.uri}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}>
+                          <span className="artsdata-link-pill-text">{t('dashboard.events.list.artsdata')}</span>
                           <LinkOutlined style={{ fontSize: '14px' }} />
+                          {eventItem?.subEventDetails?.isSubEventLinkedToArtsdata && (
+                            <LinkOutlined style={{ fontSize: '14px' }} />
+                          )}
                         </Link>
-                      </div>
-                    )}
+                      </Tooltip>
+                    ) : eventItem?.subEventDetails?.isSubEventLinkedToArtsdata ? (
+                      <Tooltip title={t('dashboard.events.list.goToLinkedEvents')}>
+                        <div
+                          className="artsdata-link-pill"
+                          data-cy="subevent-artsdata-link-pill"
+                          role="button"
+                          tabIndex={0}
+                          aria-label={t('dashboard.events.list.goToLinkedEvents')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`${location.pathname}/${eventItem?.id}`);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              navigate(`${location.pathname}/${eventItem?.id}`);
+                            }
+                          }}>
+                          <LinkOutlined style={{ fontSize: '14px' }} />
+                          <LinkOutlined style={{ fontSize: '14px' }} />
+                        </div>
+                      </Tooltip>
+                    ) : null}
+                    <EventStatus label={eventItem?.publishState} />
                   </div>
                 }
                 description={
