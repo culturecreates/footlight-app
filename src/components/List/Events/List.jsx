@@ -326,6 +326,7 @@ function Lists(props) {
                               navigate(`${location.pathname}/${eventItem?.id}`);
                             }
                           }}>
+                          <span className="artsdata-link-pill-text">{t('dashboard.events.list.artsdata')}</span>
                           <span className="artsdata-double-link-icon">
                             <LinkOutlined style={{ fontSize: '14px' }} />
                             <LinkOutlined style={{ fontSize: '14px' }} />
