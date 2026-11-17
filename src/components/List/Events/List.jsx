@@ -25,6 +25,7 @@ import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio'
 import Link from 'antd/lib/typography/Link';
 import { truncateText } from '../../../utils/stringManipulations';
 import { paginationItemRender } from '../../../utils/paginationItemRender';
+import { eventReadOnlySectionIds } from '../../../constants/eventReadOnlySectionIds';
 
 const { useBreakpoint } = Grid;
 
@@ -317,13 +318,13 @@ function Lists(props) {
                           aria-label={t('dashboard.events.list.goToLinkedEvents')}
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`${location.pathname}/${eventItem?.id}`);
+                            navigate(`${location.pathname}/${eventItem?.id}#${eventReadOnlySectionIds.DATES}`);
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
                               e.stopPropagation();
-                              navigate(`${location.pathname}/${eventItem?.id}`);
+                              navigate(`${location.pathname}/${eventItem?.id}#${eventReadOnlySectionIds.DATES}`);
                             }
                           }}>
                           <span className="artsdata-link-pill-text">{t('dashboard.events.list.artsdata')}</span>
