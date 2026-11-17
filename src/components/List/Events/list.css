@@ -91,11 +91,11 @@
   font-size: 12px;
   font-weight: 600;
   line-height: 20px;
-  padding: 4px 6px;
+  padding: 4px 8px;
   border-radius: 4px;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -111,16 +111,7 @@
 }
 
 .event-list-wrapper .event-status-list-item-title-container .artsdata-link-pill .artsdata-double-link-icon {
-  gap: 0;
-}
-
-.event-list-wrapper
-  .event-status-list-item-title-container
-  .artsdata-link-pill
-  .artsdata-double-link-icon
-  > span
-  + span {
-  margin-left: -2px;
+  gap: 2px;
 }
 
 .event-list-wrapper .event-list-item-meta .image-featured-badge {
