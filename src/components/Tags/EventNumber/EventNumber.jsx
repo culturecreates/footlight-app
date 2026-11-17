@@ -8,7 +8,7 @@ function EventNumber(props) {
   const { t } = useTranslation();
 
   return (
-    <Tag {...props} color="#DBF3FD" className="event-number-tag">
+    <Tag {...props} color="#EFF2FF" className="event-number-tag">
       &nbsp;{pluralize(props.label, t('dashboard.events.list.event'))}
     </Tag>
   );

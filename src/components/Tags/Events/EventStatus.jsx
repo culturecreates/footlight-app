@@ -18,8 +18,8 @@ function EventStatus(props) {
         setLabel(t('dashboard.events.publishState.published'));
         break;
       case eventPublishState.DRAFT:
-        setBackgroundColor('#E8E8E8');
-        setFontColor('#222732');
+        setBackgroundColor('#DBF3FD');
+        setFontColor('#1572BB');
         setLabel(t('dashboard.events.publishState.draft'));
         break;
       case eventPublishState.PENDING_REVIEW:
