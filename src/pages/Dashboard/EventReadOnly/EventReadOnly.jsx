@@ -899,7 +899,7 @@ function EventReadOnly() {
                           <Row justify="space-between">
                             {eventData?.startDateTime &&
                               eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                              !eventData?.subEventConfiguration && (
+                              !eventData?.subEventConfiguration?.length > 0 && (
                                 <Col>
                                   <br />
                                   <p className="read-only-event-content-sub-title-primary">
@@ -914,8 +914,9 @@ function EventReadOnly() {
                               )}
                             {eventData?.endDateTime &&
                               eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                              !eventData?.subEventConfiguration && (
+                              !eventData?.subEventConfiguration?.length > 0 && (
                                 <Col>
+                                  <br />
                                   <p className="read-only-event-content-sub-title-primary">
                                     {t('dashboard.events.addEditEvent.dates.endTime')}
                                   </p>
@@ -933,7 +934,6 @@ function EventReadOnly() {
                                 </Col>
                               )}
                           </Row>
-                          <br />
                           {dateType === dateTypes.MULTIPLE &&
                             eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value && (
                               <div style={{ display: 'flex', gap: '8px' }}>
