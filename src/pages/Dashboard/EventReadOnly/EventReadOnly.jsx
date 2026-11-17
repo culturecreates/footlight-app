@@ -62,6 +62,7 @@ import { getLabelByTimezoneValue } from '../../../utils/handleTimeZones';
 import { Translation } from 'react-i18next';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import StructuredDataModal from '../../../components/StructuredDataModal';
+import SubEventsList from '../../../components/SubEventsList';
 import '../../../components/NoContent/noContent.css';
 import {
   isReadOnlyValueEmpty,
@@ -894,6 +895,16 @@ function EventReadOnly() {
                                   </div>
                                 </Col>
                               </Row>
+                              {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
+                                <Row>
+                                  <Col flex="423px">
+                                    <SubEventsList
+                                      subEvents={eventData?.subEvents}
+                                      timezone={eventData?.scheduleTimezone ?? 'Canada/Eastern'}
+                                    />
+                                  </Col>
+                                </Row>
+                              )}
                             </>
                           )}
                           <Row justify="space-between">

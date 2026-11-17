@@ -1,0 +1,58 @@
+/* Row height × 5 = max visible rows before the list scrolls */
+.sub-events-list {
+  --sub-events-row-height: 32px;
+  margin-top: 8px;
+  max-height: calc(var(--sub-events-row-height) * 5 + 8px);
+  overflow-y: auto;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background-color: #ffffff;
+}
+
+.sub-events-list .sub-events-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: var(--sub-events-row-height);
+  font-size: 12px;
+  color: #222732;
+}
+
+.sub-events-list .sub-events-list-date {
+  flex: 0 0 96px;
+  font-weight: 700;
+}
+
+.sub-events-list .sub-events-list-time {
+  flex: 1 1 auto;
+  font-weight: 400;
+}
+
+.sub-events-list .sub-events-list-link {
+  flex: 0 0 auto;
+}
+
+.sub-events-list .sub-events-artsdata-pill {
+  background-color: #e3e8ff;
+  color: #0f0e98;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.sub-events-list .sub-events-artsdata-pill span {
+  display: inline-flex;
+  align-items: center;
+  color: #0f0e98;
+}
+
+.sub-events-list .sub-events-artsdata-pill .sub-events-artsdata-pill-text {
+  text-decoration: underline;
+}
