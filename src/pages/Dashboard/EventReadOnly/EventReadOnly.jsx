@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { Row, Col, Button, Skeleton, notification } from 'antd';
-import { CalendarOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { CalendarOutlined, InfoCircleOutlined, RightOutlined, WarningOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
@@ -106,6 +106,7 @@ function EventReadOnly() {
   const activeTabKey = useSelector(getActiveTabKey);
 
   const [dateType, setDateType] = useState();
+  const [isSubEventsListOpen, setIsSubEventsListOpen] = useState(true);
   const [locationPlace, setLocationPlace] = useState();
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
@@ -376,6 +377,8 @@ function EventReadOnly() {
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
   }, []);
+
+  const showSubEventsList = dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0;
 
   return !debouncedLoading ? (
     <div>
@@ -871,7 +874,7 @@ function EventReadOnly() {
                               </span>
                               <Row>
                                 <Col flex="423px">
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                                     <CalendarOutlined
                                       style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }}
                                     />
@@ -892,11 +895,31 @@ function EventReadOnly() {
                                       open={false}
                                       suffixIcon={false}
                                     />
+                                    {showSubEventsList && (
+                                      <Button
+                                        type="text"
+                                        className="sub-events-list-toggle"
+                                        data-cy="button-toggle-sub-events"
+                                        aria-expanded={isSubEventsListOpen}
+                                        aria-controls="read-only-sub-events-list"
+                                        style={{ marginLeft: 'auto' }}
+                                        icon={
+                                          <RightOutlined
+                                            style={{
+                                              color: '#646D7B',
+                                              transform: `rotate(${isSubEventsListOpen ? -90 : 90}deg)`,
+                                              transition: 'transform 0.2s',
+                                            }}
+                                          />
+                                        }
+                                        onClick={() => setIsSubEventsListOpen((open) => !open)}
+                                      />
+                                    )}
                                   </div>
                                 </Col>
                               </Row>
-                              {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
-                                <Row>
+                              {showSubEventsList && isSubEventsListOpen && (
+                                <Row id="read-only-sub-events-list">
                                   <Col flex="423px">
                                     <SubEventsList
                                       subEvents={eventData?.subEvents}
