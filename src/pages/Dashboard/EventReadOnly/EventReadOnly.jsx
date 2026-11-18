@@ -14,7 +14,7 @@ import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { sanitizeHtml } from '../../../utils/stringManipulations';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { eventStatusOptions } from '../../../constants/eventStatus';
-import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypes } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
@@ -417,6 +417,9 @@ function EventReadOnly() {
     });
     return () => cancelAnimationFrame(frame);
   }, [debouncedLoading, location.hash]);
+
+  const isRecurringEvent = !!eventData?.recurringEvent;
+  const showEventTimes = !isRecurringEvent && !(eventData?.subEventConfiguration?.length > 0);
 
   return !debouncedLoading ? (
     <div>
@@ -974,63 +977,39 @@ function EventReadOnly() {
                             </>
                           )}
                           <Row justify="space-between">
-                            {eventData?.startDateTime &&
-                              eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                              !eventData?.subEventConfiguration?.length > 0 && (
-                                <Col>
-                                  <br />
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.dates.startTime')}
-                                  </p>
-                                  <p className="read-only-event-content">
-                                    {moment
-                                      .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                                      .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
-                                  </p>
-                                </Col>
-                              )}
-                            {eventData?.endDateTime &&
-                              eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                              !eventData?.subEventConfiguration?.length > 0 && (
-                                <Col>
-                                  <br />
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.dates.endTime')}
-                                  </p>
-                                  <p className="read-only-event-content">
-                                    {moment
-                                      .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                                      .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
-                                    {dateType === dateTypes.SINGLE &&
-                                      doesEventExceedNextDay(
-                                        eventData?.startDateTime,
-                                        eventData?.endDateTime,
-                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                      ) && <sup> +1&nbsp;{t('common.day')}</sup>}
-                                  </p>
-                                </Col>
-                              )}
-                          </Row>
-                          {dateType === dateTypes.MULTIPLE &&
-                            eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value && (
-                              <div style={{ display: 'flex', gap: '8px' }}>
-                                {daysOfWeek.map((day, index) => {
-                                  return (
-                                    <Button
-                                      key={index}
-                                      className="recurring-day-buttons"
-                                      style={{
-                                        ...(eventData?.recurringEvent?.weekDays?.includes(day?.value) && {
-                                          borderColor: '#607EFC',
-                                          backgroundColor: '#EFF2FF',
-                                        }),
-                                      }}>
-                                      {day.name}
-                                    </Button>
-                                  );
-                                })}
-                              </div>
+                            {eventData?.startDateTime && showEventTimes && (
+                              <Col>
+                                <br />
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.dates.startTime')}
+                                </p>
+                                <p className="read-only-event-content">
+                                  {moment
+                                    .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                                    .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                                </p>
+                              </Col>
                             )}
+                            {eventData?.endDateTime && showEventTimes && (
+                              <Col>
+                                <br />
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.dates.endTime')}
+                                </p>
+                                <p className="read-only-event-content">
+                                  {moment
+                                    .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                                    .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                                  {dateType === dateTypes.SINGLE &&
+                                    doesEventExceedNextDay(
+                                      eventData?.startDateTime,
+                                      eventData?.endDateTime,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    ) && <sup> +1&nbsp;{t('common.day')}</sup>}
+                                </p>
+                              </Col>
+                            )}
+                          </Row>
                           {eventData?.scheduleTimezone && (
                             <>
                               <br />
