@@ -14,7 +14,7 @@ import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { sanitizeHtml } from '../../../utils/stringManipulations';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { eventStatusOptions } from '../../../constants/eventStatus';
-import { dateFrequencyOptions, dateTypes } from '../../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
@@ -420,6 +420,8 @@ function EventReadOnly() {
 
   const isRecurringEvent = !!eventData?.recurringEvent;
   const showEventTimes = !isRecurringEvent && !(eventData?.subEventConfiguration?.length > 0);
+  const showWeekDays =
+    dateType === dateTypes.MULTIPLE && eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value;
 
   return !debouncedLoading ? (
     <div>
@@ -1010,6 +1012,25 @@ function EventReadOnly() {
                               </Col>
                             )}
                           </Row>
+                          {showWeekDays && (
+                            <div style={{ display: 'flex', gap: '8px' }} data-cy="div-recurring-week-days">
+                              {daysOfWeek.map((day, index) => {
+                                return (
+                                  <Button
+                                    key={index}
+                                    className="recurring-day-buttons"
+                                    style={{
+                                      ...(eventData?.recurringEvent?.weekDays?.includes(day?.value) && {
+                                        borderColor: '#607EFC',
+                                        backgroundColor: '#EFF2FF',
+                                      }),
+                                    }}>
+                                    {day.name}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          )}
                           {eventData?.scheduleTimezone && (
                             <>
                               <br />
