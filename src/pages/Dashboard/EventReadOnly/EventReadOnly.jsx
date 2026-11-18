@@ -914,7 +914,7 @@ function EventReadOnly() {
                                 </span>
                                 {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
                                   <Tags
-                                    style={{ color: '#0F0E98', borderRadius: '4px', marginRight: '10px' }}
+                                    style={{ color: '#0F0E98', borderRadius: '4px', marginRight: '0px' }}
                                     color={'#EFF2FF'}>
                                     {pluralize(eventData?.subEvents?.length, t('dashboard.events.list.event'))}
                                   </Tags>
