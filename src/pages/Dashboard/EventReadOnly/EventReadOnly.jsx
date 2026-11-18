@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { Row, Col, Button, Skeleton, notification } from 'antd';
-import { CalendarOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { CalendarOutlined, InfoCircleOutlined, RightOutlined, WarningOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { eventReadOnlySectionIds } from '../../../constants/eventReadOnlySectionIds';
 import { useDashboardContext } from '../../../hooks/useDashboardContext';
 import { useGetEventQuery } from '../../../services/events';
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,6 +63,7 @@ import { getLabelByTimezoneValue } from '../../../utils/handleTimeZones';
 import { Translation } from 'react-i18next';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import StructuredDataModal from '../../../components/StructuredDataModal';
+import SubEventsList from '../../../components/SubEventsList';
 import '../../../components/NoContent/noContent.css';
 import {
   isReadOnlyValueEmpty,
@@ -69,6 +71,8 @@ import {
   getMissingMandatoryFieldKeys,
   shouldShowMandatoryMissingMessage,
 } from '../../../utils/readOnlyValueHelpers';
+
+const DATES_SCROLL_GAP = 16;
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -105,11 +109,14 @@ function EventReadOnly() {
   const activeTabKey = useSelector(getActiveTabKey);
 
   const [dateType, setDateType] = useState();
+  const [isSubEventsListOpen, setIsSubEventsListOpen] = useState(true);
   const [locationPlace, setLocationPlace] = useState();
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const [selectedSupporters, setSelectedSupporters] = useState([]);
   const [debouncedLoading, setDebouncedLoading] = useState(true);
+  const location = useLocation();
+  const datesSectionRef = useRef(null);
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [structuredDataOpen, setStructuredDataOpen] = useState(false);
@@ -375,6 +382,46 @@ function EventReadOnly() {
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
   }, []);
+
+  const showSubEventsList = dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0;
+
+  useEffect(() => {
+    if (debouncedLoading || location.hash !== `#${eventReadOnlySectionIds.DATES}`) return;
+    const section = datesSectionRef.current;
+    if (!section) return;
+
+    // The page scrolls inside the dashboard content area, under a sticky header and sticky tabs.
+    // Scroll that area so the section starts just below them instead of hidden behind them.
+    const scrollToDates = () => {
+      const scrollContainer = section.closest('.site-layout-background');
+      const tabsNav = section.closest('.read-only-tab-layout')?.querySelector('.ant-tabs-nav');
+      const stickyOffset =
+        (stickyHeaderRef.current?.offsetHeight ?? 0) + (tabsNav?.offsetHeight ?? 0) + DATES_SCROLL_GAP;
+
+      if (scrollContainer) {
+        const top =
+          scrollContainer.scrollTop +
+          section.getBoundingClientRect().top -
+          scrollContainer.getBoundingClientRect().top -
+          stickyOffset;
+        scrollContainer.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      } else {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      section.focus({ preventScroll: true });
+    };
+
+    // Wait for the dates/sub-events layout to settle before measuring.
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(scrollToDates);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [debouncedLoading, location.hash]);
+
+  const isRecurringEvent = !!eventData?.recurringEvent;
+  const showEventTimes = !isRecurringEvent && !(eventData?.subEventConfiguration?.length > 0);
+  const showWeekDays =
+    dateType === dateTypes.MULTIPLE && eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value;
 
   return !debouncedLoading ? (
     <div>
@@ -813,7 +860,12 @@ function EventReadOnly() {
                   <Col flex={'723px'} className="read-only-event-section-col top-level-column">
                     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                       <Col flex={'423px'}>
-                        <div className="read-only-event-section-wrapper">
+                        <div
+                          className="read-only-event-section-wrapper"
+                          id={eventReadOnlySectionIds.DATES}
+                          ref={datesSectionRef}
+                          tabIndex={-1}
+                          data-cy="section-event-dates">
                           <p className="read-only-event-content-title">
                             {t('dashboard.events.addEditEvent.dates.dates')}
                           </p>
@@ -862,15 +914,15 @@ function EventReadOnly() {
                                 </span>
                                 {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
                                   <Tags
-                                    style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
-                                    color={'#DBF3FD'}>
+                                    style={{ color: '#0F0E98', borderRadius: '4px', marginRight: '0px' }}
+                                    color={'#EFF2FF'}>
                                     {pluralize(eventData?.subEvents?.length, t('dashboard.events.list.event'))}
                                   </Tags>
                                 )}
                               </span>
                               <Row>
                                 <Col flex="423px">
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                                     <CalendarOutlined
                                       style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }}
                                     />
@@ -891,69 +943,95 @@ function EventReadOnly() {
                                       open={false}
                                       suffixIcon={false}
                                     />
+                                    {showSubEventsList && (
+                                      <Button
+                                        type="text"
+                                        className="sub-events-list-toggle"
+                                        data-cy="button-toggle-sub-events"
+                                        aria-expanded={isSubEventsListOpen}
+                                        aria-controls="read-only-sub-events-list"
+                                        style={{ marginLeft: 'auto' }}
+                                        icon={
+                                          <RightOutlined
+                                            style={{
+                                              color: '#646D7B',
+                                              transform: `rotate(${isSubEventsListOpen ? -90 : 90}deg)`,
+                                              transition: 'transform 0.2s',
+                                            }}
+                                          />
+                                        }
+                                        onClick={() => setIsSubEventsListOpen((open) => !open)}
+                                      />
+                                    )}
                                   </div>
                                 </Col>
                               </Row>
+                              {showSubEventsList && isSubEventsListOpen && (
+                                <Row id="read-only-sub-events-list">
+                                  <Col flex="423px">
+                                    <SubEventsList
+                                      subEvents={eventData?.subEvents}
+                                      timezone={eventData?.scheduleTimezone ?? 'Canada/Eastern'}
+                                    />
+                                  </Col>
+                                </Row>
+                              )}
                             </>
                           )}
                           <Row justify="space-between">
-                            {eventData?.startDateTime &&
-                              eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                              !eventData?.subEventConfiguration && (
-                                <Col>
-                                  <br />
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.dates.startTime')}
-                                  </p>
-                                  <p className="read-only-event-content">
-                                    {moment
-                                      .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                                      .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
-                                  </p>
-                                </Col>
-                              )}
-                            {eventData?.endDateTime &&
-                              eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                              !eventData?.subEventConfiguration && (
-                                <Col>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {t('dashboard.events.addEditEvent.dates.endTime')}
-                                  </p>
-                                  <p className="read-only-event-content">
-                                    {moment
-                                      .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                                      .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
-                                    {dateType === dateTypes.SINGLE &&
-                                      doesEventExceedNextDay(
-                                        eventData?.startDateTime,
-                                        eventData?.endDateTime,
-                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                      ) && <sup> +1&nbsp;{t('common.day')}</sup>}
-                                  </p>
-                                </Col>
-                              )}
+                            {eventData?.startDateTime && showEventTimes && (
+                              <Col>
+                                <br />
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.dates.startTime')}
+                                </p>
+                                <p className="read-only-event-content">
+                                  {moment
+                                    .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                                    .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                                </p>
+                              </Col>
+                            )}
+                            {eventData?.endDateTime && showEventTimes && (
+                              <Col>
+                                <br />
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.dates.endTime')}
+                                </p>
+                                <p className="read-only-event-content">
+                                  {moment
+                                    .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                                    .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                                  {dateType === dateTypes.SINGLE &&
+                                    doesEventExceedNextDay(
+                                      eventData?.startDateTime,
+                                      eventData?.endDateTime,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    ) && <sup> +1&nbsp;{t('common.day')}</sup>}
+                                </p>
+                              </Col>
+                            )}
                           </Row>
                           <br />
-                          {dateType === dateTypes.MULTIPLE &&
-                            eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value && (
-                              <div style={{ display: 'flex', gap: '8px' }}>
-                                {daysOfWeek.map((day, index) => {
-                                  return (
-                                    <Button
-                                      key={index}
-                                      className="recurring-day-buttons"
-                                      style={{
-                                        ...(eventData?.recurringEvent?.weekDays?.includes(day?.value) && {
-                                          borderColor: '#607EFC',
-                                          backgroundColor: '#EFF2FF',
-                                        }),
-                                      }}>
-                                      {day.name}
-                                    </Button>
-                                  );
-                                })}
-                              </div>
-                            )}
+                          {showWeekDays && (
+                            <div style={{ display: 'flex', gap: '8px' }} data-cy="div-recurring-week-days">
+                              {daysOfWeek.map((day, index) => {
+                                return (
+                                  <Button
+                                    key={index}
+                                    className="recurring-day-buttons"
+                                    style={{
+                                      ...(eventData?.recurringEvent?.weekDays?.includes(day?.value) && {
+                                        borderColor: '#607EFC',
+                                        backgroundColor: '#EFF2FF',
+                                      }),
+                                    }}>
+                                    {day.name}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          )}
                           {eventData?.scheduleTimezone && (
                             <>
                               <br />

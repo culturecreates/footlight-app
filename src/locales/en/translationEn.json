@@ -581,7 +581,10 @@
         "updatedBy": "Updated",
         "by": "by",
         "to": "to",
-        "event": "occurrence"
+        "event": "occurrence",
+        "artsdata": "Artsdata",
+        "viewInArtsdata": "View in Artsdata",
+        "goToLinkedEvents": "Go to linked events"
       },
       "deleteEvent": {
         "title": "Confirm Delete",
