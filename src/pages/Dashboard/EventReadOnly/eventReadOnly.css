@@ -172,3 +172,7 @@ th {
     font-size: 12px;
   }
 }
+
+.read-only-event-section-wrapper#dates:focus {
+  outline: none;
+}
