@@ -1012,6 +1012,7 @@ function EventReadOnly() {
                               </Col>
                             )}
                           </Row>
+                          <br />
                           {showWeekDays && (
                             <div style={{ display: 'flex', gap: '8px' }} data-cy="div-recurring-week-days">
                               {daysOfWeek.map((day, index) => {
