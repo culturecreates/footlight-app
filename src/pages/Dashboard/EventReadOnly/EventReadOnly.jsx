@@ -72,8 +72,6 @@ import {
   shouldShowMandatoryMissingMessage,
 } from '../../../utils/readOnlyValueHelpers';
 
-const DATES_SCROLL_GAP = 16;
-
 function EventReadOnly() {
   const { t } = useTranslation();
   const { calendarId, eventId } = useParams();
@@ -116,7 +114,6 @@ function EventReadOnly() {
   const [selectedSupporters, setSelectedSupporters] = useState([]);
   const [debouncedLoading, setDebouncedLoading] = useState(true);
   const location = useLocation();
-  const datesSectionRef = useRef(null);
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [structuredDataOpen, setStructuredDataOpen] = useState(false);
@@ -387,33 +384,12 @@ function EventReadOnly() {
 
   useEffect(() => {
     if (debouncedLoading || location.hash !== `#${eventReadOnlySectionIds.DATES}`) return;
-    const section = datesSectionRef.current;
-    if (!section) return;
-
-    // The page scrolls inside the dashboard content area, under a sticky header and sticky tabs.
-    // Scroll that area so the section starts just below them instead of hidden behind them.
-    const scrollToDates = () => {
-      const scrollContainer = section.closest('.site-layout-background');
-      const tabsNav = section.closest('.read-only-tab-layout')?.querySelector('.ant-tabs-nav');
-      const stickyOffset =
-        (stickyHeaderRef.current?.offsetHeight ?? 0) + (tabsNav?.offsetHeight ?? 0) + DATES_SCROLL_GAP;
-
-      if (scrollContainer) {
-        const top =
-          scrollContainer.scrollTop +
-          section.getBoundingClientRect().top -
-          scrollContainer.getBoundingClientRect().top -
-          stickyOffset;
-        scrollContainer.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-      } else {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-      section.focus({ preventScroll: true });
-    };
-
-    // Wait for the dates/sub-events layout to settle before measuring.
-    let frame = requestAnimationFrame(() => {
-      frame = requestAnimationFrame(scrollToDates);
+    const frame = requestAnimationFrame(() => {
+      const section = [...document.querySelectorAll(`#${eventReadOnlySectionIds.DATES}`)].find(
+        (element) => element.offsetParent !== null,
+      );
+      section?.scrollIntoView({ block: 'start' });
+      section?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
   }, [debouncedLoading, location.hash]);
@@ -863,7 +839,6 @@ function EventReadOnly() {
                         <div
                           className="read-only-event-section-wrapper"
                           id={eventReadOnlySectionIds.DATES}
-                          ref={datesSectionRef}
                           tabIndex={-1}
                           data-cy="section-event-dates">
                           <p className="read-only-event-content-title">
