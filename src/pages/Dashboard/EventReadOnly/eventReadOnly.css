@@ -173,6 +173,11 @@ th {
   }
 }
 
+/* Opened via #dates: stop below the sticky header (its height is kept in the CSS variable) and the sticky tabs (~80px incl. gap) */
+.read-only-event-section-wrapper#dates {
+  scroll-margin-top: calc(var(--event-read-only-header-height, 0px) + 80px);
+}
+
 .read-only-event-section-wrapper#dates:focus {
   outline: none;
 }
